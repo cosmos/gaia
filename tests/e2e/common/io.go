@@ -1,4 +1,4 @@
-package e2e
+package common
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"os"
 )
 
-// copyFile copy file from src to dst
-func copyFile(src, dst string) (int64, error) { //nolint:unparam
+// CopyFile copy file from src to dst
+func CopyFile(src, dst string) (int64, error) { //nolint:unparam
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
 		return 0, err
@@ -33,9 +33,9 @@ func copyFile(src, dst string) (int64, error) { //nolint:unparam
 	return nBytes, err
 }
 
-// writeFile write a byte slice into a file path
+// WriteFile write a byte slice into a file path
 // create the file if it doesn't exist
 // NOTE: this file can be write and read by everyone
-func writeFile(path string, body []byte) error {
+func WriteFile(path string, body []byte) error {
 	return os.WriteFile(path, body, 0o666) //nolint:gosec
 }

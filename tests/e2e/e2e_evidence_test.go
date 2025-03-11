@@ -5,6 +5,8 @@ import (
 	evidencetypes "cosmossdk.io/x/evidence/types"
 	"encoding/hex"
 	"fmt"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"strings"
 )
 
@@ -12,19 +14,20 @@ func (s *IntegrationTestSuite) testEvidence() {
 	s.Run("test evidence queries", func() {
 		var (
 			valIdx   = 0
-			chain    = s.chainA
-			chainAPI = fmt.Sprintf("http://%s", s.valResources[chain.id][valIdx].GetHostPort("1317/tcp"))
+			chain    = s.commonHelper.Resources.ChainA
+			chainAPI = fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[chain.Id][valIdx].GetHostPort("1317/tcp"))
 		)
-		res, err := queryAllEvidence(chainAPI)
+		res, err := query.QueryAllEvidence(chainAPI)
 		s.Require().NoError(err)
-		s.Require().Equal(numberOfEvidences, len(res.Evidence))
+		s.Require().Equal(common.NumberOfEvidences, len(res.Evidence))
 		for _, evidence := range res.Evidence {
 			var exportedEvidence exported.Evidence
-			err := cdc.UnpackAny(evidence, &exportedEvidence)
+			err := common.Cdc.UnpackAny(evidence, &exportedEvidence)
 			s.Require().NoError(err)
 			eq, ok := exportedEvidence.(*evidencetypes.Equivocation)
 			s.Require().True(ok)
-			s.execQueryEvidence(chain, valIdx, strings.ToUpper(hex.EncodeToString(eq.Hash())))
+			_, err = s.queryHelper.ExecQueryEvidence(chainAPI, strings.ToUpper(hex.EncodeToString(eq.Hash())))
+			s.Require().NoError(err)
 		}
 	})
 }

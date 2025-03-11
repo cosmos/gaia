@@ -1,4 +1,4 @@
-package e2e
+package common
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func httpGet(endpoint string) ([]byte, error) {
+func HttpGet(endpoint string) ([]byte, error) {
 	resp, err := http.Get(endpoint) //nolint:gosec // this is only used during tests
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -23,7 +23,7 @@ func httpGet(endpoint string) ([]byte, error) {
 	return body, nil
 }
 
-func readJSON(resp *http.Response) (map[string]interface{}, error) {
+func ReadJSON(resp *http.Response) (map[string]interface{}, error) {
 	defer resp.Body.Close()
 
 	body, readErr := io.ReadAll(resp.Body)

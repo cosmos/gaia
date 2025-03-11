@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/tx"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -50,25 +52,32 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up e2e integration test suite...")
 
 	var err error
-	s.chainA, err = newChain()
+	s.commonHelper.Resources.ChainA, err = common.NewChain()
 	s.Require().NoError(err)
 
-	s.chainB, err = newChain()
+	s.commonHelper.Resources.ChainB, err = common.NewChain()
 	s.Require().NoError(err)
 
-	s.dkrPool, err = dockertest.NewPool("")
+	s.commonHelper.Resources.DkrPool, err = dockertest.NewPool("")
 	s.Require().NoError(err)
 
-	s.dkrNet, err = s.dkrPool.CreateNetwork(fmt.Sprintf("%s-%s-testnet", s.chainA.id, s.chainB.id))
+	s.commonHelper.Resources.DkrNet, err = s.commonHelper.Resources.DkrPool.CreateNetwork(fmt.Sprintf("%s-%s-testnet", s.commonHelper.Resources.ChainA.Id, s.commonHelper.Resources.ChainB.Id))
 	s.Require().NoError(err)
 
-	s.valResources = make(map[string][]*dockertest.Resource)
+	s.commonHelper.Resources.ValResources = make(map[string][]*dockertest.Resource)
 
-	vestingMnemonic, err := createMnemonic()
+	vestingMnemonic, err := common.CreateMnemonic()
 	s.Require().NoError(err)
 
-	jailedValMnemonic, err := createMnemonic()
+	jailedValMnemonic, err := common.CreateMnemonic()
 	s.Require().NoError(err)
+
+	s.commonHelper.Suite = &s.Suite
+
+	s.tx = tx.Helper{
+		Suite:        &s.Suite,
+		CommonHelper: &s.commonHelper,
+	}
 
 	// The bootstrapping phase is as follows:
 	//
@@ -77,22 +86,22 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// 3. Start both networks.
 	// 4. Create and run IBC relayer (Hermes) containers.
 
-	s.T().Logf("starting e2e infrastructure for chain A; chain-id: %s; datadir: %s", s.chainA.id, s.chainA.dataDir)
-	s.initNodes(s.chainA)
-	s.initGenesis(s.chainA, vestingMnemonic, jailedValMnemonic)
-	s.initValidatorConfigs(s.chainA)
-	s.runValidators(s.chainA, 0)
+	s.T().Logf("starting e2e infrastructure for chain A; chain-id: %s; datadir: %s", s.commonHelper.Resources.ChainA.Id, s.commonHelper.Resources.ChainA.DataDir)
+	s.initNodes(s.commonHelper.Resources.ChainA)
+	s.initGenesis(s.commonHelper.Resources.ChainA, vestingMnemonic, jailedValMnemonic)
+	s.initValidatorConfigs(s.commonHelper.Resources.ChainA)
+	s.runValidators(s.commonHelper.Resources.ChainA, 0)
 
-	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.chainB.id, s.chainB.dataDir)
-	s.initNodes(s.chainB)
-	s.initGenesis(s.chainB, vestingMnemonic, jailedValMnemonic)
-	s.initValidatorConfigs(s.chainB)
-	s.runValidators(s.chainB, 10)
+	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.commonHelper.Resources.ChainB.Id, s.commonHelper.Resources.ChainB.DataDir)
+	s.initNodes(s.commonHelper.Resources.ChainB)
+	s.initGenesis(s.commonHelper.Resources.ChainB, vestingMnemonic, jailedValMnemonic)
+	s.initValidatorConfigs(s.commonHelper.Resources.ChainB)
+	s.runValidators(s.commonHelper.Resources.ChainB, 10)
 
-	s.testCounters = TestCounters{
-		proposalCounter:           0,
-		contractsCounter:          0,
-		contractsCounterPerSender: map[string]uint64{},
+	s.TestCounters = common.TestCounters{
+		ProposalCounter:           0,
+		ContractsCounter:          0,
+		ContractsCounterPerSender: map[string]uint64{},
 	}
 
 	time.Sleep(10 * time.Second)
@@ -111,56 +120,56 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.T().Log("tearing down e2e integration test suite...")
 
-	s.Require().NoError(s.dkrPool.Purge(s.hermesResource))
+	s.Require().NoError(s.commonHelper.Resources.DkrPool.Purge(s.commonHelper.Resources.HermesResource))
 
-	for _, vr := range s.valResources {
+	for _, vr := range s.commonHelper.Resources.ValResources {
 		for _, r := range vr {
-			s.Require().NoError(s.dkrPool.Purge(r))
+			s.Require().NoError(s.commonHelper.Resources.DkrPool.Purge(r))
 		}
 	}
 
-	s.Require().NoError(s.dkrPool.RemoveNetwork(s.dkrNet))
+	s.Require().NoError(s.commonHelper.Resources.DkrPool.RemoveNetwork(s.commonHelper.Resources.DkrNet))
 
-	os.RemoveAll(s.chainA.dataDir)
-	os.RemoveAll(s.chainB.dataDir)
+	os.RemoveAll(s.commonHelper.Resources.ChainA.DataDir)
+	os.RemoveAll(s.commonHelper.Resources.ChainB.DataDir)
 
-	for _, td := range s.tmpDirs {
+	for _, td := range s.commonHelper.Resources.TmpDirs {
 		os.RemoveAll(td)
 	}
 }
 
-func (s *IntegrationTestSuite) initNodes(c *chain) {
-	s.Require().NoError(c.createAndInitValidators(2))
+func (s *IntegrationTestSuite) initNodes(c *common.Chain) {
+	s.Require().NoError(c.CreateAndInitValidators(2))
 	/* Adding 4 accounts to val0 local directory
-	c.genesisAccounts[0]: Relayer Account
-	c.genesisAccounts[1]: ICA Owner
-	c.genesisAccounts[2]: Test Account 1
-	c.genesisAccounts[3]: Test Account 2
+	c.GenesisAccounts[0]: Relayer Account
+	c.GenesisAccounts[1]: ICA Owner
+	c.GenesisAccounts[2]: Test Account 1
+	c.GenesisAccounts[3]: Test Account 2
 	*/
-	s.Require().NoError(c.addAccountFromMnemonic(5))
+	s.Require().NoError(c.AddAccountFromMnemonic(5))
 	// Initialize a genesis file for the first validator
-	val0ConfigDir := c.validators[0].configDir()
+	val0ConfigDir := c.Validators[0].ConfigDir()
 	var addrAll []sdk.AccAddress
-	for _, val := range c.validators {
-		addr, err := val.keyInfo.GetAddress()
+	for _, val := range c.Validators {
+		addr, err := val.KeyInfo.GetAddress()
 		s.Require().NoError(err)
 		addrAll = append(addrAll, addr)
 	}
 
-	for _, addr := range c.genesisAccounts {
-		acctAddr, err := addr.keyInfo.GetAddress()
+	for _, addr := range c.GenesisAccounts {
+		acctAddr, err := addr.KeyInfo.GetAddress()
 		s.Require().NoError(err)
 		addrAll = append(addrAll, acctAddr)
 	}
 
 	s.Require().NoError(
-		modifyGenesis(val0ConfigDir, "", initBalanceStr, addrAll, initialBaseFeeAmt, uatomDenom),
+		modifyGenesis(val0ConfigDir, "", common.InitBalanceStr, addrAll, common.InitialBaseFeeAmt, common.UatomDenom),
 	)
 	// copy the genesis file to the remaining validators
-	for _, val := range c.validators[1:] {
-		_, err := copyFile(
+	for _, val := range c.Validators[1:] {
+		_, err := common.CopyFile(
 			filepath.Join(val0ConfigDir, "config", "genesis.json"),
-			filepath.Join(val.configDir(), "config", "genesis.json"),
+			filepath.Join(val.ConfigDir(), "config", "genesis.json"),
 		)
 		s.Require().NoError(err)
 	}
@@ -168,20 +177,20 @@ func (s *IntegrationTestSuite) initNodes(c *chain) {
 
 // TODO find a better way to manipulate accounts to add genesis accounts
 func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
-	c *chain,
+	c *common.Chain,
 	valConfigDir,
 	vestingMnemonic,
 	jailedValMnemonic string,
 	appGenState map[string]json.RawMessage,
 ) map[string]json.RawMessage {
 	var (
-		authGenState    = authtypes.GetGenesisStateFromAppState(cdc, appGenState)
-		bankGenState    = banktypes.GetGenesisStateFromAppState(cdc, appGenState)
-		stakingGenState = stakingtypes.GetGenesisStateFromAppState(cdc, appGenState)
+		authGenState    = authtypes.GetGenesisStateFromAppState(common.Cdc, appGenState)
+		bankGenState    = banktypes.GetGenesisStateFromAppState(common.Cdc, appGenState)
+		stakingGenState = stakingtypes.GetGenesisStateFromAppState(common.Cdc, appGenState)
 	)
 
 	// create genesis vesting accounts keys
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, valConfigDir, nil, cdc)
+	kb, err := keyring.New(common.KeyringAppName, keyring.BackendTest, valConfigDir, nil, common.Cdc)
 	s.Require().NoError(err)
 
 	keyringAlgos, _ := kb.SupportedAlgorithms()
@@ -193,18 +202,18 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	s.Require().NoError(err)
 
 	// create genesis vesting accounts keys
-	c.genesisVestingAccounts = make(map[string]sdk.AccAddress)
+	c.GenesisVestingAccounts = make(map[string]sdk.AccAddress)
 	for i, key := range genesisVestingKeys {
 		// Use the first wallet from the same mnemonic by HD path
-		acc, err := kb.NewAccount(key, vestingMnemonic, "", HDPath(i), algo)
+		acc, err := kb.NewAccount(key, vestingMnemonic, "", common.HDPath(i), algo)
 		s.Require().NoError(err)
-		c.genesisVestingAccounts[key], err = acc.GetAddress()
+		c.GenesisVestingAccounts[key], err = acc.GetAddress()
 		s.Require().NoError(err)
-		s.T().Logf("created %s genesis account %s\n", key, c.genesisVestingAccounts[key].String())
+		s.T().Logf("created %s genesis account %s\n", key, c.GenesisVestingAccounts[key].String())
 	}
 	var (
-		continuousVestingAcc = c.genesisVestingAccounts[continuousVestingKey]
-		delayedVestingAcc    = c.genesisVestingAccounts[delayedVestingKey]
+		continuousVestingAcc = c.GenesisVestingAccounts[continuousVestingKey]
+		delayedVestingAcc    = c.GenesisVestingAccounts[delayedVestingKey]
 	)
 
 	// add jailed validator to staking store
@@ -222,18 +231,18 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	)
 	s.Require().NoError(err)
 	val.Jailed = true
-	val.Tokens = math.NewInt(slashingShares)
-	val.DelegatorShares = math.LegacyNewDec(slashingShares)
+	val.Tokens = math.NewInt(common.SlashingShares)
+	val.DelegatorShares = math.LegacyNewDec(common.SlashingShares)
 	stakingGenState.Validators = append(stakingGenState.Validators, val)
 
 	// add jailed validator delegations
 	stakingGenState.Delegations = append(stakingGenState.Delegations, stakingtypes.Delegation{
 		DelegatorAddress: jailedValAcc.String(),
 		ValidatorAddress: jailedValAddr.String(),
-		Shares:           math.LegacyNewDec(slashingShares),
+		Shares:           math.LegacyNewDec(common.SlashingShares),
 	})
 
-	appGenState[stakingtypes.ModuleName], err = cdc.MarshalJSON(stakingGenState)
+	appGenState[stakingtypes.ModuleName], err = common.Cdc.MarshalJSON(stakingGenState)
 	s.Require().NoError(err)
 
 	// add jailed account to the genesis
@@ -277,7 +286,7 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	authGenState.Accounts = genAccs
 
 	// update auth module state
-	appGenState[authtypes.ModuleName], err = cdc.MarshalJSON(&authGenState)
+	appGenState[authtypes.ModuleName], err = common.Cdc.MarshalJSON(&authGenState)
 	s.Require().NoError(err)
 
 	// update balances
@@ -291,11 +300,11 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	}
 	jailedValidatorBalances := banktypes.Balance{
 		Address: jailedValAcc.String(),
-		Coins:   sdk.NewCoins(tokenAmount),
+		Coins:   sdk.NewCoins(common.TokenAmount),
 	}
 	stakingModuleBalances := banktypes.Balance{
 		Address: authtypes.NewModuleAddress(stakingtypes.NotBondedPoolName).String(),
-		Coins:   sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(slashingShares))),
+		Coins:   sdk.NewCoins(sdk.NewCoin(common.UatomDenom, math.NewInt(common.SlashingShares))),
 	}
 	bankGenState.Balances = append(
 		bankGenState.Balances,
@@ -309,34 +318,34 @@ func (s *IntegrationTestSuite) addGenesisVestingAndJailedAccounts(
 	// update the denom metadata for the bank module
 	bankGenState.DenomMetadata = append(bankGenState.DenomMetadata, banktypes.Metadata{
 		Description: "An example stable token",
-		Display:     uatomDenom,
-		Base:        uatomDenom,
-		Symbol:      uatomDenom,
-		Name:        uatomDenom,
+		Display:     common.UatomDenom,
+		Base:        common.UatomDenom,
+		Symbol:      common.UatomDenom,
+		Name:        common.UatomDenom,
 		DenomUnits: []*banktypes.DenomUnit{
 			{
-				Denom:    uatomDenom,
+				Denom:    common.UatomDenom,
 				Exponent: 0,
 			},
 		},
 	})
 
 	// update bank module state
-	appGenState[banktypes.ModuleName], err = cdc.MarshalJSON(bankGenState)
+	appGenState[banktypes.ModuleName], err = common.Cdc.MarshalJSON(bankGenState)
 	s.Require().NoError(err)
 
 	return appGenState
 }
 
-func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic, jailedValMnemonic string) {
+func (s *IntegrationTestSuite) initGenesis(c *common.Chain, vestingMnemonic, jailedValMnemonic string) {
 	var (
 		serverCtx = server.NewDefaultContext()
 		config    = serverCtx.Config
-		validator = c.validators[0]
+		validator = c.Validators[0]
 	)
 
-	config.SetRoot(validator.configDir())
-	config.Moniker = validator.moniker
+	config.SetRoot(validator.ConfigDir())
+	config.Moniker = validator.Moniker
 
 	genFilePath := config.GenesisFile()
 	appGenState, genDoc, err := genutiltypes.GenesisStateFromGenFile(genFilePath)
@@ -344,16 +353,16 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic, jailedValM
 
 	appGenState = s.addGenesisVestingAndJailedAccounts(
 		c,
-		validator.configDir(),
+		validator.ConfigDir(),
 		vestingMnemonic,
 		jailedValMnemonic,
 		appGenState,
 	)
 
 	var evidenceGenState evidencetypes.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[evidencetypes.ModuleName], &evidenceGenState))
+	s.Require().NoError(common.Cdc.UnmarshalJSON(appGenState[evidencetypes.ModuleName], &evidenceGenState))
 
-	evidenceGenState.Evidence = make([]*codectypes.Any, numberOfEvidences)
+	evidenceGenState.Evidence = make([]*codectypes.Any, common.NumberOfEvidences)
 	for i := range evidenceGenState.Evidence {
 		pk := ed25519.GenPrivKey()
 		evidence := &evidencetypes.Equivocation{
@@ -366,22 +375,22 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic, jailedValM
 		s.Require().NoError(err)
 	}
 
-	appGenState[evidencetypes.ModuleName], err = cdc.MarshalJSON(&evidenceGenState)
+	appGenState[evidencetypes.ModuleName], err = common.Cdc.MarshalJSON(&evidenceGenState)
 	s.Require().NoError(err)
 
 	var genUtilGenState genutiltypes.GenesisState
-	s.Require().NoError(cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
+	s.Require().NoError(common.Cdc.UnmarshalJSON(appGenState[genutiltypes.ModuleName], &genUtilGenState))
 
 	// generate genesis txs
-	genTxs := make([]json.RawMessage, len(c.validators))
-	for i, val := range c.validators {
-		createValmsg, err := val.buildCreateValidatorMsg(stakingAmountCoin)
+	genTxs := make([]json.RawMessage, len(c.Validators))
+	for i, val := range c.Validators {
+		createValmsg, err := val.BuildCreateValidatorMsg(common.StakingAmountCoin)
 		s.Require().NoError(err)
-		signedTx, err := val.signMsg(createValmsg)
+		signedTx, err := val.SignMsg(createValmsg)
 
 		s.Require().NoError(err)
 
-		txRaw, err := cdc.MarshalJSON(signedTx)
+		txRaw, err := common.Cdc.MarshalJSON(signedTx)
 		s.Require().NoError(err)
 
 		genTxs[i] = txRaw
@@ -389,7 +398,7 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic, jailedValM
 
 	genUtilGenState.GenTxs = genTxs
 
-	appGenState[genutiltypes.ModuleName], err = cdc.MarshalJSON(&genUtilGenState)
+	appGenState[genutiltypes.ModuleName], err = common.Cdc.MarshalJSON(&genUtilGenState)
 	s.Require().NoError(err)
 
 	genDoc.AppState, err = json.MarshalIndent(appGenState, "", "  ")
@@ -405,22 +414,22 @@ func (s *IntegrationTestSuite) initGenesis(c *chain, vestingMnemonic, jailedValM
 	s.Require().NoError(err)
 
 	// write the updated genesis file to each validator.
-	for _, val := range c.validators {
-		err = writeFile(filepath.Join(val.configDir(), "config", "genesis.json"), bz)
+	for _, val := range c.Validators {
+		err = common.WriteFile(filepath.Join(val.ConfigDir(), "config", "genesis.json"), bz)
 		s.Require().NoError(err)
 
-		err = writeFile(filepath.Join(val.configDir(), vestingPeriodFile), vestingPeriod)
+		err = common.WriteFile(filepath.Join(val.ConfigDir(), vestingPeriodFile), vestingPeriod)
 		s.Require().NoError(err)
 
-		err = writeFile(filepath.Join(val.configDir(), rawTxFile), rawTx)
+		err = common.WriteFile(filepath.Join(val.ConfigDir(), rawTxFile), rawTx)
 		s.Require().NoError(err)
 	}
 }
 
-// initValidatorConfigs initializes the validator configs for the given chain.
-func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
-	for i, val := range c.validators {
-		tmCfgPath := filepath.Join(val.configDir(), "config", "config.toml")
+// initValidatorConfigs initializes the validator configs for the given Chain.
+func (s *IntegrationTestSuite) initValidatorConfigs(c *common.Chain) {
+	for i, val := range c.Validators {
+		tmCfgPath := filepath.Join(val.ConfigDir(), "config", "config.toml")
 
 		vpr := viper.New()
 		vpr.SetConfigFile(tmCfgPath)
@@ -432,20 +441,20 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 
 		valConfig.P2P.ListenAddress = "tcp://0.0.0.0:26656"
 		valConfig.P2P.AddrBookStrict = false
-		valConfig.P2P.ExternalAddress = fmt.Sprintf("%s:%d", val.instanceName(), 26656)
+		valConfig.P2P.ExternalAddress = fmt.Sprintf("%s:%d", val.InstanceName(), 26656)
 		valConfig.RPC.ListenAddress = "tcp://0.0.0.0:26657"
 		valConfig.StateSync.Enable = false
 		valConfig.LogLevel = "info"
 
 		var peers []string
 
-		for j := 0; j < len(c.validators); j++ {
+		for j := 0; j < len(c.Validators); j++ {
 			if i == j {
 				continue
 			}
 
-			peer := c.validators[j]
-			peerID := fmt.Sprintf("%s@%s%d:26656", peer.nodeKey.ID(), peer.moniker, j)
+			peer := c.Validators[j]
+			peerID := fmt.Sprintf("%s@%s%d:26656", peer.NodeKey.ID(), peer.Moniker, j)
 			peers = append(peers, peerID)
 		}
 
@@ -454,12 +463,12 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 		tmconfig.WriteConfigFile(tmCfgPath, valConfig)
 
 		// set application configuration
-		appCfgPath := filepath.Join(val.configDir(), "config", "app.toml")
+		appCfgPath := filepath.Join(val.ConfigDir(), "config", "app.toml")
 
 		appConfig := srvconfig.DefaultConfig()
 		appConfig.API.Enable = true
 		appConfig.API.Address = "tcp://0.0.0.0:1317"
-		appConfig.MinGasPrices = fmt.Sprintf("%s%s", minGasPrice, uatomDenom)
+		appConfig.MinGasPrices = fmt.Sprintf("%s%s", common.MinGasPrice, common.UatomDenom)
 		appConfig.GRPC.Address = "0.0.0.0:9090"
 
 		srvconfig.SetConfigTemplate(srvconfig.DefaultConfigTemplate)
@@ -467,25 +476,25 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *chain) {
 	}
 }
 
-// runValidators runs the validators in the chain
-func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
-	s.T().Logf("starting Gaia %s validator containers...", c.id)
+// runValidators runs the validators in the Chain
+func (s *IntegrationTestSuite) runValidators(c *common.Chain, portOffset int) {
+	s.T().Logf("starting Gaia %s validator containers...", c.Id)
 
-	s.valResources[c.id] = make([]*dockertest.Resource, len(c.validators))
-	for i, val := range c.validators {
+	s.commonHelper.Resources.ValResources[c.Id] = make([]*dockertest.Resource, len(c.Validators))
+	for i, val := range c.Validators {
 		runOpts := &dockertest.RunOptions{
-			Name:      val.instanceName(),
-			NetworkID: s.dkrNet.Network.ID,
+			Name:      val.InstanceName(),
+			NetworkID: s.commonHelper.Resources.DkrNet.Network.ID,
 			Mounts: []string{
-				fmt.Sprintf("%s/:%s", val.configDir(), gaiaHomePath),
+				fmt.Sprintf("%s/:%s", val.ConfigDir(), common.GaiaHomePath),
 			},
 			Repository: "cosmos/gaiad-e2e",
 		}
 
-		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.configDir()).Run()) //nolint:gosec // this is a test
+		s.Require().NoError(exec.Command("chmod", "-R", "0777", val.ConfigDir()).Run()) //nolint:gosec // this is a test
 
 		// expose the first validator for debugging and communication
-		if val.index == 0 {
+		if val.Index == 0 {
 			runOpts.PortBindings = map[docker.Port][]docker.PortBinding{
 				"1317/tcp":  {{HostIP: "", HostPort: fmt.Sprintf("%d", 1317+portOffset)}},
 				"6060/tcp":  {{HostIP: "", HostPort: fmt.Sprintf("%d", 6060+portOffset)}},
@@ -500,11 +509,11 @@ func (s *IntegrationTestSuite) runValidators(c *chain, portOffset int) {
 			}
 		}
 
-		resource, err := s.dkrPool.RunWithOptions(runOpts, noRestart)
+		resource, err := s.commonHelper.Resources.DkrPool.RunWithOptions(runOpts, noRestart)
 		s.Require().NoError(err)
 
-		s.valResources[c.id][i] = resource
-		s.T().Logf("started Gaia %s validator container: %s", c.id, resource.Container.ID)
+		s.commonHelper.Resources.ValResources[c.Id][i] = resource
+		s.T().Logf("started Gaia %s validator container: %s", c.Id, resource.Container.ID)
 	}
 
 	rpcClient, err := rpchttp.New("tcp://localhost:26657", "/websocket")
@@ -540,35 +549,35 @@ func noRestart(config *docker.HostConfig) {
 }
 
 // runIBCRelayer bootstraps an IBC Hermes relayer by creating an IBC connection and
-// a transfer channel between chainA and chainB.
+// a transfer channel between ChainA and ChainB.
 func (s *IntegrationTestSuite) runIBCRelayer() {
 	s.T().Log("starting Hermes relayer container")
 
 	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-hermes-")
 	s.Require().NoError(err)
-	s.tmpDirs = append(s.tmpDirs, tmpDir)
+	s.commonHelper.Resources.TmpDirs = append(s.commonHelper.Resources.TmpDirs, tmpDir)
 
-	gaiaAVal := s.chainA.validators[0]
-	gaiaBVal := s.chainB.validators[0]
+	gaiaAVal := s.commonHelper.Resources.ChainA.Validators[0]
+	gaiaBVal := s.commonHelper.Resources.ChainB.Validators[0]
 
-	gaiaARly := s.chainA.genesisAccounts[relayerAccountIndexHermes]
-	gaiaBRly := s.chainB.genesisAccounts[relayerAccountIndexHermes]
+	gaiaARly := s.commonHelper.Resources.ChainA.GenesisAccounts[common.RelayerAccountIndexHermes]
+	gaiaBRly := s.commonHelper.Resources.ChainB.GenesisAccounts[common.RelayerAccountIndexHermes]
 
 	hermesCfgPath := path.Join(tmpDir, "hermes")
 
 	s.Require().NoError(os.MkdirAll(hermesCfgPath, 0o755))
-	_, err = copyFile(
+	_, err = common.CopyFile(
 		filepath.Join("./scripts/", "hermes_bootstrap.sh"),
 		filepath.Join(hermesCfgPath, "hermes_bootstrap.sh"),
 	)
 	s.Require().NoError(err)
 
-	s.hermesResource, err = s.dkrPool.RunWithOptions(
+	s.commonHelper.Resources.HermesResource, err = s.commonHelper.Resources.DkrPool.RunWithOptions(
 		&dockertest.RunOptions{
-			Name:       fmt.Sprintf("%s-%s-relayer", s.chainA.id, s.chainB.id),
+			Name:       fmt.Sprintf("%s-%s-relayer", s.commonHelper.Resources.ChainA.Id, s.commonHelper.Resources.ChainB.Id),
 			Repository: "ghcr.io/cosmos/hermes-e2e",
 			Tag:        "1.0.0",
-			NetworkID:  s.dkrNet.Network.ID,
+			NetworkID:  s.commonHelper.Resources.DkrNet.Network.ID,
 			Mounts: []string{
 				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),
 			},
@@ -576,14 +585,14 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 				"3031/tcp": {{HostIP: "", HostPort: "3031"}},
 			},
 			Env: []string{
-				fmt.Sprintf("GAIA_A_E2E_CHAIN_ID=%s", s.chainA.id),
-				fmt.Sprintf("GAIA_B_E2E_CHAIN_ID=%s", s.chainB.id),
-				fmt.Sprintf("GAIA_A_E2E_VAL_MNEMONIC=%s", gaiaAVal.mnemonic),
-				fmt.Sprintf("GAIA_B_E2E_VAL_MNEMONIC=%s", gaiaBVal.mnemonic),
-				fmt.Sprintf("GAIA_A_E2E_RLY_MNEMONIC=%s", gaiaARly.mnemonic),
-				fmt.Sprintf("GAIA_B_E2E_RLY_MNEMONIC=%s", gaiaBRly.mnemonic),
-				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.valResources[s.chainA.id][0].Container.Name[1:]),
-				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.valResources[s.chainB.id][0].Container.Name[1:]),
+				fmt.Sprintf("GAIA_A_E2E_CHAIN_ID=%s", s.commonHelper.Resources.ChainA.Id),
+				fmt.Sprintf("GAIA_B_E2E_CHAIN_ID=%s", s.commonHelper.Resources.ChainB.Id),
+				fmt.Sprintf("GAIA_A_E2E_VAL_MNEMONIC=%s", gaiaAVal.Mnemonic),
+				fmt.Sprintf("GAIA_B_E2E_VAL_MNEMONIC=%s", gaiaBVal.Mnemonic),
+				fmt.Sprintf("GAIA_A_E2E_RLY_MNEMONIC=%s", gaiaARly.Mnemonic),
+				fmt.Sprintf("GAIA_B_E2E_RLY_MNEMONIC=%s", gaiaBRly.Mnemonic),
+				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].Container.Name[1:]),
+				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainB.Id][0].Container.Name[1:]),
 			},
 			User: "root",
 			Entrypoint: []string{
@@ -596,18 +605,18 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	)
 	s.Require().NoError(err)
 
-	s.T().Logf("started Hermes relayer container: %s", s.hermesResource.Container.ID)
+	s.T().Logf("started Hermes relayer container: %s", s.commonHelper.Resources.HermesResource.Container.ID)
 
 	// XXX: Give time to both networks to start, otherwise we might see gRPC
 	// transport errors.
 	time.Sleep(10 * time.Second)
 
 	// create the client, connection and channel between the two Gaia chains
-	s.createConnection()
-	s.createChannel()
+	s.commonHelper.CreateConnection()
+	s.commonHelper.CreateChannel()
 }
 
 func configFile(filename string) string {
-	filepath := filepath.Join(gaiaConfigPath, filename)
+	filepath := filepath.Join(common.GaiaConfigPath, filename)
 	return filepath
 }

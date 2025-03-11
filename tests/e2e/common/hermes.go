@@ -1,4 +1,4 @@
-package e2e
+package common
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, portID, channelID string) (success bool) { //nolint:unparam
+func (h *Helper) HermesClearPacket(configPath, chainID, portID, channelID string) (success bool) { //nolint:unparam
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -21,8 +21,8 @@ func (s *IntegrationTestSuite) hermesClearPacket(configPath, chainID, portID, ch
 		fmt.Sprintf("--port=%s", portID),
 	}
 
-	if _, err := s.executeHermesCommand(ctx, hermesCmd); err != nil {
-		s.T().Logf("failed to clear packets: %s", err)
+	if _, err := h.ExecuteHermesCommand(ctx, hermesCmd); err != nil {
+		h.Suite.T().Logf("failed to clear packets: %s", err)
 		return false
 	}
 
@@ -41,8 +41,8 @@ type RelayerPacketsOutput struct {
 	Status string `json:"status"`
 }
 
-func (s *IntegrationTestSuite) createConnection() {
-	s.T().Logf("connecting %s and %s chains via IBC", s.chainA.id, s.chainB.id)
+func (h *Helper) CreateConnection() {
+	h.Suite.T().Logf("connecting %s and %s chains via IBC", h.Resources.ChainA.Id, h.Resources.ChainB.Id)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -53,19 +53,19 @@ func (s *IntegrationTestSuite) createConnection() {
 		"create",
 		"connection",
 		"--a-chain",
-		s.chainA.id,
+		h.Resources.ChainA.Id,
 		"--b-chain",
-		s.chainB.id,
+		h.Resources.ChainB.Id,
 	}
 
-	_, err := s.executeHermesCommand(ctx, hermesCmd)
-	s.Require().NoError(err, "failed to connect chains: %s", err)
+	_, err := h.ExecuteHermesCommand(ctx, hermesCmd)
+	h.Suite.Require().NoError(err, "failed to connect chains: %s", err)
 
-	s.T().Logf("connected %s and %s chains via IBC", s.chainA.id, s.chainB.id)
+	h.Suite.T().Logf("connected %s and %s chains via IBC", h.Resources.ChainA.Id, h.Resources.ChainB.Id)
 }
 
-func (s *IntegrationTestSuite) createChannel() {
-	s.T().Logf("creating IBC transfer channel created between chains %s and %s", s.chainA.id, s.chainB.id)
+func (h *Helper) CreateChannel() {
+	h.Suite.T().Logf("creating IBC transfer channel created between chains %s and %s", h.Resources.ChainA.Id, h.Resources.ChainB.Id)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -74,30 +74,30 @@ func (s *IntegrationTestSuite) createChannel() {
 		"--json",
 		"create",
 		"channel",
-		"--a-chain", s.chainA.id,
 		"--a-connection", "connection-0",
+		"--a-chain", h.Resources.ChainA.Id,
 		"--a-port", "transfer",
 		"--b-port", "transfer",
 		"--channel-version", "ics20-1",
 		"--order", "unordered",
 	}
 
-	_, err := s.executeHermesCommand(ctx, hermesCmd)
-	s.Require().NoError(err, "failed to create IBC transfer channel between chains: %s", err)
+	_, err := h.ExecuteHermesCommand(ctx, hermesCmd)
+	h.Suite.Require().NoError(err, "failed to create IBC transfer channel between chains: %s", err)
 
-	s.T().Logf("IBC transfer channel created between chains %s and %s", s.chainA.id, s.chainB.id)
+	h.Suite.T().Logf("IBC transfer channel created between chains %s and %s", h.Resources.ChainA.Id, h.Resources.ChainB.Id)
 }
 
 // This function will complete the channel handshake in cases when ChanOpenInit was initiated
-// by some transaction that was previously executed on the chain. For example,
+// by some transaction that was previously executed on the Chain. For example,
 // ICA MsgRegisterInterchainAccount will perform ChanOpenInit during its execution.
-func (s *IntegrationTestSuite) completeChannelHandshakeFromTry(
+func (h *Helper) CompleteChannelHandshakeFromTry(
 	srcChain, dstChain,
 	srcConnection, dstConnection,
 	srcPort, dstPort,
 	srcChannel, dstChannel string,
 ) {
-	s.T().Logf("completing IBC channel handshake between: (%s, %s, %s, %s) and (%s, %s, %s, %s)",
+	h.Suite.T().Logf("completing IBC channel handshake between: (%s, %s, %s, %s) and (%s, %s, %s, %s)",
 		srcChain, srcConnection, srcPort, srcChannel,
 		dstChain, dstConnection, dstPort, dstChannel)
 
@@ -117,8 +117,8 @@ func (s *IntegrationTestSuite) completeChannelHandshakeFromTry(
 		"--src-channel", srcChannel,
 	}
 
-	_, err := s.executeHermesCommand(ctx, hermesCmd)
-	s.Require().NoError(err, "failed to execute chan-open-try: %s", err)
+	_, err := h.ExecuteHermesCommand(ctx, hermesCmd)
+	h.Suite.Require().NoError(err, "failed to execute chan-open-try: %s", err)
 
 	hermesCmd = []string{
 		hermesBinary,
@@ -134,8 +134,8 @@ func (s *IntegrationTestSuite) completeChannelHandshakeFromTry(
 		"--src-channel", dstChannel,
 	}
 
-	_, err = s.executeHermesCommand(ctx, hermesCmd)
-	s.Require().NoError(err, "failed to execute chan-open-ack: %s", err)
+	_, err = h.ExecuteHermesCommand(ctx, hermesCmd)
+	h.Suite.Require().NoError(err, "failed to execute chan-open-ack: %s", err)
 
 	hermesCmd = []string{
 		hermesBinary,
@@ -151,10 +151,10 @@ func (s *IntegrationTestSuite) completeChannelHandshakeFromTry(
 		"--src-channel", srcChannel,
 	}
 
-	_, err = s.executeHermesCommand(ctx, hermesCmd)
-	s.Require().NoError(err, "failed to execute chan-open-confirm: %s", err)
+	_, err = h.ExecuteHermesCommand(ctx, hermesCmd)
+	h.Suite.Require().NoError(err, "failed to execute chan-open-confirm: %s", err)
 
-	s.T().Logf("IBC channel handshake completed between: (%s, %s, %s, %s) and (%s, %s, %s, %s)",
+	h.Suite.T().Logf("IBC channel handshake completed between: (%s, %s, %s, %s) and (%s, %s, %s, %s)",
 		srcChain, srcConnection, srcPort, srcChannel,
 		dstChain, dstConnection, dstPort, dstChannel)
 }

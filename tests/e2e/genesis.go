@@ -3,6 +3,7 @@ package e2e
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	"time"
 
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
@@ -51,7 +52,7 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 		return fmt.Errorf("failed to unmarshal genesis state: %w", err)
 	}
 
-	authGenState := authtypes.GetGenesisStateFromAppState(cdc, appState)
+	authGenState := authtypes.GetGenesisStateFromAppState(common.Cdc, appState)
 	accs, err := authtypes.UnpackAccounts(authGenState.Accounts)
 	if err != nil {
 		return fmt.Errorf("failed to get accounts from any: %w", err)
@@ -77,17 +78,17 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 
 	authGenState.Accounts = genAccs
 
-	authGenStateBz, err := cdc.MarshalJSON(&authGenState)
+	authGenStateBz, err := common.Cdc.MarshalJSON(&authGenState)
 	if err != nil {
 		return fmt.Errorf("failed to marshal auth genesis state: %w", err)
 	}
 	appState[authtypes.ModuleName] = authGenStateBz
 
-	bankGenState := banktypes.GetGenesisStateFromAppState(cdc, appState)
+	bankGenState := banktypes.GetGenesisStateFromAppState(common.Cdc, appState)
 	bankGenState.Balances = append(bankGenState.Balances, balances...)
 	bankGenState.Balances = banktypes.SanitizeGenesisBalances(bankGenState.Balances)
 
-	bankGenStateBz, err := cdc.MarshalJSON(bankGenState)
+	bankGenStateBz, err := common.Cdc.MarshalJSON(bankGenState)
 	if err != nil {
 		return fmt.Errorf("failed to marshal bank genesis state: %w", err)
 	}
@@ -97,7 +98,7 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 	var icaGenesisState icagen.GenesisState
 
 	if appState[icatypes.ModuleName] != nil {
-		cdc.MustUnmarshalJSON(appState[icatypes.ModuleName], &icaGenesisState)
+		common.Cdc.MustUnmarshalJSON(appState[icatypes.ModuleName], &icaGenesisState)
 	}
 
 	icaGenesisState.HostGenesisState.Params.AllowMessages = []string{
@@ -129,26 +130,26 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 		"/tendermint.liquidity.v1beta1.MsgWithdrawWithinBatch",
 	}
 
-	icaGenesisStateBz, err := cdc.MarshalJSON(&icaGenesisState)
+	icaGenesisStateBz, err := common.Cdc.MarshalJSON(&icaGenesisState)
 	if err != nil {
 		return fmt.Errorf("failed to marshal interchain accounts genesis state: %w", err)
 	}
 	appState[icatypes.ModuleName] = icaGenesisStateBz
 
-	feemarketState := feemarkettypes.GetGenesisStateFromAppState(cdc, appState)
+	feemarketState := feemarkettypes.GetGenesisStateFromAppState(common.Cdc, appState)
 	feemarketState.Params.MinBaseGasPrice = math.LegacyMustNewDecFromStr(basefee)
 	feemarketState.Params.FeeDenom = denom
 	feemarketState.Params.DistributeFees = true
 	feemarketState.State.BaseGasPrice = math.LegacyMustNewDecFromStr(basefee)
-	feemarketStateBz, err := cdc.MarshalJSON(&feemarketState)
+	feemarketStateBz, err := common.Cdc.MarshalJSON(&feemarketState)
 	if err != nil {
 		return fmt.Errorf("failed to marshal feemarket genesis state: %w", err)
 	}
 	appState[feemarkettypes.ModuleName] = feemarketStateBz
 
-	stakingGenState := stakingtypes.GetGenesisStateFromAppState(cdc, appState)
+	stakingGenState := stakingtypes.GetGenesisStateFromAppState(common.Cdc, appState)
 	stakingGenState.Params.BondDenom = denom
-	stakingGenStateBz, err := cdc.MarshalJSON(stakingGenState)
+	stakingGenStateBz, err := common.Cdc.MarshalJSON(stakingGenState)
 	if err != nil {
 		return fmt.Errorf("failed to marshal staking genesis state: %s", err)
 	}
@@ -182,7 +183,7 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 	govStateV4.Params.ExpeditedVotingPeriod = &expeditedVoting
 	govStateV4.Params.ExpeditedMinDeposit = sdk.NewCoins(sdk.NewCoin(denom, amnt)) // same as normal for testing
 
-	govGenStateBz, err := cdc.MarshalJSON(govStateV4)
+	govGenStateBz, err := common.Cdc.MarshalJSON(govStateV4)
 	if err != nil {
 		return fmt.Errorf("failed to marshal gov genesis state: %w", err)
 	}

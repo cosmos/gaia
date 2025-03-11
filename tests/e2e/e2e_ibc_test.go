@@ -3,6 +3,8 @@ package e2e
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"strconv"
 	"strings"
 	"time"
@@ -36,17 +38,17 @@ func (s *IntegrationTestSuite) testIBCTokenTransfer() {
 			ibcStakeDenom string
 		)
 
-		address, _ := s.chainA.validators[0].keyInfo.GetAddress()
+		address, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 		sender := address.String()
 
-		address, _ = s.chainB.validators[0].keyInfo.GetAddress()
+		address, _ = s.commonHelper.Resources.ChainB.Validators[0].KeyInfo.GetAddress()
 		recipient := address.String()
 
-		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainB.id][0].GetHostPort("1317/tcp"))
+		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainB.Id][0].GetHostPort("1317/tcp"))
 
 		s.Require().Eventually(
 			func() bool {
-				balances, err = queryGaiaAllBalances(chainBAPIEndpoint, recipient)
+				balances, err = query.QueryGaiaAllBalances(chainBAPIEndpoint, recipient)
 				s.Require().NoError(err)
 				return balances.Len() != 0
 			},
@@ -61,14 +63,14 @@ func (s *IntegrationTestSuite) testIBCTokenTransfer() {
 		}
 
 		tokenAmt := 3300000000
-		s.sendIBC(s.chainA, 0, sender, recipient, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), "", transferChannel, nil, false)
+		s.tx.SendIBC(s.commonHelper.Resources.ChainA, 0, sender, recipient, strconv.Itoa(tokenAmt)+common.UatomDenom, common.StandardFees.String(), "", common.TransferChannel, nil, false)
 
-		pass := s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferPort, transferChannel)
+		pass := s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainA.Id, common.TransferPort, common.TransferChannel)
 		s.Require().True(pass)
 
 		s.Require().Eventually(
 			func() bool {
-				balances, err = queryGaiaAllBalances(chainBAPIEndpoint, recipient)
+				balances, err = query.QueryGaiaAllBalances(chainBAPIEndpoint, recipient)
 				s.Require().NoError(err)
 				return balances.Len() != 0
 			},
@@ -108,13 +110,13 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 			err error
 		)
 
-		address, _ := s.chainA.validators[0].keyInfo.GetAddress()
+		address, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 		sender := address.String()
 
-		address, _ = s.chainB.validators[0].keyInfo.GetAddress()
+		address, _ = s.commonHelper.Resources.ChainB.Validators[0].KeyInfo.GetAddress()
 		middlehop := address.String()
 
-		address, _ = s.chainA.validators[1].keyInfo.GetAddress()
+		address, _ = s.commonHelper.Resources.ChainA.Validators[1].KeyInfo.GetAddress()
 		recipient := address.String()
 
 		forwardPort := "transfer"
@@ -122,7 +124,7 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 
 		tokenAmt := 3300000000
 
-		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
 
 		var (
 			beforeSenderUAtomBalance    sdk.Coin
@@ -131,10 +133,10 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 
 		s.Require().Eventually(
 			func() bool {
-				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
+				beforeSenderUAtomBalance, err = query.GetSpecificBalance(chainAAPIEndpoint, sender, common.UatomDenom)
 				s.Require().NoError(err)
 
-				beforeRecipientUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
+				beforeRecipientUAtomBalance, err = query.GetSpecificBalance(chainAAPIEndpoint, recipient, common.UatomDenom)
 				s.Require().NoError(err)
 
 				return beforeSenderUAtomBalance.IsValid() && beforeRecipientUAtomBalance.IsValid()
@@ -154,21 +156,21 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 		memo, err := json.Marshal(firstHopMetadata)
 		s.Require().NoError(err)
 
-		s.sendIBC(s.chainA, 0, sender, middlehop, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), string(memo), transferChannel, nil, false)
+		s.tx.SendIBC(s.commonHelper.Resources.ChainA, 0, sender, middlehop, strconv.Itoa(tokenAmt)+common.UatomDenom, common.StandardFees.String(), string(memo), common.TransferChannel, nil, false)
 
-		pass := s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferPort, transferChannel)
+		pass := s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainA.Id, common.TransferPort, common.TransferChannel)
 		s.Require().True(pass)
 
 		s.Require().Eventually(
 			func() bool {
-				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
+				afterSenderUAtomBalance, err := query.GetSpecificBalance(chainAAPIEndpoint, sender, common.UatomDenom)
 				s.Require().NoError(err)
 
-				afterRecipientUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, recipient, uatomDenom)
+				afterRecipientUAtomBalance, err := query.GetSpecificBalance(chainAAPIEndpoint, recipient, common.UatomDenom)
 				s.Require().NoError(err)
 
-				decremented := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
-				incremented := beforeRecipientUAtomBalance.Add(tokenAmount).IsEqual(afterRecipientUAtomBalance)
+				decremented := beforeSenderUAtomBalance.Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterSenderUAtomBalance)
+				incremented := beforeRecipientUAtomBalance.Add(common.TokenAmount).IsEqual(afterRecipientUAtomBalance)
 
 				return decremented && incremented
 			},
@@ -186,13 +188,13 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 	time.Sleep(30 * time.Second)
 
 	s.Run("send_failed_multihop_uatom_to_chainA_from_chainA", func() {
-		address, _ := s.chainA.validators[0].keyInfo.GetAddress()
+		address, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 		sender := address.String()
 
-		address, _ = s.chainB.validators[0].keyInfo.GetAddress()
+		address, _ = s.commonHelper.Resources.ChainB.Validators[0].KeyInfo.GetAddress()
 		middlehop := address.String()
 
-		address, _ = s.chainA.validators[1].keyInfo.GetAddress()
+		address, _ = s.commonHelper.Resources.ChainA.Validators[1].KeyInfo.GetAddress()
 		recipient := strings.Replace(address.String(), "cosmos", "foobar", 1) // this should be an invalid recipient to force the tx to fail
 
 		forwardPort := "transfer"
@@ -200,7 +202,7 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 
 		tokenAmt := 3300000000
 
-		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
 
 		var (
 			beforeSenderUAtomBalance sdk.Coin
@@ -209,7 +211,7 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 
 		s.Require().Eventually(
 			func() bool {
-				beforeSenderUAtomBalance, err = getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
+				beforeSenderUAtomBalance, err = query.GetSpecificBalance(chainAAPIEndpoint, sender, common.UatomDenom)
 				s.Require().NoError(err)
 
 				return beforeSenderUAtomBalance.IsValid()
@@ -229,15 +231,15 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 		memo, err := json.Marshal(firstHopMetadata)
 		s.Require().NoError(err)
 
-		s.sendIBC(s.chainA, 0, sender, middlehop, strconv.Itoa(tokenAmt)+uatomDenom, standardFees.String(), string(memo), transferChannel, nil, false)
+		s.tx.SendIBC(s.commonHelper.Resources.ChainA, 0, sender, middlehop, strconv.Itoa(tokenAmt)+common.UatomDenom, common.StandardFees.String(), string(memo), common.TransferChannel, nil, false)
 
 		// Sender account should be initially decremented the full amount
 		s.Require().Eventually(
 			func() bool {
-				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
+				afterSenderUAtomBalance, err := query.GetSpecificBalance(chainAAPIEndpoint, sender, common.UatomDenom)
 				s.Require().NoError(err)
 
-				returned := beforeSenderUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterSenderUAtomBalance)
+				returned := beforeSenderUAtomBalance.Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterSenderUAtomBalance)
 
 				return returned
 			},
@@ -248,12 +250,12 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 		// since the forward receiving account is invalid, it should be refunded to the original sender (minus the original fee)
 		s.Require().Eventually(
 			func() bool {
-				pass := s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferPort, transferChannel)
+				pass := s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainA.Id, common.TransferPort, common.TransferChannel)
 				s.Require().True(pass)
 
-				afterSenderUAtomBalance, err := getSpecificBalance(chainAAPIEndpoint, sender, uatomDenom)
+				afterSenderUAtomBalance, err := query.GetSpecificBalance(chainAAPIEndpoint, sender, common.UatomDenom)
 				s.Require().NoError(err)
-				returned := beforeSenderUAtomBalance.Sub(standardFees).IsEqual(afterSenderUAtomBalance)
+				returned := beforeSenderUAtomBalance.Sub(common.StandardFees).IsEqual(afterSenderUAtomBalance)
 				return returned
 			},
 			5*time.Minute,

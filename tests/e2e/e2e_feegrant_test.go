@@ -2,6 +2,8 @@ package e2e
 
 import (
 	"fmt"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -21,69 +23,69 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 	s.Run("test fee grant module", func() {
 		var (
 			valIdx = 0
-			c      = s.chainA
-			api    = fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
+			c      = s.commonHelper.Resources.ChainA
+			api    = fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[c.Id][valIdx].GetHostPort("1317/tcp"))
 		)
 
-		alice, _ := c.genesisAccounts[1].keyInfo.GetAddress()
-		bob, _ := c.genesisAccounts[2].keyInfo.GetAddress()
-		charlie, _ := c.genesisAccounts[3].keyInfo.GetAddress()
+		alice, _ := c.GenesisAccounts[1].KeyInfo.GetAddress()
+		bob, _ := c.GenesisAccounts[2].KeyInfo.GetAddress()
+		charlie, _ := c.GenesisAccounts[3].KeyInfo.GetAddress()
 
 		// add fee grant from alice to bob
-		s.execFeeGrant(
+		s.tx.ExecFeeGrant(
 			c,
 			valIdx,
 			alice.String(),
 			bob.String(),
-			standardFees.String(),
-			withKeyValue(flagAllowedMessages, sdk.MsgTypeURL(&banktypes.MsgSend{})),
+			common.StandardFees.String(),
+			common.WithKeyValue(common.FlagAllowedMessages, sdk.MsgTypeURL(&banktypes.MsgSend{})),
 		)
 
-		bobBalance, err := getSpecificBalance(api, bob.String(), uatomDenom)
+		bobBalance, err := query.GetSpecificBalance(api, bob.String(), common.UatomDenom)
 		s.Require().NoError(err)
 
 		// withdrawal all balance + fee + fee granter flag should succeed
-		s.execBankSend(
+		s.tx.ExecBankSend(
 			c,
 			valIdx,
 			bob.String(),
-			Address(),
-			tokenAmount.String(),
-			standardFees.String(),
+			common.Address(),
+			common.TokenAmount.String(),
+			common.StandardFees.String(),
 			false,
-			withKeyValue(flagFeeGranter, alice.String()),
+			common.WithKeyValue(common.FlagFeeGranter, alice.String()),
 		)
 
 		// check if the bob balance was subtracted without the fees
-		expectedBobBalance := bobBalance.Sub(tokenAmount)
-		bobBalance, err = getSpecificBalance(api, bob.String(), uatomDenom)
+		expectedBobBalance := bobBalance.Sub(common.TokenAmount)
+		bobBalance, err = query.GetSpecificBalance(api, bob.String(), common.UatomDenom)
 		s.Require().NoError(err)
 		s.Require().Equal(expectedBobBalance, bobBalance)
 
 		// tx should fail after spend limit reach
-		s.execBankSend(
+		s.tx.ExecBankSend(
 			c,
 			valIdx,
 			bob.String(),
-			Address(),
-			tokenAmount.String(),
-			standardFees.String(),
+			common.Address(),
+			common.TokenAmount.String(),
+			common.StandardFees.String(),
 			true,
-			withKeyValue(flagFeeGranter, alice.String()),
+			common.WithKeyValue(common.FlagFeeGranter, alice.String()),
 		)
 
 		// add fee grant from alice to charlie
-		s.execFeeGrant(
+		s.tx.ExecFeeGrant(
 			c,
 			valIdx,
 			alice.String(),
 			charlie.String(),
-			standardFees.String(), // spend limit
-			withKeyValue(flagAllowedMessages, sdk.MsgTypeURL(&banktypes.MsgSend{})),
+			common.StandardFees.String(), // spend limit
+			common.WithKeyValue(common.FlagAllowedMessages, sdk.MsgTypeURL(&banktypes.MsgSend{})),
 		)
 
 		// revoke fee grant from alice to charlie
-		s.execFeeGrantRevoke(
+		s.tx.ExecFeeGrantRevoke(
 			c,
 			valIdx,
 			alice.String(),
@@ -91,15 +93,15 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 		)
 
 		// tx should fail because the grant was revoked
-		s.execBankSend(
+		s.tx.ExecBankSend(
 			c,
 			valIdx,
 			charlie.String(),
-			Address(),
-			tokenAmount.String(),
-			standardFees.String(),
+			common.Address(),
+			common.TokenAmount.String(),
+			common.StandardFees.String(),
 			true,
-			withKeyValue(flagFeeGranter, alice.String()),
+			common.WithKeyValue(common.FlagFeeGranter, alice.String()),
 		)
 	})
 }

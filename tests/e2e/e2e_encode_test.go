@@ -2,6 +2,7 @@ package e2e
 
 import (
 	"encoding/base64"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	"path/filepath"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,21 +13,21 @@ const (
 )
 
 func (s *IntegrationTestSuite) testEncode() {
-	chain := s.chainA
+	chain := s.commonHelper.Resources.ChainA
 	_, encoded, err := buildRawTx()
 	s.Require().NoError(err)
 
-	got := s.execEncode(chain, filepath.Join(gaiaHomePath, rawTxFile))
+	got := s.tx.ExecEncode(chain, filepath.Join(common.GaiaHomePath, rawTxFile))
 	s.T().Logf("encoded tx: %s", got)
 	s.Require().Equal(encoded, got)
 }
 
 func (s *IntegrationTestSuite) testDecode() {
-	chain := s.chainA
+	chain := s.commonHelper.Resources.ChainA
 	rawTx, encoded, err := buildRawTx()
 	s.Require().NoError(err)
 
-	got := s.execDecode(chain, encoded)
+	got := s.tx.ExecDecode(chain, encoded)
 	s.T().Logf("raw tx: %s", got)
 	s.Require().Equal(string(rawTx), got)
 }
@@ -34,15 +35,15 @@ func (s *IntegrationTestSuite) testDecode() {
 // buildRawTx build a dummy tx using the TxBuilder and
 // return the JSON and encoded tx's
 func buildRawTx() ([]byte, string, error) {
-	builder := txConfig.NewTxBuilder()
-	builder.SetGasLimit(gas)
-	builder.SetFeeAmount(sdk.NewCoins(standardFees))
+	builder := common.TxConfig.NewTxBuilder()
+	builder.SetGasLimit(common.Gas)
+	builder.SetFeeAmount(sdk.NewCoins(common.StandardFees))
 	builder.SetMemo("foomemo")
-	tx, err := txConfig.TxJSONEncoder()(builder.GetTx())
+	tx, err := common.TxConfig.TxJSONEncoder()(builder.GetTx())
 	if err != nil {
 		return nil, "", err
 	}
-	txBytes, err := txConfig.TxEncoder()(builder.GetTx())
+	txBytes, err := common.TxConfig.TxEncoder()(builder.GetTx())
 	if err != nil {
 		return nil, "", err
 	}

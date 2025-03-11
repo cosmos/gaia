@@ -2,6 +2,8 @@ package e2e
 
 import (
 	"fmt"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"strconv"
 	"time"
 
@@ -9,51 +11,51 @@ import (
 )
 
 func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
-	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
 
-	validatorA := s.chainA.validators[0]
-	validatorAAddr, _ := validatorA.keyInfo.GetAddress()
+	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
+	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	s.writeAddRateLimitAtomProposal(s.chainA, v2)
-	s.testCounters.proposalCounter++
-	submitGovFlags := []string{configFile(proposalAddRateLimitAtomFilename)}
-	depositGovFlags := []string{strconv.Itoa(s.testCounters.proposalCounter), depositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(s.testCounters.proposalCounter), "yes"}
+	s.msg.WriteAddRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	s.commonHelper.TestCounters.ProposalCounter++
+	submitGovFlags := []string{configFile(common.ProposalAddRateLimitAtomFilename)}
+	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes"}
 
-	channel := transferChannel
+	channel := common.TransferChannel
 	if v2 {
-		channel = v2TransferClient
+		channel = common.V2TransferClient
 	}
 
-	s.T().Logf("Proposal number: %d", s.testCounters.proposalCounter)
-	s.T().Logf("Submitting, deposit and vote Gov Proposal: Add IBC rate limit for (%s, %s)", channel, uatomDenom)
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.testCounters.proposalCounter, "ratelimittypes.MsgAddRateLimit", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.T().Logf("Proposal number: %d", s.commonHelper.TestCounters.ProposalCounter)
+	s.T().Logf("Submitting, deposit and vote Gov Proposal: Add IBC rate limit for (%s, %s)", channel, common.UatomDenom)
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.commonHelper.TestCounters.ProposalCounter, "ratelimittypes.MsgAddRateLimit", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.Require().Eventually(
 		func() bool {
-			channel := transferChannel
+			channel := common.TransferChannel
 			if v2 {
-				channel = v2TransferClient
+				channel = common.V2TransferClient
 			}
 			s.T().Logf("After AddRateLimit proposal (channel-0, uatom)")
 
-			rateLimits, err := queryAllRateLimits(chainEndpoint)
+			rateLimits, err := query.QueryAllRateLimits(chainEndpoint)
 			s.Require().NoError(err)
 			s.Require().Len(rateLimits, 1)
 			s.Require().Equal(channel, rateLimits[0].Path.ChannelOrClientId)
-			s.Require().Equal(uatomDenom, rateLimits[0].Path.Denom)
+			s.Require().Equal(common.UatomDenom, rateLimits[0].Path.Denom)
 			s.Require().Equal(uint64(24), rateLimits[0].Quota.DurationHours)
 			s.Require().Equal(sdkmath.NewInt(1), rateLimits[0].Quota.MaxPercentRecv)
 			s.Require().Equal(sdkmath.NewInt(1), rateLimits[0].Quota.MaxPercentSend)
 
-			res, err := queryRateLimit(chainEndpoint, channel, uatomDenom)
+			res, err := query.QueryRateLimit(chainEndpoint, channel, common.UatomDenom)
 			s.Require().NoError(err)
 			s.Require().NotNil(res.RateLimit)
 			s.Require().Equal(*rateLimits[0].Path, *res.RateLimit.Path)
 			s.Require().Equal(*rateLimits[0].Quota, *res.RateLimit.Quota)
 
 			if !v2 {
-				rateLimitsByChainID, err := queryRateLimitsByChainID(chainEndpoint, s.chainB.id)
+				rateLimitsByChainID, err := query.QueryRateLimitsByChainID(chainEndpoint, s.commonHelper.Resources.ChainB.Id)
 				s.Require().NoError(err)
 				s.Require().Len(rateLimits, 1)
 				s.Require().Equal(*rateLimits[0].Path, *rateLimitsByChainID[0].Path)
@@ -66,35 +68,35 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 		5*time.Second,
 	)
 
-	s.writeAddRateLimitStakeProposal(s.chainA, v2)
-	s.testCounters.proposalCounter++
-	submitGovFlags = []string{configFile(proposalAddRateLimitStakeFilename)}
-	depositGovFlags = []string{strconv.Itoa(s.testCounters.proposalCounter), depositAmount.String()}
-	voteGovFlags = []string{strconv.Itoa(s.testCounters.proposalCounter), "yes"}
+	s.msg.WriteAddRateLimitStakeProposal(s.commonHelper.Resources.ChainA, v2)
+	s.commonHelper.TestCounters.ProposalCounter++
+	submitGovFlags = []string{configFile(common.ProposalAddRateLimitStakeFilename)}
+	depositGovFlags = []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags = []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes"}
 
-	s.T().Logf("Proposal number: %d", s.testCounters.proposalCounter)
-	s.T().Logf("Submitting, deposit and vote Gov Proposal: Add IBC rate limit for (%s, %s)", channel, stakeDenom)
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.testCounters.proposalCounter, "ratelimittypes.MsgAddRateLimit", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.T().Logf("Proposal number: %d", s.commonHelper.TestCounters.ProposalCounter)
+	s.T().Logf("Submitting, deposit and vote Gov Proposal: Add IBC rate limit for (%s, %s)", channel, common.StakeDenom)
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.commonHelper.TestCounters.ProposalCounter, "ratelimittypes.MsgAddRateLimit", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.Require().Eventually(
 		func() bool {
-			channel := transferChannel
+			channel := common.TransferChannel
 			if v2 {
-				channel = v2TransferClient
+				channel = common.V2TransferClient
 			}
 			s.T().Logf("After AddRateLimit proposal (channel-0, stake)")
 
-			rateLimits, err := queryAllRateLimits(chainEndpoint)
+			rateLimits, err := query.QueryAllRateLimits(chainEndpoint)
 			s.Require().NoError(err)
 			s.Require().Len(rateLimits, 2)
 			// Note: the rate limits are ordered lexicographically by denom
 			s.Require().Equal(channel, rateLimits[0].Path.ChannelOrClientId)
-			s.Require().Equal(stakeDenom, rateLimits[0].Path.Denom)
+			s.Require().Equal(common.StakeDenom, rateLimits[0].Path.Denom)
 			s.Require().Equal(uint64(6), rateLimits[0].Quota.DurationHours)
 			s.Require().Equal(sdkmath.NewInt(5), rateLimits[0].Quota.MaxPercentRecv)
 			s.Require().Equal(sdkmath.NewInt(10), rateLimits[0].Quota.MaxPercentSend)
 
-			res, err := queryRateLimit(chainEndpoint, channel, stakeDenom)
+			res, err := query.QueryRateLimit(chainEndpoint, channel, common.StakeDenom)
 			s.Require().NoError(err)
 			s.Require().NotNil(res.RateLimit)
 			s.Require().Equal(*rateLimits[0].Path, *res.RateLimit.Path)
@@ -108,31 +110,31 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 }
 
 func (s *IntegrationTestSuite) testUpdateRateLimit(v2 bool) {
-	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
 
-	validatorA := s.chainA.validators[0]
-	validatorAAddr, _ := validatorA.keyInfo.GetAddress()
+	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
+	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	s.writeUpdateRateLimitAtomProposal(s.chainA, v2)
-	s.testCounters.proposalCounter++
-	submitGovFlags := []string{configFile(proposalUpdateRateLimitAtomFilename)}
-	depositGovFlags := []string{strconv.Itoa(s.testCounters.proposalCounter), depositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(s.testCounters.proposalCounter), "yes"}
+	s.msg.WriteUpdateRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	s.commonHelper.TestCounters.ProposalCounter++
+	submitGovFlags := []string{configFile(common.ProposalUpdateRateLimitAtomFilename)}
+	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes"}
 
-	channel := transferChannel
+	channel := common.TransferChannel
 	if v2 {
-		channel = v2TransferClient
+		channel = common.V2TransferClient
 	}
 
-	s.T().Logf("Proposal number: %d", s.testCounters.proposalCounter)
-	s.T().Logf("Submitting, deposit and vote Gov Proposal: Update IBC rate limit for (%s, %s)", channel, uatomDenom)
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.testCounters.proposalCounter, "ratelimittypes.MsgUpdateRateLimit", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.T().Logf("Proposal number: %d", s.commonHelper.TestCounters.ProposalCounter)
+	s.T().Logf("Submitting, deposit and vote Gov Proposal: Update IBC rate limit for (%s, %s)", channel, common.UatomDenom)
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.commonHelper.TestCounters.ProposalCounter, "ratelimittypes.MsgUpdateRateLimit", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.Require().Eventually(
 		func() bool {
 			s.T().Logf("After UpdateRateLimit proposal")
 
-			res, err := queryRateLimit(chainEndpoint, channel, uatomDenom)
+			res, err := query.QueryRateLimit(chainEndpoint, channel, common.UatomDenom)
 			s.Require().NoError(err)
 			s.Require().NotNil(res.RateLimit)
 			s.Require().Equal(sdkmath.NewInt(2), res.RateLimit.Quota.MaxPercentSend)
@@ -146,31 +148,31 @@ func (s *IntegrationTestSuite) testUpdateRateLimit(v2 bool) {
 }
 
 func (s *IntegrationTestSuite) testResetRateLimit(v2 bool) {
-	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
 
-	validatorA := s.chainA.validators[0]
-	validatorAAddr, _ := validatorA.keyInfo.GetAddress()
+	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
+	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	s.writeResetRateLimitAtomProposal(s.chainA, v2)
-	s.testCounters.proposalCounter++
-	submitGovFlags := []string{configFile(proposalResetRateLimitAtomFilename)}
-	depositGovFlags := []string{strconv.Itoa(s.testCounters.proposalCounter), depositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(s.testCounters.proposalCounter), "yes"}
+	s.msg.WriteResetRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	s.commonHelper.TestCounters.ProposalCounter++
+	submitGovFlags := []string{configFile(common.ProposalResetRateLimitAtomFilename)}
+	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes"}
 
-	channel := transferChannel
+	channel := common.TransferChannel
 	if v2 {
-		channel = v2TransferClient
+		channel = common.V2TransferClient
 	}
 
-	s.T().Logf("Proposal number: %d", s.testCounters.proposalCounter)
-	s.T().Logf("Submitting, deposit and vote Gov Proposal: Reset IBC rate limit for (%s, %s)", channel, uatomDenom)
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.testCounters.proposalCounter, "ratelimittypes.MsgResetRateLimit", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.T().Logf("Proposal number: %d", s.commonHelper.TestCounters.ProposalCounter)
+	s.T().Logf("Submitting, deposit and vote Gov Proposal: Reset IBC rate limit for (%s, %s)", channel, common.UatomDenom)
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.commonHelper.TestCounters.ProposalCounter, "ratelimittypes.MsgResetRateLimit", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.Require().Eventually(
 		func() bool {
 			s.T().Logf("After ResetRateLimit proposal")
 
-			res, err := queryRateLimit(chainEndpoint, channel, uatomDenom)
+			res, err := query.QueryRateLimit(chainEndpoint, channel, common.UatomDenom)
 			s.Require().NoError(err)
 			s.Require().NotNil(res.RateLimit)
 			s.Require().Equal(sdkmath.NewInt(0), res.RateLimit.Flow.Inflow)
@@ -184,35 +186,35 @@ func (s *IntegrationTestSuite) testResetRateLimit(v2 bool) {
 }
 
 func (s *IntegrationTestSuite) testRemoveRateLimit(v2 bool) {
-	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
 
-	validatorA := s.chainA.validators[0]
-	validatorAAddr, _ := validatorA.keyInfo.GetAddress()
+	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
+	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	s.writeRemoveRateLimitAtomProposal(s.chainA, v2)
-	s.testCounters.proposalCounter++
-	submitGovFlags := []string{configFile(proposalRemoveRateLimitAtomFilename)}
-	depositGovFlags := []string{strconv.Itoa(s.testCounters.proposalCounter), depositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(s.testCounters.proposalCounter), "yes"}
+	s.msg.WriteRemoveRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	s.commonHelper.TestCounters.ProposalCounter++
+	submitGovFlags := []string{configFile(common.ProposalRemoveRateLimitAtomFilename)}
+	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes"}
 
-	channel := transferChannel
+	channel := common.TransferChannel
 	if v2 {
-		channel = v2TransferClient
+		channel = common.V2TransferClient
 	}
 
-	s.T().Logf("Proposal number: %d", s.testCounters.proposalCounter)
-	s.T().Logf("Submitting, deposit and vote Gov Proposal: Remove IBC rate limit for (%s, %s)", channel, uatomDenom)
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.testCounters.proposalCounter, "ratelimittypes.MsgRemoveRateLimit", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.T().Logf("Proposal number: %d", s.commonHelper.TestCounters.ProposalCounter)
+	s.T().Logf("Submitting, deposit and vote Gov Proposal: Remove IBC rate limit for (%s, %s)", channel, common.UatomDenom)
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.commonHelper.TestCounters.ProposalCounter, "ratelimittypes.MsgRemoveRateLimit", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.Require().Eventually(
 		func() bool {
 			s.T().Logf("After RemoveRateLimit proposal")
 
-			rateLimits, err := queryAllRateLimits(chainEndpoint)
+			rateLimits, err := query.QueryAllRateLimits(chainEndpoint)
 			s.Require().NoError(err)
 			s.Require().Len(rateLimits, 1)
 
-			res, err := queryRateLimit(chainEndpoint, channel, uatomDenom)
+			res, err := query.QueryRateLimit(chainEndpoint, channel, common.UatomDenom)
 			s.Require().NoError(err)
 			s.Require().Nil(res.RateLimit)
 
@@ -222,25 +224,25 @@ func (s *IntegrationTestSuite) testRemoveRateLimit(v2 bool) {
 		5*time.Second,
 	)
 
-	s.writeRemoveRateLimitStakeProposal(s.chainA, v2)
-	s.testCounters.proposalCounter++
-	submitGovFlags = []string{configFile(proposalRemoveRateLimitStakeFilename)}
-	depositGovFlags = []string{strconv.Itoa(s.testCounters.proposalCounter), depositAmount.String()}
-	voteGovFlags = []string{strconv.Itoa(s.testCounters.proposalCounter), "yes"}
+	s.msg.WriteRemoveRateLimitStakeProposal(s.commonHelper.Resources.ChainA, v2)
+	s.commonHelper.TestCounters.ProposalCounter++
+	submitGovFlags = []string{configFile(common.ProposalRemoveRateLimitStakeFilename)}
+	depositGovFlags = []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags = []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes"}
 
-	s.T().Logf("Proposal number: %d", s.testCounters.proposalCounter)
-	s.T().Logf("Submitting, deposit and vote Gov Proposal: Remove IBC rate limit for (%s, %s)", channel, stakeDenom)
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.testCounters.proposalCounter, "ratelimittypes.MsgRemoveRateLimit", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.T().Logf("Proposal number: %d", s.commonHelper.TestCounters.ProposalCounter)
+	s.T().Logf("Submitting, deposit and vote Gov Proposal: Remove IBC rate limit for (%s, %s)", channel, common.StakeDenom)
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.commonHelper.TestCounters.ProposalCounter, "ratelimittypes.MsgRemoveRateLimit", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.Require().Eventually(
 		func() bool {
 			s.T().Logf("After RemoveRateLimit proposal")
 
-			rateLimits, err := queryAllRateLimits(chainEndpoint)
+			rateLimits, err := query.QueryAllRateLimits(chainEndpoint)
 			s.Require().NoError(err)
 			s.Require().Len(rateLimits, 0)
 
-			res, err := queryRateLimit(chainEndpoint, channel, stakeDenom)
+			res, err := query.QueryRateLimit(chainEndpoint, channel, common.StakeDenom)
 			s.Require().NoError(err)
 			s.Require().Nil(res.RateLimit)
 
@@ -252,23 +254,23 @@ func (s *IntegrationTestSuite) testRemoveRateLimit(v2 bool) {
 }
 
 func (s *IntegrationTestSuite) testIBCTransfer(expToFail bool, v2 bool) {
-	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
 
-	address, _ := s.chainA.validators[0].keyInfo.GetAddress()
+	address, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 	sender := address.String()
 
-	address, _ = s.chainB.validators[0].keyInfo.GetAddress()
+	address, _ = s.commonHelper.Resources.ChainB.Validators[0].KeyInfo.GetAddress()
 	recipient := address.String()
 
-	totalAmount, err := querySupplyOf(chainEndpoint, uatomDenom)
+	totalAmount, err := query.QuerySupplyOf(chainEndpoint, common.UatomDenom)
 	s.Require().NoError(err)
 
 	threshold := totalAmount.Amount.Mul(sdkmath.NewInt(1)).Quo(sdkmath.NewInt(100))
 	tokenAmt := threshold.Add(sdkmath.NewInt(10)).String()
 
-	channel := transferChannel
+	channel := common.TransferChannel
 	if v2 {
-		channel = v2TransferClient
+		channel = common.V2TransferClient
 	}
 
 	var absoluteTimeout *int64
@@ -277,12 +279,12 @@ func (s *IntegrationTestSuite) testIBCTransfer(expToFail bool, v2 bool) {
 		absoluteTimeout = &timeout
 	}
 
-	s.sendIBC(s.chainA, 0, sender, recipient, tokenAmt+uatomDenom, standardFees.String(), "", channel, absoluteTimeout, expToFail)
+	s.tx.SendIBC(s.commonHelper.Resources.ChainA, 0, sender, recipient, tokenAmt+common.UatomDenom, common.StandardFees.String(), "", channel, absoluteTimeout, expToFail)
 
 	if !expToFail {
 		s.T().Logf("After successful IBC transfer")
 
-		res, err := queryRateLimit(chainEndpoint, channel, uatomDenom)
+		res, err := query.QueryRateLimit(chainEndpoint, channel, common.UatomDenom)
 		s.Require().NoError(err)
 		s.Require().NotNil(res.RateLimit)
 		s.Require().Equal(sdkmath.NewInt(0), res.RateLimit.Flow.Inflow)

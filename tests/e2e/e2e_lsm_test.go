@@ -2,8 +2,6 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"strconv"
 	"strings"
 	"time"
@@ -13,17 +11,20 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) testLSM() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
 	validatorAddressA := sdk.ValAddress(validatorAAddr).String()
 
-	oldStakingParams, err := query.QueryStakingParams(chainEndpoint)
+	oldStakingParams, err := query.StakingParams(chainEndpoint)
 	s.Require().NoError(err)
 	err = s.msg.WriteLiquidStakingParamsUpdateProposal(s.commonHelper.Resources.ChainA, oldStakingParams.Params)
 	s.Require().NoError(err)
@@ -40,7 +41,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	// query the proposal status and new fee
 	s.Require().Eventually(
 		func() bool {
-			proposal, err := query.QueryGovProposal(chainEndpoint, s.commonHelper.TestCounters.ProposalCounter)
+			proposal, err := query.GovProposal(chainEndpoint, s.commonHelper.TestCounters.ProposalCounter)
 			s.Require().NoError(err)
 			return proposal.GetProposal().Status == govv1beta1.StatusPassed
 		},
@@ -50,7 +51,7 @@ func (s *IntegrationTestSuite) testLSM() {
 
 	s.Require().Eventually(
 		func() bool {
-			stakingParams, err := query.QueryStakingParams(chainEndpoint)
+			stakingParams, err := query.StakingParams(chainEndpoint)
 			s.T().Logf("After LSM parameters update proposal")
 			s.Require().NoError(err)
 
@@ -74,7 +75,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	selfBondedShares := math.LegacyZeroDec()
 	s.Require().Eventually(
 		func() bool {
-			res, err := query.QueryDelegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
+			res, err := query.Delegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
 			delegation := res.GetDelegationResponse().GetDelegation()
 			selfBondedShares = delegation.Shares
 			isValidatorBond := delegation.ValidatorBond
@@ -95,7 +96,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	// Validate delegation successful
 	s.Require().Eventually(
 		func() bool {
-			res, err := query.QueryDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
+			res, err := query.Delegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
@@ -113,7 +114,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	// Validate delegation reduced
 	s.Require().Eventually(
 		func() bool {
-			res, err := query.QueryDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
+			res, err := query.Delegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
@@ -128,7 +129,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressA), strconv.Itoa(recordID))
 	s.Require().Eventually(
 		func() bool {
-			res, err := query.GetSpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
+			res, err := query.SpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
 			s.Require().NoError(err)
 			return res.Amount.Equal(tokenizeAmount)
 		},
@@ -143,10 +144,10 @@ func (s *IntegrationTestSuite) testLSM() {
 	// Validate tokens are sent properly
 	s.Require().Eventually(
 		func() bool {
-			afterSenderShareDenomBalance, err := query.GetSpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
+			afterSenderShareDenomBalance, err := query.SpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
 			s.Require().NoError(err)
 
-			afterRecipientShareDenomBalance, err := query.GetSpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
+			afterRecipientShareDenomBalance, err := query.SpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
 			s.Require().NoError(err)
 
 			decremented := afterSenderShareDenomBalance.IsNil() || afterSenderShareDenomBalance.IsZero()
@@ -164,7 +165,7 @@ func (s *IntegrationTestSuite) testLSM() {
 	// Validate ownership transferred correctly
 	s.Require().Eventually(
 		func() bool {
-			record, err := query.QueryTokenizeShareRecordByID(chainEndpoint, recordID)
+			record, err := query.TokenizeShareRecordByID(chainEndpoint, recordID)
 			s.Require().NoError(err)
 			tokenizeShareRecord = record
 			return record.Owner == validatorAAddr.String()
@@ -181,7 +182,7 @@ func (s *IntegrationTestSuite) testLSM() {
 
 	s.Require().Eventually(
 		func() bool {
-			afterSenderShareBalance, err := query.GetSpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
+			afterSenderShareBalance, err := query.SpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
 			s.Require().NoError(err)
 
 			decremented := afterSenderShareBalance.Add(ibcTransferAmount).IsEqual(sendAmount)
@@ -198,13 +199,13 @@ func (s *IntegrationTestSuite) testLSM() {
 	// check redeem success
 	s.Require().Eventually(
 		func() bool {
-			balanceRes, err := query.GetSpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
+			balanceRes, err := query.SpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
 			s.Require().NoError(err)
 			if !balanceRes.Amount.IsNil() && balanceRes.Amount.IsZero() {
 				return false
 			}
 
-			delegationRes, err := query.QueryDelegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
+			delegationRes, err := query.Delegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
 			delegation := delegationRes.GetDelegationResponse().GetDelegation()
 			s.Require().NoError(err)
 
@@ -213,7 +214,7 @@ func (s *IntegrationTestSuite) testLSM() {
 			}
 
 			// check that tokenize share record module account received some rewards, since it unbonded during redeem tx execution
-			balanceRes, err = query.GetSpecificBalance(chainEndpoint, tokenizeShareRecord.GetModuleAddress().String(), common.UAtomDenom)
+			balanceRes, err = query.SpecificBalance(chainEndpoint, tokenizeShareRecord.GetModuleAddress().String(), common.UAtomDenom)
 			s.Require().NoError(err)
 			if balanceRes.Amount.IsNil() || balanceRes.Amount.IsZero() {
 				return false

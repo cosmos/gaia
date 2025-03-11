@@ -5,12 +5,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	query2 "github.com/cosmos/gaia/v23/tests/e2e/query"
 	"os"
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	query2 "github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) testCWCounter() {
@@ -33,7 +34,7 @@ func (s *IntegrationTestSuite) testCWCounter() {
 
 	// Instantiate the contract
 	contractAddr := s.tx.InstantiateWasm(ctx, s.commonHelper.Resources.ChainA, valIdx, sender, strconv.Itoa(s.commonHelper.TestCounters.ContractsCounter), "{\"count\":0}", "counter")
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	// Execute the contract
 	s.tx.ExecuteWasm(ctx, s.commonHelper.Resources.ChainA, valIdx, sender, contractAddr, "{\"increment\":{}}")
@@ -45,7 +46,7 @@ func (s *IntegrationTestSuite) testCWCounter() {
 	queryJSON, err := json.Marshal(query)
 	s.Require().NoError(err)
 	queryMsg := base64.StdEncoding.EncodeToString(queryJSON)
-	data, err := query2.QueryWasmSmartContractState(chainEndpoint, contractAddr, queryMsg)
+	data, err := query2.WasmSmartContractState(chainEndpoint, contractAddr, queryMsg)
 	s.Require().NoError(err)
 	var counterResp map[string]int
 	err = json.Unmarshal(data, &counterResp)

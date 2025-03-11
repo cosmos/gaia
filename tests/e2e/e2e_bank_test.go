@@ -2,8 +2,6 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"path/filepath"
 	"time"
 
@@ -14,6 +12,8 @@ import (
 	authTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	extensiontypes "github.com/cosmos/gaia/v23/x/metaprotocols/types"
 )
 
@@ -23,7 +23,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 			err           error
 			valIdx        = 0
 			c             = s.commonHelper.Resources.ChainA
-			chainEndpoint = fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[c.Id][valIdx].GetHostPort("1317/tcp"))
+			chainEndpoint = fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[c.ID][valIdx].GetHostPort("1317/tcp"))
 		)
 
 		// define one sender and two recipient accounts
@@ -41,13 +41,13 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 		// get balances of sender and recipient accounts
 		s.Require().Eventually(
 			func() bool {
-				beforeAliceUAtomBalance, err = query.GetSpecificBalance(chainEndpoint, alice.String(), common.UAtomDenom)
+				beforeAliceUAtomBalance, err = query.SpecificBalance(chainEndpoint, alice.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				beforeBobUAtomBalance, err = query.GetSpecificBalance(chainEndpoint, bob.String(), common.UAtomDenom)
+				beforeBobUAtomBalance, err = query.SpecificBalance(chainEndpoint, bob.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				beforeCharlieUAtomBalance, err = query.GetSpecificBalance(chainEndpoint, charlie.String(), common.UAtomDenom)
+				beforeCharlieUAtomBalance, err = query.SpecificBalance(chainEndpoint, charlie.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
 				return beforeAliceUAtomBalance.IsValid() && beforeBobUAtomBalance.IsValid() && beforeCharlieUAtomBalance.IsValid()
@@ -62,10 +62,10 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 		// check that the transfer was successful
 		s.Require().Eventually(
 			func() bool {
-				afterAliceUAtomBalance, err = query.GetSpecificBalance(chainEndpoint, alice.String(), common.UAtomDenom)
+				afterAliceUAtomBalance, err = query.SpecificBalance(chainEndpoint, alice.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				afterBobUAtomBalance, err = query.GetSpecificBalance(chainEndpoint, bob.String(), common.UAtomDenom)
+				afterBobUAtomBalance, err = query.SpecificBalance(chainEndpoint, bob.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
 				decremented := beforeAliceUAtomBalance.Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterAliceUAtomBalance)
@@ -85,13 +85,13 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 
 		s.Require().Eventually(
 			func() bool {
-				afterAliceUAtomBalance, err = query.GetSpecificBalance(chainEndpoint, alice.String(), common.UAtomDenom)
+				afterAliceUAtomBalance, err = query.SpecificBalance(chainEndpoint, alice.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				afterBobUAtomBalance, err = query.GetSpecificBalance(chainEndpoint, bob.String(), common.UAtomDenom)
+				afterBobUAtomBalance, err = query.SpecificBalance(chainEndpoint, bob.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				afterCharlieUAtomBalance, err = query.GetSpecificBalance(chainEndpoint, charlie.String(), common.UAtomDenom)
+				afterCharlieUAtomBalance, err = query.SpecificBalance(chainEndpoint, charlie.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
 				decremented := beforeAliceUAtomBalance.Sub(common.TokenAmount).Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterAliceUAtomBalance)

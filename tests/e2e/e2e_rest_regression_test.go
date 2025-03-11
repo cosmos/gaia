@@ -2,8 +2,9 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	"net/http"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
 // /*
@@ -51,7 +52,7 @@ func (s *IntegrationTestSuite) testRestInterfaces() {
 		var (
 			valIdx        = 0
 			c             = s.commonHelper.Resources.ChainA
-			endpointURL   = fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[c.Id][valIdx].GetHostPort("1317/tcp"))
+			endpointURL   = fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[c.ID][valIdx].GetHostPort("1317/tcp"))
 			testEndpoints = []struct {
 				Path           string
 				ExpectedStatus int

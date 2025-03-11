@@ -6,11 +6,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/types"
-	"github.com/ory/dockertest/v3/docker"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/ory/dockertest/v3/docker"
+
+	"github.com/cosmos/cosmos-sdk/types"
 )
 
 func (h *Helper) ExecuteGaiaTxCommand(ctx context.Context, c *Chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
@@ -25,7 +27,7 @@ func (h *Helper) ExecuteGaiaTxCommand(ctx context.Context, c *Chain, gaiaCommand
 		Context:      ctx,
 		AttachStdout: true,
 		AttachStderr: true,
-		Container:    h.Resources.ValResources[c.Id][valIdx].Container.ID,
+		Container:    h.Resources.ValResources[c.ID][valIdx].Container.ID,
 		User:         "nonroot",
 		Cmd:          gaiaCommand,
 	})
@@ -47,7 +49,7 @@ func (h *Helper) ExecuteGaiaTxCommand(ctx context.Context, c *Chain, gaiaCommand
 	}
 }
 
-func (h *Helper) ExecuteHermesCommand(ctx context.Context, hermesCmd []string) ([]byte, error) { //nolint:unparam
+func (h *Helper) ExecuteHermesCommand(ctx context.Context, hermesCmd []string) ([]byte, error) {
 	var outBuf bytes.Buffer
 	exec, err := h.Resources.DkrPool.Client.CreateExec(docker.CreateExecOptions{
 		Context:      ctx,
@@ -98,7 +100,7 @@ func (h *Helper) DefaultExecValidation(chain *Chain, valIdx int) func([]byte, []
 			return false
 		}
 		if strings.Contains(txResp.String(), "code: 0") || txResp.Code == 0 {
-			endpoint := fmt.Sprintf("http://%s", h.Resources.ValResources[chain.Id][valIdx].GetHostPort("1317/tcp"))
+			endpoint := fmt.Sprintf("http://%s", h.Resources.ValResources[chain.ID][valIdx].GetHostPort("1317/tcp"))
 			h.Suite.Require().Eventually(
 				func() bool {
 					return QueryGaiaTx(endpoint, txResp.TxHash) == nil

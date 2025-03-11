@@ -2,15 +2,17 @@ package query
 
 import (
 	"fmt"
+	"io"
+	"net/http"
+
 	"github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"io"
-	"net/http"
 )
 
-func queryAccount(endpoint, address string) (acc types.AccountI, err error) {
+func Account(endpoint, address string) (acc types.AccountI, err error) {
 	var res authtypes.QueryAccountResponse
 	resp, err := http.Get(fmt.Sprintf("%s/cosmos/auth/v1beta1/accounts/%s", endpoint, address))
 	if err != nil {
@@ -28,8 +30,8 @@ func queryAccount(endpoint, address string) (acc types.AccountI, err error) {
 	return acc, common.Cdc.UnpackAny(res.Account, &acc)
 }
 
-func QueryDelayedVestingAccount(endpoint, address string) (vestingtypes.DelayedVestingAccount, error) {
-	baseAcc, err := queryAccount(endpoint, address)
+func DelayedVestingAccount(endpoint, address string) (vestingtypes.DelayedVestingAccount, error) {
+	baseAcc, err := Account(endpoint, address)
 	if err != nil {
 		return vestingtypes.DelayedVestingAccount{}, err
 	}
@@ -41,8 +43,8 @@ func QueryDelayedVestingAccount(endpoint, address string) (vestingtypes.DelayedV
 	return *acc, nil
 }
 
-func QueryContinuousVestingAccount(endpoint, address string) (vestingtypes.ContinuousVestingAccount, error) {
-	baseAcc, err := queryAccount(endpoint, address)
+func ContinuousVestingAccount(endpoint, address string) (vestingtypes.ContinuousVestingAccount, error) {
+	baseAcc, err := Account(endpoint, address)
 	if err != nil {
 		return vestingtypes.ContinuousVestingAccount{}, err
 	}
@@ -54,8 +56,8 @@ func QueryContinuousVestingAccount(endpoint, address string) (vestingtypes.Conti
 	return *acc, nil
 }
 
-func QueryPeriodicVestingAccount(endpoint, address string) (vestingtypes.PeriodicVestingAccount, error) { //nolint:unused // this is called during e2e tests
-	baseAcc, err := queryAccount(endpoint, address)
+func PeriodicVestingAccount(endpoint, address string) (vestingtypes.PeriodicVestingAccount, error) {
+	baseAcc, err := Account(endpoint, address)
 	if err != nil {
 		return vestingtypes.PeriodicVestingAccount{}, err
 	}

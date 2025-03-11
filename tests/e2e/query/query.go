@@ -1,13 +1,15 @@
 package query
 
 import (
-	tendermintv1beta1 "cosmossdk.io/api/cosmos/base/tendermint/v1beta1"
 	"fmt"
+
+	tendermintv1beta1 "cosmossdk.io/api/cosmos/base/tendermint/v1beta1"
+
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
 func GetLatestBlockHeight(endpoint string) (int, error) {
-	body, err := common.HttpGet(fmt.Sprintf("%s/cosmos/base/tendermint/v1beta1/blocks/latest", endpoint))
+	body, err := common.HTTPGet(fmt.Sprintf("%s/cosmos/base/tendermint/v1beta1/blocks/latest", endpoint))
 	if err != nil {
 		return 0, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

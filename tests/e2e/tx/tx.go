@@ -3,13 +3,16 @@ package tx
 import (
 	"context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	types7 "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/stretchr/testify/suite"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/stretchr/testify/suite"
+
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
 type Helper struct {
@@ -22,11 +25,11 @@ func (h *Helper) ExecDecode(
 	txPath string,
 	opt ...common.FlagOption,
 ) string {
-	opts := common.ApplyOptions(c.Id, opt)
+	opts := common.ApplyOptions(c.ID, opt)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("%s - Executing gaiad decoding with %v", c.Id, txPath)
+	h.Suite.T().Logf("%s - Executing gaiad decoding with %v", c.ID, txPath)
 	gaiaCommand := []string{
 		common.GaiadBinary,
 		common.TxCommand,
@@ -54,11 +57,11 @@ func (h *Helper) ExecEncode(
 	txPath string,
 	opt ...common.FlagOption,
 ) string {
-	opts := common.ApplyOptions(c.Id, opt)
+	opts := common.ApplyOptions(c.ID, opt)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("%s - Executing gaiad encoding with %v", c.Id, txPath)
+	h.Suite.T().Logf("%s - Executing gaiad encoding with %v", c.ID, txPath)
 	gaiaCommand := []string{
 		common.GaiadBinary,
 		common.TxCommand,
@@ -83,13 +86,13 @@ func (h *Helper) ExecEncode(
 
 func (h *Helper) expectErrExecValidation(chain *common.Chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
-		var txResp types7.TxResponse
+		var txResp types.TxResponse
 		gotErr := common.Cdc.UnmarshalJSON(stdOut, &txResp) != nil
 		if gotErr {
 			h.Suite.Require().True(expectErr)
 		}
 
-		endpoint := fmt.Sprintf("http://%s", h.CommonHelper.Resources.ValResources[chain.Id][valIdx].GetHostPort("1317/tcp"))
+		endpoint := fmt.Sprintf("http://%s", h.CommonHelper.Resources.ValResources[chain.ID][valIdx].GetHostPort("1317/tcp"))
 		// wait for the tx to be committed on chain
 		h.Suite.Require().Eventuallyf(
 			func() bool {
@@ -107,7 +110,7 @@ func (h *Helper) expectErrExecValidation(chain *common.Chain, valIdx int, expect
 
 func (h *Helper) ExpectTxSubmitError(expectErrString string) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
-		var txResp types7.TxResponse
+		var txResp types.TxResponse
 		if err := common.Cdc.UnmarshalJSON(stdOut, &txResp); err != nil {
 			return false
 		}
@@ -130,7 +133,7 @@ func (h *Helper) SignTxFileOnline(chain *common.Chain, valIdx int, from string, 
 		common.TxCommand,
 		"sign",
 		filepath.Join(common.GaiaHomePath, txFilePath),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, chain.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, chain.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagHome, common.GaiaHomePath),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
 		"--keyring-backend=test",
@@ -165,7 +168,7 @@ func (h *Helper) BroadcastTxFile(chain *common.Chain, valIdx int, from string, t
 		common.TxCommand,
 		"broadcast",
 		filepath.Join(common.GaiaHomePath, txFilePath),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, chain.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, chain.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagHome, common.GaiaHomePath),
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
 		"--keyring-backend=test",
@@ -187,5 +190,3 @@ func (h *Helper) BroadcastTxFile(chain *common.Chain, valIdx int, from string, t
 	}
 	return output, nil
 }
-
-//nolint:unparam

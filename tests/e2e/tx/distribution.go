@@ -3,17 +3,19 @@ package tx
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/x/distribution/types"
+
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"time"
 )
 
 func (h *Helper) ExecDistributionFundCommunityPool(c *common.Chain, valIdx int, from, amt, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("Executing gaiad tx distribution fund-community-pool on chain %s", c.Id)
+	h.Suite.T().Logf("Executing gaiad tx distribution fund-community-pool on chain %s", c.ID)
 
 	gaiaCommand := []string{
 		common.GaiadBinary,
@@ -22,7 +24,7 @@ func (h *Helper) ExecDistributionFundCommunityPool(c *common.Chain, valIdx int, 
 		"fund-community-pool",
 		amt,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, from),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
 		"--keyring-backend=test",
 		"--output=json",
@@ -44,7 +46,7 @@ func (h *Helper) ExecSetWithdrawAddress(
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("Setting distribution withdrawal address on chain %s for %s to %s", c.Id, delegatorAddress, newWithdrawalAddress)
+	h.Suite.T().Logf("Setting distribution withdrawal address on chain %s for %s to %s", c.ID, delegatorAddress, newWithdrawalAddress)
 	gaiaCommand := []string{
 		common.GaiadBinary,
 		common.TxCommand,
@@ -53,7 +55,7 @@ func (h *Helper) ExecSetWithdrawAddress(
 		newWithdrawalAddress,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddress),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagHome, homePath),
 		"--keyring-backend=test",
 		"--output=json",
@@ -74,7 +76,7 @@ func (h *Helper) ExecWithdrawReward(
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("Withdrawing distribution rewards on chain %s for delegator %s from %s validator", c.Id, delegatorAddress, validatorAddress)
+	h.Suite.T().Logf("Withdrawing distribution rewards on chain %s for delegator %s from %s validator", c.ID, delegatorAddress, validatorAddress)
 	gaiaCommand := []string{
 		common.GaiadBinary,
 		common.TxCommand,
@@ -85,7 +87,7 @@ func (h *Helper) ExecWithdrawReward(
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, "300uatom"),
 		fmt.Sprintf("--%s=%s", flags.FlagGas, "auto"),
 		fmt.Sprintf("--%s=%s", flags.FlagGasAdjustment, "1.5"),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagHome, homePath),
 		"--keyring-backend=test",
 		"--output=json",

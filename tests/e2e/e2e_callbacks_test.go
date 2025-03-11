@@ -4,13 +4,14 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
 const (
@@ -23,7 +24,7 @@ const (
 func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	valIdx := 0
 	val := s.commonHelper.Resources.ChainA.Validators[valIdx]
@@ -97,9 +98,9 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 
 	senderB, _ := s.commonHelper.Resources.ChainB.Validators[0].KeyInfo.GetAddress()
 	s.tx.SendIBC(s.commonHelper.Resources.ChainB, 0, senderB.String(), adapterAddress, "1uatom", "3000000uatom", memo, common.TransferChannel, nil, false)
-	s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainB.Id, common.TransferPort, common.TransferChannel)
+	s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainB.ID, common.TransferPort, common.TransferChannel)
 
-	balances, err := query.QueryGaiaAllBalances(chainEndpoint, RecipientAddress)
+	balances, err := query.AllBalances(chainEndpoint, RecipientAddress)
 	if err != nil {
 		return
 	}

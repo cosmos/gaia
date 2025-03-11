@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func (h *Helper) HermesClearPacket(configPath, chainID, portID, channelID string) (success bool) { //nolint:unparam
+func (h *Helper) HermesClearPacket(configPath, chainID, portID, channelID string) (success bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -42,7 +42,7 @@ type RelayerPacketsOutput struct {
 }
 
 func (h *Helper) CreateConnection() {
-	h.Suite.T().Logf("connecting %s and %s chains via IBC", h.Resources.ChainA.Id, h.Resources.ChainB.Id)
+	h.Suite.T().Logf("connecting %s and %s chains via IBC", h.Resources.ChainA.ID, h.Resources.ChainB.ID)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -53,19 +53,19 @@ func (h *Helper) CreateConnection() {
 		"create",
 		"connection",
 		"--a-chain",
-		h.Resources.ChainA.Id,
+		h.Resources.ChainA.ID,
 		"--b-chain",
-		h.Resources.ChainB.Id,
+		h.Resources.ChainB.ID,
 	}
 
 	_, err := h.ExecuteHermesCommand(ctx, hermesCmd)
 	h.Suite.Require().NoError(err, "failed to connect chains: %s", err)
 
-	h.Suite.T().Logf("connected %s and %s chains via IBC", h.Resources.ChainA.Id, h.Resources.ChainB.Id)
+	h.Suite.T().Logf("connected %s and %s chains via IBC", h.Resources.ChainA.ID, h.Resources.ChainB.ID)
 }
 
 func (h *Helper) CreateChannel() {
-	h.Suite.T().Logf("creating IBC transfer channel created between chains %s and %s", h.Resources.ChainA.Id, h.Resources.ChainB.Id)
+	h.Suite.T().Logf("creating IBC transfer channel created between chains %s and %s", h.Resources.ChainA.ID, h.Resources.ChainB.ID)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -75,7 +75,7 @@ func (h *Helper) CreateChannel() {
 		"create",
 		"channel",
 		"--a-connection", "connection-0",
-		"--a-chain", h.Resources.ChainA.Id,
+		"--a-chain", h.Resources.ChainA.ID,
 		"--a-port", "transfer",
 		"--b-port", "transfer",
 		"--channel-version", "ics20-1",
@@ -85,7 +85,7 @@ func (h *Helper) CreateChannel() {
 	_, err := h.ExecuteHermesCommand(ctx, hermesCmd)
 	h.Suite.Require().NoError(err, "failed to create IBC transfer channel between chains: %s", err)
 
-	h.Suite.T().Logf("IBC transfer channel created between chains %s and %s", h.Resources.ChainA.Id, h.Resources.ChainB.Id)
+	h.Suite.T().Logf("IBC transfer channel created between chains %s and %s", h.Resources.ChainA.ID, h.Resources.ChainB.ID)
 }
 
 // This function will complete the channel handshake in cases when ChanOpenInit was initiated

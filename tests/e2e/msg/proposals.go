@@ -1,14 +1,18 @@
 package msg
 
 import (
-	"cosmossdk.io/math"
 	"fmt"
+	"path/filepath"
+
+	"github.com/stretchr/testify/suite"
+
+	"cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	"github.com/cosmos/gaia/v23/tests/e2e/data"
-	"github.com/stretchr/testify/suite"
-	"path/filepath"
 )
 
 type Helper struct {

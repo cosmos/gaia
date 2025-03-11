@@ -2,8 +2,6 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"strconv"
 	"time"
 
@@ -11,10 +9,13 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) testStaking() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorB := s.commonHelper.Resources.ChainA.Validators[1]
@@ -29,7 +30,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	fees := sdk.NewCoin(common.UAtomDenom, math.NewInt(1))
 
 	existingDelegation := math.LegacyZeroDec()
-	res, err := query.QueryDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
+	res, err := query.Delegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
 	if err == nil {
 		existingDelegation = res.GetDelegationResponse().GetDelegation().GetShares()
 	}
@@ -43,7 +44,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	// Validate delegation successful
 	s.Require().Eventually(
 		func() bool {
-			res, err := query.QueryDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
+			res, err := query.Delegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
@@ -62,7 +63,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	// Validate re-delegation successful
 	s.Require().Eventually(
 		func() bool {
-			res, err := query.QueryDelegation(chainEndpoint, validatorAddressB, delegatorAddress.String())
+			res, err := query.Delegation(chainEndpoint, validatorAddressB, delegatorAddress.String())
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
@@ -80,7 +81,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	// query alice's current delegation from validator A
 	s.Require().Eventually(
 		func() bool {
-			res, err := query.QueryDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
+			res, err := query.Delegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
@@ -101,7 +102,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	// validate unbonding delegations
 	s.Require().Eventually(
 		func() bool {
-			res, err := query.QueryUnbondingDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
+			res, err := query.UnbondingDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
 			s.Require().NoError(err)
 
 			s.Require().Len(res.GetUnbond().Entries, 1)
@@ -128,12 +129,12 @@ func (s *IntegrationTestSuite) testStaking() {
 	// validate that unbonding delegation was successfully canceled
 	s.Require().Eventually(
 		func() bool {
-			resDel, err := query.QueryDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
+			resDel, err := query.Delegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
 			amt := resDel.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
 			// expect that no unbonding delegations are found for validator A
-			_, err = query.QueryUnbondingDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
+			_, err = query.UnbondingDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
 			s.Require().Error(err)
 
 			// expect to get the delegation back

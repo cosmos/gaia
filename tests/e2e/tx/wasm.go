@@ -3,11 +3,14 @@ package tx
 import (
 	"context"
 	"fmt"
+	"strconv"
+
+	"gopkg.in/yaml.v2"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
+
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	"github.com/cosmos/gaia/v23/tests/e2e/query"
-	"gopkg.in/yaml.v2"
-	"strconv"
 )
 
 // todo: change this to a query instead of a command when https://github.com/CosmWasm/wasmd/issues/2147 is fixed
@@ -39,7 +42,7 @@ func (h *Helper) StoreWasm(ctx context.Context, c *common.Chain, valIdx int, sen
 		wasmPath,
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, common.StandardFees.String()),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		"--gas=5000000",
 		"--keyring-backend=test",
 		"--broadcast-mode=sync",
@@ -47,7 +50,7 @@ func (h *Helper) StoreWasm(ctx context.Context, c *common.Chain, valIdx int, sen
 		"-y",
 	}
 
-	h.Suite.T().Logf("%s storing wasm on host chain %s", sender, h.CommonHelper.Resources.ChainB.Id)
+	h.Suite.T().Logf("%s storing wasm on host chain %s", sender, h.CommonHelper.Resources.ChainB.ID)
 	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, storeCmd, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Log("successfully sent store wasm tx")
 	h.CommonHelper.TestCounters.ContractsCounter++
@@ -66,7 +69,7 @@ func (h *Helper) InstantiateWasm(ctx context.Context, c *common.Chain, valIdx in
 		msg,
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, common.StandardFees.String()),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--label=%s", label),
 		"--no-admin",
 		"--gas=500000",
@@ -76,11 +79,11 @@ func (h *Helper) InstantiateWasm(ctx context.Context, c *common.Chain, valIdx in
 		"-y",
 	}
 
-	h.Suite.T().Logf("%s instantiating wasm on host chain %s", sender, h.CommonHelper.Resources.ChainB.Id)
+	h.Suite.T().Logf("%s instantiating wasm on host chain %s", sender, h.CommonHelper.Resources.ChainB.ID)
 	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, storeCmd, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Log("successfully sent instantiate wasm tx")
-	chainEndpoint := fmt.Sprintf("http://%s", h.CommonHelper.Resources.ValResources[c.Id][0].GetHostPort("1317/tcp"))
-	address, err := query.QueryWasmContractAddress(chainEndpoint, sender, h.CommonHelper.TestCounters.ContractsCounterPerSender[sender])
+	chainEndpoint := fmt.Sprintf("http://%s", h.CommonHelper.Resources.ValResources[c.ID][0].GetHostPort("1317/tcp"))
+	address, err := query.WasmContractAddress(chainEndpoint, sender, h.CommonHelper.TestCounters.ContractsCounterPerSender[sender])
 	h.Suite.Require().NoError(err)
 	h.CommonHelper.TestCounters.ContractsCounterPerSender[sender]++
 	return address
@@ -99,7 +102,7 @@ func (h *Helper) Instantiate2Wasm(ctx context.Context, c *common.Chain, valIdx i
 		salt,
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, common.StandardFees.String()),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--label=%s", label),
 		"--no-admin",
 		"--gas=250000",
@@ -109,12 +112,12 @@ func (h *Helper) Instantiate2Wasm(ctx context.Context, c *common.Chain, valIdx i
 		"-y",
 	}
 
-	h.Suite.T().Logf("%s instantiating wasm on host chain %s", sender, h.CommonHelper.Resources.ChainB.Id)
+	h.Suite.T().Logf("%s instantiating wasm on host chain %s", sender, h.CommonHelper.Resources.ChainB.ID)
 
 	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, storeCmd, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Log("successfully sent instantiate2 wasm tx")
-	chainEndpoint := fmt.Sprintf("http://%s", h.CommonHelper.Resources.ValResources[c.Id][0].GetHostPort("1317/tcp"))
-	address, err := query.QueryWasmContractAddress(chainEndpoint, sender, h.CommonHelper.TestCounters.ContractsCounterPerSender[sender])
+	chainEndpoint := fmt.Sprintf("http://%s", h.CommonHelper.Resources.ValResources[c.ID][0].GetHostPort("1317/tcp"))
+	address, err := query.WasmContractAddress(chainEndpoint, sender, h.CommonHelper.TestCounters.ContractsCounterPerSender[sender])
 	h.Suite.Require().NoError(err)
 	h.CommonHelper.TestCounters.ContractsCounterPerSender[sender]++
 	return address
@@ -130,14 +133,14 @@ func (h *Helper) ExecuteWasm(ctx context.Context, c *common.Chain, valIdx int, s
 		msg,
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, common.StandardFees.String()),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		"--gas=250000",
 		"--keyring-backend=test",
 		"--broadcast-mode=sync",
 		"--output=json",
 		"-y",
 	}
-	h.Suite.T().Logf("%s executing wasm on host chain %s", sender, h.CommonHelper.Resources.ChainB.Id)
+	h.Suite.T().Logf("%s executing wasm on host chain %s", sender, h.CommonHelper.Resources.ChainB.ID)
 	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, execCmd, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Log("successfully sent execute wasm tx")
 }

@@ -2,17 +2,18 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"time"
 
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) testDistribution() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	validatorB := s.commonHelper.Resources.ChainA.Validators[1]
 	validatorBAddr, _ := validatorB.KeyInfo.GetAddress()
@@ -24,7 +25,7 @@ func (s *IntegrationTestSuite) testDistribution() {
 	newWithdrawalAddress, _ := s.commonHelper.Resources.ChainA.GenesisAccounts[3].KeyInfo.GetAddress()
 	fees := sdk.NewCoin(common.UAtomDenom, math.NewInt(1000))
 
-	beforeBalance, err := query.GetSpecificBalance(chainEndpoint, newWithdrawalAddress.String(), common.UAtomDenom)
+	beforeBalance, err := query.SpecificBalance(chainEndpoint, newWithdrawalAddress.String(), common.UAtomDenom)
 	s.Require().NoError(err)
 	if beforeBalance.IsNil() {
 		beforeBalance = sdk.NewCoin(common.UAtomDenom, math.NewInt(0))
@@ -35,7 +36,7 @@ func (s *IntegrationTestSuite) testDistribution() {
 	// Verify
 	s.Require().Eventually(
 		func() bool {
-			res, err := query.QueryDelegatorWithdrawalAddress(chainEndpoint, delegatorAddress.String())
+			res, err := query.DelegatorWithdrawalAddress(chainEndpoint, delegatorAddress.String())
 			s.Require().NoError(err)
 
 			return res.WithdrawAddress == newWithdrawalAddress.String()
@@ -47,7 +48,7 @@ func (s *IntegrationTestSuite) testDistribution() {
 	s.tx.ExecWithdrawReward(s.commonHelper.Resources.ChainA, 0, delegatorAddress.String(), valOperAddressA, common.GaiaHomePath)
 	s.Require().Eventually(
 		func() bool {
-			afterBalance, err := query.GetSpecificBalance(chainEndpoint, newWithdrawalAddress.String(), common.UAtomDenom)
+			afterBalance, err := query.SpecificBalance(chainEndpoint, newWithdrawalAddress.String(), common.UAtomDenom)
 			s.Require().NoError(err)
 
 			return afterBalance.IsGTE(beforeBalance)
@@ -65,10 +66,10 @@ Test Benchmarks:
 3. Verification that correct funds have been deposited to distribution module account
 */
 func (s *IntegrationTestSuite) fundCommunityPool() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 	sender, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 
-	beforeDistUatomBalance, _ := query.GetSpecificBalance(chainAAPIEndpoint, common.DistModuleAddress, common.TokenAmount.Denom)
+	beforeDistUatomBalance, _ := query.SpecificBalance(chainAAPIEndpoint, common.DistModuleAddress, common.TokenAmount.Denom)
 	if beforeDistUatomBalance.IsNil() {
 		// Set balance to 0 if previous balance does not exist
 		beforeDistUatomBalance = sdk.NewInt64Coin(common.UAtomDenom, 0)
@@ -78,7 +79,7 @@ func (s *IntegrationTestSuite) fundCommunityPool() {
 
 	s.Require().Eventually(
 		func() bool {
-			afterDistUatomBalance, err := query.GetSpecificBalance(chainAAPIEndpoint, common.DistModuleAddress, common.TokenAmount.Denom)
+			afterDistUatomBalance, err := query.SpecificBalance(chainAAPIEndpoint, common.DistModuleAddress, common.TokenAmount.Denom)
 			s.Require().NoErrorf(err, "Error getting balance: %s", afterDistUatomBalance)
 
 			// check if the balance is increased by the TokenAmount and at least some portion of

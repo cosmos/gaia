@@ -2,11 +2,12 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
 // /*
@@ -24,7 +25,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 		var (
 			valIdx = 0
 			c      = s.commonHelper.Resources.ChainA
-			api    = fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[c.Id][valIdx].GetHostPort("1317/tcp"))
+			api    = fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[c.ID][valIdx].GetHostPort("1317/tcp"))
 		)
 
 		alice, _ := c.GenesisAccounts[1].KeyInfo.GetAddress()
@@ -41,7 +42,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 			common.WithKeyValue(common.FlagAllowedMessages, sdk.MsgTypeURL(&banktypes.MsgSend{})),
 		)
 
-		bobBalance, err := query.GetSpecificBalance(api, bob.String(), common.UAtomDenom)
+		bobBalance, err := query.SpecificBalance(api, bob.String(), common.UAtomDenom)
 		s.Require().NoError(err)
 
 		// withdrawal all balance + fee + fee granter flag should succeed
@@ -58,7 +59,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 
 		// check if the bob balance was subtracted without the fees
 		expectedBobBalance := bobBalance.Sub(common.TokenAmount)
-		bobBalance, err = query.GetSpecificBalance(api, bob.String(), common.UAtomDenom)
+		bobBalance, err = query.SpecificBalance(api, bob.String(), common.UAtomDenom)
 		s.Require().NoError(err)
 		s.Require().Equal(expectedBobBalance, bobBalance)
 

@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec/unknownproto"
 	sdktx "github.com/cosmos/cosmos-sdk/types/tx"
 )

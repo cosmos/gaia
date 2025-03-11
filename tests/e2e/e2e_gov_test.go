@@ -2,8 +2,6 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"strconv"
 	"time"
 
@@ -16,6 +14,9 @@ import (
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
 /*
@@ -28,7 +29,7 @@ Test Benchmarks:
 TODO: Perform upgrade in place of chain restart
 */
 func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 	senderAddress, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 	sender := senderAddress.String()
 	height, err := query.GetLatestBlockHeight(chainAAPIEndpoint)
@@ -75,7 +76,7 @@ Test Benchmarks:
 3. Validation that the chain produced blocks past the intended upgrade height
 */
 func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 	senderAddress, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 
 	sender := senderAddress.String()
@@ -114,7 +115,7 @@ Test Benchmarks:
 */
 func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 	s.fundCommunityPool()
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 	senderAddress, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 	sender := senderAddress.String()
 	recipientAddress, _ := s.commonHelper.Resources.ChainA.Validators[1].KeyInfo.GetAddress()
@@ -123,7 +124,7 @@ func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 	err := s.msg.WriteGovCommunitySpendProposal(s.commonHelper.Resources.ChainA, sendAmount, recipient)
 	s.Require().NoError(err)
 
-	beforeRecipientBalance, err := query.GetSpecificBalance(chainAAPIEndpoint, recipient, common.UAtomDenom)
+	beforeRecipientBalance, err := query.SpecificBalance(chainAAPIEndpoint, recipient, common.UAtomDenom)
 	s.Require().NoError(err)
 
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
@@ -135,7 +136,7 @@ func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 
 	s.Require().Eventually(
 		func() bool {
-			afterRecipientBalance, err := query.GetSpecificBalance(chainAAPIEndpoint, recipient, common.UAtomDenom)
+			afterRecipientBalance, err := query.SpecificBalance(chainAAPIEndpoint, recipient, common.UAtomDenom)
 			s.Require().NoError(err)
 
 			return afterRecipientBalance.Sub(sendAmount).IsEqual(beforeRecipientBalance)
@@ -209,7 +210,7 @@ func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := query.QueryGovProposal(chainAAPIEndpoint, proposalID)
+				proposal, err := query.GovProposal(chainAAPIEndpoint, proposalID)
 				s.Require().NoError(err)
 				return proposal.GetProposal().Status == expectedSuccessStatus
 			},
@@ -228,14 +229,14 @@ func (s *IntegrationTestSuite) submitGovCommandExpectingFailure(sender string, g
 
 // testSetBlocksPerEpoch tests that we can change `BlocksPerEpoch` through a governance proposal
 func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	providerParams := providertypes.DefaultParams()
 
 	// assert that initially, the actual blocks per epoch are the default blocks per epoch
 	s.Require().Eventually(
 		func() bool {
-			blocksPerEpoch, err := query.QueryBlocksPerEpoch(chainEndpoint)
+			blocksPerEpoch, err := query.BlocksPerEpoch(chainEndpoint)
 			s.T().Logf("Initial BlocksPerEpoch param: %v", blocksPerEpoch)
 			s.Require().NoError(err)
 
@@ -265,7 +266,7 @@ func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 
 	s.Require().Eventually(
 		func() bool {
-			blocksPerEpoch, err := query.QueryBlocksPerEpoch(chainEndpoint)
+			blocksPerEpoch, err := query.BlocksPerEpoch(chainEndpoint)
 			s.Require().NoError(err)
 
 			s.T().Logf("Newly set blocks per epoch: %d", blocksPerEpoch)
@@ -296,7 +297,7 @@ func (s *IntegrationTestSuite) ExpeditedProposalRejected() {
 // MsgSoftwareUpgrade can be expedited but it can only be submitted using "tx gov submit-proposal" command.
 // Messages submitted using "tx gov submit-legacy-proposal" command cannot be expedited.// submit but vote no so that the proposal is not passed
 func (s *IntegrationTestSuite) GovSoftwareUpgradeExpedited() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 	senderAddress, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 	sender := senderAddress.String()
 
@@ -313,7 +314,7 @@ func (s *IntegrationTestSuite) GovSoftwareUpgradeExpedited() {
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := query.QueryGovProposalV1(chainAAPIEndpoint, s.commonHelper.TestCounters.ProposalCounter)
+				proposal, err := query.GovProposalV1(chainAAPIEndpoint, s.commonHelper.TestCounters.ProposalCounter)
 				s.Require().NoError(err)
 				return proposal.Proposal.Expedited && proposal.GetProposal().Status == govtypesv1.ProposalStatus_PROPOSAL_STATUS_DEPOSIT_PERIOD
 			},
@@ -326,7 +327,7 @@ func (s *IntegrationTestSuite) GovSoftwareUpgradeExpedited() {
 		// confirm that the proposal was moved from expedited
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := query.QueryGovProposalV1(chainAAPIEndpoint, s.commonHelper.TestCounters.ProposalCounter)
+				proposal, err := query.GovProposalV1(chainAAPIEndpoint, s.commonHelper.TestCounters.ProposalCounter)
 				s.Require().NoError(err)
 				return proposal.Proposal.Expedited == false
 			},

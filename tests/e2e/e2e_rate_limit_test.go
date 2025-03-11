@@ -2,16 +2,17 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"strconv"
 	"time"
 
 	sdkmath "cosmossdk.io/math"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
@@ -40,7 +41,7 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 			}
 			s.T().Logf("After AddRateLimit proposal (channel-0, uatom)")
 
-			rateLimits, err := query.QueryAllRateLimits(chainEndpoint)
+			rateLimits, err := query.AllRateLimits(chainEndpoint)
 			s.Require().NoError(err)
 			s.Require().Len(rateLimits, 1)
 			s.Require().Equal(channel, rateLimits[0].Path.ChannelOrClientId)
@@ -49,14 +50,14 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 			s.Require().Equal(sdkmath.NewInt(1), rateLimits[0].Quota.MaxPercentRecv)
 			s.Require().Equal(sdkmath.NewInt(1), rateLimits[0].Quota.MaxPercentSend)
 
-			res, err := query.QueryRateLimit(chainEndpoint, channel, common.UAtomDenom)
+			res, err := query.RateLimit(chainEndpoint, channel, common.UAtomDenom)
 			s.Require().NoError(err)
 			s.Require().NotNil(res.RateLimit)
 			s.Require().Equal(*rateLimits[0].Path, *res.RateLimit.Path)
 			s.Require().Equal(*rateLimits[0].Quota, *res.RateLimit.Quota)
 
 			if !v2 {
-				rateLimitsByChainID, err := query.QueryRateLimitsByChainID(chainEndpoint, s.commonHelper.Resources.ChainB.Id)
+				rateLimitsByChainID, err := query.RateLimitsByChainID(chainEndpoint, s.commonHelper.Resources.ChainB.ID)
 				s.Require().NoError(err)
 				s.Require().Len(rateLimits, 1)
 				s.Require().Equal(*rateLimits[0].Path, *rateLimitsByChainID[0].Path)
@@ -88,7 +89,7 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 			}
 			s.T().Logf("After AddRateLimit proposal (channel-0, stake)")
 
-			rateLimits, err := query.QueryAllRateLimits(chainEndpoint)
+			rateLimits, err := query.AllRateLimits(chainEndpoint)
 			s.Require().NoError(err)
 			s.Require().Len(rateLimits, 2)
 			// Note: the rate limits are ordered lexicographically by denom
@@ -98,7 +99,7 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 			s.Require().Equal(sdkmath.NewInt(5), rateLimits[0].Quota.MaxPercentRecv)
 			s.Require().Equal(sdkmath.NewInt(10), rateLimits[0].Quota.MaxPercentSend)
 
-			res, err := query.QueryRateLimit(chainEndpoint, channel, common.StakeDenom)
+			res, err := query.RateLimit(chainEndpoint, channel, common.StakeDenom)
 			s.Require().NoError(err)
 			s.Require().NotNil(res.RateLimit)
 			s.Require().Equal(*rateLimits[0].Path, *res.RateLimit.Path)
@@ -112,7 +113,7 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 }
 
 func (s *IntegrationTestSuite) testUpdateRateLimit(v2 bool) {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
@@ -137,7 +138,7 @@ func (s *IntegrationTestSuite) testUpdateRateLimit(v2 bool) {
 		func() bool {
 			s.T().Logf("After UpdateRateLimit proposal")
 
-			res, err := query.QueryRateLimit(chainEndpoint, channel, common.UAtomDenom)
+			res, err := query.RateLimit(chainEndpoint, channel, common.UAtomDenom)
 			s.Require().NoError(err)
 			s.Require().NotNil(res.RateLimit)
 			s.Require().Equal(sdkmath.NewInt(2), res.RateLimit.Quota.MaxPercentSend)
@@ -151,7 +152,7 @@ func (s *IntegrationTestSuite) testUpdateRateLimit(v2 bool) {
 }
 
 func (s *IntegrationTestSuite) testResetRateLimit(v2 bool) {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
@@ -176,7 +177,7 @@ func (s *IntegrationTestSuite) testResetRateLimit(v2 bool) {
 		func() bool {
 			s.T().Logf("After ResetRateLimit proposal")
 
-			res, err := query.QueryRateLimit(chainEndpoint, channel, common.UAtomDenom)
+			res, err := query.RateLimit(chainEndpoint, channel, common.UAtomDenom)
 			s.Require().NoError(err)
 			s.Require().NotNil(res.RateLimit)
 			s.Require().Equal(sdkmath.NewInt(0), res.RateLimit.Flow.Inflow)
@@ -190,7 +191,7 @@ func (s *IntegrationTestSuite) testResetRateLimit(v2 bool) {
 }
 
 func (s *IntegrationTestSuite) testRemoveRateLimit(v2 bool) {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
@@ -215,11 +216,11 @@ func (s *IntegrationTestSuite) testRemoveRateLimit(v2 bool) {
 		func() bool {
 			s.T().Logf("After RemoveRateLimit proposal")
 
-			rateLimits, err := query.QueryAllRateLimits(chainEndpoint)
+			rateLimits, err := query.AllRateLimits(chainEndpoint)
 			s.Require().NoError(err)
 			s.Require().Len(rateLimits, 1)
 
-			res, err := query.QueryRateLimit(chainEndpoint, channel, common.UAtomDenom)
+			res, err := query.RateLimit(chainEndpoint, channel, common.UAtomDenom)
 			s.Require().NoError(err)
 			s.Require().Nil(res.RateLimit)
 
@@ -244,11 +245,11 @@ func (s *IntegrationTestSuite) testRemoveRateLimit(v2 bool) {
 		func() bool {
 			s.T().Logf("After RemoveRateLimit proposal")
 
-			rateLimits, err := query.QueryAllRateLimits(chainEndpoint)
+			rateLimits, err := query.AllRateLimits(chainEndpoint)
 			s.Require().NoError(err)
 			s.Require().Len(rateLimits, 0)
 
-			res, err := query.QueryRateLimit(chainEndpoint, channel, common.StakeDenom)
+			res, err := query.RateLimit(chainEndpoint, channel, common.StakeDenom)
 			s.Require().NoError(err)
 			s.Require().Nil(res.RateLimit)
 
@@ -260,7 +261,7 @@ func (s *IntegrationTestSuite) testRemoveRateLimit(v2 bool) {
 }
 
 func (s *IntegrationTestSuite) testIBCTransfer(expToFail bool, v2 bool) {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	address, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 	sender := address.String()
@@ -268,7 +269,7 @@ func (s *IntegrationTestSuite) testIBCTransfer(expToFail bool, v2 bool) {
 	address, _ = s.commonHelper.Resources.ChainB.Validators[0].KeyInfo.GetAddress()
 	recipient := address.String()
 
-	totalAmount, err := query.QuerySupplyOf(chainEndpoint, common.UAtomDenom)
+	totalAmount, err := query.SupplyOf(chainEndpoint, common.UAtomDenom)
 	s.Require().NoError(err)
 
 	threshold := totalAmount.Amount.Mul(sdkmath.NewInt(1)).Quo(sdkmath.NewInt(100))
@@ -290,7 +291,7 @@ func (s *IntegrationTestSuite) testIBCTransfer(expToFail bool, v2 bool) {
 	if !expToFail {
 		s.T().Logf("After successful IBC transfer")
 
-		res, err := query.QueryRateLimit(chainEndpoint, channel, common.UAtomDenom)
+		res, err := query.RateLimit(chainEndpoint, channel, common.UAtomDenom)
 		s.Require().NoError(err)
 		s.Require().NotNil(res.RateLimit)
 		s.Require().Equal(sdkmath.NewInt(0), res.RateLimit.Flow.Inflow)

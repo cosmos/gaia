@@ -9,7 +9,7 @@ const jailedValidatorKey = "jailed"
 
 func (s *IntegrationTestSuite) testSlashing(chainEndpoint string) {
 	s.Run("test unjail validator", func() {
-		validators, err := query.QueryValidators(chainEndpoint)
+		validators, err := query.Validators(chainEndpoint)
 		s.Require().NoError(err)
 
 		for _, val := range validators.Validators {
@@ -19,7 +19,7 @@ func (s *IntegrationTestSuite) testSlashing(chainEndpoint string) {
 					common.WithKeyValue(common.FlagFrom, jailedValidatorKey),
 				)
 
-				valQ, err := query.QueryValidator(chainEndpoint, val.OperatorAddress)
+				valQ, err := query.Validator(chainEndpoint, val.OperatorAddress)
 				s.Require().NoError(err)
 				s.Require().False(valQ.Jailed)
 			}

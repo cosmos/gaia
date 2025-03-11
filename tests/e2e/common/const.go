@@ -1,13 +1,16 @@
 package common
 
 import (
+	"path/filepath"
+
 	"cosmossdk.io/math"
+
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
 	"github.com/cosmos/gaia/v23/types"
-	"path/filepath"
 )
 
 // ica tests

@@ -73,7 +73,7 @@ func init() {
 
 type Chain struct {
 	DataDir    string
-	Id         string
+	ID         string
 	Validators []*validator
 	accounts   []*account //nolint:unused
 	// initial accounts in genesis
@@ -88,13 +88,13 @@ func NewChain() (*Chain, error) {
 	}
 
 	return &Chain{
-		Id:      "chain-" + tmrand.Str(6),
+		ID:      "chain-" + tmrand.Str(6),
 		DataDir: tmpDir,
 	}, nil
 }
 
 func (c *Chain) configDir() string {
-	return fmt.Sprintf("%s/%s", c.DataDir, c.Id)
+	return fmt.Sprintf("%s/%s", c.DataDir, c.ID)
 }
 
 func (c *Chain) CreateAndInitValidators(count int) error {
@@ -192,6 +192,6 @@ func (c *Chain) createValidator(index int) *validator {
 	return &validator{
 		chain:   c,
 		Index:   index,
-		Moniker: fmt.Sprintf("%s-gaia-%d", c.Id, index),
+		Moniker: fmt.Sprintf("%s-gaia-%d", c.ID, index),
 	}
 }

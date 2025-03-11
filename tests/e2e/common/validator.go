@@ -82,7 +82,7 @@ func (v *validator) init(genesisState map[string]json.RawMessage) error {
 	}
 
 	appGenesis := genutiltypes.AppGenesis{
-		ChainID:  v.chain.Id,
+		ChainID:  v.chain.ID,
 		AppState: appState,
 		Consensus: &genutiltypes.ConsensusGenesis{
 			Validators: nil,
@@ -294,7 +294,7 @@ func (v *validator) SignMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 
 	signerData := authsigning.SignerData{
 		Address:       sdk.AccAddress(pk.Bytes()).String(),
-		ChainID:       v.chain.Id,
+		ChainID:       v.chain.ID,
 		AccountNumber: 0,
 		Sequence:      0,
 		PubKey:        pk,

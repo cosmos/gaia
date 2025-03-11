@@ -2,12 +2,14 @@ package query
 
 import (
 	"fmt"
+
 	"github.com/CosmWasm/wasmd/x/wasm/types"
+
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func QueryWasmContractAddress(endpoint, creator string, idx uint64) (string, error) {
-	body, err := common.HttpGet(fmt.Sprintf("%s/cosmwasm/wasm/v1/contracts/creator/%s", endpoint, creator))
+func WasmContractAddress(endpoint, creator string, idx uint64) (string, error) {
+	body, err := common.HTTPGet(fmt.Sprintf("%s/cosmwasm/wasm/v1/contracts/creator/%s", endpoint, creator))
 	if err != nil {
 		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
@@ -20,8 +22,8 @@ func QueryWasmContractAddress(endpoint, creator string, idx uint64) (string, err
 	return response.ContractAddresses[idx], nil
 }
 
-func QueryWasmSmartContractState(endpoint, address, msg string) ([]byte, error) {
-	body, err := common.HttpGet(fmt.Sprintf("%s/cosmwasm/wasm/v1/contract/%s/smart/%s", endpoint, address, msg))
+func WasmSmartContractState(endpoint, address, msg string) ([]byte, error) {
+	body, err := common.HTTPGet(fmt.Sprintf("%s/cosmwasm/wasm/v1/contract/%s/smart/%s", endpoint, address, msg))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

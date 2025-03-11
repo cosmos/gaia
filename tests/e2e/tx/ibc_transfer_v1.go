@@ -3,12 +3,13 @@ package tx
 import (
 	"context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	"time"
+
+	"github.com/cosmos/cosmos-sdk/client/flags"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-//nolint:unparam
 func (h *Helper) SendIBC(c *common.Chain, valIdx int, sender, recipient, token, fees, note, channel string, absoluteTimeout *int64, expErr bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -32,7 +33,7 @@ func (h *Helper) SendIBC(c *common.Chain, valIdx int, sender, recipient, token, 
 	ibcCmd = append(ibcCmd, []string{
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, fees),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		// fmt.Sprintf("--%s=%s", flags.FlagNote, note),
 		fmt.Sprintf("--memo=%s", note),
 		"--keyring-backend=test",
@@ -41,7 +42,7 @@ func (h *Helper) SendIBC(c *common.Chain, valIdx int, sender, recipient, token, 
 		"-y",
 	}...)
 
-	h.Suite.T().Logf("sending %s from %s (%s) to %s (%s) with memo %s", token, h.CommonHelper.Resources.ChainA.Id, sender, h.CommonHelper.Resources.ChainB.Id, recipient, note)
+	h.Suite.T().Logf("sending %s from %s (%s) to %s (%s) with memo %s", token, h.CommonHelper.Resources.ChainA.ID, sender, h.CommonHelper.Resources.ChainB.ID, recipient, note)
 	if expErr {
 		h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, ibcCmd, valIdx, h.expectErrExecValidation(c, valIdx, true))
 		h.Suite.T().Log("unsuccessfully sent IBC tokens")

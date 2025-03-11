@@ -2,12 +2,14 @@ package query
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
+
 	"github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/types"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func QueryICAAccountAddress(endpoint, owner, connectionID string) (string, error) {
-	body, err := common.HttpGet(fmt.Sprintf("%s/ibc/apps/interchain_accounts/controller/v1/owners/%s/connections/%s", endpoint, owner, connectionID))
+func ICAAccountAddress(endpoint, owner, connectionID string) (string, error) {
+	body, err := common.HTTPGet(fmt.Sprintf("%s/ibc/apps/interchain_accounts/controller/v1/owners/%s/connections/%s", endpoint, owner, connectionID))
 	if err != nil {
 		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

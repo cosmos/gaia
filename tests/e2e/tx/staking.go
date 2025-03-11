@@ -3,18 +3,19 @@ package tx
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"time"
 )
 
-func (h *Helper) ExecDelegate(c *common.Chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) { //nolint:unparam
-
+func (h *Helper) ExecDelegate(c *common.Chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("Executing gaiad tx staking delegate %s", c.Id)
+	h.Suite.T().Logf("Executing gaiad tx staking delegate %s", c.ID)
 
 	gaiaCommand := []string{
 		common.GaiadBinary,
@@ -24,7 +25,7 @@ func (h *Helper) ExecDelegate(c *common.Chain, valIdx int, amount, valOperAddres
 		valOperAddress,
 		amount,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
 		fmt.Sprintf("--%s=%s", flags.FlagGas, "250000"), // default 200_000 is not enough
 		"--keyring-backend=test",
@@ -41,7 +42,7 @@ func (h *Helper) ExecUnbondDelegation(c *common.Chain, valIdx int, amount, valOp
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("Executing gaiad tx staking unbond %s", c.Id)
+	h.Suite.T().Logf("Executing gaiad tx staking unbond %s", c.ID)
 
 	gaiaCommand := []string{
 		common.GaiadBinary,
@@ -51,7 +52,7 @@ func (h *Helper) ExecUnbondDelegation(c *common.Chain, valIdx int, amount, valOp
 		valOperAddress,
 		amount,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
 		"--gas=300000", // default 200_000 is not enough; gas fees are higher when unbonding is done after LSM operations
 		"--keyring-backend=test",
@@ -68,7 +69,7 @@ func (h *Helper) ExecCancelUnbondingDelegation(c *common.Chain, valIdx int, amou
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("Executing gaiad tx staking cancel-unbond %s", c.Id)
+	h.Suite.T().Logf("Executing gaiad tx staking cancel-unbond %s", c.ID)
 
 	gaiaCommand := []string{
 		common.GaiadBinary,
@@ -79,7 +80,7 @@ func (h *Helper) ExecCancelUnbondingDelegation(c *common.Chain, valIdx int, amou
 		amount,
 		creationHeight,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
@@ -97,7 +98,7 @@ func (h *Helper) ExecRedelegate(c *common.Chain, valIdx int, amount, originalVal
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("Executing gaiad tx staking redelegate %s", c.Id)
+	h.Suite.T().Logf("Executing gaiad tx staking redelegate %s", c.ID)
 
 	gaiaCommand := []string{
 		common.GaiadBinary,
@@ -108,7 +109,7 @@ func (h *Helper) ExecRedelegate(c *common.Chain, valIdx int, amount, originalVal
 		newValOperAddress,
 		amount,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagGas, "350000"), // default 200000 isn't enough
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
 		"--keyring-backend=test",
@@ -125,7 +126,7 @@ func (h *Helper) ExecuteValidatorBond(c *common.Chain, valIdx int, valOperAddres
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("Executing gaiad tx staking validator-bond %s", c.Id)
+	h.Suite.T().Logf("Executing gaiad tx staking validator-bond %s", c.ID)
 
 	gaiaCommand := []string{
 		common.GaiadBinary,
@@ -134,7 +135,7 @@ func (h *Helper) ExecuteValidatorBond(c *common.Chain, valIdx int, valOperAddres
 		"validator-bond",
 		valOperAddress,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
@@ -150,7 +151,7 @@ func (h *Helper) ExecuteTokenizeShares(c *common.Chain, valIdx int, amount, valO
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("Executing gaiad tx staking tokenize-share %s", c.Id)
+	h.Suite.T().Logf("Executing gaiad tx staking tokenize-share %s", c.ID)
 
 	gaiaCommand := []string{
 		common.GaiadBinary,
@@ -161,7 +162,7 @@ func (h *Helper) ExecuteTokenizeShares(c *common.Chain, valIdx int, amount, valO
 		amount,
 		delegatorAddr,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
 		fmt.Sprintf("--%s=%d", flags.FlagGas, 1000000),
 		"--keyring-backend=test",
@@ -178,7 +179,7 @@ func (h *Helper) ExecuteRedeemShares(c *common.Chain, valIdx int, amount, delega
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("Executing gaiad tx staking redeem-tokens %s", c.Id)
+	h.Suite.T().Logf("Executing gaiad tx staking redeem-tokens %s", c.ID)
 
 	gaiaCommand := []string{
 		common.GaiadBinary,
@@ -187,7 +188,7 @@ func (h *Helper) ExecuteRedeemShares(c *common.Chain, valIdx int, amount, delega
 		"redeem-tokens",
 		amount,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
 		fmt.Sprintf("--%s=%d", flags.FlagGas, 1000000),
 		"--keyring-backend=test",
@@ -204,7 +205,7 @@ func (h *Helper) ExecuteTransferTokenizeShareRecord(c *common.Chain, valIdx int,
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("Executing gaiad tx staking transfer-tokenize-share-record %s", c.Id)
+	h.Suite.T().Logf("Executing gaiad tx staking transfer-tokenize-share-record %s", c.ID)
 
 	gaiaCommand := []string{
 		common.GaiadBinary,
@@ -214,7 +215,7 @@ func (h *Helper) ExecuteTransferTokenizeShareRecord(c *common.Chain, valIdx int,
 		recordID,
 		newOwner,
 		fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.Id),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
 		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, txFees),
 		"--keyring-backend=test",
 		fmt.Sprintf("--%s=%s", flags.FlagHome, home),

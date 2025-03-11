@@ -2,8 +2,6 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"strconv"
 	"strings"
 	"time"
@@ -15,6 +13,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) testICARegisterAccountAndSendTx() {
@@ -32,19 +33,19 @@ func (s *IntegrationTestSuite) testICARegisterAccountAndSendTx() {
 		icaOwnerAccount := address.String()
 		icaOwnerPortID, _ := icatypes.NewControllerPortID(icaOwnerAccount)
 
-		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].GetHostPort("1317/tcp"))
-		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainB.Id][0].GetHostPort("1317/tcp"))
+		chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
+		chainBAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainB.ID][0].GetHostPort("1317/tcp"))
 
 		s.tx.RegisterICAAccount(s.commonHelper.Resources.ChainA, 0, icaOwnerAccount, common.ConnectionID, common.StandardFees.String())
 		s.commonHelper.CompleteChannelHandshakeFromTry(
-			s.commonHelper.Resources.ChainA.Id, s.commonHelper.Resources.ChainB.Id,
+			s.commonHelper.Resources.ChainA.ID, s.commonHelper.Resources.ChainB.ID,
 			common.ConnectionID, common.ConnectionID,
 			icaOwnerPortID, icatypes.HostPortID,
 			common.IcaChannel, common.IcaChannel)
 
 		s.Require().Eventually(
 			func() bool {
-				icaAccount, _ = query.QueryICAAccountAddress(chainAAPIEndpoint, icaOwnerAccount, common.ConnectionID)
+				icaAccount, _ = query.ICAAccountAddress(chainAAPIEndpoint, icaOwnerAccount, common.ConnectionID)
 				return icaAccount != ""
 			},
 			time.Minute,
@@ -54,12 +55,12 @@ func (s *IntegrationTestSuite) testICARegisterAccountAndSendTx() {
 		TokenAmount := 3300000000
 		s.tx.SendIBC(s.commonHelper.Resources.ChainA, 0, icaOwnerAccount, icaAccount, strconv.Itoa(TokenAmount)+common.UAtomDenom, common.StandardFees.String(), "", common.TransferChannel, nil, false)
 
-		pass := s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainA.Id, common.TransferPort, common.TransferChannel)
+		pass := s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainA.ID, common.TransferPort, common.TransferChannel)
 		s.Require().True(pass)
 
 		s.Require().Eventually(
 			func() bool {
-				icaAccountBalances, err = query.QueryGaiaAllBalances(chainBAPIEndpoint, icaAccount)
+				icaAccountBalances, err = query.AllBalances(chainBAPIEndpoint, icaAccount)
 				s.Require().NoError(err)
 				return icaAccountBalances.Len() != 0
 			},
@@ -81,7 +82,7 @@ func (s *IntegrationTestSuite) testICARegisterAccountAndSendTx() {
 
 		s.Require().Eventually(
 			func() bool {
-				recipientBalances, err = query.QueryGaiaAllBalances(chainBAPIEndpoint, recipientB)
+				recipientBalances, err = query.AllBalances(chainBAPIEndpoint, recipientB)
 				s.Require().NoError(err)
 				return recipientBalances.Len() != 0
 			},
@@ -103,11 +104,11 @@ func (s *IntegrationTestSuite) testICARegisterAccountAndSendTx() {
 
 		s.tx.BuildICASendTransactionFile(common.Cdc, []proto.Message{bankSendMsg}, s.commonHelper.Resources.ChainA.Validators[0].ConfigDir())
 		s.tx.SendICATransaction(s.commonHelper.Resources.ChainA, 0, icaOwnerAccount, common.ConnectionID, configFile(common.ICASendTransactionFileName), common.StandardFees.String())
-		s.Require().True(s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainA.Id, icaOwnerPortID, common.IcaChannel))
+		s.Require().True(s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainA.ID, icaOwnerPortID, common.IcaChannel))
 
 		s.Require().Eventually(
 			func() bool {
-				recipientBalances, err = query.QueryGaiaAllBalances(chainBAPIEndpoint, recipientB)
+				recipientBalances, err = query.AllBalances(chainBAPIEndpoint, recipientB)
 				s.Require().NoError(err)
 				return recipientBalances.Len() != 0
 			},

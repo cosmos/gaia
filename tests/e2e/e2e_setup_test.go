@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/tx"
 	"math/rand"
 	"os"
 	"os/exec"
@@ -42,6 +40,9 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/tx"
 )
 
 func TestIntegrationTestSuite(t *testing.T) {
@@ -61,7 +62,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.commonHelper.Resources.DkrPool, err = dockertest.NewPool("")
 	s.Require().NoError(err)
 
-	s.commonHelper.Resources.DkrNet, err = s.commonHelper.Resources.DkrPool.CreateNetwork(fmt.Sprintf("%s-%s-testnet", s.commonHelper.Resources.ChainA.Id, s.commonHelper.Resources.ChainB.Id))
+	s.commonHelper.Resources.DkrNet, err = s.commonHelper.Resources.DkrPool.CreateNetwork(fmt.Sprintf("%s-%s-testnet", s.commonHelper.Resources.ChainA.ID, s.commonHelper.Resources.ChainB.ID))
 	s.Require().NoError(err)
 
 	s.commonHelper.Resources.ValResources = make(map[string][]*dockertest.Resource)
@@ -85,13 +86,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// 3. Start both networks.
 	// 4. Create and run IBC relayer (Hermes) containers.
 
-	s.T().Logf("starting e2e infrastructure for chain A; chain-id: %s; datadir: %s", s.commonHelper.Resources.ChainA.Id, s.commonHelper.Resources.ChainA.DataDir)
+	s.T().Logf("starting e2e infrastructure for chain A; chain-id: %s; datadir: %s", s.commonHelper.Resources.ChainA.ID, s.commonHelper.Resources.ChainA.DataDir)
 	s.initNodes(s.commonHelper.Resources.ChainA)
 	s.initGenesis(s.commonHelper.Resources.ChainA, vestingMnemonic, jailedValMnemonic)
 	s.initValidatorConfigs(s.commonHelper.Resources.ChainA)
 	s.runValidators(s.commonHelper.Resources.ChainA, 0)
 
-	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.commonHelper.Resources.ChainB.Id, s.commonHelper.Resources.ChainB.DataDir)
+	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.commonHelper.Resources.ChainB.ID, s.commonHelper.Resources.ChainB.DataDir)
 	s.initNodes(s.commonHelper.Resources.ChainB)
 	s.initGenesis(s.commonHelper.Resources.ChainB, vestingMnemonic, jailedValMnemonic)
 	s.initValidatorConfigs(s.commonHelper.Resources.ChainB)
@@ -484,9 +485,9 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *common.Chain) {
 
 // runValidators runs the validators in the Chain
 func (s *IntegrationTestSuite) runValidators(c *common.Chain, portOffset int) {
-	s.T().Logf("starting Gaia %s validator containers...", c.Id)
+	s.T().Logf("starting Gaia %s validator containers...", c.ID)
 
-	s.commonHelper.Resources.ValResources[c.Id] = make([]*dockertest.Resource, len(c.Validators))
+	s.commonHelper.Resources.ValResources[c.ID] = make([]*dockertest.Resource, len(c.Validators))
 	for i, val := range c.Validators {
 		runOpts := &dockertest.RunOptions{
 			Name:      val.InstanceName(),
@@ -518,8 +519,8 @@ func (s *IntegrationTestSuite) runValidators(c *common.Chain, portOffset int) {
 		resource, err := s.commonHelper.Resources.DkrPool.RunWithOptions(runOpts, noRestart)
 		s.Require().NoError(err)
 
-		s.commonHelper.Resources.ValResources[c.Id][i] = resource
-		s.T().Logf("started Gaia %s validator container: %s", c.Id, resource.Container.ID)
+		s.commonHelper.Resources.ValResources[c.ID][i] = resource
+		s.T().Logf("started Gaia %s validator container: %s", c.ID, resource.Container.ID)
 	}
 
 	rpcClient, err := rpchttp.New("tcp://localhost:26657", "/websocket")
@@ -580,7 +581,7 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 
 	s.commonHelper.Resources.HermesResource, err = s.commonHelper.Resources.DkrPool.RunWithOptions(
 		&dockertest.RunOptions{
-			Name:       fmt.Sprintf("%s-%s-relayer", s.commonHelper.Resources.ChainA.Id, s.commonHelper.Resources.ChainB.Id),
+			Name:       fmt.Sprintf("%s-%s-relayer", s.commonHelper.Resources.ChainA.ID, s.commonHelper.Resources.ChainB.ID),
 			Repository: "ghcr.io/cosmos/hermes-e2e",
 			Tag:        "1.0.0",
 			NetworkID:  s.commonHelper.Resources.DkrNet.Network.ID,
@@ -591,14 +592,14 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 				"3031/tcp": {{HostIP: "", HostPort: "3031"}},
 			},
 			Env: []string{
-				fmt.Sprintf("GAIA_A_E2E_CHAIN_ID=%s", s.commonHelper.Resources.ChainA.Id),
-				fmt.Sprintf("GAIA_B_E2E_CHAIN_ID=%s", s.commonHelper.Resources.ChainB.Id),
+				fmt.Sprintf("GAIA_A_E2E_CHAIN_ID=%s", s.commonHelper.Resources.ChainA.ID),
+				fmt.Sprintf("GAIA_B_E2E_CHAIN_ID=%s", s.commonHelper.Resources.ChainB.ID),
 				fmt.Sprintf("GAIA_A_E2E_VAL_MNEMONIC=%s", gaiaAVal.Mnemonic),
 				fmt.Sprintf("GAIA_B_E2E_VAL_MNEMONIC=%s", gaiaBVal.Mnemonic),
 				fmt.Sprintf("GAIA_A_E2E_RLY_MNEMONIC=%s", gaiaARly.Mnemonic),
 				fmt.Sprintf("GAIA_B_E2E_RLY_MNEMONIC=%s", gaiaBRly.Mnemonic),
-				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.Id][0].Container.Name[1:]),
-				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainB.Id][0].Container.Name[1:]),
+				fmt.Sprintf("GAIA_A_E2E_VAL_HOST=%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].Container.Name[1:]),
+				fmt.Sprintf("GAIA_B_E2E_VAL_HOST=%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainB.ID][0].Container.Name[1:]),
 			},
 			User: "root",
 			Entrypoint: []string{

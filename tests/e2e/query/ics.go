@@ -2,12 +2,14 @@ package query
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
+
 	"github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func QueryBlocksPerEpoch(endpoint string) (int64, error) {
-	body, err := common.HttpGet(fmt.Sprintf("%s/interchain_security/ccv/provider/params", endpoint))
+func BlocksPerEpoch(endpoint string) (int64, error) {
+	body, err := common.HTTPGet(fmt.Sprintf("%s/interchain_security/ccv/provider/params", endpoint))
 	if err != nil {
 		return 0, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

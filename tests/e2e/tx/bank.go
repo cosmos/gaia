@@ -3,9 +3,11 @@ package tx
 import (
 	"context"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	"time"
+
+	"github.com/cosmos/cosmos-sdk/x/bank/types"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
 func (h *Helper) ExecBankSend(
@@ -21,12 +23,12 @@ func (h *Helper) ExecBankSend(
 	// TODO remove the hardcode opt after refactor, all methods should accept custom flags
 	opt = append(opt, common.WithKeyValue(common.FlagFees, fees))
 	opt = append(opt, common.WithKeyValue(common.FlagFrom, from))
-	opts := common.ApplyOptions(c.Id, opt)
+	opts := common.ApplyOptions(c.ID, opt)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("sending %s tokens from %s to %s on chain %s", amt, from, to, c.Id)
+	h.Suite.T().Logf("sending %s tokens from %s to %s on chain %s", amt, from, to, c.ID)
 
 	gaiaCommand := []string{
 		common.GaiadBinary,
@@ -58,12 +60,12 @@ func (h *Helper) ExecBankMultiSend(
 	// TODO remove the hardcode opt after refactor, all methods should accept custom flags
 	opt = append(opt, common.WithKeyValue(common.FlagFees, fees))
 	opt = append(opt, common.WithKeyValue(common.FlagFrom, from))
-	opts := common.ApplyOptions(c.Id, opt)
+	opts := common.ApplyOptions(c.ID, opt)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	h.Suite.T().Logf("sending %s tokens from %s to %s on chain %s", amt, from, to, c.Id)
+	h.Suite.T().Logf("sending %s tokens from %s to %s on chain %s", amt, from, to, c.ID)
 
 	gaiaCommand := []string{
 		common.GaiadBinary,

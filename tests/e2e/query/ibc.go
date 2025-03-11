@@ -2,12 +2,14 @@ package query
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
+
 	"github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func QueryIbcWasmChecksums(endpoint string) ([]string, error) {
-	body, err := common.HttpGet(fmt.Sprintf("%s/ibc/lightclients/wasm/v1/checksums", endpoint))
+func IbcWasmChecksums(endpoint string) ([]string, error) {
+	body, err := common.HTTPGet(fmt.Sprintf("%s/ibc/lightclients/wasm/v1/checksums", endpoint))
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}

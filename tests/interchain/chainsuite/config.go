@@ -144,7 +144,7 @@ func DefaultChainSpec(env Environment) *interchaintest.ChainSpec {
 			},
 			Images: []ibc.DockerImage{{
 				Repository: repository,
-				UidGid:     "1025:1025", // this is the user in heighliner docker images
+				UIDGID:     "1025:1025", // this is the user in heighliner docker images
 			}},
 			ModifyGenesis:        cosmos.ModifyGenesis(DefaultGenesis()),
 			ModifyGenesisAmounts: DefaultGenesisAmounts(Uatom),

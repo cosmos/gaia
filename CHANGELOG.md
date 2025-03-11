@@ -12,6 +12,7 @@
 - Bump [ibc-go/modules/light-clients/08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) to [v0.6.0+ibc-go-v10.0-wasmvm-v2.2-beta.2](https://github.com/cosmos/ibc-go/tree/modules/light-clients/08-wasm/v0.6.0%2Bibc-go-v10.0-wasmvm-v2.2-beta.2) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
 - Bump [interchain-security](https://github.com/cosmos/interchain-security) to [v7.0.0-rc0](https://github.com/cosmos/interchain-security/tree/v7.0.0-rc0) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.50.12](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.12) ([\#3560](https://github.com/cosmos/gaia/pull/3560))
+- Bump [ibc-apps/modules/rate-limiting](https://github.com/cosmos/ibc-apps/tree/main/modules/rate-limiting) to [v10.0.0-beta.2-bugfix.1](https://github.com/cosmos/ibc-apps/tree/modules/rate-limiting/v10.0.0-beta.2-bugfix.1) ([\#3588](https://github.com/cosmos/gaia/pull/3588))
 
 ### BUG FIXES
 - Export only validators that are participating in consensus
@@ -22,6 +23,7 @@
 
 ### FEATURES
 - Add [ibc-go/modules/light-clients/08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) ([\#3554](https://github.com/cosmos/gaia/pull/3554))
+- Add BLS Verifier Querier to 08-wasm ([\#3596](https://github.com/cosmos/gaia/pull/3596))
 
 ### STATE BREAKING
 - Remove [ibc-go/modules/apps/29-fee](https://github.com/cosmos/ibc-go/tree/v8.5.3/modules/apps/29-fee) ([\#3553](https://github.com/cosmos/gaia/pull/3553))

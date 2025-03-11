@@ -16,9 +16,10 @@ import (
 	ratelimit "github.com/cosmos/ibc-apps/modules/rate-limiting/v10"
 	ratelimitkeeper "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/keeper"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
-	ibccallbacks "github.com/cosmos/ibc-go/modules/apps/callbacks"
-	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/keeper"
-	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/types"
+	ratelimitv2 "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/v2"
+	"github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/blsverifier"
+	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/keeper"
+	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
 	ica "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/keeper"
@@ -26,12 +27,16 @@ import (
 	icahost "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host/types"
+	ibccallbacks "github.com/cosmos/ibc-go/v10/modules/apps/callbacks"
+	ibccallbacksv2 "github.com/cosmos/ibc-go/v10/modules/apps/callbacks/v2"
 	"github.com/cosmos/ibc-go/v10/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v10/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
+	transferv2 "github.com/cosmos/ibc-go/v10/modules/apps/transfer/v2"
 	ibcclienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
 	ibcconnectiontypes "github.com/cosmos/ibc-go/v10/modules/core/03-connection/types"
 	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
+	ibcapi "github.com/cosmos/ibc-go/v10/modules/core/api"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 	icsprovider "github.com/cosmos/interchain-security/v7/x/ccv/provider"
@@ -214,6 +219,9 @@ func NewAppKeeper(
 		appKeepers.AccountKeeper,
 	)
 
+	// We need to set the bank keeper here otherwise risk a NPE in certain message handlers
+	appKeepers.AuthzKeeper = appKeepers.AuthzKeeper.SetBankKeeper(appKeepers.BankKeeper)
+
 	appKeepers.FeeGrantKeeper = feegrantkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[feegrant.StoreKey]),
@@ -296,6 +304,7 @@ func NewAppKeeper(
 			"/ibc.core.client.v1.Query/ConsensusState",
 			"/ibc.core.connection.v1.Query/Connection",
 		}, bApp.GRPCQueryRouter()),
+		Custom: blsverifier.CustomQuerier(),
 	}
 
 	dataDir := filepath.Join(homePath, "data")
@@ -424,6 +433,7 @@ func NewAppKeeper(
 		govAuthority, // authority
 		appKeepers.BankKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper, // ChannelKeeper
+		appKeepers.IBCKeeper.ClientKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
 	)
 
@@ -455,7 +465,7 @@ func NewAppKeeper(
 		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
 		appKeepers.PFMRouterKeeper, // ISC4 Wrapper: PFM Router middleware
 		appKeepers.IBCKeeper.ChannelKeeper,
-		appKeepers.IBCKeeper.ChannelKeeperV2,
+		bApp.MsgServiceRouter(),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
@@ -539,6 +549,13 @@ func NewAppKeeper(
 	appKeepers.ICAControllerKeeper.WithICS4Wrapper(icaICS4Wrapper)
 	wasmStack := wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper)
 
+	// Create IBCv2 Transfer Stack
+	var transferStackV2 ibcapi.IBCModule
+	transferStackV2 = transferv2.NewIBCModule(appKeepers.TransferKeeper)
+	transferStackV2 = ibccallbacksv2.NewIBCMiddleware(transferStackV2, appKeepers.IBCKeeper.ChannelKeeperV2,
+		wasmStackIBCHandler, appKeepers.IBCKeeper.ChannelKeeperV2, gaiaparams.MaxIBCCallbackGas)
+	transferStackV2 = ratelimitv2.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStackV2)
+
 	// Create IBC Router & seal
 	ibcRouter := porttypes.NewRouter().
 		AddRoute(icahosttypes.SubModuleName, icaHostStack).
@@ -548,6 +565,11 @@ func NewAppKeeper(
 		AddRoute(wasmtypes.ModuleName, wasmStack)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
+
+	// Create IBCv2 Router & seal
+	ibcv2Router := ibcapi.NewRouter().
+		AddRoute(ibctransfertypes.PortID, transferStackV2)
+	appKeepers.IBCKeeper.SetRouterV2(ibcv2Router)
 
 	return appKeepers
 }

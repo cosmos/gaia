@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
+	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/types"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
@@ -319,7 +320,6 @@ func queryAllRateLimits(endpoint string) ([]ratelimittypes.RateLimit, error) {
 	return res.RateLimits, nil
 }
 
-//nolint:unparam
 func queryRateLimit(endpoint, channelID, denom string) (ratelimittypes.QueryRateLimitResponse, error) {
 	var res ratelimittypes.QueryRateLimitResponse
 
@@ -376,7 +376,7 @@ func queryBlocksPerEpoch(endpoint string) (int64, error) {
 	return response.Params.BlocksPerEpoch, nil
 }
 
-func queryWasmContractAddress(endpoint, creator string) (string, error) {
+func queryWasmContractAddress(endpoint, creator string, idx uint64) (string, error) {
 	body, err := httpGet(fmt.Sprintf("%s/cosmwasm/wasm/v1/contracts/creator/%s", endpoint, creator))
 	if err != nil {
 		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
@@ -387,7 +387,7 @@ func queryWasmContractAddress(endpoint, creator string) (string, error) {
 		return "", err
 	}
 
-	return response.ContractAddresses[0], nil
+	return response.ContractAddresses[idx], nil
 }
 
 func queryWasmSmartContractState(endpoint, address, msg string) ([]byte, error) {
@@ -402,4 +402,18 @@ func queryWasmSmartContractState(endpoint, address, msg string) ([]byte, error) 
 	}
 
 	return response.Data, nil
+}
+
+func queryIbcWasmChecksums(endpoint string) ([]string, error) {
+	body, err := httpGet(fmt.Sprintf("%s/ibc/lightclients/wasm/v1/checksums", endpoint))
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var response wasmclienttypes.QueryChecksumsResponse
+	if err = cdc.UnmarshalJSON(body, &response); err != nil {
+		return nil, err
+	}
+
+	return response.Checksums, nil
 }

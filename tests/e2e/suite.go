@@ -9,7 +9,6 @@ import (
 
 type IntegrationTestSuite struct {
 	suite.Suite
-	TestCounters common.TestCounters
 	commonHelper common.Helper
 	tx           tx.Helper
 	msg          msg.Helper

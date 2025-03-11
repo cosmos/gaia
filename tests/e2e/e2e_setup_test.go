@@ -99,7 +99,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.Resources.ChainB)
 	s.runValidators(s.Resources.ChainB, 10)
 
-	s.TestCounters = common.TestCounters{
+	s.commonHelper.TestCounters = common.TestCounters{
 		ProposalCounter:           0,
 		ContractsCounter:          0,
 		ContractsCounterPerSender: map[string]uint64{},

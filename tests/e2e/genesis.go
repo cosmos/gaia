@@ -3,7 +3,6 @@ package e2e
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	"time"
 
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"

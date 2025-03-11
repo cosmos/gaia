@@ -5,8 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	query2 "github.com/cosmos/gaia/v23/tests/e2e/query"
 	"os"
 	"path/filepath"
 	"strconv"

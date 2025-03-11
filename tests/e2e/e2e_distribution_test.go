@@ -2,8 +2,6 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"time"
 
 	"cosmossdk.io/math"

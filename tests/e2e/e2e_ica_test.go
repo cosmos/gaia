@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/cosmos/gogoproto/proto"
-	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
+	icatypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/types"
 
 	"cosmossdk.io/math"
 
@@ -61,7 +61,7 @@ func (s *IntegrationTestSuite) testICARegisterAccountAndSendTx() {
 		)
 
 		tokenAmount := 3300000000
-		s.sendIBC(s.chainA, 0, icaOwnerAccount, icaAccount, strconv.Itoa(tokenAmount)+uatomDenom, standardFees.String(), "", false)
+		s.sendIBC(s.chainA, 0, icaOwnerAccount, icaAccount, strconv.Itoa(tokenAmount)+uatomDenom, standardFees.String(), "", transferChannel, nil, false)
 
 		pass := s.hermesClearPacket(hermesConfigWithGasPrices, s.chainA.id, transferPort, transferChannel)
 		s.Require().True(pass)

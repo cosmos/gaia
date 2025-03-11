@@ -4,8 +4,8 @@ import (
 	feemarketante "github.com/skip-mev/feemarket/x/feemarket/ante"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 
-	ibcante "github.com/cosmos/ibc-go/v8/modules/core/ante"
-	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	ibcante "github.com/cosmos/ibc-go/v10/modules/core/ante"
+	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
 	corestoretypes "cosmossdk.io/core/store"
 	errorsmod "cosmossdk.io/errors"
@@ -44,7 +44,7 @@ type HandlerOptions struct {
 	FeeMarketKeeper       *feemarketkeeper.Keeper
 	TxFeeChecker          ante.TxFeeChecker
 	TXCounterStoreService corestoretypes.KVStoreService
-	WasmConfig            *wasmtypes.WasmConfig
+	WasmConfig            *wasmtypes.NodeConfig
 }
 
 func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {

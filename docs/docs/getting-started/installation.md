@@ -28,7 +28,7 @@ sudo apt install -y make gcc build-essential
 ## Install Go
 
 :::tip
-**Go 1.22+** is required.
+**Go 1.23+** is required.
 :::
 
 We suggest the following two ways to install Go. Check out the [official docs](https://golang.org/doc/install) and Go installer for the correct download for your operating system. Alternatively, you can install Go yourself from the command line. Detailed below are standard default installation locations, but feel free to customize.
@@ -41,12 +41,12 @@ Building the `gaiad` binary on Windows is not supported due to [dependency issue
 
 **Ubuntu:**
 
-At the time of this writing, the latest release is `1.22.3`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
+At the time of this writing, the latest release is `1.23.6`. We're going to download the tarball, extract it to `/usr/local`, and export `GOROOT` to our `$PATH`
 
 ```bash
-curl -OL https://go.dev/dl/go1.22.3.darwin-amd64.tar.gz
+curl -OL https://go.dev/dl/go1.23.6.darwin-amd64.tar.gz
 
-sudo tar -C /usr/local -xvf go1.22.3.darwin-amd64.tar.gz
+sudo tar -C /usr/local -xvf go1.23.6.darwin-amd64.tar.gz
 
 
 export PATH=$PATH:/usr/local/go/bin
@@ -101,7 +101,7 @@ server_name: gaiad
 version: v18.0.0
 commit: 682770f2410ab0d33ac7f0c7203519d7a99fa2b6
 build_tags: netgo,ledger,muslc
-go: go version go1.22.3 linux/amd64
+go: go version go1.23.6 linux/amd64
 ```
 
 ## Docker

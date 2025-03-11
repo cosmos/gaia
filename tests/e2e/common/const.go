@@ -2,10 +2,10 @@ package common
 
 import (
 	"cosmossdk.io/math"
-	types2 "github.com/cosmos/cosmos-sdk/types"
-	types3 "github.com/cosmos/cosmos-sdk/x/auth/types"
-	types4 "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	types5 "github.com/cosmos/cosmos-sdk/x/gov/types"
+	sdktypes "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/gaia/v23/types"
 	"path/filepath"
 )
@@ -81,10 +81,10 @@ var stakingAmount = math.NewInt(100000000000)
 var (
 	GaiaConfigPath = filepath.Join(GaiaHomePath, "config")
 
-	StakingAmountCoin = types2.NewCoin(UatomDenom, stakingAmount)
-	TokenAmount       = types2.NewCoin(UatomDenom, math.NewInt(3300000000)) // 3,300uatom
-	StandardFees      = types2.NewCoin(UatomDenom, math.NewInt(330000))     // 0.33uatom
-	DepositAmount     = types2.NewCoin(UatomDenom, math.NewInt(330000000))  // 3,300uatom
-	DistModuleAddress = types3.NewModuleAddress(types4.ModuleName).String()
-	GovModuleAddress  = types3.NewModuleAddress(types5.ModuleName).String()
+	StakingAmountCoin = sdktypes.NewCoin(UatomDenom, stakingAmount)
+	TokenAmount       = sdktypes.NewCoin(UatomDenom, math.NewInt(3300000000)) // 3,300uatom
+	StandardFees      = sdktypes.NewCoin(UatomDenom, math.NewInt(330000))     // 0.33uatom
+	DepositAmount     = sdktypes.NewCoin(UatomDenom, math.NewInt(330000000))  // 3,300uatom
+	DistModuleAddress = authtypes.NewModuleAddress(distributiontypes.ModuleName).String()
+	GovModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 )

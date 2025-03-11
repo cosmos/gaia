@@ -26,7 +26,7 @@ func (s *IntegrationTestSuite) testEvidence() {
 			s.Require().NoError(err)
 			eq, ok := exportedEvidence.(*evidencetypes.Equivocation)
 			s.Require().True(ok)
-			_, err = s.queryHelper.ExecQueryEvidence(chainAPI, strings.ToUpper(hex.EncodeToString(eq.Hash())))
+			_, err = query.ExecQueryEvidence(chainAPI, strings.ToUpper(hex.EncodeToString(eq.Hash())))
 			s.Require().NoError(err)
 		}
 	})

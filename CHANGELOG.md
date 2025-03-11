@@ -30,10 +30,6 @@
 
 ### API-Breaking
 
-### Dependencies
-
-- Bump [github.com/btcsuite/btcd](https://github.com/btcsuite/btcd) from 0.22.1 to 0.24.2 ([#3626](https://github.com/cosmos/gaia/pull/3626))
-
 ## v22.2.0
 
 *February 12, 2025*

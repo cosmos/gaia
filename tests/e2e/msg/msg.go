@@ -15,7 +15,7 @@ type Helper struct {
 	Suite suite.Suite
 }
 
-func (h *Helper) WriteGovCommunitySpendProposal(c *common.Chain, amount sdk.Coin, recipient string) {
+func (h *Helper) WriteGovCommunitySpendProposal(c *common.Chain, amount sdk.Coin, recipient string) error {
 	template := `
 	{
 		"messages":[
@@ -39,10 +39,13 @@ func (h *Helper) WriteGovCommunitySpendProposal(c *common.Chain, amount sdk.Coin
 	`
 	propMsgBody := fmt.Sprintf(template, common.GovModuleAddress, recipient, amount.Denom, amount.Amount.String())
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalCommunitySpendFilename), []byte(propMsgBody))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (h *Helper) WriteSoftwareUpgradeProposal(c *common.Chain, height int64, name string) {
+func (h *Helper) WriteSoftwareUpgradeProposal(c *common.Chain, height int64, name string) error {
 	body := `{
 		"messages": [
 		 {
@@ -65,10 +68,13 @@ func (h *Helper) WriteSoftwareUpgradeProposal(c *common.Chain, height int64, nam
 	propMsgBody := fmt.Sprintf(body, name, height)
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalSoftwareUpgrade), []byte(propMsgBody))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (h *Helper) WriteCancelSoftwareUpgradeProposal(c *common.Chain) {
+func (h *Helper) WriteCancelSoftwareUpgradeProposal(c *common.Chain) error {
 	template := `{
 		"messages": [
 		 {
@@ -83,10 +89,13 @@ func (h *Helper) WriteCancelSoftwareUpgradeProposal(c *common.Chain) {
 	   }`
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalCancelSoftwareUpgrade), []byte(template))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (h *Helper) WriteLiquidStakingParamsUpdateProposal(c *common.Chain, oldParams stakingtypes.Params) {
+func (h *Helper) WriteLiquidStakingParamsUpdateProposal(c *common.Chain, oldParams stakingtypes.Params) error {
 	template := `
 	{
 		"messages": [
@@ -126,12 +135,15 @@ func (h *Helper) WriteLiquidStakingParamsUpdateProposal(c *common.Chain, oldPara
 	)
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalLSMParamUpdateFilename), []byte(propMsgBody))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // WriteGovParamChangeProposalBlocksPerEpoch writes a governance proposal JSON file to change the `BlocksPerEpoch`
 // parameter to the provided `blocksPerEpoch`
-func (h *Helper) WriteGovParamChangeProposalBlocksPerEpoch(c *common.Chain, paramsJSON string) {
+func (h *Helper) WriteGovParamChangeProposalBlocksPerEpoch(c *common.Chain, paramsJSON string) error {
 	template := `
 	{
 		"messages":[
@@ -155,12 +167,15 @@ func (h *Helper) WriteGovParamChangeProposalBlocksPerEpoch(c *common.Chain, para
 	)
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalBlocksPerEpochFilename), []byte(propMsgBody))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // WriteFailingExpeditedProposal writes a governance proposal JSON file.
 // The proposal fails because only SoftwareUpgrade and CancelSoftwareUpgrade can be expedited.
-func (h *Helper) WriteFailingExpeditedProposal(c *common.Chain, blocksPerEpoch int64) {
+func (h *Helper) WriteFailingExpeditedProposal(c *common.Chain, blocksPerEpoch int64) error {
 	template := `
 	{
 		"messages":[
@@ -193,36 +208,42 @@ func (h *Helper) WriteFailingExpeditedProposal(c *common.Chain, blocksPerEpoch i
 	)
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalFailExpedited), []byte(propMsgBody))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // MsgSoftwareUpgrade can be expedited and it can only be submitted using "tx gov submit-proposal" command.
-func (h *Helper) WriteExpeditedSoftwareUpgradeProp(c *common.Chain) {
+func (h *Helper) WriteExpeditedSoftwareUpgradeProp(c *common.Chain) error {
 	body := `{
- "messages": [
-  {
-   "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
-   "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
-   "plan": {
-    "name": "test-expedited-upgrade",
-    "height": "123456789",
-    "info": "test",
-    "upgraded_client_state": null
-   }
-  }
- ],
- "metadata": "ipfs://CID",
- "deposit": "100uatom",
- "title": "title",
- "summary": "test",
- "expedited": true
-}`
+			 "messages": [
+			  {
+			   "@type": "/cosmos.upgrade.v1beta1.MsgSoftwareUpgrade",
+			   "authority": "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
+			   "plan": {
+				"name": "test-expedited-upgrade",
+				"height": "123456789",
+				"info": "test",
+				"upgraded_client_state": null
+			   }
+			  }
+			 ],
+			 "metadata": "ipfs://CID",
+			 "deposit": "100uatom",
+			 "title": "title",
+			 "summary": "test",
+			 "expedited": true
+			}`
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalExpeditedSoftwareUpgrade), []byte(body))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (h *Helper) WriteAddRateLimitAtomProposal(c *common.Chain, v2 bool) {
+func (h *Helper) WriteAddRateLimitAtomProposal(c *common.Chain, v2 bool) error {
 	template := `
 	{
 		"messages": [
@@ -256,10 +277,13 @@ func (h *Helper) WriteAddRateLimitAtomProposal(c *common.Chain, v2 bool) {
 	)
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalAddRateLimitAtomFilename), []byte(propMsgBody))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (h *Helper) WriteAddRateLimitStakeProposal(c *common.Chain, v2 bool) {
+func (h *Helper) WriteAddRateLimitStakeProposal(c *common.Chain, v2 bool) error {
 	template := `
 	{
 		"messages": [
@@ -293,10 +317,13 @@ func (h *Helper) WriteAddRateLimitStakeProposal(c *common.Chain, v2 bool) {
 	)
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalAddRateLimitStakeFilename), []byte(propMsgBody))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (h *Helper) WriteUpdateRateLimitAtomProposal(c *common.Chain, v2 bool) {
+func (h *Helper) WriteUpdateRateLimitAtomProposal(c *common.Chain, v2 bool) error {
 	template := `
 	{
 		"messages": [
@@ -330,10 +357,13 @@ func (h *Helper) WriteUpdateRateLimitAtomProposal(c *common.Chain, v2 bool) {
 	)
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalUpdateRateLimitAtomFilename), []byte(propMsgBody))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (h *Helper) WriteResetRateLimitAtomProposal(c *common.Chain, v2 bool) {
+func (h *Helper) WriteResetRateLimitAtomProposal(c *common.Chain, v2 bool) error {
 	template := `
 	{
 		"messages": [
@@ -361,10 +391,13 @@ func (h *Helper) WriteResetRateLimitAtomProposal(c *common.Chain, v2 bool) {
 	)
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalResetRateLimitAtomFilename), []byte(propMsgBody))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (h *Helper) WriteRemoveRateLimitAtomProposal(c *common.Chain, v2 bool) {
+func (h *Helper) WriteRemoveRateLimitAtomProposal(c *common.Chain, v2 bool) error {
 	template := `
 	{
 		"messages": [
@@ -392,10 +425,13 @@ func (h *Helper) WriteRemoveRateLimitAtomProposal(c *common.Chain, v2 bool) {
 	)
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalRemoveRateLimitAtomFilename), []byte(propMsgBody))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (h *Helper) WriteRemoveRateLimitStakeProposal(c *common.Chain, v2 bool) {
+func (h *Helper) WriteRemoveRateLimitStakeProposal(c *common.Chain, v2 bool) error {
 	template := `
 	{
 		"messages": [
@@ -423,10 +459,13 @@ func (h *Helper) WriteRemoveRateLimitStakeProposal(c *common.Chain, v2 bool) {
 	)
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalRemoveRateLimitStakeFilename), []byte(propMsgBody))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (h *Helper) WriteStoreWasmLightClientProposal(c *common.Chain) {
+func (h *Helper) WriteStoreWasmLightClientProposal(c *common.Chain) error {
 	template := `
 	{
 		"messages": [
@@ -447,5 +486,8 @@ func (h *Helper) WriteStoreWasmLightClientProposal(c *common.Chain) {
 	)
 
 	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalStoreWasmLightClientFilename), []byte(propMsgBody))
-	h.Suite.Require().NoError(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }

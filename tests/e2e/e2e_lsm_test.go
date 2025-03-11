@@ -25,7 +25,8 @@ func (s *IntegrationTestSuite) testLSM() {
 
 	oldStakingParams, err := query.QueryStakingParams(chainEndpoint)
 	s.Require().NoError(err)
-	s.msg.WriteLiquidStakingParamsUpdateProposal(s.commonHelper.Resources.ChainA, oldStakingParams.Params)
+	err = s.msg.WriteLiquidStakingParamsUpdateProposal(s.commonHelper.Resources.ChainA, oldStakingParams.Params)
+	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalLSMParamUpdateFilename)}
 	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}

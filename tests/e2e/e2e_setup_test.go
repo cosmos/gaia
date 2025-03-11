@@ -66,18 +66,17 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.commonHelper.Resources.ValResources = make(map[string][]*dockertest.Resource)
 
+	s.commonHelper.TestCounters = common.TestCounters{
+		ProposalCounter:           0,
+		ContractsCounter:          0,
+		ContractsCounterPerSender: map[string]uint64{},
+	}
+
 	vestingMnemonic, err := common.CreateMnemonic()
 	s.Require().NoError(err)
 
 	jailedValMnemonic, err := common.CreateMnemonic()
 	s.Require().NoError(err)
-
-	s.commonHelper.Suite = &s.Suite
-
-	s.tx = tx.Helper{
-		Suite:        &s.Suite,
-		CommonHelper: &s.commonHelper,
-	}
 
 	// The bootstrapping phase is as follows:
 	//
@@ -102,6 +101,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		ProposalCounter:           0,
 		ContractsCounter:          0,
 		ContractsCounterPerSender: map[string]uint64{},
+	}
+
+	s.commonHelper.Suite = &s.Suite
+
+	s.tx = tx.Helper{
+		Suite:        &s.Suite,
+		CommonHelper: &s.commonHelper,
 	}
 
 	time.Sleep(10 * time.Second)

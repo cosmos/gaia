@@ -16,7 +16,8 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	s.msg.WriteAddRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	err := s.msg.WriteAddRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalAddRateLimitAtomFilename)}
 	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
@@ -68,7 +69,8 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 		5*time.Second,
 	)
 
-	s.msg.WriteAddRateLimitStakeProposal(s.commonHelper.Resources.ChainA, v2)
+	err = s.msg.WriteAddRateLimitStakeProposal(s.commonHelper.Resources.ChainA, v2)
+	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags = []string{configFile(common.ProposalAddRateLimitStakeFilename)}
 	depositGovFlags = []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
@@ -115,7 +117,8 @@ func (s *IntegrationTestSuite) testUpdateRateLimit(v2 bool) {
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	s.msg.WriteUpdateRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	err := s.msg.WriteUpdateRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalUpdateRateLimitAtomFilename)}
 	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
@@ -153,7 +156,8 @@ func (s *IntegrationTestSuite) testResetRateLimit(v2 bool) {
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	s.msg.WriteResetRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	err := s.msg.WriteResetRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalResetRateLimitAtomFilename)}
 	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
@@ -191,7 +195,8 @@ func (s *IntegrationTestSuite) testRemoveRateLimit(v2 bool) {
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	s.msg.WriteRemoveRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	err := s.msg.WriteRemoveRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalRemoveRateLimitAtomFilename)}
 	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
@@ -224,7 +229,8 @@ func (s *IntegrationTestSuite) testRemoveRateLimit(v2 bool) {
 		5*time.Second,
 	)
 
-	s.msg.WriteRemoveRateLimitStakeProposal(s.commonHelper.Resources.ChainA, v2)
+	err = s.msg.WriteRemoveRateLimitStakeProposal(s.commonHelper.Resources.ChainA, v2)
+	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags = []string{configFile(common.ProposalRemoveRateLimitStakeFilename)}
 	depositGovFlags = []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}

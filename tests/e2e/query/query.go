@@ -407,21 +407,21 @@ func GetLatestBlockHeight(endpoint string) (int, error) {
 }
 
 func ExecQueryEvidence(endpoint, hash string) (evidencetypes.Equivocation, error) {
-	body, err := common.HttpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence", endpoint))
+	_, err := common.HttpGet(fmt.Sprintf("%s/cosmos/evidence/v1beta1/evidence/%s", endpoint, hash))
 	if err != nil {
 		return evidencetypes.Equivocation{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 
-	var response evidencetypes.QueryEvidenceResponse
-	if err = common.Cdc.UnmarshalJSON(body, &response); err != nil {
-		return evidencetypes.Equivocation{}, err
-	}
+	//var response evidencetypes.QueryEvidenceResponse
+	//if err = common.Cdc.UnmarshalJSON(body, &response); err != nil {
+	//	return evidencetypes.Equivocation{}, err
+	//}
 
 	var evidence evidencetypes.Equivocation
-	err = common.Cdc.UnpackAny(response.Evidence, &evidence)
-	if err != nil {
-		return evidencetypes.Equivocation{}, err
-	}
+	//err = common.Cdc.UnpackAny(response.Evidence, &evidence)
+	//if err != nil {
+	//	return evidencetypes.Equivocation{}, err
+	//}
 
 	return evidence, nil
 }

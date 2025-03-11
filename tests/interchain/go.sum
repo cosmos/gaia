@@ -395,8 +395,8 @@ github.com/cosmos/ibc-go/v10 v10.0.0 h1:38nkt3kSrBLnA7mm9Gg4S11X3wtWdbLv7laBZ8hz
 github.com/cosmos/ibc-go/v10 v10.0.0/go.mod h1:82OVClziZQ+9EyDRrnlr2eewcewQ0cxLu7LAbF+q7mc=
 github.com/cosmos/ics23/go v0.11.0 h1:jk5skjT0TqX5e5QJbEnwXIS2yI2vnmLOgpQPeM5RtnU=
 github.com/cosmos/ics23/go v0.11.0/go.mod h1:A8OjxPE67hHST4Icw94hOxxFEJMBG031xIGF/JHNIY0=
-github.com/cosmos/interchain-security/v7 v7.0.0-20250227030200-41409c50cf2f h1:+HmwQJ/g6lpowJ9TWCq0r+TJ2Vm/TQG1XqAobRf7NHg=
-github.com/cosmos/interchain-security/v7 v7.0.0-20250227030200-41409c50cf2f/go.mod h1:F1NYgT7aupA9ichMzYTpZGYgUOgor9+1BS3H7OPVq6M=
+github.com/cosmos/interchain-security/v7 v7.0.0 h1:jMbiIkz0l60JQB4l6M+rkzjvhMEXu5So705yZFKE2gA=
+github.com/cosmos/interchain-security/v7 v7.0.0/go.mod h1:4zYOGZLc1hdhCI8kzVE/G26D9wSqlqJl9UrH1xTGD38=
 github.com/cosmos/interchaintest/v8 v8.8.2-0.20250224162529-535379c62c73 h1:cIWTHr2fXdqNrVaFHz92g28SeYKDkF1PN6/Tm+kZMdQ=
 github.com/cosmos/interchaintest/v8 v8.8.2-0.20250224162529-535379c62c73/go.mod h1:KNWCIEW8CxiqoDEXJTXcAfd83+NOx7B4H4RuFsj+yDc=
 github.com/cosmos/ledger-cosmos-go v0.14.0 h1:WfCHricT3rPbkPSVKRH+L4fQGKYHuGOK9Edpel8TYpE=

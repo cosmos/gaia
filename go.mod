@@ -26,17 +26,11 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.12
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.0
-<<<<<<< HEAD
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0-beta.2
-	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0-beta.2-bugfix.2
-	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.0.0-rc.3
-=======
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0
 	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.0.0
->>>>>>> ce8ec5b (chore: Bump to production versions (#3625))
 	github.com/cosmos/ibc-go/v10 v10.0.0
-	github.com/cosmos/interchain-security/v7 v7.0.0-rc0.0.20250303194851-ccfc7f173e2f
+	github.com/cosmos/interchain-security/v7 v7.0.0
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.11.0

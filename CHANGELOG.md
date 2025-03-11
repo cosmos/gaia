@@ -23,6 +23,7 @@
 
 ### FEATURES
 - Add [ibc-go/modules/light-clients/08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) ([\#3554](https://github.com/cosmos/gaia/pull/3554))
+- Add BLS Verifier Querier to 08-wasm ([\#3596](https://github.com/cosmos/gaia/pull/3596))
 
 ### STATE BREAKING
 - Remove [ibc-go/modules/apps/29-fee](https://github.com/cosmos/ibc-go/tree/v8.5.3/modules/apps/29-fee) ([\#3553](https://github.com/cosmos/gaia/pull/3553))

@@ -80,6 +80,28 @@ func (s *IntegrationTestSuite) testCreateWasmLightClient() {
 	s.T().Logf("Creating wasm light client on chain %s", s.chainA.id)
 	s.executeGaiaTxCommand(ctx, s.chainA, cmd, valIdx, s.defaultExecValidation(s.chainA, valIdx))
 	s.T().Log("successfully created wasm light client")
+
+	cmd2 := []string{
+		gaiadBinary,
+		txCommand,
+		"ibc",
+		"client",
+		"add-counterparty",
+		v2TransferClient,
+		"client-0",
+		"aWJj",
+		fmt.Sprintf("--from=%s", sender),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, standardFees.String()),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.chainA.id),
+		"--keyring-backend=test",
+		"--broadcast-mode=sync",
+		"--output=json",
+		"-y",
+	}
+
+	s.T().Logf("Adding wasm light client counterparty on chain %s", s.chainA.id)
+	s.executeGaiaTxCommand(ctx, s.chainA, cmd2, valIdx, s.defaultExecValidation(s.chainA, valIdx))
+	s.T().Log("successfully added wasm light client counterparty")
 }
 
 func (s *IntegrationTestSuite) writeStoreWasmLightClientProposal(c *chain) {

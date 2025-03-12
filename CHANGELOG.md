@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v22.3.1
+
+*March 12, 2025*
+
+### DEPENDENCIES
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v8.7.0](https://github.com/cosmos/ibc-go/releases/tag/v8.7.0)
+
 ## v22.3.0
 
 *February 27, 2025*

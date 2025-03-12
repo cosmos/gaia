@@ -150,6 +150,8 @@ func (s *IntegrationTestSuite) TestIbcV2() {
 	// ibc v2 wasm light client tests
 	s.testStoreWasmLightClient()
 	s.testCreateWasmLightClient()
+	s.TestV2RecvPacket()
+	s.TestV2Callback()
 
 	// ibc v2 rate limiting tests
 	s.testAddRateLimits(true)

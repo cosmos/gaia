@@ -29,6 +29,7 @@
 - Remove [ibc-go/modules/apps/29-fee](https://github.com/cosmos/ibc-go/tree/v8.5.3/modules/apps/29-fee) ([\#3553](https://github.com/cosmos/gaia/pull/3553))
 
 ### API-Breaking
+- Bump [github.com/cometbft/cometbft-db](https://github.com/cometbft/cometbft-db) from 0.14.1 to 1.0.4 ([#3574](https://github.com/cosmos/gaia/pull/3574))
 
 ### Dependencies
 - Bump [github.com/prometheus/client_golang](https://github.com/prometheus/client_golang) from 1.20.5 to 1.21.0 ([#3548](https://github.com/cosmos/gaia/pull/3548))

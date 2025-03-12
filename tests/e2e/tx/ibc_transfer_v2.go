@@ -29,7 +29,7 @@ func (h *Helper) CreateIBCV2RecvPacketTx(timeoutTimestamp uint64, amount, submit
 
 	packet := types.MsgRecvPacket{
 		Packet: types.Packet{
-			Sequence:          1,
+			Sequence:          uint64(h.CommonHelper.TestCounters.IBCV2PacketSequence),
 			SourceClient:      common.CounterpartyID,
 			DestinationClient: common.V2TransferClient,
 			TimeoutTimestamp:  timeoutTimestamp,

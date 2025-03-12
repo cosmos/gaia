@@ -66,12 +66,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.Resources.ValResources = make(map[string][]*dockertest.Resource)
 
-	s.commonHelper.TestCounters = common.TestCounters{
-		ProposalCounter:           0,
-		ContractsCounter:          0,
-		ContractsCounterPerSender: map[string]uint64{},
-	}
-
 	vestingMnemonic, err := common.CreateMnemonic()
 	s.Require().NoError(err)
 
@@ -100,6 +94,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.commonHelper.TestCounters = common.TestCounters{
 		ProposalCounter:           0,
 		ContractsCounter:          0,
+		IBCV2PacketSequence:       1,
 		ContractsCounterPerSender: map[string]uint64{},
 	}
 

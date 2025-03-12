@@ -6,8 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/client/flags"
-
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
@@ -57,46 +55,6 @@ func (s *IntegrationTestSuite) testCreateWasmLightClient() {
 	clientState := `{"@type":"/ibc.lightclients.wasm.v1.ClientState","data":"ZG9lc250IG1hdHRlcg==","checksum":"O45STPnbLLar4DtFwDx0dE6tuXQW5XTKPHpbjaugun4=","latest_height":{"revision_number":"0","revision_height":"7795583"}}`
 	consensusState := `{"@type":"/ibc.lightclients.wasm.v1.ConsensusState","data":"ZG9lc250IG1hdHRlcg=="}`
 
-	cmd := []string{
-		common.GaiadBinary,
-		common.TxCommand,
-		"ibc",
-		"client",
-		"create",
-		clientState,
-		consensusState,
-		fmt.Sprintf("--from=%s", sender),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, common.StandardFees.String()),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.commonHelper.Resources.ChainA.ID),
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
-		"-y",
-	}
-
-	s.T().Logf("Creating wasm light client on chain %s", s.commonHelper.Resources.ChainA.ID)
-	s.commonHelper.ExecuteGaiaTxCommand(ctx, s.commonHelper.Resources.ChainA, cmd, valIdx, s.commonHelper.DefaultExecValidation(s.commonHelper.Resources.ChainA, valIdx))
-	s.T().Log("successfully created wasm light client")
-
-	cmd2 := []string{
-		common.GaiadBinary,
-		common.TxCommand,
-		"ibc",
-		"client",
-		"add-counterparty",
-		common.V2TransferClient,
-		"client-0",
-		"aWJj",
-		fmt.Sprintf("--from=%s", sender),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, common.StandardFees.String()),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.commonHelper.Resources.ChainA.ID),
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
-		"-y",
-	}
-
-	s.T().Logf("Adding wasm light client counterparty on chain %s", s.commonHelper.Resources.ChainA.ID)
-	s.commonHelper.ExecuteGaiaTxCommand(ctx, s.commonHelper.Resources.ChainA, cmd2, valIdx, s.commonHelper.DefaultExecValidation(s.commonHelper.Resources.ChainA, valIdx))
-	s.T().Log("successfully added wasm light client counterparty")
+	s.tx.CreateClient(s.commonHelper.Resources.ChainA, clientState, consensusState, sender, ctx, valIdx)
+	s.tx.AddWasmClientCounterparty(s.commonHelper.Resources.ChainA, sender, ctx, valIdx)
 }

@@ -69,6 +69,21 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 
 	recipientDenom := fmt.Sprintf("ibc/%X", bs)
 
+	memo := buildCallbacksMemo(entrypointAddress, recipientDenom, adapterAddress)
+
+	senderB, _ := s.commonHelper.Resources.ChainB.Validators[0].KeyInfo.GetAddress()
+	s.tx.SendIBC(s.commonHelper.Resources.ChainB, 0, senderB.String(), adapterAddress, "1uatom", "3000000uatom", memo, common.TransferChannel, nil, false)
+	s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainB.ID, common.TransferPort, common.TransferChannel)
+
+	balances, err := query.AllBalances(chainEndpoint, RecipientAddress)
+	if err != nil {
+		return
+	}
+
+	require.Equal(s.T(), balances[0].String(), "1"+recipientDenom)
+}
+
+func buildCallbacksMemo(entrypointAddress string, recipientDenom string, adapterAddress string) string {
 	ibcHooksData := fmt.Sprintf(`"wasm": {
 						"contract": "%s",
 						"msg": {
@@ -93,17 +108,6 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 					"address": "%s",
 					"gas_limit": "%d"
 				  }`, adapterAddress, 10_000_000)
-
 	memo := fmt.Sprintf("{%s,%s}", destCallbackData, ibcHooksData)
-
-	senderB, _ := s.commonHelper.Resources.ChainB.Validators[0].KeyInfo.GetAddress()
-	s.tx.SendIBC(s.commonHelper.Resources.ChainB, 0, senderB.String(), adapterAddress, "1uatom", "3000000uatom", memo, common.TransferChannel, nil, false)
-	s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainB.ID, common.TransferPort, common.TransferChannel)
-
-	balances, err := query.AllBalances(chainEndpoint, RecipientAddress)
-	if err != nil {
-		return
-	}
-
-	require.Equal(s.T(), balances[0].String(), "1"+recipientDenom)
+	return memo
 }

@@ -85,4 +85,6 @@ var (
 	DistModuleAddress = authtypes.NewModuleAddress(distributiontypes.ModuleName).String()
 	GovModuleAddress  = authtypes.NewModuleAddress(govtypes.ModuleName).String()
 	stakingAmount     = math.NewInt(100000000000)
+	AdapterAddress    = ""
+	EntrypointAddress = ""
 )

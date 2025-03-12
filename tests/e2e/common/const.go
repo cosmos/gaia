@@ -71,6 +71,7 @@ const (
 	TransferChannel           = "channel-0"
 
 	V2TransferClient = "08-wasm-1"
+	CounterpartyID   = "client-0"
 
 	GovAuthority = "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn"
 )

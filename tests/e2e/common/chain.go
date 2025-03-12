@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	ibcv2types "github.com/cosmos/ibc-go/v10/modules/core/04-channel/v2/types"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -66,6 +67,8 @@ func init() {
 	metaprotocoltypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 	ratelimittypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 	wasmclienttypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+
+	ibcv2types.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 
 	Cdc = EncodingConfig.Marshaler
 	TxConfig = EncodingConfig.TxConfig

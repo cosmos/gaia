@@ -181,16 +181,6 @@ func (s *IntegrationTestSuite) testLiquid() {
 				return false
 			}
 
-			/*
-				delegationRes, err := queryDelegation(chainEndpoint, validatorAddressA, validatorAAddr.String())
-				delegation := delegationRes.GetDelegationResponse().GetDelegation()
-				s.Require().NoError(err)
-
-				if !delegation.Shares.Equal(selfBondedShares.Add(math.LegacyNewDecFromInt(redeemAmount.Amount))) {
-					return false
-				}
-			*/
-
 			// check that tokenize share record module account received some rewards, since it unbonded during redeem tx execution
 			balanceRes, err = getSpecificBalance(chainEndpoint, tokenizeShareRecord.GetModuleAddress().String(), uatomDenom)
 			s.Require().NoError(err)

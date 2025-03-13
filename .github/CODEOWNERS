@@ -6,3 +6,4 @@
 # CODEOWNERS for interchain tests
 
 /tests/interchain @dasanchez @LexaMichaelides @fastfadingviolets @cosmos/interchain_inc_gaia_write
+/.github/workflows/interchain-test.yml @dasanchez @LexaMichaelides @fastfadingviolets @cosmos/interchain_inc_gaia_write

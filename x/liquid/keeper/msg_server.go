@@ -283,17 +283,12 @@ func (k msgServer) RedeemTokensForShares(goCtx context.Context, msg *types.MsgRe
 		return nil, types.ErrTinyRedemptionAmount
 	}
 
-	// If this redemption is NOT from a liquid staking provider, decrement the total liquid staked
-	// If the redemption was from a liquid staking provider, the shares are still considered
-	// liquid, even in their non-tokenized form (since they are owned by a liquid staking provider)
-	if !k.DelegatorIsLiquidStaker(delegatorAddress) {
-		if err := k.DecreaseTotalLiquidStakedTokens(ctx, tokens); err != nil {
-			return nil, err
-		}
-		_, err = k.DecreaseValidatorLiquidShares(ctx, valAddr, shares)
-		if err != nil {
-			return nil, err
-		}
+	if err := k.DecreaseTotalLiquidStakedTokens(ctx, tokens); err != nil {
+		return nil, err
+	}
+	_, err = k.DecreaseValidatorLiquidShares(ctx, valAddr, shares)
+	if err != nil {
+		return nil, err
 	}
 
 	returnAmount, err := k.stakingKeeper.Unbond(ctx, record.GetModuleAddress(), valAddr, shares)

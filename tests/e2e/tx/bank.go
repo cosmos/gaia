@@ -44,7 +44,7 @@ func (h *TestingSuite) ExecBankSend(
 		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
 	}
 
-	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.expectErrExecValidation(c, valIdx, expectErr))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.ExpectErrExecValidation(c, valIdx, expectErr))
 }
 
 func (h *TestingSuite) ExecBankMultiSend(
@@ -82,5 +82,5 @@ func (h *TestingSuite) ExecBankMultiSend(
 		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
 	}
 
-	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.expectErrExecValidation(c, valIdx, expectErr))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.ExpectErrExecValidation(c, valIdx, expectErr))
 }

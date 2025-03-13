@@ -54,13 +54,13 @@ const (
 	NumberOfEvidences               = 10
 	SlashingShares            int64 = 10000
 
-	ProposalCommunitySpendFilename   = "proposal_community_spend.json"
-	ProposalLSMParamUpdateFilename   = "proposal_lsm_param_update.json"
-	ProposalBlocksPerEpochFilename   = "proposal_blocks_per_epoch.json"
-	ProposalFailExpedited            = "proposal_fail_expedited.json"
-	ProposalExpeditedSoftwareUpgrade = "proposal_expedited_software_upgrade.json"
-	ProposalSoftwareUpgrade          = "proposal_software_upgrade.json"
-	ProposalCancelSoftwareUpgrade    = "proposal_cancel_software_upgrade.json"
+	ProposalCommunitySpendFilename    = "proposal_community_spend.json"
+	ProposalLiquidParamUpdateFilename = "proposal_liquid_param_update.json"
+	ProposalBlocksPerEpochFilename    = "proposal_blocks_per_epoch.json"
+	ProposalFailExpedited             = "proposal_fail_expedited.json"
+	ProposalExpeditedSoftwareUpgrade  = "proposal_expedited_software_upgrade.json"
+	ProposalSoftwareUpgrade           = "proposal_software_upgrade.json"
+	ProposalCancelSoftwareUpgrade     = "proposal_cancel_software_upgrade.json"
 
 	// proposalAddConsumerChainFilename    = "proposal_add_consumer.json"
 	// proposalRemoveConsumerChainFilename = "proposal_remove_consumer.json"

@@ -81,7 +81,7 @@ func (h *TestingSuite) ExecEncode(
 	return encoded
 }
 
-func (h *TestingSuite) expectErrExecValidation(chain *common.Chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
+func (h *TestingSuite) ExpectErrExecValidation(chain *common.Chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp types.TxResponse
 		gotErr := common.Cdc.UnmarshalJSON(stdOut, &txResp) != nil

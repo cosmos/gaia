@@ -13,6 +13,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/msg"
 	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
@@ -26,7 +27,7 @@ func (s *IntegrationTestSuite) testLSM() {
 
 	oldStakingParams, err := query.StakingParams(chainEndpoint)
 	s.Require().NoError(err)
-	err = s.msg.WriteLiquidStakingParamsUpdateProposal(s.commonHelper.Resources.ChainA, oldStakingParams.Params)
+	err = msg.WriteLiquidStakingParamsUpdateProposal(s.commonHelper.Resources.ChainA, oldStakingParams.Params)
 	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalLSMParamUpdateFilename)}

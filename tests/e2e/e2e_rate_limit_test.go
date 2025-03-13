@@ -8,6 +8,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/msg"
 	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
@@ -17,7 +18,7 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	err := s.msg.WriteAddRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	err := msg.WriteAddRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
 	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalAddRateLimitAtomFilename)}
@@ -70,7 +71,7 @@ func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {
 		5*time.Second,
 	)
 
-	err = s.msg.WriteAddRateLimitStakeProposal(s.commonHelper.Resources.ChainA, v2)
+	err = msg.WriteAddRateLimitStakeProposal(s.commonHelper.Resources.ChainA, v2)
 	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags = []string{configFile(common.ProposalAddRateLimitStakeFilename)}
@@ -118,7 +119,7 @@ func (s *IntegrationTestSuite) testUpdateRateLimit(v2 bool) {
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	err := s.msg.WriteUpdateRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	err := msg.WriteUpdateRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
 	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalUpdateRateLimitAtomFilename)}
@@ -157,7 +158,7 @@ func (s *IntegrationTestSuite) testResetRateLimit(v2 bool) {
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	err := s.msg.WriteResetRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	err := msg.WriteResetRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
 	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalResetRateLimitAtomFilename)}
@@ -196,7 +197,7 @@ func (s *IntegrationTestSuite) testRemoveRateLimit(v2 bool) {
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	err := s.msg.WriteRemoveRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
+	err := msg.WriteRemoveRateLimitAtomProposal(s.commonHelper.Resources.ChainA, v2)
 	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalRemoveRateLimitAtomFilename)}
@@ -230,7 +231,7 @@ func (s *IntegrationTestSuite) testRemoveRateLimit(v2 bool) {
 		5*time.Second,
 	)
 
-	err = s.msg.WriteRemoveRateLimitStakeProposal(s.commonHelper.Resources.ChainA, v2)
+	err = msg.WriteRemoveRateLimitStakeProposal(s.commonHelper.Resources.ChainA, v2)
 	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags = []string{configFile(common.ProposalRemoveRateLimitStakeFilename)}

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/stretchr/testify/suite"
-
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -15,11 +13,7 @@ import (
 	"github.com/cosmos/gaia/v23/tests/e2e/data"
 )
 
-type Helper struct {
-	Suite suite.Suite
-}
-
-func (h *Helper) WriteGovCommunitySpendProposal(c *common.Chain, amount sdk.Coin, recipient string) error {
+func WriteGovCommunitySpendProposal(c *common.Chain, amount sdk.Coin, recipient string) error {
 	template := `
 	{
 		"messages":[
@@ -49,7 +43,7 @@ func (h *Helper) WriteGovCommunitySpendProposal(c *common.Chain, amount sdk.Coin
 	return nil
 }
 
-func (h *Helper) WriteSoftwareUpgradeProposal(c *common.Chain, height int64, name string) error {
+func WriteSoftwareUpgradeProposal(c *common.Chain, height int64, name string) error {
 	body := `{
 		"messages": [
 		 {
@@ -78,7 +72,7 @@ func (h *Helper) WriteSoftwareUpgradeProposal(c *common.Chain, height int64, nam
 	return nil
 }
 
-func (h *Helper) WriteCancelSoftwareUpgradeProposal(c *common.Chain) error {
+func WriteCancelSoftwareUpgradeProposal(c *common.Chain) error {
 	template := `{
 		"messages": [
 		 {
@@ -99,7 +93,7 @@ func (h *Helper) WriteCancelSoftwareUpgradeProposal(c *common.Chain) error {
 	return nil
 }
 
-func (h *Helper) WriteLiquidStakingParamsUpdateProposal(c *common.Chain, oldParams stakingtypes.Params) error {
+func WriteLiquidStakingParamsUpdateProposal(c *common.Chain, oldParams stakingtypes.Params) error {
 	template := `
 	{
 		"messages": [
@@ -147,7 +141,7 @@ func (h *Helper) WriteLiquidStakingParamsUpdateProposal(c *common.Chain, oldPara
 
 // WriteGovParamChangeProposalBlocksPerEpoch writes a governance proposal JSON file to change the `BlocksPerEpoch`
 // parameter to the provided `blocksPerEpoch`
-func (h *Helper) WriteGovParamChangeProposalBlocksPerEpoch(c *common.Chain, paramsJSON string) error {
+func WriteGovParamChangeProposalBlocksPerEpoch(c *common.Chain, paramsJSON string) error {
 	template := `
 	{
 		"messages":[
@@ -179,7 +173,7 @@ func (h *Helper) WriteGovParamChangeProposalBlocksPerEpoch(c *common.Chain, para
 
 // WriteFailingExpeditedProposal writes a governance proposal JSON file.
 // The proposal fails because only SoftwareUpgrade and CancelSoftwareUpgrade can be expedited.
-func (h *Helper) WriteFailingExpeditedProposal(c *common.Chain, blocksPerEpoch int64) error {
+func WriteFailingExpeditedProposal(c *common.Chain, blocksPerEpoch int64) error {
 	template := `
 	{
 		"messages":[
@@ -219,7 +213,7 @@ func (h *Helper) WriteFailingExpeditedProposal(c *common.Chain, blocksPerEpoch i
 }
 
 // MsgSoftwareUpgrade can be expedited and it can only be submitted using "tx gov submit-proposal" command.
-func (h *Helper) WriteExpeditedSoftwareUpgradeProp(c *common.Chain) error {
+func WriteExpeditedSoftwareUpgradeProp(c *common.Chain) error {
 	body := `{
 			 "messages": [
 			  {
@@ -247,7 +241,7 @@ func (h *Helper) WriteExpeditedSoftwareUpgradeProp(c *common.Chain) error {
 	return nil
 }
 
-func (h *Helper) WriteAddRateLimitAtomProposal(c *common.Chain, v2 bool) error {
+func WriteAddRateLimitAtomProposal(c *common.Chain, v2 bool) error {
 	template := `
 	{
 		"messages": [
@@ -287,7 +281,7 @@ func (h *Helper) WriteAddRateLimitAtomProposal(c *common.Chain, v2 bool) error {
 	return nil
 }
 
-func (h *Helper) WriteAddRateLimitStakeProposal(c *common.Chain, v2 bool) error {
+func WriteAddRateLimitStakeProposal(c *common.Chain, v2 bool) error {
 	template := `
 	{
 		"messages": [
@@ -327,7 +321,7 @@ func (h *Helper) WriteAddRateLimitStakeProposal(c *common.Chain, v2 bool) error 
 	return nil
 }
 
-func (h *Helper) WriteUpdateRateLimitAtomProposal(c *common.Chain, v2 bool) error {
+func WriteUpdateRateLimitAtomProposal(c *common.Chain, v2 bool) error {
 	template := `
 	{
 		"messages": [
@@ -367,7 +361,7 @@ func (h *Helper) WriteUpdateRateLimitAtomProposal(c *common.Chain, v2 bool) erro
 	return nil
 }
 
-func (h *Helper) WriteResetRateLimitAtomProposal(c *common.Chain, v2 bool) error {
+func WriteResetRateLimitAtomProposal(c *common.Chain, v2 bool) error {
 	template := `
 	{
 		"messages": [
@@ -401,7 +395,7 @@ func (h *Helper) WriteResetRateLimitAtomProposal(c *common.Chain, v2 bool) error
 	return nil
 }
 
-func (h *Helper) WriteRemoveRateLimitAtomProposal(c *common.Chain, v2 bool) error {
+func WriteRemoveRateLimitAtomProposal(c *common.Chain, v2 bool) error {
 	template := `
 	{
 		"messages": [
@@ -435,7 +429,7 @@ func (h *Helper) WriteRemoveRateLimitAtomProposal(c *common.Chain, v2 bool) erro
 	return nil
 }
 
-func (h *Helper) WriteRemoveRateLimitStakeProposal(c *common.Chain, v2 bool) error {
+func WriteRemoveRateLimitStakeProposal(c *common.Chain, v2 bool) error {
 	template := `
 	{
 		"messages": [
@@ -469,7 +463,7 @@ func (h *Helper) WriteRemoveRateLimitStakeProposal(c *common.Chain, v2 bool) err
 	return nil
 }
 
-func (h *Helper) WriteStoreWasmLightClientProposal(c *common.Chain) error {
+func WriteStoreWasmLightClientProposal(c *common.Chain) error {
 	template := `
 	{
 		"messages": [

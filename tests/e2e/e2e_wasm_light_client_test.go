@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/msg"
 	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
@@ -18,7 +19,7 @@ func (s *IntegrationTestSuite) testStoreWasmLightClient() {
 	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	err := s.msg.WriteStoreWasmLightClientProposal(s.commonHelper.Resources.ChainA)
+	err := msg.WriteStoreWasmLightClientProposal(s.commonHelper.Resources.ChainA)
 	s.Require().NoError(err)
 	s.commonHelper.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalStoreWasmLightClientFilename)}

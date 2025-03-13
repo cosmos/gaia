@@ -2,12 +2,13 @@ package e2e
 
 import (
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/msg"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/msg"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) TestV2RecvPacket() {

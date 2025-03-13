@@ -3,11 +3,13 @@ package tx
 import (
 	"context"
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
+
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func (h *Helper) AddWasmClientCounterparty(c *common.Chain, sender string, ctx context.Context, valIdx int) {
+func (h *Helper) AddWasmClientCounterparty(ctx context.Context, c *common.Chain, sender string, valIdx int) {
 	cmd := []string{
 		common.GaiadBinary,
 		common.TxCommand,
@@ -31,7 +33,7 @@ func (h *Helper) AddWasmClientCounterparty(c *common.Chain, sender string, ctx c
 	h.Suite.T().Log("successfully added wasm light client counterparty")
 }
 
-func (h *Helper) CreateClient(c *common.Chain, clientState string, consensusState string, sender string, ctx context.Context, valIdx int) {
+func (h *Helper) CreateClient(ctx context.Context, c *common.Chain, clientState string, consensusState string, sender string, valIdx int) {
 	cmd := []string{
 		common.GaiadBinary,
 		common.TxCommand,

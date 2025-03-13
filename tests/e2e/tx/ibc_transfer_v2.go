@@ -1,11 +1,13 @@
 package tx
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	types2 "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
 	"github.com/cosmos/ibc-go/v10/modules/core/04-channel/v2/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
 func (h *Helper) CreateIBCV2RecvPacketTx(timeoutTimestamp uint64, amount, submitterAddress, recipientAddress, memo string) ([]byte, error) {
@@ -51,12 +53,17 @@ func (h *Helper) CreateIBCV2RecvPacketTx(timeoutTimestamp uint64, amount, submit
 
 	builder.SetGasLimit(uint64(500000))
 	builder.SetFeeAmount(sdk.NewCoins(sdk.NewInt64Coin("uatom", 500000)))
-	//builder.SetMemo("test")
 
 	builtTx := builder.GetTx()
 	bz, err := common.EncodingConfig.TxConfig.TxEncoder()(builtTx)
+	if err != nil {
+		return nil, err
+	}
 
 	decodedTx, err := common.DecodeTx(bz)
+	if err != nil {
+		return nil, err
+	}
 
 	rawTx, err := common.Cdc.MarshalJSON(decodedTx)
 	if err != nil {

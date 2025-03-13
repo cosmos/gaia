@@ -20,15 +20,9 @@ replace (
 require (
 	cosmossdk.io/math v1.5.0
 	github.com/cometbft/cometbft v0.38.17
-<<<<<<< HEAD
-	github.com/cosmos/cosmos-sdk v0.50.12
-	github.com/cosmos/ibc-go/v10 v10.0.0
-	github.com/cosmos/interchain-security/v7 v7.0.0
-=======
 	github.com/cosmos/cosmos-sdk v0.50.13
 	github.com/cosmos/ibc-go/v10 v10.1.0
-	github.com/cosmos/interchain-security/v7 v7.0.0-20250227030200-41409c50cf2f
->>>>>>> dde894a (Bump ibc-go (#3642))
+	github.com/cosmos/interchain-security/v7 v7.0.0
 	github.com/docker/docker v28.0.0+incompatible
 	github.com/google/go-github/v62 v62.0.0
 	github.com/gorilla/websocket v1.5.3

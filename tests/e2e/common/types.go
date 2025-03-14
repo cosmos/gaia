@@ -6,7 +6,7 @@ import (
 )
 
 type Helper struct {
-	Suite        *suite.Suite
+	suite.Suite
 	TestCounters TestCounters
 	Resources    Resources
 }

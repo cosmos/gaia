@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/stretchr/testify/suite"
-
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/types"
 
@@ -16,7 +14,6 @@ import (
 )
 
 type Helper struct {
-	suite.Suite
 	common.Helper
 }
 

@@ -10,8 +10,6 @@ replace (
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.50.9-lsm
 	github.com/cosmos/iavl => github.com/cosmos/iavl v1.1.2
 	github.com/cosmos/interchain-security/v5 => github.com/cosmos/interchain-security/v5 v5.0.0-20240905162918-300530f18130
-	github.com/docker/distribution => github.com/docker/distribution v2.8.2+incompatible
-	github.com/docker/docker => github.com/docker/docker v24.0.9+incompatible
 	github.com/ethereum/go-ethereum => github.com/ethereum/go-ethereum v1.14.5 // indirect
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/vedhavyas/go-subkey => github.com/strangelove-ventures/go-subkey v1.0.7
@@ -20,8 +18,8 @@ replace (
 require (
 	cosmossdk.io/math v1.5.0
 	github.com/cometbft/cometbft v0.38.17
-	github.com/cosmos/cosmos-sdk v0.50.12
-	github.com/cosmos/ibc-go/v10 v10.0.0
+	github.com/cosmos/cosmos-sdk v0.50.13
+	github.com/cosmos/ibc-go/v10 v10.1.0
 	github.com/cosmos/interchain-security/v7 v7.0.0-20250227030200-41409c50cf2f
 	github.com/docker/docker v28.0.0+incompatible
 	github.com/google/go-github/v62 v62.0.0
@@ -75,6 +73,7 @@ require (
 	github.com/bits-and-blooms/bitset v1.17.0 // indirect
 	github.com/btcsuite/btcd v0.22.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.3.4 // indirect
+	github.com/btcsuite/btcd/chaincfg/chainhash v1.1.0 // indirect
 	github.com/bytedance/sonic v1.12.3 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
@@ -110,7 +109,7 @@ require (
 	github.com/desertbit/timer v1.0.1 // indirect
 	github.com/dgraph-io/badger/v4 v4.2.0 // indirect
 	github.com/dgraph-io/ristretto v0.1.1 // indirect
-	github.com/docker/distribution v2.8.3+incompatible // indirect
+	github.com/distribution/reference v0.5.0 // indirect
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -190,6 +189,7 @@ require (
 	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
+	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/mtibben/percent v0.2.1 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
@@ -238,15 +238,18 @@ require (
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.53.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.53.0 // indirect
-	go.opentelemetry.io/otel v1.34.0 // indirect
-	go.opentelemetry.io/otel/metric v1.34.0 // indirect
-	go.opentelemetry.io/otel/trace v1.34.0 // indirect
+	go.opentelemetry.io/otel v1.35.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.35.0 // indirect
+	go.opentelemetry.io/otel/metric v1.35.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.35.0 // indirect
+	go.opentelemetry.io/otel/trace v1.35.0 // indirect
+	go.opentelemetry.io/proto/otlp v1.5.0 // indirect
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/oauth2 v0.24.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/term v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.9.0 // indirect
@@ -273,4 +276,4 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-replace github.com/strangelove-ventures/interchaintest/v8 => github.com/cosmos/interchaintest/v8 v8.8.2-0.20250224162529-535379c62c73
+replace github.com/strangelove-ventures/interchaintest/v8 => github.com/cosmos/interchaintest/v8 v8.8.2-0.20250305184330-0bb5f20ad3bd

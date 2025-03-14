@@ -120,14 +120,24 @@ func GetTestList() ([]string, error) {
 
 func main() {
 	ctx := context.Background()
-	if len(os.Args) != 2 {
+
+	// Instead of using flags, check for environment variables
+	manualFromVersion := os.Getenv("FROM_VERSION")
+	manualUpgradeName := os.Getenv("UPGRADE_NAME")
+
+	if len(os.Args) < 2 {
 		fmt.Fprintf(os.Stderr, "Usage: %s <version>\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Environment variables:\n")
+		fmt.Fprintf(os.Stderr, "  FROM_VERSION: explicitly specify the version to upgrade from\n")
+		fmt.Fprintf(os.Stderr, "  UPGRADE_NAME: explicitly specify the upgrade name\n")
 		return
 	}
+
 	if _, err := os.Stat("go.mod"); err != nil {
 		fmt.Fprintf(os.Stderr, "go.mod not found: %v\nRun me from the root of the gaia repo!\n", err)
 		return
 	}
+
 	testTag := os.Args[1]
 	testVersion := testTag
 	if !semver.IsValid(testVersion) {
@@ -138,11 +148,38 @@ func main() {
 			return
 		}
 	}
-	previous, upgradeName, err := GetPreviousMajorMinor(ctx, testVersion)
-	if err != nil {
-		fmt.Fprint(os.Stderr, err)
-		return
+
+	var previous []string
+	var upgradeName string
+	var err error
+
+	// Check if we're using manual specification via environment variables
+	if manualFromVersion != "" {
+		fmt.Fprintf(os.Stderr, "Using manually specified FROM_VERSION=%s\n", manualFromVersion)
+		previous = []string{manualFromVersion}
+
+		// Use manual upgrade name if provided, otherwise derive from testVersion
+		if manualUpgradeName != "" {
+			fmt.Fprintf(os.Stderr, "Using manually specified UPGRADE_NAME=%s\n", manualUpgradeName)
+			upgradeName = manualUpgradeName
+		} else {
+			upgradeName = semver.Major(testVersion)
+		}
+	} else {
+		// Use the automatic version determination
+		previous, upgradeName, err = GetPreviousMajorMinor(ctx, testVersion)
+		if err != nil {
+			fmt.Fprint(os.Stderr, err)
+			return
+		}
 	}
+
+	// Override upgrade name if explicitly provided
+	if manualUpgradeName != "" && previous[0] != manualFromVersion {
+		fmt.Fprintf(os.Stderr, "Using manually specified UPGRADE_NAME=%s\n", manualUpgradeName)
+		upgradeName = manualUpgradeName
+	}
+
 	tests, err := GetTestList()
 	if err != nil {
 		fmt.Fprint(os.Stderr, err)

@@ -1,4 +1,4 @@
-package e2e
+package common
 
 import (
 	"fmt"
@@ -38,66 +38,66 @@ import (
 
 const (
 	keyringPassphrase = "testpassphrase"
-	keyringAppName    = "testnet"
+	KeyringAppName    = "testnet"
 )
 
 var (
-	encodingConfig gaiaparams.EncodingConfig
-	cdc            codec.Codec
-	txConfig       client.TxConfig
+	EncodingConfig gaiaparams.EncodingConfig
+	Cdc            codec.Codec
+	TxConfig       client.TxConfig
 )
 
 func init() {
-	encodingConfig = gaiaparams.MakeEncodingConfig()
-	banktypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	authtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	authvesting.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	stakingtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	evidencetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	cryptocodec.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	govv1types.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	govv1beta1types.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	paramsproptypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	paramsproptypes.RegisterLegacyAminoCodec(encodingConfig.Amino)
+	EncodingConfig = gaiaparams.MakeEncodingConfig()
+	banktypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	authtypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	authvesting.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	stakingtypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	evidencetypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	cryptocodec.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	govv1types.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	govv1beta1types.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	paramsproptypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	paramsproptypes.RegisterLegacyAminoCodec(EncodingConfig.Amino)
 
-	upgradetypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	distribtypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	providertypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	metaprotocoltypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	ratelimittypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
-	wasmclienttypes.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	upgradetypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	distribtypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	providertypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	metaprotocoltypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	ratelimittypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	wasmclienttypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 
-	cdc = encodingConfig.Marshaler
-	txConfig = encodingConfig.TxConfig
+	Cdc = EncodingConfig.Marshaler
+	TxConfig = EncodingConfig.TxConfig
 }
 
-type chain struct {
-	dataDir    string
-	id         string
-	validators []*validator
+type Chain struct {
+	DataDir    string
+	ID         string
+	Validators []*validator
 	accounts   []*account //nolint:unused
 	// initial accounts in genesis
-	genesisAccounts        []*account
-	genesisVestingAccounts map[string]sdk.AccAddress
+	GenesisAccounts        []*account
+	GenesisVestingAccounts map[string]sdk.AccAddress
 }
 
-func newChain() (*chain, error) {
+func NewChain() (*Chain, error) {
 	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-")
 	if err != nil {
 		return nil, err
 	}
 
-	return &chain{
-		id:      "chain-" + tmrand.Str(6),
-		dataDir: tmpDir,
+	return &Chain{
+		ID:      "chain-" + tmrand.Str(6),
+		DataDir: tmpDir,
 	}, nil
 }
 
-func (c *chain) configDir() string {
-	return fmt.Sprintf("%s/%s", c.dataDir, c.id)
+func (c *Chain) configDir() string {
+	return fmt.Sprintf("%s/%s", c.DataDir, c.ID)
 }
 
-func (c *chain) createAndInitValidators(count int) error {
+func (c *Chain) CreateAndInitValidators(count int) error {
 	// create a separate app dir for the tempApp so that wasmvm won't complain about file locks
 	tempAppDir := filepath.Join(gaia.DefaultNodeHome, strconv.Itoa(rand.Intn(10000)))
 	tempApplication := gaia.NewGaiaApp(
@@ -116,7 +116,7 @@ func (c *chain) createAndInitValidators(count int) error {
 		}
 	}()
 
-	genesisState := tempApplication.ModuleBasics.DefaultGenesis(encodingConfig.Marshaler)
+	genesisState := tempApplication.ModuleBasics.DefaultGenesis(EncodingConfig.Marshaler)
 
 	for i := 0; i < count; i++ {
 		node := c.createValidator(i)
@@ -126,7 +126,7 @@ func (c *chain) createAndInitValidators(count int) error {
 			return err
 		}
 
-		c.validators = append(c.validators, node)
+		c.Validators = append(c.Validators, node)
 
 		// create keys
 		if err := node.createKey("val"); err != nil {
@@ -143,7 +143,7 @@ func (c *chain) createAndInitValidators(count int) error {
 	return nil
 }
 
-func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error { //nolint:unused // this is called during e2e tests
+func (c *Chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error { //nolint:unused // this is called during e2e tests
 	tempApplication := gaia.NewGaiaApp(
 		log.NewNopLogger(),
 		dbm.NewMemDB(),
@@ -160,7 +160,7 @@ func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []stri
 		}
 	}()
 
-	genesisState := tempApplication.ModuleBasics.DefaultGenesis(encodingConfig.Marshaler)
+	genesisState := tempApplication.ModuleBasics.DefaultGenesis(EncodingConfig.Marshaler)
 
 	for i := 0; i < count; i++ {
 		// create node
@@ -171,7 +171,7 @@ func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []stri
 			return err
 		}
 
-		c.validators = append(c.validators, node)
+		c.Validators = append(c.Validators, node)
 
 		// create keys
 		if err := node.createKeyFromMnemonic("val", mnemonics[i]); err != nil {
@@ -188,10 +188,10 @@ func (c *chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []stri
 	return nil
 }
 
-func (c *chain) createValidator(index int) *validator {
+func (c *Chain) createValidator(index int) *validator {
 	return &validator{
 		chain:   c,
-		index:   index,
-		moniker: fmt.Sprintf("%s-gaia-%d", c.id, index),
+		Index:   index,
+		Moniker: fmt.Sprintf("%s-gaia-%d", c.ID, index),
 	}
 }

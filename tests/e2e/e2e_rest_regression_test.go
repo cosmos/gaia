@@ -3,6 +3,8 @@ package e2e
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
 // /*
@@ -49,8 +51,8 @@ func (s *IntegrationTestSuite) testRestInterfaces() {
 	s.Run("test rest interfaces", func() {
 		var (
 			valIdx        = 0
-			c             = s.chainA
-			endpointURL   = fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
+			c             = s.Resources.ChainA
+			endpointURL   = fmt.Sprintf("http://%s", s.Resources.ValResources[c.ID][valIdx].GetHostPort("1317/tcp"))
 			testEndpoints = []struct {
 				Path           string
 				ExpectedStatus int
@@ -81,7 +83,7 @@ func (s *IntegrationTestSuite) testRestInterfaces() {
 			resp, err := http.Get(fmt.Sprintf("%s%s", endpointURL, endpoint.Path))
 			s.NoError(err, fmt.Sprintf("failed to get endpoint: %s%s", endpointURL, endpoint.Path))
 
-			_, err = readJSON(resp)
+			_, err = common.ReadJSON(resp)
 			s.NoError(err, fmt.Sprintf("failed to read body of endpoint: %s%s", endpointURL, endpoint.Path))
 
 			s.EqualValues(resp.StatusCode, endpoint.ExpectedStatus, fmt.Sprintf("invalid status from endpoint: : %s%s", endpointURL, endpoint.Path))

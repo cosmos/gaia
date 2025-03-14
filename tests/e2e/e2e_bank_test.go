@@ -12,6 +12,8 @@ import (
 	authTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	extensiontypes "github.com/cosmos/gaia/v23/x/metaprotocols/types"
 )
 
@@ -20,14 +22,14 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 		var (
 			err           error
 			valIdx        = 0
-			c             = s.chainA
-			chainEndpoint = fmt.Sprintf("http://%s", s.valResources[c.id][valIdx].GetHostPort("1317/tcp"))
+			c             = s.Resources.ChainA
+			chainEndpoint = fmt.Sprintf("http://%s", s.Resources.ValResources[c.ID][valIdx].GetHostPort("1317/tcp"))
 		)
 
 		// define one sender and two recipient accounts
-		alice, _ := c.genesisAccounts[1].keyInfo.GetAddress()
-		bob, _ := c.genesisAccounts[2].keyInfo.GetAddress()
-		charlie, _ := c.genesisAccounts[3].keyInfo.GetAddress()
+		alice, _ := c.GenesisAccounts[1].KeyInfo.GetAddress()
+		bob, _ := c.GenesisAccounts[2].KeyInfo.GetAddress()
+		charlie, _ := c.GenesisAccounts[3].KeyInfo.GetAddress()
 
 		var beforeAliceUAtomBalance,
 			beforeBobUAtomBalance,
@@ -39,13 +41,13 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 		// get balances of sender and recipient accounts
 		s.Require().Eventually(
 			func() bool {
-				beforeAliceUAtomBalance, err = getSpecificBalance(chainEndpoint, alice.String(), uatomDenom)
+				beforeAliceUAtomBalance, err = query.SpecificBalance(chainEndpoint, alice.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				beforeBobUAtomBalance, err = getSpecificBalance(chainEndpoint, bob.String(), uatomDenom)
+				beforeBobUAtomBalance, err = query.SpecificBalance(chainEndpoint, bob.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				beforeCharlieUAtomBalance, err = getSpecificBalance(chainEndpoint, charlie.String(), uatomDenom)
+				beforeCharlieUAtomBalance, err = query.SpecificBalance(chainEndpoint, charlie.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
 				return beforeAliceUAtomBalance.IsValid() && beforeBobUAtomBalance.IsValid() && beforeCharlieUAtomBalance.IsValid()
@@ -55,19 +57,19 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 		)
 
 		// alice sends tokens to bob
-		s.execBankSend(s.chainA, valIdx, alice.String(), bob.String(), tokenAmount.String(), standardFees.String(), false)
+		s.ExecBankSend(s.Resources.ChainA, valIdx, alice.String(), bob.String(), common.TokenAmount.String(), common.StandardFees.String(), false)
 
 		// check that the transfer was successful
 		s.Require().Eventually(
 			func() bool {
-				afterAliceUAtomBalance, err = getSpecificBalance(chainEndpoint, alice.String(), uatomDenom)
+				afterAliceUAtomBalance, err = query.SpecificBalance(chainEndpoint, alice.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				afterBobUAtomBalance, err = getSpecificBalance(chainEndpoint, bob.String(), uatomDenom)
+				afterBobUAtomBalance, err = query.SpecificBalance(chainEndpoint, bob.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				decremented := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(standardFees).IsEqual(afterAliceUAtomBalance)
-				incremented := beforeBobUAtomBalance.Add(tokenAmount).IsEqual(afterBobUAtomBalance)
+				decremented := beforeAliceUAtomBalance.Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterAliceUAtomBalance)
+				incremented := beforeBobUAtomBalance.Add(common.TokenAmount).IsEqual(afterBobUAtomBalance)
 
 				return decremented && incremented
 			},
@@ -79,22 +81,22 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 		beforeAliceUAtomBalance, beforeBobUAtomBalance = afterAliceUAtomBalance, afterBobUAtomBalance
 
 		// alice sends tokens to bob and charlie, at once
-		s.execBankMultiSend(s.chainA, valIdx, alice.String(), []string{bob.String(), charlie.String()}, tokenAmount.String(), standardFees.String(), false)
+		s.ExecBankMultiSend(s.Resources.ChainA, valIdx, alice.String(), []string{bob.String(), charlie.String()}, common.TokenAmount.String(), common.StandardFees.String(), false)
 
 		s.Require().Eventually(
 			func() bool {
-				afterAliceUAtomBalance, err = getSpecificBalance(chainEndpoint, alice.String(), uatomDenom)
+				afterAliceUAtomBalance, err = query.SpecificBalance(chainEndpoint, alice.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				afterBobUAtomBalance, err = getSpecificBalance(chainEndpoint, bob.String(), uatomDenom)
+				afterBobUAtomBalance, err = query.SpecificBalance(chainEndpoint, bob.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				afterCharlieUAtomBalance, err = getSpecificBalance(chainEndpoint, charlie.String(), uatomDenom)
+				afterCharlieUAtomBalance, err = query.SpecificBalance(chainEndpoint, charlie.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				decremented := beforeAliceUAtomBalance.Sub(tokenAmount).Sub(tokenAmount).Sub(standardFees).IsEqual(afterAliceUAtomBalance)
-				incremented := beforeBobUAtomBalance.Add(tokenAmount).IsEqual(afterBobUAtomBalance) &&
-					beforeCharlieUAtomBalance.Add(tokenAmount).IsEqual(afterCharlieUAtomBalance)
+				decremented := beforeAliceUAtomBalance.Sub(common.TokenAmount).Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterAliceUAtomBalance)
+				incremented := beforeBobUAtomBalance.Add(common.TokenAmount).IsEqual(afterBobUAtomBalance) &&
+					beforeCharlieUAtomBalance.Add(common.TokenAmount).IsEqual(afterCharlieUAtomBalance)
 
 				return decremented && incremented
 			},
@@ -109,12 +111,12 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 // the tx is signed and broadcast using gaiad tx sign and broadcast commands
 func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 	s.Run("transfer_with_non_critical_extension_options", func() {
-		c := s.chainB
+		c := s.Resources.ChainB
 
-		submitterAccount := c.genesisAccounts[1]
-		submitterAddress, err := submitterAccount.keyInfo.GetAddress()
+		submitterAccount := c.GenesisAccounts[1]
+		submitterAddress, err := submitterAccount.KeyInfo.GetAddress()
 		s.Require().NoError(err)
-		sendMsg := banktypes.NewMsgSend(submitterAddress, submitterAddress, sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(100))))
+		sendMsg := banktypes.NewMsgSend(submitterAddress, submitterAddress, sdk.NewCoins(sdk.NewCoin(common.UAtomDenom, math.NewInt(100))))
 
 		// valid non-critical extension options
 		ext := &extensiontypes.ExtensionData{
@@ -127,12 +129,12 @@ func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 		s.Require().NoError(err)
 		s.Require().NotNil(extAny)
 
-		txBuilder := encodingConfig.TxConfig.NewTxBuilder()
+		txBuilder := common.EncodingConfig.TxConfig.NewTxBuilder()
 
 		s.Require().NoError(txBuilder.SetMsgs(sendMsg))
 
 		txBuilder.SetMemo("non-critical-ext-message-test")
-		txBuilder.SetFeeAmount(sdk.NewCoins(standardFees))
+		txBuilder.SetFeeAmount(sdk.NewCoins(common.StandardFees))
 		txBuilder.SetGasLimit(200000)
 
 		// add extension options
@@ -141,34 +143,34 @@ func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 			etx.SetNonCriticalExtensionOptions(extAny)
 		}
 
-		bz, err := encodingConfig.TxConfig.TxEncoder()(tx)
+		bz, err := common.EncodingConfig.TxConfig.TxEncoder()(tx)
 		s.Require().NoError(err)
 		s.Require().NotNil(bz)
 
-		txWithExt, err := decodeTx(bz)
+		txWithExt, err := common.DecodeTx(bz)
 		s.Require().NoError(err)
 		s.Require().NotNil(txWithExt)
 
-		rawTx, err := cdc.MarshalJSON(txWithExt)
+		rawTx, err := common.Cdc.MarshalJSON(txWithExt)
 		s.Require().NoError(err)
 		s.Require().NotNil(rawTx)
 
 		unsignedFname := "unsigned_non_critical_extension_option_tx.json"
-		unsignedJSONFile := filepath.Join(c.validators[0].configDir(), unsignedFname)
-		err = writeFile(unsignedJSONFile, rawTx)
+		unsignedJSONFile := filepath.Join(c.Validators[0].ConfigDir(), unsignedFname)
+		err = common.WriteFile(unsignedJSONFile, rawTx)
 		s.Require().NoError(err)
 
-		signedTx, err := s.signTxFileOnline(c, 0, submitterAddress.String(), unsignedFname)
+		signedTx, err := s.SignTxFileOnline(c, 0, submitterAddress.String(), unsignedFname)
 		s.Require().NoError(err)
 		s.Require().NotNil(signedTx)
 
 		signedFname := "signed_non_critical_extension_option_tx.json"
-		signedJSONFile := filepath.Join(c.validators[0].configDir(), signedFname)
-		err = writeFile(signedJSONFile, signedTx)
+		signedJSONFile := filepath.Join(c.Validators[0].ConfigDir(), signedFname)
+		err = common.WriteFile(signedJSONFile, signedTx)
 		s.Require().NoError(err)
 
 		// if there's no errors the non_critical_extension_options field was properly encoded and decoded
-		out, err := s.broadcastTxFile(c, 0, submitterAddress.String(), signedFname)
+		out, err := s.BroadcastTxFile(c, 0, submitterAddress.String(), signedFname)
 		s.Require().NoError(err)
 		s.Require().NotNil(out)
 	})
@@ -178,12 +180,12 @@ func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 // the tx should always fail to decode the extension options since no concrete type is registered for the provided extension field
 func (s *IntegrationTestSuite) failedBankSendWithNonCriticalExtensionOptions() {
 	s.Run("fail_encoding_invalid_non_critical_extension_options", func() {
-		c := s.chainB
+		c := s.Resources.ChainB
 
-		submitterAccount := c.genesisAccounts[1]
-		submitterAddress, err := submitterAccount.keyInfo.GetAddress()
+		submitterAccount := c.GenesisAccounts[1]
+		submitterAddress, err := submitterAccount.KeyInfo.GetAddress()
 		s.Require().NoError(err)
-		sendMsg := banktypes.NewMsgSend(submitterAddress, submitterAddress, sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(100))))
+		sendMsg := banktypes.NewMsgSend(submitterAddress, submitterAddress, sdk.NewCoins(sdk.NewCoin(common.UAtomDenom, math.NewInt(100))))
 
 		// the message does not matter, as long as it is in the interface registry
 		ext := &banktypes.MsgMultiSend{}
@@ -192,12 +194,12 @@ func (s *IntegrationTestSuite) failedBankSendWithNonCriticalExtensionOptions() {
 		s.Require().NoError(err)
 		s.Require().NotNil(extAny)
 
-		txBuilder := encodingConfig.TxConfig.NewTxBuilder()
+		txBuilder := common.EncodingConfig.TxConfig.NewTxBuilder()
 
 		s.Require().NoError(txBuilder.SetMsgs(sendMsg))
 
 		txBuilder.SetMemo("fail-non-critical-ext-message")
-		txBuilder.SetFeeAmount(sdk.NewCoins(standardFees))
+		txBuilder.SetFeeAmount(sdk.NewCoins(common.StandardFees))
 		txBuilder.SetGasLimit(200000)
 
 		// add extension options
@@ -206,12 +208,12 @@ func (s *IntegrationTestSuite) failedBankSendWithNonCriticalExtensionOptions() {
 			etx.SetNonCriticalExtensionOptions(extAny)
 		}
 
-		bz, err := encodingConfig.TxConfig.TxEncoder()(tx)
+		bz, err := common.EncodingConfig.TxConfig.TxEncoder()(tx)
 		s.Require().NoError(err)
 		s.Require().NotNil(bz)
 
 		// decode fails because the provided extension option does not implement the correct TxExtensionOptionI interface
-		txWithExt, err := decodeTx(bz)
+		txWithExt, err := common.DecodeTx(bz)
 		s.Require().Error(err)
 		s.Require().ErrorContains(err, "failed to decode tx: no concrete type registered for type URL /cosmos.bank.v1beta1.MsgMultiSend against interface *tx.TxExtensionOptionI")
 		s.Require().Nil(txWithExt)

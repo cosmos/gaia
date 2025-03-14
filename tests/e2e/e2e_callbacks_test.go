@@ -8,8 +8,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/stretchr/testify/assert/yaml"
 	"github.com/stretchr/testify/require"
+
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
 const (
@@ -22,41 +24,39 @@ const (
 func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	valIdx := 0
-	val := s.chainA.validators[valIdx]
-	address, _ := val.keyInfo.GetAddress()
+	val := s.Resources.ChainA.Validators[valIdx]
+	address, _ := val.KeyInfo.GetAddress()
 	sender := address.String()
 	dirName, err := os.Getwd()
 	s.Require().NoError(err)
 
 	// Copy file to container path and store the contract
 	entryPointSrc := filepath.Join(dirName, "data/skip_go_entry_point.wasm")
-	entryPointDst := filepath.Join(val.configDir(), "config", "skip_go_entry_point.wasm")
-	_, err = copyFile(entryPointSrc, entryPointDst)
+	entryPointDst := filepath.Join(val.ConfigDir(), "config", "skip_go_entry_point.wasm")
+	_, err = common.CopyFile(entryPointSrc, entryPointDst)
 	s.Require().NoError(err)
-	storeWasmPath := configFile("skip_go_entry_point.wasm")
-	s.storeWasm(ctx, s.chainA, valIdx, sender, storeWasmPath)
+	entryPointPath := configFile("skip_go_entry_point.wasm")
+	entryPointCode := s.StoreWasm(ctx, s.Resources.ChainA, valIdx, sender, entryPointPath)
 
 	adapterSrc := filepath.Join(dirName, "data/skip_go_ibc_adapter_ibc_callbacks.wasm")
-	adapterDst := filepath.Join(val.configDir(), "config", "skip_go_ibc_adapter_ibc_callbacks.wasm")
-	_, err = copyFile(adapterSrc, adapterDst)
+	adapterDst := filepath.Join(val.ConfigDir(), "config", "skip_go_ibc_adapter_ibc_callbacks.wasm")
+	_, err = common.CopyFile(adapterSrc, adapterDst)
 	s.Require().NoError(err)
-	storeWasmPath = configFile("skip_go_ibc_adapter_ibc_callbacks.wasm")
-	s.storeWasm(ctx, s.chainA, valIdx, sender, storeWasmPath)
+	adapterPath := configFile("skip_go_ibc_adapter_ibc_callbacks.wasm")
+	adapterCode := s.StoreWasm(ctx, s.Resources.ChainA, valIdx, sender, adapterPath)
 
-	entrypointPredictedAddress := s.queryBuildAddress(ctx, s.chainA, valIdx, Sha256SkipEntryPoint, sender, SaltHex)
+	entrypointPredictedAddress := s.QueryBuildAddress(ctx, s.Resources.ChainA, valIdx, Sha256SkipEntryPoint, sender, SaltHex)
 	s.Require().NoError(err)
 
 	instantiateAdapterJSON := fmt.Sprintf(`{"entry_point_contract_address":"%s"}`, entrypointPredictedAddress)
-	s.instantiateWasm(ctx, s.chainA, valIdx, sender, "3", instantiateAdapterJSON, "adapter")
-	adapterAddress, err := queryWasmContractAddress(chainEndpoint, address.String(), 1)
+	adapterAddress := s.InstantiateWasm(ctx, s.Resources.ChainA, valIdx, sender, adapterCode, instantiateAdapterJSON, "adapter")
 	s.Require().NoError(err)
 
 	instantiateEntrypointJSON := fmt.Sprintf(`{"swap_venues":[], "ibc_transfer_contract_address": "%s"}`, adapterAddress)
-	s.instantiate2Wasm(ctx, s.chainA, valIdx, sender, "2", instantiateEntrypointJSON, SaltHex, "entrypoint")
-	entrypointAddress, err := queryWasmContractAddress(chainEndpoint, address.String(), 2)
+	entrypointAddress := s.Instantiate2Wasm(ctx, s.Resources.ChainA, valIdx, sender, entryPointCode, instantiateEntrypointJSON, SaltHex, "entrypoint")
 	s.Require().Equal(entrypointPredictedAddress, entrypointAddress)
 	s.Require().NoError(err)
 
@@ -96,33 +96,14 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 
 	memo := fmt.Sprintf("{%s,%s}", destCallbackData, ibcHooksData)
 
-	senderB, _ := s.chainB.validators[0].keyInfo.GetAddress()
-	s.sendIBC(s.chainB, 0, senderB.String(), adapterAddress, "1uatom", "3000000uatom", memo, transferChannel, nil, false)
-	s.hermesClearPacket(hermesConfigWithGasPrices, s.chainB.id, transferPort, transferChannel)
+	senderB, _ := s.Resources.ChainB.Validators[0].KeyInfo.GetAddress()
+	s.SendIBC(s.Resources.ChainB, 0, senderB.String(), adapterAddress, "1uatom", "3000000uatom", memo, common.TransferChannel, nil, false)
+	s.HermesClearPacket(common.HermesConfigWithGasPrices, s.Resources.ChainB.ID, common.TransferPort, common.TransferChannel)
 
-	balances, err := queryGaiaAllBalances(chainEndpoint, RecipientAddress)
+	balances, err := query.AllBalances(chainEndpoint, RecipientAddress)
 	if err != nil {
 		return
 	}
 
 	require.Equal(s.T(), balances[0].String(), "1"+recipientDenom)
-}
-
-func (s *IntegrationTestSuite) queryBuildAddress(ctx context.Context, c *chain, valIdx int, codeHash, creatorAddress, saltHexEncoded string,
-) (res string) {
-	cmd := []string{
-		gaiadBinary,
-		queryCommand,
-		"wasm",
-		"build-address",
-		codeHash,
-		creatorAddress,
-		saltHexEncoded,
-	}
-
-	s.executeGaiaTxCommand(ctx, c, cmd, valIdx, func(stdOut []byte, stdErr []byte) bool {
-		s.Require().NoError(yaml.Unmarshal(stdOut, &res))
-		return true
-	})
-	return res
 }

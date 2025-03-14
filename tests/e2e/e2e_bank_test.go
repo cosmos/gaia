@@ -22,8 +22,8 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 		var (
 			err           error
 			valIdx        = 0
-			c             = s.commonHelper.Resources.ChainA
-			chainEndpoint = fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[c.ID][valIdx].GetHostPort("1317/tcp"))
+			c             = s.Resources.ChainA
+			chainEndpoint = fmt.Sprintf("http://%s", s.Resources.ValResources[c.ID][valIdx].GetHostPort("1317/tcp"))
 		)
 
 		// define one sender and two recipient accounts
@@ -57,7 +57,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 		)
 
 		// alice sends tokens to bob
-		s.tx.ExecBankSend(s.commonHelper.Resources.ChainA, valIdx, alice.String(), bob.String(), common.TokenAmount.String(), common.StandardFees.String(), false)
+		s.ExecBankSend(s.Resources.ChainA, valIdx, alice.String(), bob.String(), common.TokenAmount.String(), common.StandardFees.String(), false)
 
 		// check that the transfer was successful
 		s.Require().Eventually(
@@ -81,7 +81,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 		beforeAliceUAtomBalance, beforeBobUAtomBalance = afterAliceUAtomBalance, afterBobUAtomBalance
 
 		// alice sends tokens to bob and charlie, at once
-		s.tx.ExecBankMultiSend(s.commonHelper.Resources.ChainA, valIdx, alice.String(), []string{bob.String(), charlie.String()}, common.TokenAmount.String(), common.StandardFees.String(), false)
+		s.ExecBankMultiSend(s.Resources.ChainA, valIdx, alice.String(), []string{bob.String(), charlie.String()}, common.TokenAmount.String(), common.StandardFees.String(), false)
 
 		s.Require().Eventually(
 			func() bool {
@@ -111,7 +111,7 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 // the tx is signed and broadcast using gaiad tx sign and broadcast commands
 func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 	s.Run("transfer_with_non_critical_extension_options", func() {
-		c := s.commonHelper.Resources.ChainB
+		c := s.Resources.ChainB
 
 		submitterAccount := c.GenesisAccounts[1]
 		submitterAddress, err := submitterAccount.KeyInfo.GetAddress()
@@ -160,7 +160,7 @@ func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 		err = common.WriteFile(unsignedJSONFile, rawTx)
 		s.Require().NoError(err)
 
-		signedTx, err := s.tx.SignTxFileOnline(c, 0, submitterAddress.String(), unsignedFname)
+		signedTx, err := s.SignTxFileOnline(c, 0, submitterAddress.String(), unsignedFname)
 		s.Require().NoError(err)
 		s.Require().NotNil(signedTx)
 
@@ -170,7 +170,7 @@ func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 		s.Require().NoError(err)
 
 		// if there's no errors the non_critical_extension_options field was properly encoded and decoded
-		out, err := s.tx.BroadcastTxFile(c, 0, submitterAddress.String(), signedFname)
+		out, err := s.BroadcastTxFile(c, 0, submitterAddress.String(), signedFname)
 		s.Require().NoError(err)
 		s.Require().NotNil(out)
 	})
@@ -180,7 +180,7 @@ func (s *IntegrationTestSuite) bankSendWithNonCriticalExtensionOptions() {
 // the tx should always fail to decode the extension options since no concrete type is registered for the provided extension field
 func (s *IntegrationTestSuite) failedBankSendWithNonCriticalExtensionOptions() {
 	s.Run("fail_encoding_invalid_non_critical_extension_options", func() {
-		c := s.commonHelper.Resources.ChainB
+		c := s.Resources.ChainB
 
 		submitterAccount := c.GenesisAccounts[1]
 		submitterAddress, err := submitterAccount.KeyInfo.GetAddress()

@@ -14,8 +14,8 @@ func (s *IntegrationTestSuite) testSlashing(chainEndpoint string) {
 
 		for _, val := range validators.Validators {
 			if val.Jailed {
-				s.tx.ExecUnjail(
-					s.commonHelper.Resources.ChainA,
+				s.ExecUnjail(
+					s.Resources.ChainA,
 					common.WithKeyValue(common.FlagFrom, jailedValidatorKey),
 				)
 

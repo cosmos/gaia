@@ -34,7 +34,7 @@ func (h *Helper) execVestingTx(
 		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, 0, h.CommonHelper.DefaultExecValidation(c, 0))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, 0, h.DefaultExecValidation(c, 0))
 	h.Suite.T().Logf("successfully %s with %v", method, args)
 }
 

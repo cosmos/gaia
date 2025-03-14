@@ -40,7 +40,7 @@ func (h *Helper) ExecFeeGrant(c *common.Chain, valIdx int, granter, grantee, spe
 	}
 	h.Suite.T().Logf("running feegrant on chain: %s - Tx %v", c.ID, gaiaCommand)
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 }
 
 func (h *Helper) ExecFeeGrantRevoke(c *common.Chain, valIdx int, granter, grantee string, opt ...common.FlagOption) {
@@ -65,5 +65,5 @@ func (h *Helper) ExecFeeGrantRevoke(c *common.Chain, valIdx int, granter, grante
 		gaiaCommand = append(gaiaCommand, fmt.Sprintf("--%s=%v", flag, value))
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 }

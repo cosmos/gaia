@@ -30,23 +30,23 @@ Test Benchmarks:
 TODO: Perform upgrade in place of chain restart
 */
 func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
-	senderAddress, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
+	senderAddress, _ := s.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 	sender := senderAddress.String()
 	height, err := query.GetLatestBlockHeight(chainAAPIEndpoint)
 	s.Require().NoError(err)
 	proposalHeight := height + common.GovProposalBlockBuffer
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
-	s.commonHelper.TestCounters.ProposalCounter++
+	s.TestCounters.ProposalCounter++
 
-	err = msg.WriteSoftwareUpgradeProposal(s.commonHelper.Resources.ChainA, int64(proposalHeight), "upgrade-v0")
+	err = msg.WriteSoftwareUpgradeProposal(s.Resources.ChainA, int64(proposalHeight), "upgrade-v0")
 	s.Require().NoError(err)
 
 	submitGovFlags := []string{configFile(common.ProposalSoftwareUpgrade)}
 
-	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05"}
-	s.submitGovProposal(chainAAPIEndpoint, sender, s.commonHelper.TestCounters.ProposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "weighted-vote")
+	depositGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), "yes=0.8,no=0.1,abstain=0.05,no_with_veto=0.05"}
+	s.submitGovProposal(chainAAPIEndpoint, sender, s.TestCounters.ProposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "weighted-vote")
 
 	s.verifyChainHaltedAtUpgradeHeight(chainAAPIEndpoint, proposalHeight)
 	s.T().Logf("Successfully halted chain at  height %d", proposalHeight)
@@ -66,7 +66,7 @@ func (s *IntegrationTestSuite) GovSoftwareUpgrade() {
 		5*time.Second,
 	)
 
-	s.commonHelper.TestCounters.ProposalCounter = 0
+	s.TestCounters.ProposalCounter = 0
 }
 
 /*
@@ -77,31 +77,31 @@ Test Benchmarks:
 3. Validation that the chain produced blocks past the intended upgrade height
 */
 func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
-	senderAddress, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
+	senderAddress, _ := s.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 
 	sender := senderAddress.String()
 	height, err := query.GetLatestBlockHeight(chainAAPIEndpoint)
 	s.Require().NoError(err)
 	proposalHeight := height + 50
-	err = msg.WriteSoftwareUpgradeProposal(s.commonHelper.Resources.ChainA, int64(proposalHeight), "upgrade-v1")
+	err = msg.WriteSoftwareUpgradeProposal(s.Resources.ChainA, int64(proposalHeight), "upgrade-v1")
 	s.Require().NoError(err)
 
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
-	s.commonHelper.TestCounters.ProposalCounter++
+	s.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalSoftwareUpgrade)}
 
-	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes"}
-	s.submitGovProposal(chainAAPIEndpoint, sender, s.commonHelper.TestCounters.ProposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	depositGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), "yes"}
+	s.submitGovProposal(chainAAPIEndpoint, sender, s.TestCounters.ProposalCounter, upgradetypes.ProposalTypeSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
-	s.commonHelper.TestCounters.ProposalCounter++
-	err = msg.WriteCancelSoftwareUpgradeProposal(s.commonHelper.Resources.ChainA)
+	s.TestCounters.ProposalCounter++
+	err = msg.WriteCancelSoftwareUpgradeProposal(s.Resources.ChainA)
 	s.Require().NoError(err)
 	submitGovFlags = []string{configFile(common.ProposalCancelSoftwareUpgrade)}
-	depositGovFlags = []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
-	voteGovFlags = []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes"}
-	s.submitGovProposal(chainAAPIEndpoint, sender, s.commonHelper.TestCounters.ProposalCounter, upgradetypes.ProposalTypeCancelSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	depositGovFlags = []string{strconv.Itoa(s.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags = []string{strconv.Itoa(s.TestCounters.ProposalCounter), "yes"}
+	s.submitGovProposal(chainAAPIEndpoint, sender, s.TestCounters.ProposalCounter, upgradetypes.ProposalTypeCancelSoftwareUpgrade, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.verifyChainPassesUpgradeHeight(chainAAPIEndpoint, proposalHeight)
 	s.T().Logf("Successfully canceled upgrade at height %d", proposalHeight)
@@ -116,24 +116,24 @@ Test Benchmarks:
 */
 func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 	s.fundCommunityPool()
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
-	senderAddress, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
+	senderAddress, _ := s.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 	sender := senderAddress.String()
-	recipientAddress, _ := s.commonHelper.Resources.ChainA.Validators[1].KeyInfo.GetAddress()
+	recipientAddress, _ := s.Resources.ChainA.Validators[1].KeyInfo.GetAddress()
 	recipient := recipientAddress.String()
 	sendAmount := sdk.NewCoin(common.UAtomDenom, math.NewInt(10000000)) // 10uatom
-	err := msg.WriteGovCommunitySpendProposal(s.commonHelper.Resources.ChainA, sendAmount, recipient)
+	err := msg.WriteGovCommunitySpendProposal(s.Resources.ChainA, sendAmount, recipient)
 	s.Require().NoError(err)
 
 	beforeRecipientBalance, err := query.SpecificBalance(chainAAPIEndpoint, recipient, common.UAtomDenom)
 	s.Require().NoError(err)
 
 	// Gov tests may be run in arbitrary order, each test must increment proposalCounter to have the correct proposal id to submit and query
-	s.commonHelper.TestCounters.ProposalCounter++
+	s.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalCommunitySpendFilename)}
-	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes"}
-	s.submitGovProposal(chainAAPIEndpoint, sender, s.commonHelper.TestCounters.ProposalCounter, "CommunityPoolSpend", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	depositGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), "yes"}
+	s.submitGovProposal(chainAAPIEndpoint, sender, s.TestCounters.ProposalCounter, "CommunityPoolSpend", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.Require().Eventually(
 		func() bool {
@@ -207,7 +207,7 @@ func (s *IntegrationTestSuite) verifyChainPassesUpgradeHeight(endpoint string, u
 
 func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string, proposalID int, govCommand string, proposalFlags []string, expectedSuccessStatus govtypesv1beta1.ProposalStatus) {
 	s.Run(fmt.Sprintf("Running tx gov %s", govCommand), func() {
-		s.tx.RunGovExec(s.commonHelper.Resources.ChainA, 0, sender, govCommand, proposalFlags, common.StandardFees.String(), nil)
+		s.RunGovExec(s.Resources.ChainA, 0, sender, govCommand, proposalFlags, common.StandardFees.String(), nil)
 
 		s.Require().Eventually(
 			func() bool {
@@ -224,13 +224,13 @@ func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string
 func (s *IntegrationTestSuite) submitGovCommandExpectingFailure(sender string, govCommand string, proposalFlags []string) {
 	s.Run(fmt.Sprintf("Running failing expedited tx gov %s -- expecting error", govCommand), func() {
 		// should return an error -- the Tx fails at the ante handler
-		s.tx.RunGovExec(s.commonHelper.Resources.ChainA, 0, sender, govCommand, proposalFlags, common.StandardFees.String(), s.tx.ExpectTxSubmitError("unsupported expedited proposal type"))
+		s.RunGovExec(s.Resources.ChainA, 0, sender, govCommand, proposalFlags, common.StandardFees.String(), s.ExpectTxSubmitError("unsupported expedited proposal type"))
 	})
 }
 
 // testSetBlocksPerEpoch tests that we can change `BlocksPerEpoch` through a governance proposal
 func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	providerParams := providertypes.DefaultParams()
 
@@ -252,18 +252,18 @@ func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 	expectedBlocksPerEpoch := providerParams.BlocksPerEpoch + 1
 	providerParams.BlocksPerEpoch = expectedBlocksPerEpoch
 	paramsJSON := common.Cdc.MustMarshalJSON(&providerParams)
-	err := msg.WriteGovParamChangeProposalBlocksPerEpoch(s.commonHelper.Resources.ChainA, string(paramsJSON))
+	err := msg.WriteGovParamChangeProposalBlocksPerEpoch(s.Resources.ChainA, string(paramsJSON))
 	s.Require().NoError(err)
 
-	validatorAAddr, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
-	s.commonHelper.TestCounters.ProposalCounter++
+	validatorAAddr, _ := s.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
+	s.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalBlocksPerEpochFilename)}
-	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes"}
+	depositGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), "yes"}
 
-	s.T().Logf("Proposal number: %d", s.commonHelper.TestCounters.ProposalCounter)
+	s.T().Logf("Proposal number: %d", s.TestCounters.ProposalCounter)
 	s.T().Logf("Submitting, deposit and vote Gov Proposal: Change BlocksPerEpoch parameter")
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.commonHelper.TestCounters.ProposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.TestCounters.ProposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.Require().Eventually(
 		func() bool {
@@ -285,10 +285,10 @@ func (s *IntegrationTestSuite) ExpeditedProposalRejected() {
 
 	// attempt to change but nothing should happen -> proposal fails at ante handler
 	expectedBlocksPerEpoch := defaultBlocksPerEpoch + 100
-	err := msg.WriteFailingExpeditedProposal(s.commonHelper.Resources.ChainA, expectedBlocksPerEpoch)
+	err := msg.WriteFailingExpeditedProposal(s.Resources.ChainA, expectedBlocksPerEpoch)
 	s.Require().NoError(err)
 
-	validatorAAddr, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
+	validatorAAddr, _ := s.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 	submitGovFlags := []string{configFile(common.ProposalFailExpedited)}
 
 	s.T().Logf("Submitting, deposit and vote Gov Proposal: Change BlocksPerEpoch parameter - expecting to fail")
@@ -298,37 +298,37 @@ func (s *IntegrationTestSuite) ExpeditedProposalRejected() {
 // MsgSoftwareUpgrade can be expedited but it can only be submitted using "tx gov submit-proposal" command.
 // Messages submitted using "tx gov submit-legacy-proposal" command cannot be expedited.// submit but vote no so that the proposal is not passed
 func (s *IntegrationTestSuite) GovSoftwareUpgradeExpedited() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
-	senderAddress, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
+	senderAddress, _ := s.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 	sender := senderAddress.String()
 
-	s.commonHelper.TestCounters.ProposalCounter++
-	err := msg.WriteExpeditedSoftwareUpgradeProp(s.commonHelper.Resources.ChainA)
+	s.TestCounters.ProposalCounter++
+	err := msg.WriteExpeditedSoftwareUpgradeProp(s.Resources.ChainA)
 	s.Require().NoError(err)
 	submitGovFlags := []string{configFile(common.ProposalExpeditedSoftwareUpgrade)}
 
-	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes=0.1,no=0.8,abstain=0.05,no_with_veto=0.05"}
+	depositGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), "yes=0.1,no=0.8,abstain=0.05,no_with_veto=0.05"}
 
 	s.Run(fmt.Sprintf("Running expedited tx gov %s", "submit-proposal"), func() {
-		s.submitGovCommand(chainAAPIEndpoint, sender, s.commonHelper.TestCounters.ProposalCounter, "submit-proposal", submitGovFlags, govtypesv1beta1.StatusDepositPeriod)
+		s.submitGovCommand(chainAAPIEndpoint, sender, s.TestCounters.ProposalCounter, "submit-proposal", submitGovFlags, govtypesv1beta1.StatusDepositPeriod)
 
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := query.GovProposalV1(chainAAPIEndpoint, s.commonHelper.TestCounters.ProposalCounter)
+				proposal, err := query.GovProposalV1(chainAAPIEndpoint, s.TestCounters.ProposalCounter)
 				s.Require().NoError(err)
 				return proposal.Proposal.Expedited && proposal.GetProposal().Status == govtypesv1.ProposalStatus_PROPOSAL_STATUS_DEPOSIT_PERIOD
 			},
 			15*time.Second,
 			5*time.Second,
 		)
-		s.submitGovCommand(chainAAPIEndpoint, sender, s.commonHelper.TestCounters.ProposalCounter, "deposit", depositGovFlags, govtypesv1beta1.StatusVotingPeriod)
-		s.submitGovCommand(chainAAPIEndpoint, sender, s.commonHelper.TestCounters.ProposalCounter, "weighted-vote", voteGovFlags, govtypesv1beta1.StatusRejected) // voting no on prop
+		s.submitGovCommand(chainAAPIEndpoint, sender, s.TestCounters.ProposalCounter, "deposit", depositGovFlags, govtypesv1beta1.StatusVotingPeriod)
+		s.submitGovCommand(chainAAPIEndpoint, sender, s.TestCounters.ProposalCounter, "weighted-vote", voteGovFlags, govtypesv1beta1.StatusRejected) // voting no on prop
 
 		// confirm that the proposal was moved from expedited
 		s.Require().Eventually(
 			func() bool {
-				proposal, err := query.GovProposalV1(chainAAPIEndpoint, s.commonHelper.TestCounters.ProposalCounter)
+				proposal, err := query.GovProposalV1(chainAAPIEndpoint, s.TestCounters.ProposalCounter)
 				s.Require().NoError(err)
 				return proposal.Proposal.Expedited == false
 			},

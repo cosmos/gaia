@@ -15,17 +15,17 @@ import (
 )
 
 func (s *IntegrationTestSuite) testStaking() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
-	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
-	validatorB := s.commonHelper.Resources.ChainA.Validators[1]
+	validatorA := s.Resources.ChainA.Validators[0]
+	validatorB := s.Resources.ChainA.Validators[1]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 	validatorBAddr, _ := validatorB.KeyInfo.GetAddress()
 
 	validatorAddressA := sdk.ValAddress(validatorAAddr).String()
 	validatorAddressB := sdk.ValAddress(validatorBAddr).String()
 
-	delegatorAddress, _ := s.commonHelper.Resources.ChainA.GenesisAccounts[2].KeyInfo.GetAddress()
+	delegatorAddress, _ := s.Resources.ChainA.GenesisAccounts[2].KeyInfo.GetAddress()
 
 	fees := sdk.NewCoin(common.UAtomDenom, math.NewInt(1))
 
@@ -39,7 +39,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	delegation := sdk.NewCoin(common.UAtomDenom, delegationAmount) // 500 atom
 
 	// Alice delegate uatom to Validator A
-	s.tx.ExecDelegate(s.commonHelper.Resources.ChainA, 0, delegation.String(), validatorAddressA, delegatorAddress.String(), common.GaiaHomePath, fees.String())
+	s.ExecDelegate(s.Resources.ChainA, 0, delegation.String(), validatorAddressA, delegatorAddress.String(), common.GaiaHomePath, fees.String())
 
 	// Validate delegation successful
 	s.Require().Eventually(
@@ -58,7 +58,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	redelegation := sdk.NewCoin(common.UAtomDenom, redelegationAmount) // 250 atom
 
 	// Alice re-delegate half of her uatom delegation from Validator A to Validator B
-	s.tx.ExecRedelegate(s.commonHelper.Resources.ChainA, 0, redelegation.String(), validatorAddressA, validatorAddressB, delegatorAddress.String(), common.GaiaHomePath, fees.String())
+	s.ExecRedelegate(s.Resources.ChainA, 0, redelegation.String(), validatorAddressA, validatorAddressB, delegatorAddress.String(), common.GaiaHomePath, fees.String())
 
 	// Validate re-delegation successful
 	s.Require().Eventually(
@@ -95,7 +95,7 @@ func (s *IntegrationTestSuite) testStaking() {
 	)
 
 	// Alice unbonds all her uatom delegation from Validator A
-	s.tx.ExecUnbondDelegation(s.commonHelper.Resources.ChainA, 0, currDelegation.String(), validatorAddressA, delegatorAddress.String(), common.GaiaHomePath, fees.String())
+	s.ExecUnbondDelegation(s.Resources.ChainA, 0, currDelegation.String(), validatorAddressA, delegatorAddress.String(), common.GaiaHomePath, fees.String())
 
 	var ubdDelegationEntry types.UnbondingDelegationEntry
 
@@ -115,8 +115,8 @@ func (s *IntegrationTestSuite) testStaking() {
 	)
 
 	// cancel the full amount of unbonding delegations from Validator A
-	s.tx.ExecCancelUnbondingDelegation(
-		s.commonHelper.Resources.ChainA,
+	s.ExecCancelUnbondingDelegation(
+		s.Resources.ChainA,
 		0,
 		currDelegation.String(),
 		validatorAddressA,

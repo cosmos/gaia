@@ -45,8 +45,8 @@ func (h *Helper) RegisterICAAccount(c *common.Chain, valIdx int, sender, connect
 		"--output=json",
 		"-y",
 	}
-	h.Suite.T().Logf("%s registering ICA account on host chain %s", sender, h.CommonHelper.Resources.ChainB.ID)
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, icaCmd, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.Suite.T().Logf("%s registering ICA account on host chain %s", sender, h.Resources.ChainB.ID)
+	h.ExecuteGaiaTxCommand(ctx, c, icaCmd, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Log("successfully sent register ICA account tx")
 }
 
@@ -70,8 +70,8 @@ func (h *Helper) SendICATransaction(c *common.Chain, valIdx int, sender, connect
 		"--output=json",
 		"-y",
 	}
-	h.Suite.T().Logf("%s sending ICA transaction to the host chain %s", sender, h.CommonHelper.Resources.ChainB.ID)
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, icaCmd, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.Suite.T().Logf("%s sending ICA transaction to the host chain %s", sender, h.Resources.ChainB.ID)
+	h.ExecuteGaiaTxCommand(ctx, c, icaCmd, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Log("successfully sent ICA transaction")
 }
 

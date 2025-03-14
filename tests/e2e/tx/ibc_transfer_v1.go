@@ -42,12 +42,12 @@ func (h *Helper) SendIBC(c *common.Chain, valIdx int, sender, recipient, token, 
 		"-y",
 	}...)
 
-	h.Suite.T().Logf("sending %s from %s (%s) to %s (%s) with memo %s", token, h.CommonHelper.Resources.ChainA.ID, sender, h.CommonHelper.Resources.ChainB.ID, recipient, note)
+	h.Suite.T().Logf("sending %s from %s (%s) to %s (%s) with memo %s", token, h.Resources.ChainA.ID, sender, h.Resources.ChainB.ID, recipient, note)
 	if expErr {
-		h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, ibcCmd, valIdx, h.expectErrExecValidation(c, valIdx, true))
+		h.ExecuteGaiaTxCommand(ctx, c, ibcCmd, valIdx, h.expectErrExecValidation(c, valIdx, true))
 		h.Suite.T().Log("unsuccessfully sent IBC tokens")
 	} else {
-		h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, ibcCmd, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+		h.ExecuteGaiaTxCommand(ctx, c, ibcCmd, valIdx, h.DefaultExecValidation(c, valIdx))
 		h.Suite.T().Log("successfully sent IBC tokens")
 	}
 }

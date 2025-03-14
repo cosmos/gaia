@@ -14,7 +14,7 @@ import (
 func (h *Helper) RunGovExec(c *common.Chain, valIdx int, submitterAddr, govCommand string, proposalFlags []string, fees string, validationFunc func([]byte, []byte) bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-	validateResponse := h.CommonHelper.DefaultExecValidation(c, valIdx)
+	validateResponse := h.DefaultExecValidation(c, valIdx)
 	if validationFunc != nil {
 		validateResponse = validationFunc
 	}
@@ -38,6 +38,6 @@ func (h *Helper) RunGovExec(c *common.Chain, valIdx int, submitterAddr, govComma
 
 	gaiaCommand = common.ConcatFlags(gaiaCommand, proposalFlags, generalFlags)
 	h.Suite.T().Logf("Executing gaiad tx gov %s on chain %s", govCommand, c.ID)
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, validateResponse)
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, validateResponse)
 	h.Suite.T().Logf("Successfully executed %s", govCommand)
 }

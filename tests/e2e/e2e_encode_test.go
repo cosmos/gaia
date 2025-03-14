@@ -14,21 +14,21 @@ const (
 )
 
 func (s *IntegrationTestSuite) testEncode() {
-	chain := s.commonHelper.Resources.ChainA
+	chain := s.Resources.ChainA
 	_, encoded, err := buildRawTx()
 	s.Require().NoError(err)
 
-	got := s.tx.ExecEncode(chain, filepath.Join(common.GaiaHomePath, rawTxFile))
+	got := s.ExecEncode(chain, filepath.Join(common.GaiaHomePath, rawTxFile))
 	s.T().Logf("encoded tx: %s", got)
 	s.Require().Equal(encoded, got)
 }
 
 func (s *IntegrationTestSuite) testDecode() {
-	chain := s.commonHelper.Resources.ChainA
+	chain := s.Resources.ChainA
 	rawTx, encoded, err := buildRawTx()
 	s.Require().NoError(err)
 
-	got := s.tx.ExecDecode(chain, encoded)
+	got := s.ExecDecode(chain, encoded)
 	s.T().Logf("raw tx: %s", got)
 	s.Require().Equal(string(rawTx), got)
 }

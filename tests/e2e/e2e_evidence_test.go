@@ -16,8 +16,8 @@ func (s *IntegrationTestSuite) testEvidence() {
 	s.Run("test evidence queries", func() {
 		var (
 			valIdx   = 0
-			chain    = s.commonHelper.Resources.ChainA
-			chainAPI = fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[chain.ID][valIdx].GetHostPort("1317/tcp"))
+			chain    = s.Resources.ChainA
+			chainAPI = fmt.Sprintf("http://%s", s.Resources.ValResources[chain.ID][valIdx].GetHostPort("1317/tcp"))
 		)
 		res, err := query.AllEvidence(chainAPI)
 		s.Require().NoError(err)

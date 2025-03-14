@@ -51,8 +51,8 @@ func (s *IntegrationTestSuite) testRestInterfaces() {
 	s.Run("test rest interfaces", func() {
 		var (
 			valIdx        = 0
-			c             = s.commonHelper.Resources.ChainA
-			endpointURL   = fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[c.ID][valIdx].GetHostPort("1317/tcp"))
+			c             = s.Resources.ChainA
+			endpointURL   = fmt.Sprintf("http://%s", s.Resources.ValResources[c.ID][valIdx].GetHostPort("1317/tcp"))
 			testEndpoints = []struct {
 				Path           string
 				ExpectedStatus int

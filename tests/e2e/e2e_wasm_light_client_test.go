@@ -14,21 +14,21 @@ import (
 )
 
 func (s *IntegrationTestSuite) testStoreWasmLightClient() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
-	validatorA := s.commonHelper.Resources.ChainA.Validators[0]
+	validatorA := s.Resources.ChainA.Validators[0]
 	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	err := msg.WriteStoreWasmLightClientProposal(s.commonHelper.Resources.ChainA)
+	err := msg.WriteStoreWasmLightClientProposal(s.Resources.ChainA)
 	s.Require().NoError(err)
-	s.commonHelper.TestCounters.ProposalCounter++
+	s.TestCounters.ProposalCounter++
 	submitGovFlags := []string{configFile(common.ProposalStoreWasmLightClientFilename)}
-	depositGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), common.DepositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(s.commonHelper.TestCounters.ProposalCounter), "yes"}
+	depositGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), "yes"}
 
-	s.T().Logf("Proposal number: %d", s.commonHelper.TestCounters.ProposalCounter)
+	s.T().Logf("Proposal number: %d", s.TestCounters.ProposalCounter)
 	s.T().Logf("Submitting, deposit and vote Gov Proposal: Store wasm light client code")
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.commonHelper.TestCounters.ProposalCounter, "ibc.lightclients.wasm.v1.MsgStoreCode", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.TestCounters.ProposalCounter, "ibc.lightclients.wasm.v1.MsgStoreCode", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.Require().Eventually(
 		func() bool {
@@ -51,7 +51,7 @@ func (s *IntegrationTestSuite) testCreateWasmLightClient() {
 	defer cancel()
 
 	valIdx := 0
-	val := s.commonHelper.Resources.ChainA.Validators[valIdx]
+	val := s.Resources.ChainA.Validators[valIdx]
 	address, _ := val.KeyInfo.GetAddress()
 	sender := address.String()
 
@@ -68,15 +68,15 @@ func (s *IntegrationTestSuite) testCreateWasmLightClient() {
 		consensusState,
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, common.StandardFees.String()),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.commonHelper.Resources.ChainA.ID),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.Resources.ChainA.ID),
 		"--keyring-backend=test",
 		"--broadcast-mode=sync",
 		"--output=json",
 		"-y",
 	}
 
-	s.T().Logf("Creating wasm light client on chain %s", s.commonHelper.Resources.ChainA.ID)
-	s.commonHelper.ExecuteGaiaTxCommand(ctx, s.commonHelper.Resources.ChainA, cmd, valIdx, s.commonHelper.DefaultExecValidation(s.commonHelper.Resources.ChainA, valIdx))
+	s.T().Logf("Creating wasm light client on chain %s", s.Resources.ChainA.ID)
+	s.ExecuteGaiaTxCommand(ctx, s.Resources.ChainA, cmd, valIdx, s.DefaultExecValidation(s.Resources.ChainA, valIdx))
 	s.T().Log("successfully created wasm light client")
 
 	cmd2 := []string{
@@ -90,14 +90,14 @@ func (s *IntegrationTestSuite) testCreateWasmLightClient() {
 		"aWJj",
 		fmt.Sprintf("--from=%s", sender),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, common.StandardFees.String()),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.commonHelper.Resources.ChainA.ID),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.Resources.ChainA.ID),
 		"--keyring-backend=test",
 		"--broadcast-mode=sync",
 		"--output=json",
 		"-y",
 	}
 
-	s.T().Logf("Adding wasm light client counterparty on chain %s", s.commonHelper.Resources.ChainA.ID)
-	s.commonHelper.ExecuteGaiaTxCommand(ctx, s.commonHelper.Resources.ChainA, cmd2, valIdx, s.commonHelper.DefaultExecValidation(s.commonHelper.Resources.ChainA, valIdx))
+	s.T().Logf("Adding wasm light client counterparty on chain %s", s.Resources.ChainA.ID)
+	s.ExecuteGaiaTxCommand(ctx, s.Resources.ChainA, cmd2, valIdx, s.DefaultExecValidation(s.Resources.ChainA, valIdx))
 	s.T().Log("successfully added wasm light client counterparty")
 }

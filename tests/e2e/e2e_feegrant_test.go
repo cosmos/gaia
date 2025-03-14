@@ -24,8 +24,8 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 	s.Run("test fee grant module", func() {
 		var (
 			valIdx = 0
-			c      = s.commonHelper.Resources.ChainA
-			api    = fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[c.ID][valIdx].GetHostPort("1317/tcp"))
+			c      = s.Resources.ChainA
+			api    = fmt.Sprintf("http://%s", s.Resources.ValResources[c.ID][valIdx].GetHostPort("1317/tcp"))
 		)
 
 		alice, _ := c.GenesisAccounts[1].KeyInfo.GetAddress()
@@ -33,7 +33,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 		charlie, _ := c.GenesisAccounts[3].KeyInfo.GetAddress()
 
 		// add fee grant from alice to bob
-		s.tx.ExecFeeGrant(
+		s.ExecFeeGrant(
 			c,
 			valIdx,
 			alice.String(),
@@ -46,7 +46,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 		s.Require().NoError(err)
 
 		// withdrawal all balance + fee + fee granter flag should succeed
-		s.tx.ExecBankSend(
+		s.ExecBankSend(
 			c,
 			valIdx,
 			bob.String(),
@@ -64,7 +64,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 		s.Require().Equal(expectedBobBalance, bobBalance)
 
 		// tx should fail after spend limit reach
-		s.tx.ExecBankSend(
+		s.ExecBankSend(
 			c,
 			valIdx,
 			bob.String(),
@@ -76,7 +76,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 		)
 
 		// add fee grant from alice to charlie
-		s.tx.ExecFeeGrant(
+		s.ExecFeeGrant(
 			c,
 			valIdx,
 			alice.String(),
@@ -86,7 +86,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 		)
 
 		// revoke fee grant from alice to charlie
-		s.tx.ExecFeeGrantRevoke(
+		s.ExecFeeGrantRevoke(
 			c,
 			valIdx,
 			alice.String(),
@@ -94,7 +94,7 @@ func (s *IntegrationTestSuite) testFeeGrant() {
 		)
 
 		// tx should fail because the grant was revoked
-		s.tx.ExecBankSend(
+		s.ExecBankSend(
 			c,
 			valIdx,
 			charlie.String(),

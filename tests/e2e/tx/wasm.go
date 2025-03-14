@@ -26,7 +26,7 @@ func (h *Helper) QueryBuildAddress(ctx context.Context, c *common.Chain, valIdx 
 		saltHexEncoded,
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, cmd, valIdx, func(stdOut []byte, stdErr []byte) bool {
+	h.ExecuteGaiaTxCommand(ctx, c, cmd, valIdx, func(stdOut []byte, stdErr []byte) bool {
 		h.Suite.Require().NoError(yaml.Unmarshal(stdOut, &res))
 		return true
 	})
@@ -50,11 +50,11 @@ func (h *Helper) StoreWasm(ctx context.Context, c *common.Chain, valIdx int, sen
 		"-y",
 	}
 
-	h.Suite.T().Logf("%s storing wasm on host chain %s", sender, h.CommonHelper.Resources.ChainB.ID)
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, storeCmd, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.Suite.T().Logf("%s storing wasm on host chain %s", sender, h.Resources.ChainB.ID)
+	h.ExecuteGaiaTxCommand(ctx, c, storeCmd, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Log("successfully sent store wasm tx")
-	h.CommonHelper.TestCounters.ContractsCounter++
-	return strconv.Itoa(h.CommonHelper.TestCounters.ContractsCounter)
+	h.TestCounters.ContractsCounter++
+	return strconv.Itoa(h.TestCounters.ContractsCounter)
 }
 
 func (h *Helper) InstantiateWasm(ctx context.Context, c *common.Chain, valIdx int, sender, codeID,
@@ -79,13 +79,13 @@ func (h *Helper) InstantiateWasm(ctx context.Context, c *common.Chain, valIdx in
 		"-y",
 	}
 
-	h.Suite.T().Logf("%s instantiating wasm on host chain %s", sender, h.CommonHelper.Resources.ChainB.ID)
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, storeCmd, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.Suite.T().Logf("%s instantiating wasm on host chain %s", sender, h.Resources.ChainB.ID)
+	h.ExecuteGaiaTxCommand(ctx, c, storeCmd, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Log("successfully sent instantiate wasm tx")
-	chainEndpoint := fmt.Sprintf("http://%s", h.CommonHelper.Resources.ValResources[c.ID][0].GetHostPort("1317/tcp"))
-	address, err := query.WasmContractAddress(chainEndpoint, sender, h.CommonHelper.TestCounters.ContractsCounterPerSender[sender])
+	chainEndpoint := fmt.Sprintf("http://%s", h.Resources.ValResources[c.ID][0].GetHostPort("1317/tcp"))
+	address, err := query.WasmContractAddress(chainEndpoint, sender, h.TestCounters.ContractsCounterPerSender[sender])
 	h.Suite.Require().NoError(err)
-	h.CommonHelper.TestCounters.ContractsCounterPerSender[sender]++
+	h.TestCounters.ContractsCounterPerSender[sender]++
 	return address
 }
 
@@ -112,14 +112,14 @@ func (h *Helper) Instantiate2Wasm(ctx context.Context, c *common.Chain, valIdx i
 		"-y",
 	}
 
-	h.Suite.T().Logf("%s instantiating wasm on host chain %s", sender, h.CommonHelper.Resources.ChainB.ID)
+	h.Suite.T().Logf("%s instantiating wasm on host chain %s", sender, h.Resources.ChainB.ID)
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, storeCmd, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, storeCmd, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Log("successfully sent instantiate2 wasm tx")
-	chainEndpoint := fmt.Sprintf("http://%s", h.CommonHelper.Resources.ValResources[c.ID][0].GetHostPort("1317/tcp"))
-	address, err := query.WasmContractAddress(chainEndpoint, sender, h.CommonHelper.TestCounters.ContractsCounterPerSender[sender])
+	chainEndpoint := fmt.Sprintf("http://%s", h.Resources.ValResources[c.ID][0].GetHostPort("1317/tcp"))
+	address, err := query.WasmContractAddress(chainEndpoint, sender, h.TestCounters.ContractsCounterPerSender[sender])
 	h.Suite.Require().NoError(err)
-	h.CommonHelper.TestCounters.ContractsCounterPerSender[sender]++
+	h.TestCounters.ContractsCounterPerSender[sender]++
 	return address
 }
 
@@ -140,7 +140,7 @@ func (h *Helper) ExecuteWasm(ctx context.Context, c *common.Chain, valIdx int, s
 		"--output=json",
 		"-y",
 	}
-	h.Suite.T().Logf("%s executing wasm on host chain %s", sender, h.CommonHelper.Resources.ChainB.ID)
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, execCmd, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.Suite.T().Logf("%s executing wasm on host chain %s", sender, h.Resources.ChainB.ID)
+	h.ExecuteGaiaTxCommand(ctx, c, execCmd, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Log("successfully sent execute wasm tx")
 }

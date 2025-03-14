@@ -31,7 +31,7 @@ func (h *Helper) ExecDistributionFundCommunityPool(c *common.Chain, valIdx int, 
 		"-y",
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Logf("Successfully funded community pool")
 }
 
@@ -62,7 +62,7 @@ func (h *Helper) ExecSetWithdrawAddress(
 		"-y",
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Logf("Successfully set new distribution withdrawal address for %s to %s", delegatorAddress, newWithdrawalAddress)
 }
 
@@ -94,6 +94,6 @@ func (h *Helper) ExecWithdrawReward(
 		"-y",
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Logf("Successfully withdrew distribution rewards for delegator %s from validator %s", delegatorAddress, validatorAddress)
 }

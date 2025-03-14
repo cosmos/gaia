@@ -13,16 +13,16 @@ import (
 )
 
 func (s *IntegrationTestSuite) testDistribution() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
-	validatorB := s.commonHelper.Resources.ChainA.Validators[1]
+	validatorB := s.Resources.ChainA.Validators[1]
 	validatorBAddr, _ := validatorB.KeyInfo.GetAddress()
 
 	valOperAddressA := sdk.ValAddress(validatorBAddr).String()
 
-	delegatorAddress, _ := s.commonHelper.Resources.ChainA.GenesisAccounts[2].KeyInfo.GetAddress()
+	delegatorAddress, _ := s.Resources.ChainA.GenesisAccounts[2].KeyInfo.GetAddress()
 
-	newWithdrawalAddress, _ := s.commonHelper.Resources.ChainA.GenesisAccounts[3].KeyInfo.GetAddress()
+	newWithdrawalAddress, _ := s.Resources.ChainA.GenesisAccounts[3].KeyInfo.GetAddress()
 	fees := sdk.NewCoin(common.UAtomDenom, math.NewInt(1000))
 
 	beforeBalance, err := query.SpecificBalance(chainEndpoint, newWithdrawalAddress.String(), common.UAtomDenom)
@@ -31,7 +31,7 @@ func (s *IntegrationTestSuite) testDistribution() {
 		beforeBalance = sdk.NewCoin(common.UAtomDenom, math.NewInt(0))
 	}
 
-	s.tx.ExecSetWithdrawAddress(s.commonHelper.Resources.ChainA, 0, fees.String(), delegatorAddress.String(), newWithdrawalAddress.String(), common.GaiaHomePath)
+	s.ExecSetWithdrawAddress(s.Resources.ChainA, 0, fees.String(), delegatorAddress.String(), newWithdrawalAddress.String(), common.GaiaHomePath)
 
 	// Verify
 	s.Require().Eventually(
@@ -45,7 +45,7 @@ func (s *IntegrationTestSuite) testDistribution() {
 		5*time.Second,
 	)
 
-	s.tx.ExecWithdrawReward(s.commonHelper.Resources.ChainA, 0, delegatorAddress.String(), valOperAddressA, common.GaiaHomePath)
+	s.ExecWithdrawReward(s.Resources.ChainA, 0, delegatorAddress.String(), valOperAddressA, common.GaiaHomePath)
 	s.Require().Eventually(
 		func() bool {
 			afterBalance, err := query.SpecificBalance(chainEndpoint, newWithdrawalAddress.String(), common.UAtomDenom)
@@ -66,8 +66,8 @@ Test Benchmarks:
 3. Verification that correct funds have been deposited to distribution module account
 */
 func (s *IntegrationTestSuite) fundCommunityPool() {
-	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
-	sender, _ := s.commonHelper.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
+	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
+	sender, _ := s.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
 
 	beforeDistUatomBalance, _ := query.SpecificBalance(chainAAPIEndpoint, common.DistModuleAddress, common.TokenAmount.Denom)
 	if beforeDistUatomBalance.IsNil() {
@@ -75,7 +75,7 @@ func (s *IntegrationTestSuite) fundCommunityPool() {
 		beforeDistUatomBalance = sdk.NewInt64Coin(common.UAtomDenom, 0)
 	}
 
-	s.tx.ExecDistributionFundCommunityPool(s.commonHelper.Resources.ChainA, 0, sender.String(), common.TokenAmount.String(), common.StandardFees.String())
+	s.ExecDistributionFundCommunityPool(s.Resources.ChainA, 0, sender.String(), common.TokenAmount.String(), common.StandardFees.String())
 
 	s.Require().Eventually(
 		func() bool {

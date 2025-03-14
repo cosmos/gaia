@@ -16,8 +16,8 @@ import (
 )
 
 type Helper struct {
-	Suite        *suite.Suite
-	CommonHelper *common.Helper
+	suite.Suite
+	common.Helper
 }
 
 func (h *Helper) ExecDecode(
@@ -41,7 +41,7 @@ func (h *Helper) ExecDecode(
 	}
 
 	var decoded string
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut []byte, stdErr []byte) bool {
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut []byte, stdErr []byte) bool {
 		if stdErr != nil {
 			return false
 		}
@@ -73,7 +73,7 @@ func (h *Helper) ExecEncode(
 	}
 
 	var encoded string
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut []byte, stdErr []byte) bool {
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, 0, func(stdOut []byte, stdErr []byte) bool {
 		if stdErr != nil {
 			return false
 		}
@@ -92,7 +92,7 @@ func (h *Helper) expectErrExecValidation(chain *common.Chain, valIdx int, expect
 			h.Suite.Require().True(expectErr)
 		}
 
-		endpoint := fmt.Sprintf("http://%s", h.CommonHelper.Resources.ValResources[chain.ID][valIdx].GetHostPort("1317/tcp"))
+		endpoint := fmt.Sprintf("http://%s", h.Resources.ValResources[chain.ID][valIdx].GetHostPort("1317/tcp"))
 		// wait for the tx to be committed on chain
 		h.Suite.Require().Eventuallyf(
 			func() bool {
@@ -149,7 +149,7 @@ func (h *Helper) SignTxFileOnline(chain *common.Chain, valIdx int, from string, 
 		return true
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, chain, gaiaCommand, valIdx, captureOutput)
+	h.ExecuteGaiaTxCommand(ctx, chain, gaiaCommand, valIdx, captureOutput)
 	if len(erroutput) > 0 {
 		return nil, fmt.Errorf("failed to sign tx: %s", string(erroutput))
 	}
@@ -184,7 +184,7 @@ func (h *Helper) BroadcastTxFile(chain *common.Chain, valIdx int, from string, t
 		return true
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, chain, broadcastTxCmd, valIdx, captureOutput)
+	h.ExecuteGaiaTxCommand(ctx, chain, broadcastTxCmd, valIdx, captureOutput)
 	if len(erroutput) > 0 {
 		return nil, fmt.Errorf("failed to sign tx: %s", string(erroutput))
 	}

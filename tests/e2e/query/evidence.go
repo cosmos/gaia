@@ -1,9 +1,9 @@
 package query
 
 import (
-	"cosmossdk.io/x/evidence/exported"
 	"fmt"
 
+	"cosmossdk.io/x/evidence/exported"
 	"cosmossdk.io/x/evidence/types"
 
 	"github.com/cosmos/gaia/v23/tests/e2e/common"

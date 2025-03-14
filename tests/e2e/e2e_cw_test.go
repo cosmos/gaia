@@ -18,7 +18,7 @@ func (s *IntegrationTestSuite) testCWCounter() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	valIdx := 0
-	val := s.commonHelper.Resources.ChainA.Validators[valIdx]
+	val := s.Resources.ChainA.Validators[valIdx]
 	address, _ := val.KeyInfo.GetAddress()
 	sender := address.String()
 	dirName, err := os.Getwd()
@@ -30,14 +30,14 @@ func (s *IntegrationTestSuite) testCWCounter() {
 	_, err = common.CopyFile(src, dst)
 	s.Require().NoError(err)
 	storeWasmPath := configFile("counter.wasm")
-	s.tx.StoreWasm(ctx, s.commonHelper.Resources.ChainA, valIdx, sender, storeWasmPath)
+	s.StoreWasm(ctx, s.Resources.ChainA, valIdx, sender, storeWasmPath)
 
 	// Instantiate the contract
-	contractAddr := s.tx.InstantiateWasm(ctx, s.commonHelper.Resources.ChainA, valIdx, sender, strconv.Itoa(s.commonHelper.TestCounters.ContractsCounter), "{\"count\":0}", "counter")
-	chainEndpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[s.commonHelper.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
+	contractAddr := s.InstantiateWasm(ctx, s.Resources.ChainA, valIdx, sender, strconv.Itoa(s.TestCounters.ContractsCounter), "{\"count\":0}", "counter")
+	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
 	// Execute the contract
-	s.tx.ExecuteWasm(ctx, s.commonHelper.Resources.ChainA, valIdx, sender, contractAddr, "{\"increment\":{}}")
+	s.ExecuteWasm(ctx, s.Resources.ChainA, valIdx, sender, contractAddr, "{\"increment\":{}}")
 
 	// Validate count increment
 	query := map[string]interface{}{

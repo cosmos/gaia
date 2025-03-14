@@ -34,7 +34,7 @@ func (h *Helper) ExecDelegate(c *common.Chain, valIdx int, amount, valOperAddres
 		"-y",
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
@@ -61,7 +61,7 @@ func (h *Helper) ExecUnbondDelegation(c *common.Chain, valIdx int, amount, valOp
 		"-y",
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Logf("%s successfully undelegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
@@ -88,7 +88,7 @@ func (h *Helper) ExecCancelUnbondingDelegation(c *common.Chain, valIdx int, amou
 		"-y",
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Logf("%s successfully canceled unbonding %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
@@ -118,7 +118,7 @@ func (h *Helper) ExecRedelegate(c *common.Chain, valIdx int, amount, originalVal
 		"-y",
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
 }
 
@@ -143,7 +143,7 @@ func (h *Helper) ExecuteValidatorBond(c *common.Chain, valIdx int, valOperAddres
 		"-y",
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Logf("%s successfully executed validator bond tx to %s", delegatorAddr, valOperAddress)
 }
 
@@ -171,7 +171,7 @@ func (h *Helper) ExecuteTokenizeShares(c *common.Chain, valIdx int, amount, valO
 		"-y",
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Logf("%s successfully executed tokenize share tx from %s", delegatorAddr, valOperAddress)
 }
 
@@ -197,7 +197,7 @@ func (h *Helper) ExecuteRedeemShares(c *common.Chain, valIdx int, amount, delega
 		"-y",
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Logf("%s successfully executed redeem share tx for %s", delegatorAddr, amount)
 }
 
@@ -223,6 +223,6 @@ func (h *Helper) ExecuteTransferTokenizeShareRecord(c *common.Chain, valIdx int,
 		"-y",
 	}
 
-	h.CommonHelper.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.CommonHelper.DefaultExecValidation(c, valIdx))
+	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 	h.Suite.T().Logf("%s successfully executed transfer tokenize share record for %s", owner, recordID)
 }

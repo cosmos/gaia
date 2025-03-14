@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func (h *Helper) ExecDistributionFundCommunityPool(c *common.Chain, valIdx int, from, amt, fees string) {
+func (h *TestingSuite) ExecDistributionFundCommunityPool(c *common.Chain, valIdx int, from, amt, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -35,7 +35,7 @@ func (h *Helper) ExecDistributionFundCommunityPool(c *common.Chain, valIdx int, 
 	h.Suite.T().Logf("Successfully funded community pool")
 }
 
-func (h *Helper) ExecSetWithdrawAddress(
+func (h *TestingSuite) ExecSetWithdrawAddress(
 	c *common.Chain,
 	valIdx int,
 	fees,
@@ -66,7 +66,7 @@ func (h *Helper) ExecSetWithdrawAddress(
 	h.Suite.T().Logf("Successfully set new distribution withdrawal address for %s to %s", delegatorAddress, newWithdrawalAddress)
 }
 
-func (h *Helper) ExecWithdrawReward(
+func (h *TestingSuite) ExecWithdrawReward(
 	c *common.Chain,
 	valIdx int,
 	delegatorAddress,

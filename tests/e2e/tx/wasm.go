@@ -14,7 +14,7 @@ import (
 )
 
 // todo: change this to a query instead of a command when https://github.com/CosmWasm/wasmd/issues/2147 is fixed
-func (h *Helper) QueryBuildAddress(ctx context.Context, c *common.Chain, valIdx int, codeHash, creatorAddress, saltHexEncoded string,
+func (h *TestingSuite) QueryBuildAddress(ctx context.Context, c *common.Chain, valIdx int, codeHash, creatorAddress, saltHexEncoded string,
 ) (res string) {
 	cmd := []string{
 		common.GaiadBinary,
@@ -33,7 +33,7 @@ func (h *Helper) QueryBuildAddress(ctx context.Context, c *common.Chain, valIdx 
 	return res
 }
 
-func (h *Helper) StoreWasm(ctx context.Context, c *common.Chain, valIdx int, sender, wasmPath string) string {
+func (h *TestingSuite) StoreWasm(ctx context.Context, c *common.Chain, valIdx int, sender, wasmPath string) string {
 	storeCmd := []string{
 		common.GaiadBinary,
 		common.TxCommand,
@@ -57,7 +57,7 @@ func (h *Helper) StoreWasm(ctx context.Context, c *common.Chain, valIdx int, sen
 	return strconv.Itoa(h.TestCounters.ContractsCounter)
 }
 
-func (h *Helper) InstantiateWasm(ctx context.Context, c *common.Chain, valIdx int, sender, codeID,
+func (h *TestingSuite) InstantiateWasm(ctx context.Context, c *common.Chain, valIdx int, sender, codeID,
 	msg, label string,
 ) string {
 	storeCmd := []string{
@@ -89,7 +89,7 @@ func (h *Helper) InstantiateWasm(ctx context.Context, c *common.Chain, valIdx in
 	return address
 }
 
-func (h *Helper) Instantiate2Wasm(ctx context.Context, c *common.Chain, valIdx int, sender, codeID,
+func (h *TestingSuite) Instantiate2Wasm(ctx context.Context, c *common.Chain, valIdx int, sender, codeID,
 	msg, salt, label string,
 ) string {
 	storeCmd := []string{
@@ -123,7 +123,7 @@ func (h *Helper) Instantiate2Wasm(ctx context.Context, c *common.Chain, valIdx i
 	return address
 }
 
-func (h *Helper) ExecuteWasm(ctx context.Context, c *common.Chain, valIdx int, sender, addr, msg string) {
+func (h *TestingSuite) ExecuteWasm(ctx context.Context, c *common.Chain, valIdx int, sender, addr, msg string) {
 	execCmd := []string{
 		common.GaiadBinary,
 		common.TxCommand,

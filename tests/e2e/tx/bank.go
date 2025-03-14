@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func (h *Helper) ExecBankSend(
+func (h *TestingSuite) ExecBankSend(
 	c *common.Chain,
 	valIdx int,
 	from,
@@ -47,7 +47,7 @@ func (h *Helper) ExecBankSend(
 	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.expectErrExecValidation(c, valIdx, expectErr))
 }
 
-func (h *Helper) ExecBankMultiSend(
+func (h *TestingSuite) ExecBankMultiSend(
 	c *common.Chain,
 	valIdx int,
 	from string,

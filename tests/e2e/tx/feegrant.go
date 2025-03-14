@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func (h *Helper) ExecFeeGrant(c *common.Chain, valIdx int, granter, grantee, spendLimit string, opt ...common.FlagOption) {
+func (h *TestingSuite) ExecFeeGrant(c *common.Chain, valIdx int, granter, grantee, spendLimit string, opt ...common.FlagOption) {
 	opt = append(opt, common.WithKeyValue(common.FlagFrom, granter))
 	opt = append(opt, common.WithKeyValue(common.FlagSpendLimit, spendLimit))
 	opts := common.ApplyOptions(c.ID, opt)
@@ -43,7 +43,7 @@ func (h *Helper) ExecFeeGrant(c *common.Chain, valIdx int, granter, grantee, spe
 	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, h.DefaultExecValidation(c, valIdx))
 }
 
-func (h *Helper) ExecFeeGrantRevoke(c *common.Chain, valIdx int, granter, grantee string, opt ...common.FlagOption) {
+func (h *TestingSuite) ExecFeeGrantRevoke(c *common.Chain, valIdx int, granter, grantee string, opt ...common.FlagOption) {
 	opt = append(opt, common.WithKeyValue(common.FlagFrom, granter))
 	opts := common.ApplyOptions(c.ID, opt)
 

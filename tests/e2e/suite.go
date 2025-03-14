@@ -5,5 +5,5 @@ import (
 )
 
 type IntegrationTestSuite struct {
-	tx.Helper
+	tx.TestingSuite
 }

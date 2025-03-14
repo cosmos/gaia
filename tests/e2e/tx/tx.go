@@ -13,11 +13,11 @@ import (
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-type Helper struct {
-	common.Helper
+type TestingSuite struct {
+	common.TestingSuite
 }
 
-func (h *Helper) ExecDecode(
+func (h *TestingSuite) ExecDecode(
 	c *common.Chain,
 	txPath string,
 	opt ...common.FlagOption,
@@ -49,7 +49,7 @@ func (h *Helper) ExecDecode(
 	return decoded
 }
 
-func (h *Helper) ExecEncode(
+func (h *TestingSuite) ExecEncode(
 	c *common.Chain,
 	txPath string,
 	opt ...common.FlagOption,
@@ -81,7 +81,7 @@ func (h *Helper) ExecEncode(
 	return encoded
 }
 
-func (h *Helper) expectErrExecValidation(chain *common.Chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
+func (h *TestingSuite) expectErrExecValidation(chain *common.Chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp types.TxResponse
 		gotErr := common.Cdc.UnmarshalJSON(stdOut, &txResp) != nil
@@ -105,7 +105,7 @@ func (h *Helper) expectErrExecValidation(chain *common.Chain, valIdx int, expect
 	}
 }
 
-func (h *Helper) ExpectTxSubmitError(expectErrString string) func([]byte, []byte) bool {
+func (h *TestingSuite) ExpectTxSubmitError(expectErrString string) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp types.TxResponse
 		if err := common.Cdc.UnmarshalJSON(stdOut, &txResp); err != nil {
@@ -121,7 +121,7 @@ func (h *Helper) ExpectTxSubmitError(expectErrString string) func([]byte, []byte
 // SignTxFileOnline signs a transaction file using the gaiacli tx sign command
 // the from flag is used to specify the keyring account to sign the transaction
 // the from account must be registered in the keyring and exist on chain (have a balance or be a genesis account)
-func (h *Helper) SignTxFileOnline(chain *common.Chain, valIdx int, from string, txFilePath string) ([]byte, error) {
+func (h *TestingSuite) SignTxFileOnline(chain *common.Chain, valIdx int, from string, txFilePath string) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -156,7 +156,7 @@ func (h *Helper) SignTxFileOnline(chain *common.Chain, valIdx int, from string, 
 // BroadcastTxFile broadcasts a signed transaction file using the gaiacli tx broadcast command
 // the from flag is used to specify the keyring account to sign the transaction
 // the from account must be registered in the keyring and exist on chain (have a balance or be a genesis account)
-func (h *Helper) BroadcastTxFile(chain *common.Chain, valIdx int, from string, txFilePath string) ([]byte, error) {
+func (h *TestingSuite) BroadcastTxFile(chain *common.Chain, valIdx int, from string, txFilePath string) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 

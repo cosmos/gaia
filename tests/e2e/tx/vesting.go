@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func (h *Helper) execVestingTx(
+func (h *TestingSuite) execVestingTx(
 	c *common.Chain,
 	method string,
 	args []string,
@@ -38,7 +38,7 @@ func (h *Helper) execVestingTx(
 	h.Suite.T().Logf("successfully %s with %v", method, args)
 }
 
-func (h *Helper) ExecCreatePeriodicVestingAccount(
+func (h *TestingSuite) ExecCreatePeriodicVestingAccount(
 	c *common.Chain,
 	address,
 	jsonPath string,

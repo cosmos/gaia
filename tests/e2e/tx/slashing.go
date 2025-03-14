@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func (h *Helper) ExecUnjail(
+func (h *TestingSuite) ExecUnjail(
 	c *common.Chain,
 	opt ...common.FlagOption,
 ) {

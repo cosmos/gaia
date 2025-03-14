@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types"
 )
 
-func (h *Helper) ExecuteGaiaTxCommand(ctx context.Context, c *Chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
+func (h *TestingSuite) ExecuteGaiaTxCommand(ctx context.Context, c *Chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
 	if validation == nil {
 		validation = h.DefaultExecValidation(h.Resources.ChainA, 0)
 	}
@@ -49,7 +49,7 @@ func (h *Helper) ExecuteGaiaTxCommand(ctx context.Context, c *Chain, gaiaCommand
 	}
 }
 
-func (h *Helper) ExecuteHermesCommand(ctx context.Context, hermesCmd []string) ([]byte, error) {
+func (h *TestingSuite) ExecuteHermesCommand(ctx context.Context, hermesCmd []string) ([]byte, error) {
 	var outBuf bytes.Buffer
 	exec, err := h.Resources.DkrPool.Client.CreateExec(docker.CreateExecOptions{
 		Context:      ctx,
@@ -93,7 +93,7 @@ func (h *Helper) ExecuteHermesCommand(ctx context.Context, hermesCmd []string) (
 	return stdOut, nil
 }
 
-func (h *Helper) DefaultExecValidation(chain *Chain, valIdx int) func([]byte, []byte) bool {
+func (h *TestingSuite) DefaultExecValidation(chain *Chain, valIdx int) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp types.TxResponse
 		if err := Cdc.UnmarshalJSON(stdOut, &txResp); err != nil {

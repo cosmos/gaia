@@ -16,7 +16,7 @@ import (
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func (h *Helper) RegisterICAAccount(c *common.Chain, valIdx int, sender, connectionID, fees string) {
+func (h *TestingSuite) RegisterICAAccount(c *common.Chain, valIdx int, sender, connectionID, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -50,7 +50,7 @@ func (h *Helper) RegisterICAAccount(c *common.Chain, valIdx int, sender, connect
 	h.Suite.T().Log("successfully sent register ICA account tx")
 }
 
-func (h *Helper) SendICATransaction(c *common.Chain, valIdx int, sender, connectionID, packetMsgPath, fees string) {
+func (h *TestingSuite) SendICATransaction(c *common.Chain, valIdx int, sender, connectionID, packetMsgPath, fees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -75,7 +75,7 @@ func (h *Helper) SendICATransaction(c *common.Chain, valIdx int, sender, connect
 	h.Suite.T().Log("successfully sent ICA transaction")
 }
 
-func (h *Helper) BuildICASendTransactionFile(cdc codec.Codec, msgs []proto.Message, outputBaseDir string) {
+func (h *TestingSuite) BuildICASendTransactionFile(cdc codec.Codec, msgs []proto.Message, outputBaseDir string) {
 	data, err := types.SerializeCosmosTx(cdc, msgs, types.EncodingProtobuf)
 	h.Suite.Require().NoError(err)
 

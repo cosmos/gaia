@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func (h *Helper) HermesClearPacket(configPath, chainID, portID, channelID string) (success bool) {
+func (h *TestingSuite) HermesClearPacket(configPath, chainID, portID, channelID string) (success bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -41,7 +41,7 @@ type RelayerPacketsOutput struct {
 	Status string `json:"status"`
 }
 
-func (h *Helper) CreateConnection() {
+func (h *TestingSuite) CreateConnection() {
 	h.Suite.T().Logf("connecting %s and %s chains via IBC", h.Resources.ChainA.ID, h.Resources.ChainB.ID)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -64,7 +64,7 @@ func (h *Helper) CreateConnection() {
 	h.Suite.T().Logf("connected %s and %s chains via IBC", h.Resources.ChainA.ID, h.Resources.ChainB.ID)
 }
 
-func (h *Helper) CreateChannel() {
+func (h *TestingSuite) CreateChannel() {
 	h.Suite.T().Logf("creating IBC transfer channel created between chains %s and %s", h.Resources.ChainA.ID, h.Resources.ChainB.ID)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -91,7 +91,7 @@ func (h *Helper) CreateChannel() {
 // This function will complete the channel handshake in cases when ChanOpenInit was initiated
 // by some transaction that was previously executed on the Chain. For example,
 // ICA MsgRegisterInterchainAccount will perform ChanOpenInit during its execution.
-func (h *Helper) CompleteChannelHandshakeFromTry(
+func (h *TestingSuite) CompleteChannelHandshakeFromTry(
 	srcChain, dstChain,
 	srcConnection, dstConnection,
 	srcPort, dstPort,

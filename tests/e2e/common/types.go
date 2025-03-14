@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type Helper struct {
+type TestingSuite struct {
 	suite.Suite
 	TestCounters TestCounters
 	Resources    Resources

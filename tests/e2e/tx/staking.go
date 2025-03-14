@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func (h *Helper) ExecDelegate(c *common.Chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
+func (h *TestingSuite) ExecDelegate(c *common.Chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -38,7 +38,7 @@ func (h *Helper) ExecDelegate(c *common.Chain, valIdx int, amount, valOperAddres
 	h.Suite.T().Logf("%s successfully delegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
-func (h *Helper) ExecUnbondDelegation(c *common.Chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
+func (h *TestingSuite) ExecUnbondDelegation(c *common.Chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -65,7 +65,7 @@ func (h *Helper) ExecUnbondDelegation(c *common.Chain, valIdx int, amount, valOp
 	h.Suite.T().Logf("%s successfully undelegated %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
-func (h *Helper) ExecCancelUnbondingDelegation(c *common.Chain, valIdx int, amount, valOperAddress, creationHeight, delegatorAddr, home, delegateFees string) {
+func (h *TestingSuite) ExecCancelUnbondingDelegation(c *common.Chain, valIdx int, amount, valOperAddress, creationHeight, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -92,7 +92,7 @@ func (h *Helper) ExecCancelUnbondingDelegation(c *common.Chain, valIdx int, amou
 	h.Suite.T().Logf("%s successfully canceled unbonding %s to %s", delegatorAddr, amount, valOperAddress)
 }
 
-func (h *Helper) ExecRedelegate(c *common.Chain, valIdx int, amount, originalValOperAddress,
+func (h *TestingSuite) ExecRedelegate(c *common.Chain, valIdx int, amount, originalValOperAddress,
 	newValOperAddress, delegatorAddr, home, delegateFees string,
 ) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -122,7 +122,7 @@ func (h *Helper) ExecRedelegate(c *common.Chain, valIdx int, amount, originalVal
 	h.Suite.T().Logf("%s successfully redelegated %s from %s to %s", delegatorAddr, amount, originalValOperAddress, newValOperAddress)
 }
 
-func (h *Helper) ExecuteValidatorBond(c *common.Chain, valIdx int, valOperAddress, delegatorAddr, home, delegateFees string) {
+func (h *TestingSuite) ExecuteValidatorBond(c *common.Chain, valIdx int, valOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -147,7 +147,7 @@ func (h *Helper) ExecuteValidatorBond(c *common.Chain, valIdx int, valOperAddres
 	h.Suite.T().Logf("%s successfully executed validator bond tx to %s", delegatorAddr, valOperAddress)
 }
 
-func (h *Helper) ExecuteTokenizeShares(c *common.Chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
+func (h *TestingSuite) ExecuteTokenizeShares(c *common.Chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -175,7 +175,7 @@ func (h *Helper) ExecuteTokenizeShares(c *common.Chain, valIdx int, amount, valO
 	h.Suite.T().Logf("%s successfully executed tokenize share tx from %s", delegatorAddr, valOperAddress)
 }
 
-func (h *Helper) ExecuteRedeemShares(c *common.Chain, valIdx int, amount, delegatorAddr, home, delegateFees string) {
+func (h *TestingSuite) ExecuteRedeemShares(c *common.Chain, valIdx int, amount, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
@@ -201,7 +201,7 @@ func (h *Helper) ExecuteRedeemShares(c *common.Chain, valIdx int, amount, delega
 	h.Suite.T().Logf("%s successfully executed redeem share tx for %s", delegatorAddr, amount)
 }
 
-func (h *Helper) ExecuteTransferTokenizeShareRecord(c *common.Chain, valIdx int, recordID, owner, newOwner, home, txFees string) {
+func (h *TestingSuite) ExecuteTransferTokenizeShareRecord(c *common.Chain, valIdx int, recordID, owner, newOwner, home, txFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 

@@ -53,12 +53,12 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 	s.Require().NoError(err)
 
 	instantiateAdapterJSON := fmt.Sprintf(`{"entry_point_contract_address":"%s"}`, entrypointPredictedAddress)
-	adapterAddress := s.tx.InstantiateWasm(ctx, s.commonHelper.Resources.ChainA, valIdx, sender, adapterCode, instantiateAdapterJSON, "adapter")
+	adapterAddress := s.InstantiateWasm(ctx, s.Resources.ChainA, valIdx, sender, adapterCode, instantiateAdapterJSON, "adapter")
 	common.AdapterAddress = adapterAddress
 	s.Require().NoError(err)
 
 	instantiateEntrypointJSON := fmt.Sprintf(`{"swap_venues":[], "ibc_transfer_contract_address": "%s"}`, adapterAddress)
-	entrypointAddress := s.tx.Instantiate2Wasm(ctx, s.commonHelper.Resources.ChainA, valIdx, sender, entryPointCode, instantiateEntrypointJSON, SaltHex, "entrypoint")
+	entrypointAddress := s.Instantiate2Wasm(ctx, s.Resources.ChainA, valIdx, sender, entryPointCode, instantiateEntrypointJSON, SaltHex, "entrypoint")
 	common.EntrypointAddress = entrypointAddress
 	s.Require().Equal(entrypointPredictedAddress, entrypointAddress)
 	s.Require().NoError(err)
@@ -74,9 +74,9 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 
 	memo := msg.BuildCallbacksMemo(entrypointAddress, recipientDenom, adapterAddress, RecipientAddress)
 
-	senderB, _ := s.commonHelper.Resources.ChainB.Validators[0].KeyInfo.GetAddress()
-	s.tx.SendIBC(s.commonHelper.Resources.ChainB, 0, senderB.String(), adapterAddress, "1uatom", "3000000uatom", memo, common.TransferChannel, nil, false)
-	s.commonHelper.HermesClearPacket(common.HermesConfigWithGasPrices, s.commonHelper.Resources.ChainB.ID, common.TransferPort, common.TransferChannel)
+	senderB, _ := s.Resources.ChainB.Validators[0].KeyInfo.GetAddress()
+	s.SendIBC(s.Resources.ChainB, 0, senderB.String(), adapterAddress, "1uatom", "3000000uatom", memo, common.TransferChannel, nil, false)
+	s.HermesClearPacket(common.HermesConfigWithGasPrices, s.Resources.ChainB.ID, common.TransferPort, common.TransferChannel)
 
 	balances, err := query.AllBalances(chainEndpoint, RecipientAddress)
 	if err != nil {

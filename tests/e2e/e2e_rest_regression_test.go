@@ -5,9 +5,6 @@ import (
 	"net/http"
 
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"net/http"
-
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
 // /*

@@ -3,8 +3,6 @@ package e2e
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	"strings"
 
 	"cosmossdk.io/x/evidence/exported"

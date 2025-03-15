@@ -56,6 +56,6 @@ func (s *IntegrationTestSuite) testCreateWasmLightClient() {
 	clientState := `{"@type":"/ibc.lightclients.wasm.v1.ClientState","data":"ZG9lc250IG1hdHRlcg==","checksum":"O45STPnbLLar4DtFwDx0dE6tuXQW5XTKPHpbjaugun4=","latest_height":{"revision_number":"0","revision_height":"7795583"}}`
 	consensusState := `{"@type":"/ibc.lightclients.wasm.v1.ConsensusState","data":"ZG9lc250IG1hdHRlcg=="}`
 
-	s.tx.CreateClient(ctx, s.commonHelper.Resources.ChainA, clientState, consensusState, sender, valIdx)
-	s.tx.AddWasmClientCounterparty(ctx, s.commonHelper.Resources.ChainA, sender, valIdx)
+	s.CreateClient(ctx, s.Resources.ChainA, clientState, consensusState, sender, valIdx)
+	s.AddWasmClientCounterparty(ctx, s.Resources.ChainA, sender, valIdx)
 }

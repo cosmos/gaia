@@ -6,7 +6,6 @@ import (
 	"time"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 	"github.com/cosmos/gaia/v23/tests/e2e/msg"

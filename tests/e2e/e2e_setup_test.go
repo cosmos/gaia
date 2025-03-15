@@ -91,17 +91,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.initValidatorConfigs(s.Resources.ChainB)
 	s.runValidators(s.Resources.ChainB, 10)
 
-	s.commonHelper.TestCounters = common.TestCounters{
+	s.TestCounters = common.TestCounters{
 		ProposalCounter:           0,
 		ContractsCounter:          0,
 		IBCV2PacketSequence:       1,
 		ContractsCounterPerSender: map[string]uint64{},
-	}
-
-	s.testCounters = TestCounters{
-		proposalCounter:           0,
-		contractsCounter:          0,
-		contractsCounterPerSender: map[string]uint64{},
 	}
 
 	time.Sleep(10 * time.Second)

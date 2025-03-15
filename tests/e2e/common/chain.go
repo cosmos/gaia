@@ -12,6 +12,7 @@ import (
 	dbm "github.com/cosmos/cosmos-db"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
+	ibcv2types "github.com/cosmos/ibc-go/v10/modules/core/04-channel/v2/types"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	"cosmossdk.io/log"
@@ -66,6 +67,8 @@ func init() {
 	metaprotocoltypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 	ratelimittypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 	wasmclienttypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+
+	ibcv2types.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 
 	Cdc = EncodingConfig.Marshaler
 	TxConfig = EncodingConfig.TxConfig

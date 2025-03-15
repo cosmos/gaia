@@ -15,6 +15,7 @@ type TestCounters struct {
 	ProposalCounter           int
 	ContractsCounter          int
 	ContractsCounterPerSender map[string]uint64
+	IBCV2PacketSequence       int
 }
 
 type Resources struct {

@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
 )
 
-func (h *Helper) CreateIBCV2RecvPacketTx(timeoutTimestamp uint64, amount, submitterAddress, recipientAddress, memo string) ([]byte, error) {
+func (h *TestingSuite) CreateIBCV2RecvPacketTx(timeoutTimestamp uint64, amount, submitterAddress, recipientAddress, memo string) ([]byte, error) {
 	transferData := types2.NewFungibleTokenPacketData(
 		"uatom",
 		amount,
@@ -31,7 +31,7 @@ func (h *Helper) CreateIBCV2RecvPacketTx(timeoutTimestamp uint64, amount, submit
 
 	packet := types.MsgRecvPacket{
 		Packet: types.Packet{
-			Sequence:          uint64(h.CommonHelper.TestCounters.IBCV2PacketSequence),
+			Sequence:          uint64(h.TestCounters.IBCV2PacketSequence),
 			SourceClient:      common.CounterpartyID,
 			DestinationClient: common.V2TransferClient,
 			TimeoutTimestamp:  timeoutTimestamp,

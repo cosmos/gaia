@@ -12,17 +12,17 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestV2RecvPacket() {
-	chain := s.commonHelper.Resources.ChainA
+	chain := s.Resources.ChainA
 
 	submitterAccount := chain.GenesisAccounts[1]
 	submitterAddress, err := submitterAccount.KeyInfo.GetAddress()
 	s.Require().NoError(err)
 
-	endpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[chain.ID][0].GetHostPort("1317/tcp"))
+	endpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[chain.ID][0].GetHostPort("1317/tcp"))
 
 	timeoutTimestamp := uint64(time.Now().Add(time.Minute * 5).Unix())
 
-	rawTx, err := s.tx.CreateIBCV2RecvPacketTx(timeoutTimestamp, "1", submitterAddress.String(), RecipientAddress, "")
+	rawTx, err := s.CreateIBCV2RecvPacketTx(timeoutTimestamp, "1", submitterAddress.String(), RecipientAddress, "")
 	s.Require().NoError(err)
 	s.Require().NotNil(rawTx)
 
@@ -31,7 +31,7 @@ func (s *IntegrationTestSuite) TestV2RecvPacket() {
 	err = common.WriteFile(unsignedJSONFile, rawTx)
 	s.Require().NoError(err)
 
-	signedTx, err := s.tx.SignTxFileOnline(chain, 0, submitterAddress.String(), unsignedFname)
+	signedTx, err := s.SignTxFileOnline(chain, 0, submitterAddress.String(), unsignedFname)
 	s.Require().NoError(err)
 	s.Require().NotNil(signedTx)
 
@@ -41,17 +41,17 @@ func (s *IntegrationTestSuite) TestV2RecvPacket() {
 	s.Require().NoError(err)
 
 	// if there's no errors the non_critical_extension_options field was properly encoded and decoded
-	out, err := s.tx.BroadcastTxFile(chain, 0, submitterAddress.String(), signedFname)
+	out, err := s.BroadcastTxFile(chain, 0, submitterAddress.String(), signedFname)
 	s.Require().NoError(err)
 	s.Require().NotNil(out)
-	s.commonHelper.TestCounters.IBCV2PacketSequence++
+	s.TestCounters.IBCV2PacketSequence++
 
 	s.Require().Eventually(
 		func() bool {
 			balances, err := query.AllBalances(endpoint, RecipientAddress)
 			s.Require().NoError(err)
 			for _, balance := range balances {
-				if balance.String() == strconv.Itoa(s.commonHelper.TestCounters.IBCV2PacketSequence-1)+"ibc/1FBF3660E6387150C8BBDAA82EF8CE3C0AADE1F1BD921AE7529D892A53321A74" {
+				if balance.String() == strconv.Itoa(s.TestCounters.IBCV2PacketSequence-1)+"ibc/1FBF3660E6387150C8BBDAA82EF8CE3C0AADE1F1BD921AE7529D892A53321A74" {
 					return true
 				}
 			}
@@ -63,13 +63,13 @@ func (s *IntegrationTestSuite) TestV2RecvPacket() {
 }
 
 func (s *IntegrationTestSuite) TestV2Callback() {
-	chain := s.commonHelper.Resources.ChainA
+	chain := s.Resources.ChainA
 
 	submitterAccount := chain.GenesisAccounts[1]
 	submitterAddress, err := submitterAccount.KeyInfo.GetAddress()
 	s.Require().NoError(err)
 
-	endpoint := fmt.Sprintf("http://%s", s.commonHelper.Resources.ValResources[chain.ID][0].GetHostPort("1317/tcp"))
+	endpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[chain.ID][0].GetHostPort("1317/tcp"))
 
 	timeoutTimestamp := uint64(time.Now().Add(time.Minute * 5).Unix())
 
@@ -78,7 +78,7 @@ func (s *IntegrationTestSuite) TestV2Callback() {
 
 	memo := msg.BuildCallbacksMemo(common.EntrypointAddress, "ibc/1FBF3660E6387150C8BBDAA82EF8CE3C0AADE1F1BD921AE7529D892A53321A74", common.AdapterAddress, RecipientAddress)
 
-	rawTx, err := s.tx.CreateIBCV2RecvPacketTx(timeoutTimestamp, "1", submitterAddress.String(), common.AdapterAddress, memo)
+	rawTx, err := s.CreateIBCV2RecvPacketTx(timeoutTimestamp, "1", submitterAddress.String(), common.AdapterAddress, memo)
 	s.Require().NoError(err)
 
 	unsignedFname := "unsigned_recv_callback_tx.json"
@@ -86,7 +86,7 @@ func (s *IntegrationTestSuite) TestV2Callback() {
 	err = common.WriteFile(unsignedJSONFile, rawTx)
 	s.Require().NoError(err)
 
-	signedTx, err := s.tx.SignTxFileOnline(chain, 0, submitterAddress.String(), unsignedFname)
+	signedTx, err := s.SignTxFileOnline(chain, 0, submitterAddress.String(), unsignedFname)
 	s.Require().NoError(err)
 	s.Require().NotNil(signedTx)
 
@@ -95,17 +95,17 @@ func (s *IntegrationTestSuite) TestV2Callback() {
 	err = common.WriteFile(signedJSONFile, signedTx)
 	s.Require().NoError(err)
 
-	out, err := s.tx.BroadcastTxFile(chain, 0, submitterAddress.String(), signedFname)
+	out, err := s.BroadcastTxFile(chain, 0, submitterAddress.String(), signedFname)
 	s.Require().NoError(err)
 	s.Require().NotNil(out)
-	s.commonHelper.TestCounters.IBCV2PacketSequence++
+	s.TestCounters.IBCV2PacketSequence++
 
 	s.Require().Eventually(
 		func() bool {
 			balances, err := query.AllBalances(endpoint, RecipientAddress)
 			s.Require().NoError(err)
 			for _, balance := range balances {
-				if balance.String() == strconv.Itoa(s.commonHelper.TestCounters.IBCV2PacketSequence-1)+"ibc/1FBF3660E6387150C8BBDAA82EF8CE3C0AADE1F1BD921AE7529D892A53321A74" {
+				if balance.String() == strconv.Itoa(s.TestCounters.IBCV2PacketSequence-1)+"ibc/1FBF3660E6387150C8BBDAA82EF8CE3C0AADE1F1BD921AE7529D892A53321A74" {
 					return true
 				}
 			}

@@ -37,6 +37,7 @@
 - Bump [JamesIves/github-pages-deploy-action](https://github.com/jamesives/github-pages-deploy-action) from 4.7.2 to 4.7.3 ([#3547](https://github.com/cosmos/gaia/pull/3547))
 - Bump [@babel/runtime-corejs3](https://github.com/babel/babel/tree/HEAD/packages/babel-runtime-corejs3) from 7.24.0 to 7.26.10 ([#3628](https://github.com/cosmos/gaia/pull/3628))
 - Bump [@babel/helpers](https://github.com/babel/babel/tree/HEAD/packages/babel-helpers) from 7.24.0 to 7.26.10 ([#3629](https://github.com/cosmos/gaia/pull/3629))
+- Bump [github.com/cosmos/interchain-security/v7](https://github.com/cosmos/interchain-security) from 7.0.0-rc0.0.20250303194851-ccfc7f173e2f to 7.0.0 ([#3649](https://github.com/cosmos/gaia/pull/3649))
 
 ## v22.2.0
 

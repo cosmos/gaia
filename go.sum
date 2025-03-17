@@ -458,8 +458,8 @@ github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0 h1:BVRq3TXGB4KuC0Ne
 github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0/go.mod h1:tJAKo0fV9CJfwNowdzVo4HJ5Y6uaL5HF9XRTHXr21KA=
 github.com/cosmos/ibc-go/modules/capability v1.0.1 h1:ibwhrpJ3SftEEZRxCRkH0fQZ9svjthrX2+oXdZvzgGI=
 github.com/cosmos/ibc-go/modules/capability v1.0.1/go.mod h1:rquyOV262nGJplkumH+/LeYs04P3eV8oB7ZM4Ygqk4E=
-github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.0.0 h1:Kc/vT2d6sBL2ZOjX+Meo34GP4/GShvQJPagTcKOtobU=
-github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.0.0/go.mod h1:0f8L7v+WTTVoEGqRB08K/SUGFIcy5IZhgtz5VtjDarM=
+github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.1.0 h1:q3GBXlhIb1x28EyPBAM+5v13DeGTrqh1AkEEsg9k7ro=
+github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.1.0/go.mod h1:efSTtz95qJotcPHwq5LWd87VCSW1MksUwChS/gJG7Vk=
 github.com/cosmos/ibc-go/v10 v10.1.0 h1:2liTTnPTHkRlwin+jAtJoIQ8uGly2lothdsUpefeNwQ=
 github.com/cosmos/ibc-go/v10 v10.1.0/go.mod h1:Lgp7NUqBMjZhDcHzkj7IYTKHMq09GNe2iUc/qXb+rts=
 github.com/cosmos/ics23/go v0.11.0 h1:jk5skjT0TqX5e5QJbEnwXIS2yI2vnmLOgpQPeM5RtnU=

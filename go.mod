@@ -2,6 +2,8 @@ module github.com/cosmos/gaia/v23
 
 go 1.23.6
 
+toolchain go1.24.1
+
 require (
 	cosmossdk.io/api v0.7.6
 	cosmossdk.io/client/v2 v2.0.0-beta.7
@@ -29,7 +31,7 @@ require (
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0
 	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.0.0
 	github.com/cosmos/ibc-go/v10 v10.1.0
-	github.com/cosmos/interchain-security/v7 v7.0.0-rc0.0.20250303194851-ccfc7f173e2f
+	github.com/cosmos/interchain-security/v7 v7.0.0
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.11.0
@@ -41,6 +43,7 @@ require (
 	github.com/spf13/pflag v1.0.6
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.10.0
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -249,7 +252,6 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241202173237-19429a94021a // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/v3 v3.5.1 // indirect
 	nhooyr.io/websocket v1.8.17 // indirect

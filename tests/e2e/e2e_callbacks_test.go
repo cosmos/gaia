@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/msg"
 	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
@@ -53,10 +54,12 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 
 	instantiateAdapterJSON := fmt.Sprintf(`{"entry_point_contract_address":"%s"}`, entrypointPredictedAddress)
 	adapterAddress := s.InstantiateWasm(ctx, s.Resources.ChainA, valIdx, sender, adapterCode, instantiateAdapterJSON, "adapter")
+	common.AdapterAddress = adapterAddress
 	s.Require().NoError(err)
 
 	instantiateEntrypointJSON := fmt.Sprintf(`{"swap_venues":[], "ibc_transfer_contract_address": "%s"}`, adapterAddress)
 	entrypointAddress := s.Instantiate2Wasm(ctx, s.Resources.ChainA, valIdx, sender, entryPointCode, instantiateEntrypointJSON, SaltHex, "entrypoint")
+	common.EntrypointAddress = entrypointAddress
 	s.Require().Equal(entrypointPredictedAddress, entrypointAddress)
 	s.Require().NoError(err)
 
@@ -69,32 +72,7 @@ func (s *IntegrationTestSuite) testCallbacksCWSkipGo() {
 
 	recipientDenom := fmt.Sprintf("ibc/%X", bs)
 
-	ibcHooksData := fmt.Sprintf(`"wasm": {
-						"contract": "%s",
-						"msg": {
-						  "action": {
-							"sent_asset": {
-							  "native": {
-								"denom":"%s",
-								"amount":"1"
-							  }
-							},
-							"exact_out": false,
-							"timeout_timestamp": %d,
-							"action": {
-							  "transfer":{
-								"to_address": "%s"
-							  }
-							}
-						  }
-						}
-					  }`, entrypointAddress, recipientDenom, time.Now().Add(time.Minute).UnixNano(), RecipientAddress)
-	destCallbackData := fmt.Sprintf(`"dest_callback": {
-					"address": "%s",
-					"gas_limit": "%d"
-				  }`, adapterAddress, 10_000_000)
-
-	memo := fmt.Sprintf("{%s,%s}", destCallbackData, ibcHooksData)
+	memo := msg.BuildCallbacksMemo(entrypointAddress, recipientDenom, adapterAddress, RecipientAddress)
 
 	senderB, _ := s.Resources.ChainB.Validators[0].KeyInfo.GetAddress()
 	s.SendIBC(s.Resources.ChainB, 0, senderB.String(), adapterAddress, "1uatom", "3000000uatom", memo, common.TransferChannel, nil, false)

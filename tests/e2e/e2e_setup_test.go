@@ -94,6 +94,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.TestCounters = common.TestCounters{
 		ProposalCounter:           0,
 		ContractsCounter:          0,
+		IBCV2PacketSequence:       1,
 		ContractsCounterPerSender: map[string]uint64{},
 	}
 

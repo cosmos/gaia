@@ -71,15 +71,24 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=gaia \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
 			-X github.com/cometbft/cometbft/version.TMCoreSemVer=$(TM_VERSION)
 
+extldflags := ""
+UNAME_S = $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+  extldflags += -z noexecstack
+endif
 ifeq (cleveldb,$(findstring cleveldb,$(GAIA_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
 endif
 ifeq ($(LINK_STATICALLY),true)
-  ldflags += -linkmode=external -extldflags "-Wl,-z,muldefs -static -z noexecstack"
+  extldflags += -Wl,-z,muldefs -static -z noexecstack
+  ldflags += -linkmode=external
 endif
 ifeq (,$(findstring nostrip,$(GAIA_BUILD_OPTIONS)))
   ldflags += -w -s
 endif
+extldflags += $(EXTLDFLAGS)
+extldflags := $(strip $(extldflags))
+ldflags += -extldflags $(extldflags)
 ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
 

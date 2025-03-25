@@ -399,16 +399,24 @@ func (k msgServer) TransferTokenizeShareRecord(goCtx context.Context, msg *types
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress
 	}
-	k.deleteTokenizeShareRecordWithOwner(ctx, oldOwner, record.Id)
+	newOwner, err := k.authKeeper.AddressCodec().StringToBytes(msg.NewOwner)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidAddress
+	}
 
+	// This check is necessary to prevent sending rewards to a blocked addresses
+	if k.bankKeeper.BlockedAddr(oldOwner) {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", record.Owner)
+	}
+	if k.bankKeeper.BlockedAddr(newOwner) {
+		return nil, errorsmod.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive funds", msg.NewOwner)
+	}
+
+	k.deleteTokenizeShareRecordWithOwner(ctx, oldOwner, record.Id)
 	record.Owner = msg.NewOwner
 	k.setTokenizeShareRecord(ctx, record)
 
 	// Set new account reference
-	newOwner, err := k.authKeeper.AddressCodec().StringToBytes(record.Owner)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress
-	}
 	k.setTokenizeShareRecordWithOwner(ctx, newOwner, record.Id)
 
 	ctx.EventManager().EmitEvent(

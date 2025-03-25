@@ -2,6 +2,18 @@
 
 ## UNRELEASED
 
+## v23.0.1
+
+*March 25, 2025*
+
+### BUG FIXES
+- Add linker flags for noexec linux builds
+  ([\#3666](https://github.com/cosmos/gaia/pull/3666))
+
+## v23.0.0
+
+*March 14, 2025*
+
 ### DEPENDENCIES
 
 - Bump Go to 1.23 [\#3556](https://github.com/cosmos/gaia/pull/3556)

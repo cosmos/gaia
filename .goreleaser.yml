@@ -104,7 +104,7 @@ builds:
     ldflags:
       - -s -w
       - -linkmode=external
-      - -extldflags "-Wl,-z,muldefs -static"
+      - -extldflags "-Wl,-z,muldefs -static -z noexecstack"
       - -X main.commit={{.Commit}}
       - -X main.date={{ .CommitDate }}
       - -X github.com/cosmos/cosmos-sdk/version.Name=gaia

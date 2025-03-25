@@ -15,6 +15,8 @@
 - Bump [ibc-apps/modules/rate-limiting](https://github.com/cosmos/ibc-apps/tree/main/modules/rate-limiting) to [v10.0.0-beta.2-bugfix.1](https://github.com/cosmos/ibc-apps/tree/modules/rate-limiting/v10.0.0-beta.2-bugfix.1) ([\#3588](https://github.com/cosmos/gaia/pull/3588))
 
 ### BUG FIXES
+- Add linker flags for noexec linux builds
+  ([\#3666](https://github.com/cosmos/gaia/pull/3666))
 - Export only validators that are participating in consensus
   ([\#3490](https://github.com/cosmos/gaia/pull/3490))
 - Fix goreleaser config to generate Linux builds again. ([\#3506](https://github.com/cosmos/gaia/pull/3506))

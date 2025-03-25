@@ -93,6 +93,20 @@ func querySupplyOf(endpoint, denom string) (sdk.Coin, error) {
 	return supplyOfResp.Amount, nil
 }
 
+func queryTotalLiquidStaked(endpoint string) (string, error) {
+	body, err := httpGet(fmt.Sprintf("%s/gaia/liquid/v1beta1/total_liquid_staked", endpoint))
+	if err != nil {
+		return "", fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	var resp liquidtypes.QueryTotalLiquidStakedResponse
+	if err := cdc.UnmarshalJSON(body, &resp); err != nil {
+		return "", err
+	}
+
+	return resp.Tokens, nil
+}
+
 func queryLiquidParams(endpoint string) (liquidtypes.QueryParamsResponse, error) {
 	body, err := httpGet(fmt.Sprintf("%s/gaia/liquid/v1beta1/params", endpoint))
 	if err != nil {
@@ -237,6 +251,20 @@ func queryPeriodicVestingAccount(endpoint, address string) (authvesting.Periodic
 	return *acc, nil
 }
 
+func queryPool(endpoint string) (stakingtypes.Pool, error) {
+	var res stakingtypes.QueryPoolResponse
+	body, err := httpGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/pool", endpoint))
+	if err != nil {
+		return stakingtypes.Pool{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return stakingtypes.Pool{}, err
+	}
+
+	return res.Pool, nil
+}
+
 func queryValidator(endpoint, address string) (stakingtypes.Validator, error) {
 	var res stakingtypes.QueryValidatorResponse
 
@@ -303,6 +331,19 @@ func queryTokenizeShareRecordByID(endpoint string, recordID int) (liquidtypes.To
 		return liquidtypes.TokenizeShareRecord{}, err
 	}
 	return res.Record, nil
+}
+
+func queryLastTokenizeShareRecordID(endpoint string) (uint64, error) {
+	var res liquidtypes.QueryLastTokenizeShareRecordIdResponse
+	body, err := httpGet(fmt.Sprintf("%s/gaia/liquid/v1beta1/last_tokenize_share_record_id", endpoint))
+	if err != nil {
+		return 0, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	if err := cdc.UnmarshalJSON(body, &res); err != nil {
+		return 0, err
+	}
+	return res.Id, nil
 }
 
 func queryAllRateLimits(endpoint string) ([]ratelimittypes.RateLimit, error) {

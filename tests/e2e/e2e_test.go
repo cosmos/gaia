@@ -110,6 +110,8 @@ func (s *IntegrationTestSuite) TestLiquid() {
 		s.T().Skip()
 	}
 	s.testLiquid()
+	s.testLiquidGlobalLimit()
+	s.testLiquidValidatorLimit()
 }
 
 func (s *IntegrationTestSuite) TestRateLimit() {

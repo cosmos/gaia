@@ -9,11 +9,7 @@ import (
 )
 
 var (
-	// ValidatorBondFactor of -1 indicates that it's disabled
-	ValidatorBondCapDisabled = math.LegacyNewDecFromInt(math.NewInt(-1))
 
-	// DefaultValidatorBondFactor is set to -1 (disabled)
-	DefaultValidatorBondFactor = ValidatorBondCapDisabled
 	// DefaultGlobalLiquidStakingCap is set to 100%
 	DefaultGlobalLiquidStakingCap = math.LegacyOneDec()
 	// DefaultValidatorLiquidStakingCap is set to 100%
@@ -22,7 +18,6 @@ var (
 
 // NewParams creates a new Params instance
 func NewParams(
-	validatorBondFactor math.LegacyDec,
 	globalLiquidStakingCap math.LegacyDec,
 	validatorLiquidStakingCap math.LegacyDec,
 ) Params {
@@ -35,7 +30,6 @@ func NewParams(
 // DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
 	return NewParams(
-		DefaultValidatorBondFactor,
 		DefaultGlobalLiquidStakingCap,
 		DefaultValidatorLiquidStakingCap,
 	)

@@ -809,6 +809,35 @@ func (s *IntegrationTestSuite) executeValidatorBond(c *chain, valIdx int, valOpe
 }
 */
 
+func (s *IntegrationTestSuite) executeTokenizeSharesFailure(c *chain, valIdx int, amount, valOperAddress,
+	delegatorAddr, home, delegateFees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx liquid tokenize-share %s", c.id)
+
+	gaiaCommand := []string{
+		gaiadBinary,
+		txCommand,
+		liquidtypes.ModuleName,
+		"tokenize-share",
+		valOperAddress,
+		amount,
+		delegatorAddr,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.id),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
+		fmt.Sprintf("--%s=%d", flags.FlagGas, 1000000),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.executeGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.expectErrExecValidation(c, valIdx, true))
+	s.T().Logf("%s expected failure on execution of tokenize share tx from %s", delegatorAddr, valOperAddress)
+}
+
 func (s *IntegrationTestSuite) executeTokenizeShares(c *chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()

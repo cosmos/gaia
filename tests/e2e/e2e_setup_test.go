@@ -749,7 +749,7 @@ func (s *IntegrationTestSuite) writeCancelSoftwareUpgradeProposal(c *chain) {
 	s.Require().NoError(err)
 }
 
-func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain) {
+func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain, global int64, val int64) {
 	template := `
 	{
 		"messages": [
@@ -770,8 +770,8 @@ func (s *IntegrationTestSuite) writeLiquidStakingParamsUpdateProposal(c *chain) 
 	   }`
 	propMsgBody := fmt.Sprintf(template,
 		govAuthority,
-		math.LegacyNewDecWithPrec(25, 2), // 25 global_liquid_staking_cap
-		math.LegacyNewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap
+		math.LegacyNewDecWithPrec(global, 2), // global_liquid_staking_cap
+		math.LegacyNewDecWithPrec(val, 2),    // validator_liquid_staking_cap
 	)
 
 	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalLiquidParamUpdateFilename),

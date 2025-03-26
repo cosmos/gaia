@@ -810,7 +810,8 @@ func (s *IntegrationTestSuite) executeValidatorBond(c *chain, valIdx int, valOpe
 */
 
 func (s *IntegrationTestSuite) executeTokenizeSharesFailure(c *chain, valIdx int, amount, valOperAddress,
-	delegatorAddr, home, delegateFees string) {
+	delegatorAddr, home, delegateFees string,
+) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 

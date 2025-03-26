@@ -14,10 +14,8 @@ import (
 	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
 )
 
-var (
-	// underBuffer is the number of tokens under the limit to tokenize
-	underBuffer = math.NewInt(5_000_000)
-)
+// underBuffer is the number of tokens under the limit to tokenize
+var underBuffer = math.NewInt(5_000_000)
 
 func (s *IntegrationTestSuite) testLiquid() {
 	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))

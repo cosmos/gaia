@@ -18,15 +18,15 @@ import (
 )
 
 const (
-	stakeAmount          = "10000000" // 10 ATOM
-	submissionDeposit    = "100"
-	proposalDepositInt   = chainsuite.GovMinDepositAmount
-	communityPoolAmount  = "200000000" // 200 ATOM
-	yesWeight            = 0.6
-	noWeight             = 0.3
-	abstainWeight        = 0.06
-	vetoWeight           = 0.04
-	queryScaleMultiplier = 1000000000000000000 // 18 zeroes
+	govStakeAmount          = "10000000" // 10 ATOM
+	govSubmissionDeposit    = "100"
+	proposalDepositInt      = chainsuite.GovMinDepositAmount
+	govCommunityPoolAmount  = "200000000" // 200 ATOM
+	govYesWeight            = 0.6
+	govNoWeight             = 0.3
+	govAbstainWeight        = 0.06
+	govVetoWeight           = 0.04
+	govQueryScaleMultiplier = 1000000000000000000 // 18 zeroes
 )
 
 type GovSuite struct {
@@ -37,8 +37,8 @@ func (s *GovSuite) SetupSuite() {
 	s.Suite.SetupSuite()
 	// Delegate >1 ATOM with delegator account
 	node := s.Chain.GetNode()
-	node.StakingDelegate(s.GetContext(), s.DelegatorWallet.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, string(stakeAmount)+s.Chain.Config().Denom)
-	node.StakingDelegate(s.GetContext(), s.DelegatorWallet2.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, string(stakeAmount)+s.Chain.Config().Denom)
+	node.StakingDelegate(s.GetContext(), s.DelegatorWallet.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, string(govStakeAmount)+s.Chain.Config().Denom)
+	node.StakingDelegate(s.GetContext(), s.DelegatorWallet2.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, string(govStakeAmount)+s.Chain.Config().Denom)
 }
 
 func (s *GovSuite) TestProposal() {
@@ -49,7 +49,7 @@ func (s *GovSuite) TestProposal() {
 	// 4. Weighted vote
 
 	// Submit proposal
-	prop, err := s.Chain.BuildProposal(nil, "Test Proposal", "Test Proposal", "ipfs://CID", submissionDeposit+"uatom", s.DelegatorWallet.FormattedAddress(), false)
+	prop, err := s.Chain.BuildProposal(nil, "Test Proposal", "Test Proposal", "ipfs://CID", govSubmissionDeposit+"uatom", s.DelegatorWallet.FormattedAddress(), false)
 	s.Require().NoError(err)
 	result, err := s.Chain.SubmitProposal(s.GetContext(), s.DelegatorWallet.KeyName(), prop)
 	s.Require().NoError(err)
@@ -69,7 +69,7 @@ func (s *GovSuite) TestProposal() {
 	node := s.Chain.GetNode()
 	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet.KeyName(), "gov", "deposit", proposalId, proposalDeposit+"uatom", "--gas", "auto")
 	s.Require().NoError(err)
-	submissionDepositUint, err := strconv.ParseUint(submissionDeposit, 10, 64)
+	submissionDepositUint, err := strconv.ParseUint(govSubmissionDeposit, 10, 64)
 	s.Require().NoError(err)
 	depositTotal := proposalDepositInt + submissionDepositUint
 
@@ -100,7 +100,7 @@ func (s *GovSuite) TestProposal() {
 	s.Require().Equal(float64(1.0), actual_yes_weight.Float())
 
 	// Submit weighted vote
-	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet2.KeyName(), "gov", "weighted-vote", proposalId, fmt.Sprintf("yes=%0.2f,no=%0.2f,abstain=%0.2f,no_with_veto=%0.2f", yesWeight, noWeight, abstainWeight, vetoWeight), "--gas", "auto")
+	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet2.KeyName(), "gov", "weighted-vote", proposalId, fmt.Sprintf("yes=%0.2f,no=%0.2f,abstain=%0.2f,no_with_veto=%0.2f", govYesWeight, govNoWeight, govAbstainWeight, govVetoWeight), "--gas", "auto")
 	s.Require().NoError(err)
 
 	// Test weighted vote
@@ -109,16 +109,16 @@ func (s *GovSuite) TestProposal() {
 	// chainsuite.GetLogger(s.GetContext()).Sugar().Infof("%s", vote)
 	actual_yes_weight = vote.Get("options.#(option==\"VOTE_OPTION_YES\").weight")
 	// chainsuite.GetLogger(s.GetContext()).Sugar().Infof("%s", actual_yes_weight.String())
-	s.Require().Equal(float64(yesWeight), actual_yes_weight.Float())
+	s.Require().Equal(float64(govYesWeight), actual_yes_weight.Float())
 	actual_no_weight := vote.Get("options.#(option==\"VOTE_OPTION_NO\").weight")
 	// chainsuite.GetLogger(s.GetContext()).Sugar().Infof("%s", actual_no_weight.String())
-	s.Require().Equal(float64(noWeight), actual_no_weight.Float())
+	s.Require().Equal(float64(govNoWeight), actual_no_weight.Float())
 	actual_abstain_weight := vote.Get("options.#(option==\"VOTE_OPTION_ABSTAIN\").weight")
 	// chainsuite.GetLogger(s.GetContext()).Sugar().Infof("%s", actual_abstain_weight.String())
-	s.Require().Equal(float64(abstainWeight), actual_abstain_weight.Float())
+	s.Require().Equal(float64(govAbstainWeight), actual_abstain_weight.Float())
 	actual_veto_weight := vote.Get("options.#(option==\"VOTE_OPTION_NO_WITH_VETO\").weight")
 	// chainsuite.GetLogger(s.GetContext()).Sugar().Infof("%s", actual_veto_weight.String())
-	s.Require().Equal(float64(vetoWeight), actual_veto_weight.Float())
+	s.Require().Equal(float64(govVetoWeight), actual_veto_weight.Float())
 }
 
 func (s *GovSuite) TestParamChange() {
@@ -200,7 +200,7 @@ func (s *GovSuite) TestGovFundCommunityPool() {
           }
         ],
         "depositor": "%s"
-	}`, communityPoolAmount, authority)
+	}`, govCommunityPoolAmount, authority)
 
 	// Submit proposal
 	prop, err := s.Chain.BuildProposal(nil, "Community Pool Funding Proposal", "Test Proposal", "ipfs://CID", chainsuite.GovDepositAmount, s.DelegatorWallet.FormattedAddress(), false)
@@ -224,12 +224,12 @@ func (s *GovSuite) TestGovFundCommunityPool() {
 	s.Require().NoError(err)
 	balanceDifference := endingPoolBalance.Uint64() - startingPoolBalance.Uint64()
 	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("The community pool balance increased by %d", balanceDifference)
-	fundAmount, err := strconv.ParseUint(communityPoolAmount, 10, 64)
+	fundAmount, err := strconv.ParseUint(govCommunityPoolAmount, 10, 64)
 	s.Require().NoError(err)
 	s.Require().GreaterOrEqual(balanceDifference, fundAmount)
 }
 
-func TestGov(t *testing.T) {
+func TestGovModule(t *testing.T) {
 	s := &GovSuite{Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
 		UpgradeOnSetup: true,
 	})}}

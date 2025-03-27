@@ -3,6 +3,19 @@ on:
   repository_dispatch:
     types: [image-pushed]
   workflow_dispatch:
+    inputs:
+      from_version:
+        description: 'Version to upgrade from'
+        required: false
+        type: string
+      to_version:
+        description: 'Version to upgrade to (defaults to current branch/tag)'
+        required: false
+        type: string
+      upgrade_name:
+        description: 'Name of the upgrade'
+        required: false
+        type: string
 
 jobs:
     prepare-matrix:
@@ -18,7 +31,8 @@ jobs:
                   echo "tag_name=${{ github.event.client_payload.tag_name }}" | tee -a $GITHUB_OUTPUT
                 else
                   echo "ref_name=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
-                  echo "tag_name=${{ github.ref_name }}" | sed 's~/~-~g' | tee -a $GITHUB_OUTPUT
+                  TO_VERSION="${{ inputs.to_version }}"
+                  echo "tag_name=${TO_VERSION:-${{ github.ref_name }}}" | sed 's~/~-~g' | tee -a $GITHUB_OUTPUT
                 fi
             - name: Check out repository code
               uses: actions/checkout@v4
@@ -28,8 +42,14 @@ jobs:
               uses: actions/setup-go@v5
             - name: Prepare matrix
               id: generate-matrix
+              env:
+                FROM_VERSION: ${{ inputs.from_version }}
+                UPGRADE_NAME: ${{ inputs.upgrade_name }}
               run: |
                 cd ./tests/interchain
+                # Print debug information
+                echo "Using FROM_VERSION=${FROM_VERSION:-auto}"
+                echo "Using UPGRADE_NAME=${UPGRADE_NAME:-auto}"
                 echo "matrix=$(go run ./matrix_tool/main.go ${{ steps.get-metadata.outputs.tag_name }})" | tee -a $GITHUB_OUTPUT
         outputs:
             matrix: ${{ steps.generate-matrix.outputs.matrix }}
@@ -87,7 +107,7 @@ jobs:
                 UPGRADE_NAME=$(echo "$TEST_MATRIX" | jq -r '.upgrade_name[0]')
                 echo "$TEST_MATRIX" | jq -r '.previous_version[]' | while read PREV_VERSION; do
                   cat ./outputs/output-${PREV_VERSION}-*/*.json > combined-${PREV_VERSION}.json
-                  go-testreport -vars="Title:${PREV_VERSION} -> ${UPGRADE_NAME} (${TEST_VERSION})" "test-report-${PREV_VERSION}.md" < "combined-${PREV_VERSION}.json" || true
+                  go-testreport -vars="Title:${PREV_VERSION} -> ${UPGRADE_NAME} (${TEST_VERSION})" -output="test-report-${PREV_VERSION}.md" -input="combined-${PREV_VERSION}.json" || true
                   echo '' >> test-report-${PREV_VERSION}.md
                 done
                 cat test-report-*.md > test-report.md

@@ -3,40 +3,36 @@ package e2e
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 	"strconv"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/client/flags"
-
-	"github.com/cosmos/gaia/v23/tests/e2e/data"
-)
-
-const (
-	proposalStoreWasmLightClientFilename = "proposal_store_wasm_light_client.json"
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/msg"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) testStoreWasmLightClient() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
-	validatorA := s.chainA.validators[0]
-	validatorAAddr, _ := validatorA.keyInfo.GetAddress()
+	validatorA := s.Resources.ChainA.Validators[0]
+	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
-	s.writeStoreWasmLightClientProposal(s.chainA)
-	proposalCounter++
-	submitGovFlags := []string{configFile(proposalStoreWasmLightClientFilename)}
-	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
+	err := msg.WriteStoreWasmLightClientProposal(s.Resources.ChainA)
+	s.Require().NoError(err)
+	s.TestCounters.ProposalCounter++
+	submitGovFlags := []string{configFile(common.ProposalStoreWasmLightClientFilename)}
+	depositGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), "yes"}
 
-	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.T().Logf("Proposal number: %d", s.TestCounters.ProposalCounter)
 	s.T().Logf("Submitting, deposit and vote Gov Proposal: Store wasm light client code")
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), proposalCounter, "ibc.lightclients.wasm.v1.MsgStoreCode", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.TestCounters.ProposalCounter, "ibc.lightclients.wasm.v1.MsgStoreCode", submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	s.Require().Eventually(
 		func() bool {
 			s.T().Logf("After StoreWasmLightClient proposal")
 
-			res, err := queryIbcWasmChecksums(chainEndpoint)
+			res, err := query.IbcWasmChecksums(chainEndpoint)
 			s.Require().NoError(err)
 			s.Require().NotNil(res)
 			s.Require().Equal(1, len(res))
@@ -53,77 +49,13 @@ func (s *IntegrationTestSuite) testCreateWasmLightClient() {
 	defer cancel()
 
 	valIdx := 0
-	val := s.chainA.validators[valIdx]
-	address, _ := val.keyInfo.GetAddress()
+	val := s.Resources.ChainA.Validators[valIdx]
+	address, _ := val.KeyInfo.GetAddress()
 	sender := address.String()
 
 	clientState := `{"@type":"/ibc.lightclients.wasm.v1.ClientState","data":"ZG9lc250IG1hdHRlcg==","checksum":"O45STPnbLLar4DtFwDx0dE6tuXQW5XTKPHpbjaugun4=","latest_height":{"revision_number":"0","revision_height":"7795583"}}`
 	consensusState := `{"@type":"/ibc.lightclients.wasm.v1.ConsensusState","data":"ZG9lc250IG1hdHRlcg=="}`
 
-	cmd := []string{
-		gaiadBinary,
-		txCommand,
-		"ibc",
-		"client",
-		"create",
-		clientState,
-		consensusState,
-		fmt.Sprintf("--from=%s", sender),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, standardFees.String()),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.chainA.id),
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
-		"-y",
-	}
-
-	s.T().Logf("Creating wasm light client on chain %s", s.chainA.id)
-	s.executeGaiaTxCommand(ctx, s.chainA, cmd, valIdx, s.defaultExecValidation(s.chainA, valIdx))
-	s.T().Log("successfully created wasm light client")
-
-	cmd2 := []string{
-		gaiadBinary,
-		txCommand,
-		"ibc",
-		"client",
-		"add-counterparty",
-		v2TransferClient,
-		"client-0",
-		"aWJj",
-		fmt.Sprintf("--from=%s", sender),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, standardFees.String()),
-		fmt.Sprintf("--%s=%s", flags.FlagChainID, s.chainA.id),
-		"--keyring-backend=test",
-		"--broadcast-mode=sync",
-		"--output=json",
-		"-y",
-	}
-
-	s.T().Logf("Adding wasm light client counterparty on chain %s", s.chainA.id)
-	s.executeGaiaTxCommand(ctx, s.chainA, cmd2, valIdx, s.defaultExecValidation(s.chainA, valIdx))
-	s.T().Log("successfully added wasm light client counterparty")
-}
-
-func (s *IntegrationTestSuite) writeStoreWasmLightClientProposal(c *chain) {
-	template := `
-	{
-		"messages": [
-			{
-			"@type": "/ibc.lightclients.wasm.v1.MsgStoreCode",
-			"signer": "%s",
-			"wasm_byte_code": "%s"
-			}
-		],
-		"metadata": "AQ==",
-		"deposit": "100uatom",
-		"title": "Store wasm light client code",
-		"summary": "e2e-test storing wasm light client code"
-	   }`
-	propMsgBody := fmt.Sprintf(template,
-		govAuthority,
-		data.WasmDummyLightClient,
-	)
-
-	err := writeFile(filepath.Join(c.validators[0].configDir(), "config", proposalStoreWasmLightClientFilename), []byte(propMsgBody))
-	s.Require().NoError(err)
+	s.CreateClient(ctx, s.Resources.ChainA, clientState, consensusState, sender, valIdx)
+	s.AddWasmClientCounterparty(ctx, s.Resources.ChainA, sender, valIdx)
 }

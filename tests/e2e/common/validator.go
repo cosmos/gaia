@@ -1,4 +1,4 @@
-package e2e
+package common
 
 import (
 	"context"
@@ -34,34 +34,34 @@ import (
 //
 //nolint:unused
 type validator struct {
-	chain            *chain
-	index            int
-	moniker          string
-	mnemonic         string
-	keyInfo          keyring.Record
+	chain            *Chain
+	Index            int
+	Moniker          string
+	Mnemonic         string
+	KeyInfo          keyring.Record
 	privateKey       cryptotypes.PrivKey
 	consensusKey     privval.FilePVKey
 	consensusPrivKey cryptotypes.PrivKey
-	nodeKey          p2p.NodeKey
+	NodeKey          p2p.NodeKey
 }
 
 type account struct {
 	moniker    string //nolint:unused
-	mnemonic   string
-	keyInfo    keyring.Record
+	Mnemonic   string
+	KeyInfo    keyring.Record
 	privateKey cryptotypes.PrivKey
 }
 
-func (v *validator) instanceName() string {
-	return fmt.Sprintf("%s%d", v.moniker, v.index)
+func (v *validator) InstanceName() string {
+	return fmt.Sprintf("%s%d", v.Moniker, v.Index)
 }
 
-func (v *validator) configDir() string {
-	return fmt.Sprintf("%s/%s", v.chain.configDir(), v.instanceName())
+func (v *validator) ConfigDir() string {
+	return fmt.Sprintf("%s/%s", v.chain.configDir(), v.InstanceName())
 }
 
 func (v *validator) createConfig() error {
-	p := path.Join(v.configDir(), "config")
+	p := path.Join(v.ConfigDir(), "config")
 	return os.MkdirAll(p, 0o755)
 }
 
@@ -73,8 +73,8 @@ func (v *validator) init(genesisState map[string]json.RawMessage) error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 
-	config.SetRoot(v.configDir())
-	config.Moniker = v.moniker
+	config.SetRoot(v.ConfigDir())
+	config.Moniker = v.Moniker
 
 	appState, err := json.MarshalIndent(genesisState, "", " ")
 	if err != nil {
@@ -82,7 +82,7 @@ func (v *validator) init(genesisState map[string]json.RawMessage) error {
 	}
 
 	appGenesis := genutiltypes.AppGenesis{
-		ChainID:  v.chain.id,
+		ChainID:  v.chain.ID,
 		AppState: appState,
 		Consensus: &genutiltypes.ConsensusGenesis{
 			Validators: nil,
@@ -101,15 +101,15 @@ func (v *validator) createNodeKey() error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 
-	config.SetRoot(v.configDir())
-	config.Moniker = v.moniker
+	config.SetRoot(v.ConfigDir())
+	config.Moniker = v.Moniker
 
 	nodeKey, err := p2p.LoadOrGenNodeKey(config.NodeKeyFile())
 	if err != nil {
 		return err
 	}
 
-	v.nodeKey = *nodeKey
+	v.NodeKey = *nodeKey
 	return nil
 }
 
@@ -117,8 +117,8 @@ func (v *validator) createConsensusKey() error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 
-	config.SetRoot(v.configDir())
-	config.Moniker = v.moniker
+	config.SetRoot(v.ConfigDir())
+	config.Moniker = v.Moniker
 
 	pvKeyFile := config.PrivValidatorKeyFile()
 	if err := tmos.EnsureDir(filepath.Dir(pvKeyFile), 0o777); err != nil {
@@ -137,8 +137,8 @@ func (v *validator) createConsensusKey() error {
 }
 
 func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
-	dir := v.configDir()
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, dir, nil, cdc)
+	dir := v.ConfigDir()
+	kb, err := keyring.New(KeyringAppName, keyring.BackendTest, dir, nil, Cdc)
 	if err != nil {
 		return err
 	}
@@ -164,16 +164,16 @@ func (v *validator) createKeyFromMnemonic(name, mnemonic string) error {
 		return err
 	}
 
-	v.keyInfo = *info
-	v.mnemonic = mnemonic
+	v.KeyInfo = *info
+	v.Mnemonic = mnemonic
 	v.privateKey = privKey
 
 	return nil
 }
 
-func (c *chain) addAccountFromMnemonic(counts int) error {
-	val0ConfigDir := c.validators[0].configDir()
-	kb, err := keyring.New(keyringAppName, keyring.BackendTest, val0ConfigDir, nil, cdc)
+func (c *Chain) AddAccountFromMnemonic(counts int) error {
+	val0ConfigDir := c.Validators[0].ConfigDir()
+	kb, err := keyring.New(KeyringAppName, keyring.BackendTest, val0ConfigDir, nil, Cdc)
 	if err != nil {
 		return err
 	}
@@ -186,7 +186,7 @@ func (c *chain) addAccountFromMnemonic(counts int) error {
 
 	for i := 0; i < counts; i++ {
 		name := fmt.Sprintf("acct-%d", i)
-		mnemonic, err := createMnemonic()
+		mnemonic, err := CreateMnemonic()
 		if err != nil {
 			return err
 		}
@@ -205,17 +205,17 @@ func (c *chain) addAccountFromMnemonic(counts int) error {
 			return err
 		}
 		acct := account{}
-		acct.keyInfo = *info
-		acct.mnemonic = mnemonic
+		acct.KeyInfo = *info
+		acct.Mnemonic = mnemonic
 		acct.privateKey = privKey
-		c.genesisAccounts = append(c.genesisAccounts, &acct)
+		c.GenesisAccounts = append(c.GenesisAccounts, &acct)
 	}
 
 	return nil
 }
 
 func (v *validator) createKey(name string) error {
-	mnemonic, err := createMnemonic()
+	mnemonic, err := CreateMnemonic()
 	if err != nil {
 		return err
 	}
@@ -223,8 +223,8 @@ func (v *validator) createKey(name string) error {
 	return v.createKeyFromMnemonic(name, mnemonic)
 }
 
-func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
-	description := stakingtypes.NewDescription(v.moniker, "", "", "", "")
+func (v *validator) BuildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
+	description := stakingtypes.NewDescription(v.Moniker, "", "", "", "")
 	commissionRates := stakingtypes.CommissionRates{
 		Rate:          math.LegacyMustNewDecFromStr("0.1"),
 		MaxRate:       math.LegacyMustNewDecFromStr("0.2"),
@@ -236,7 +236,7 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 		return nil, err
 	}
 
-	addr, err := v.keyInfo.GetAddress()
+	addr, err := v.KeyInfo.GetAddress()
 	if err != nil {
 		return nil, err
 	}
@@ -250,14 +250,14 @@ func (v *validator) buildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 	)
 }
 
-func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
-	txBuilder := encodingConfig.TxConfig.NewTxBuilder()
+func (v *validator) SignMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
+	txBuilder := EncodingConfig.TxConfig.NewTxBuilder()
 
 	if err := txBuilder.SetMsgs(msgs...); err != nil {
 		return nil, err
 	}
 
-	txBuilder.SetMemo(fmt.Sprintf("%s@%s:26656", v.nodeKey.ID(), v.instanceName()))
+	txBuilder.SetMemo(fmt.Sprintf("%s@%s:26656", v.NodeKey.ID(), v.InstanceName()))
 	txBuilder.SetFeeAmount(sdk.NewCoins())
 	txBuilder.SetGasLimit(200000)
 
@@ -269,7 +269,7 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	// Note: This line is not needed for SIGN_MODE_LEGACY_AMINO, but putting it
 	// also doesn't affect its generated sign bytes, so for code's simplicity
 	// sake, we put it here.
-	pk, err := v.keyInfo.GetPubKey()
+	pk, err := v.KeyInfo.GetPubKey()
 	if err != nil {
 		return nil, err
 	}
@@ -287,21 +287,21 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 		return nil, err
 	}
 
-	pk, err = v.keyInfo.GetPubKey()
+	pk, err = v.KeyInfo.GetPubKey()
 	if err != nil {
 		return nil, err
 	}
 
 	signerData := authsigning.SignerData{
 		Address:       sdk.AccAddress(pk.Bytes()).String(),
-		ChainID:       v.chain.id,
+		ChainID:       v.chain.ID,
 		AccountNumber: 0,
 		Sequence:      0,
 		PubKey:        pk,
 	}
 	sig, err = tx.SignWithPrivKey(
 		context.TODO(), txsigning.SignMode_SIGN_MODE_DIRECT, signerData,
-		txBuilder, v.privateKey, txConfig, 0)
+		txBuilder, v.privateKey, TxConfig, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -311,10 +311,10 @@ func (v *validator) signMsg(msgs ...sdk.Msg) (*sdktx.Tx, error) {
 	}
 
 	signedTx := txBuilder.GetTx()
-	bz, err := encodingConfig.TxConfig.TxEncoder()(signedTx)
+	bz, err := EncodingConfig.TxConfig.TxEncoder()(signedTx)
 	if err != nil {
 		return nil, err
 	}
 
-	return decodeTx(bz)
+	return DecodeTx(bz)
 }

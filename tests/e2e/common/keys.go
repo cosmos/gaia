@@ -1,11 +1,11 @@
-package e2e
+package common
 
 import (
 	"github.com/cosmos/go-bip39"
 )
 
-// createMnemonic creates a random string mnemonic
-func createMnemonic() (string, error) {
+// CreateMnemonic creates a random string mnemonic
+func CreateMnemonic() (string, error) {
 	entropySeed, err := bip39.NewEntropy(256)
 	if err != nil {
 		return "", err

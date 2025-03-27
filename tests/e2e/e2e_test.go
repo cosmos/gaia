@@ -88,7 +88,7 @@ func (s *IntegrationTestSuite) TestSlashing() {
 	if !runSlashingTest {
 		s.T().Skip()
 	}
-	chainAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	chainAPI := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 	s.testSlashing(chainAPI)
 }
 
@@ -104,7 +104,7 @@ func (s *IntegrationTestSuite) TestVesting() {
 	if !runVestingTest {
 		s.T().Skip()
 	}
-	chainAAPI := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	chainAAPI := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 	s.testDelayedVestingAccount(chainAAPI)
 	s.testContinuousVestingAccount(chainAAPI)
 	// s.testPeriodicVestingAccount(chainAAPI) TODO: add back when v0.45 adds the missing CLI command.
@@ -152,6 +152,8 @@ func (s *IntegrationTestSuite) TestIbcV2() {
 	// ibc v2 wasm light client tests
 	s.testStoreWasmLightClient()
 	s.testCreateWasmLightClient()
+	s.TestV2RecvPacket()
+	s.TestV2Callback()
 
 	// ibc v2 rate limiting tests
 	s.testAddRateLimits(true)

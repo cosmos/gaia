@@ -20,9 +20,7 @@ type Keeper struct {
 	bankKeeper    types.BankKeeper
 	stakingKeeper types.StakingKeeper
 	distKeeper    types.DistributionKeeper
-	// TODO Replace distribution keeper's tokenizeshare record hook thingy
-	// hooks                 types.StakingHooks
-	authority string
+	authority     string
 }
 
 // NewKeeper creates a new liquid Keeper instance

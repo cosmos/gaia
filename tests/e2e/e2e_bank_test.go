@@ -1,7 +1,9 @@
 package e2e
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -217,5 +219,118 @@ func (s *IntegrationTestSuite) failedBankSendWithNonCriticalExtensionOptions() {
 		s.Require().Error(err)
 		s.Require().ErrorContains(err, "failed to decode tx: no concrete type registered for type URL /cosmos.bank.v1beta1.MsgMultiSend against interface *tx.TxExtensionOptionI")
 		s.Require().Nil(txWithExt)
+	})
+}
+
+// testFeeWithWrongDenomOrder tests that transactions with fees specified in non-standard
+// denom order are processed correctly. This verifies that the fee handling is not
+// sensitive to the order of denoms in the fee coins.
+//
+// Steps:
+// 1. Create a transaction with fees where stakeDenom comes before uatomDenom
+// 2. Sign and broadcast the transaction
+// 3. Verify that the transaction is accepted and processed successfully
+//
+// Expected: The transaction should be accepted and processed correctly despite
+// the non-standard ordering of fee denoms.
+func (s *IntegrationTestSuite) testFeeWithWrongDenomOrder() {
+	s.Run("test_fee_with_wrong_denom_order", func() {
+		c := s.chainA
+
+		// Get the first validator's account
+		submitterAccount := c.validators[0]
+		submitterAddress, err := submitterAccount.keyInfo.GetAddress()
+		s.Require().NoError(err)
+
+		// Create transaction with fees in wrong denom order
+		// Note: The standard order would be uatomDenom first, then stakeDenom
+		fees := sdk.NewCoins(
+			sdk.NewCoin(stakeDenom, math.NewInt(1000)), // stake denom first
+			sdk.NewCoin(uatomDenom, math.NewInt(100)),  // uatom denom second
+		)
+
+		// Create a simple bank send message (sending minimal amount to self)
+		msg := banktypes.NewMsgSend(
+			submitterAddress, // from address
+			submitterAddress, // to address (sending to self)
+			sdk.NewCoins(sdk.NewCoin(uatomDenom, math.NewInt(1))), // amount
+		)
+
+		// Build and prepare transaction
+		txBuilder := encodingConfig.TxConfig.NewTxBuilder()
+		err = txBuilder.SetMsgs(msg)
+		s.Require().NoError(err)
+
+		txBuilder.SetFeeAmount(fees)
+		txBuilder.SetGasLimit(gas)
+
+		// Get raw transaction bytes
+		tx := txBuilder.GetTx()
+		txBytes, err := encodingConfig.TxConfig.TxJSONEncoder()(tx)
+		s.Require().NoError(err)
+
+		// Write unsigned transaction to file
+		unsignedFname := "unsigned_tx.json"
+		unsignedTxFile := filepath.Join(submitterAccount.configDir(), unsignedFname)
+		err = writeFile(unsignedTxFile, txBytes)
+		s.Require().NoError(err)
+
+		// Sign transaction
+		signedTx, err := s.signTxFileOnline(c, 0, submitterAddress.String(), unsignedFname)
+		s.Require().NoError(err)
+
+		// Write signed transaction to file
+		signedFname := "signed_tx.json"
+		signedTxFile := filepath.Join(submitterAccount.configDir(), signedFname)
+		err = writeFile(signedTxFile, signedTx)
+		s.Require().NoError(err)
+
+		// Verify that transaction is accepted and processed correctly
+		// despite fees being in wrong denom order
+		s.Require().Eventually(
+			func() bool {
+				// Log the transaction file contents for debugging
+				txContents, err := os.ReadFile(signedTxFile)
+				if err != nil {
+					s.T().Logf("Error reading signed transaction file: %v", err)
+				} else {
+					s.T().Logf("Signed transaction contents: %s", string(txContents))
+				}
+
+				// Broadcast the transaction
+				res, err := s.broadcastTxFile(c, 0, submitterAddress.String(), signedFname)
+				if err != nil {
+					s.T().Logf("Error broadcasting transaction: %v", err)
+					return false
+				}
+
+				// Log the response for debugging
+				s.T().Logf("Broadcast response: %s", string(res))
+
+				var result map[string]interface{}
+				err = json.Unmarshal(res, &result)
+				if err != nil {
+					s.T().Logf("Error unmarshaling response: %v", err)
+					return false
+				}
+
+				// More detailed response checking
+				if rawLog, ok := result["raw_log"].(string); ok {
+					s.T().Logf("Transaction raw_log: %s", rawLog)
+				}
+
+				// Check if transaction was successful (code 0 means success)
+				if code, ok := result["code"].(float64); ok {
+					s.T().Logf("Transaction code: %v", code)
+					return code == 0
+				}
+
+				s.T().Logf("Code field not found in response")
+				return false
+			},
+			45*time.Second, // increasing timeout
+			5*time.Second,  // polling interval
+			"Transaction with wrong denom order should succeed",
+		)
 	})
 }

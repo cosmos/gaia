@@ -10,7 +10,7 @@
 
 ## 📝 Changelog
 
-Check out the [changelog](https://github.com/cosmos/gaia/blob/<v*.*.*>/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/<v-last>...<v*.*.*>) from last release.
+Check out the [changelog](https://github.com/cosmos/gaia/blob/main/CHANGELOG.md) for a list of relevant changes or [compare all changes](https://github.com/cosmos/gaia/compare/<v-last>...<v*.*.*>) from last release.
 
 <!-- Add the following line for major releases -->
 Refer to the [upgrading guide](https://github.com/cosmos/gaia/blob/release/<v*.x>/UPGRADING.md) when migrating from `<v-last.x>` to `<v*.x>`.

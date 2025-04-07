@@ -463,7 +463,7 @@ func NewAppKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[ibctransfertypes.StoreKey]),
 		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
-		appKeepers.PFMRouterKeeper, // ISC4 Wrapper: PFM Router middleware
+		appKeepers.IBCKeeper.ChannelKeeper, // ISC4 Wrapper: This is overriden later
 		appKeepers.IBCKeeper.ChannelKeeper,
 		bApp.MsgServiceRouter(),
 		appKeepers.AccountKeeper,
@@ -520,15 +520,14 @@ func NewAppKeeper(
 	// - transfer
 	//
 	// This is how transfer stack will work in the end:
-	// * RecvPacket -> IBC core -> Fee -> RateLimit -> PFM -> Provider -> Callbacks -> Transfer (AddRoute)
-	// * SendPacket -> Transfer -> Callbacks -> Provider -> PFM -> RateLimit -> Fee -> IBC core (ICS4Wrapper)
+	// * RecvPacket -> IBC core -> RateLimit -> PFM -> Provider -> Callbacks -> Transfer (AddRoute)
+	// * SendPacket -> Transfer -> Callbacks -> PFM -> RateLimit -> IBC core (ICS4Wrapper)
 
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
-	transferStack = ibccallbacks.NewIBCMiddleware(transferStack, appKeepers.IBCKeeper.ChannelKeeper, wasmStackIBCHandler,
+	cbStack := ibccallbacks.NewIBCMiddleware(transferStack, appKeepers.PFMRouterKeeper, wasmStackIBCHandler,
 		gaiaparams.MaxIBCCallbackGas)
-	transferICS4Wrapper := transferStack.(porttypes.ICS4Wrapper)
-	transferStack = icsprovider.NewIBCMiddleware(transferStack, appKeepers.ProviderKeeper)
+	transferStack = icsprovider.NewIBCMiddleware(cbStack, appKeepers.ProviderKeeper)
 	transferStack = pfmrouter.NewIBCMiddleware(
 		transferStack,
 		appKeepers.PFMRouterKeeper,
@@ -536,7 +535,7 @@ func NewAppKeeper(
 		pfmrouterkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 	)
 	transferStack = ratelimit.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStack)
-	appKeepers.TransferKeeper.WithICS4Wrapper(transferICS4Wrapper)
+	appKeepers.TransferKeeper.WithICS4Wrapper(cbStack)
 
 	// Create ICAHost Stack
 	var icaHostStack porttypes.IBCModule = icahost.NewIBCModule(appKeepers.ICAHostKeeper)

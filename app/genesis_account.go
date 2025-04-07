@@ -32,6 +32,10 @@ func (sga SimGenesisAccount) Validate() error {
 		return errors.New("OriginalVesting amount must not be nil")
 	}
 
+	if sga.DelegatedFree == nil || sga.DelegatedVesting == nil {
+		return errors.New("DelegatedFree and DelegatedVesting must not be nil")
+	}
+
 	if !sga.OriginalVesting.IsZero() {
 		if sga.StartTime >= sga.EndTime {
 			return errors.New("vesting start-time cannot be before end-time")

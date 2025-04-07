@@ -339,7 +339,7 @@ func NewGaiaApp(
 	app.setupUpgradeHandlers()
 	app.setupUpgradeStoreLoaders()
 
-	// At startup, after all modules have been registered, check that all prot
+	// At startup, after all modules have been registered, check that all proto
 	// annotations are correct.
 	protoFiles, err := proto.MergedRegistry()
 	if err != nil {
@@ -360,11 +360,11 @@ func NewGaiaApp(
 		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
 
 		if err := app.AppKeepers.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
-			tmos.Exit(fmt.Sprintf("WasmKeeper failed initialize pinned codes %s", err))
+			tmos.Exit(fmt.Sprintf("WasmKeeper failed to initialize pinned codes %s", err))
 		}
 
 		if err := app.WasmClientKeeper.InitializePinnedCodes(ctx); err != nil {
-			panic(fmt.Sprintf("wasmlckeeper failed initialize pinned codes %s", err))
+			panic(fmt.Sprintf("wasmlckeeper failed to initialize pinned codes %s", err))
 		}
 	}
 

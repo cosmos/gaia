@@ -39,6 +39,7 @@
 - Bump [JamesIves/github-pages-deploy-action](https://github.com/jamesives/github-pages-deploy-action) from 4.7.2 to 4.7.3 ([#3547](https://github.com/cosmos/gaia/pull/3547))
 - Bump [@babel/runtime-corejs3](https://github.com/babel/babel/tree/HEAD/packages/babel-runtime-corejs3) from 7.24.0 to 7.26.10 ([#3628](https://github.com/cosmos/gaia/pull/3628))
 - Bump [@babel/helpers](https://github.com/babel/babel/tree/HEAD/packages/babel-helpers) from 7.24.0 to 7.26.10 ([#3629](https://github.com/cosmos/gaia/pull/3629))
+- Bump [cosmossdk.io/store](https://github.com/cosmos/cosmos-sdk) from 1.1.1 to 1.1.2 ([#3687](https://github.com/cosmos/gaia/pull/3687))
 
 ## v22.2.0
 

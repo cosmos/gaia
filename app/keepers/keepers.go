@@ -512,7 +512,6 @@ func NewAppKeeper(
 
 	// Create Transfer Stack (from bottom to top of stack)
 	// - core IBC
-	// - ibcfee
 	// - ratelimit
 	// - pfm
 	// - provider

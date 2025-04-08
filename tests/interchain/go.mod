@@ -9,7 +9,6 @@ replace (
 	github.com/btcsuite/btcd/btcec/v2 => github.com/btcsuite/btcd/btcec/v2 v2.3.2 // 2.3.4 breaks api
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.50.9-lsm
 	github.com/cosmos/iavl => github.com/cosmos/iavl v1.1.2
-	github.com/cosmos/interchain-security/v5 => github.com/cosmos/interchain-security/v5 v5.0.0-20240905162918-300530f18130
 	github.com/ethereum/go-ethereum => github.com/ethereum/go-ethereum v1.14.5 // indirect
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/vedhavyas/go-subkey => github.com/strangelove-ventures/go-subkey v1.0.7
@@ -20,7 +19,7 @@ require (
 	github.com/cometbft/cometbft v0.38.17
 	github.com/cosmos/cosmos-sdk v0.50.13
 	github.com/cosmos/ibc-go/v10 v10.1.1
-	github.com/cosmos/interchain-security/v7 v7.0.0
+	github.com/cosmos/interchain-security/v7 v7.0.1
 	github.com/docker/docker v28.0.0+incompatible
 	github.com/google/go-github/v62 v62.0.0
 	github.com/gorilla/websocket v1.5.3

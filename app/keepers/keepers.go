@@ -463,7 +463,7 @@ func NewAppKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[ibctransfertypes.StoreKey]),
 		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
-		appKeepers.IBCKeeper.ChannelKeeper, // ISC4 Wrapper: This is overriden later
+		appKeepers.IBCKeeper.ChannelKeeper, // ISC4 Wrapper: This is overridden later
 		appKeepers.IBCKeeper.ChannelKeeper,
 		bApp.MsgServiceRouter(),
 		appKeepers.AccountKeeper,

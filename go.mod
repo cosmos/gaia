@@ -2,6 +2,8 @@ module github.com/cosmos/gaia/v23
 
 go 1.23.6
 
+toolchain go1.24.1
+
 require (
 	cosmossdk.io/api v0.7.6
 	cosmossdk.io/client/v2 v2.0.0-beta.7
@@ -27,7 +29,7 @@ require (
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0
-	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.0.0
+	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.1.0
 	github.com/cosmos/ibc-go/v10 v10.1.0
 	github.com/cosmos/interchain-security/v7 v7.0.0
 	github.com/google/gofuzz v1.2.0

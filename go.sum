@@ -472,10 +472,10 @@ github.com/cosmos/gogoproto v1.7.0 h1:79USr0oyXAbxg3rspGh/m4SWNyoz/GLaAh0QlCe2fr
 github.com/cosmos/gogoproto v1.7.0/go.mod h1:yWChEv5IUEYURQasfyBW5ffkMHR/90hiHgbNgrtp4j0=
 github.com/cosmos/iavl v1.2.4 h1:IHUrG8dkyueKEY72y92jajrizbkZKPZbMmG14QzsEkw=
 github.com/cosmos/iavl v1.2.4/go.mod h1:GiM43q0pB+uG53mLxLDzimxM9l/5N9UuSY3/D0huuVw=
-github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0 h1:qjgQgHMP79UqGsETo6vXbKaAnpblPpcbtbHfivmQoD0=
-github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.0.0/go.mod h1:uWqjaNwBh0MS/5blQAw1J5IYNsq7Oknpp6RxRF7zarI=
-github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0 h1:BVRq3TXGB4KuC0Ne7sW2T+RgTgHYppAOJl+Xw2ONCFg=
-github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.0.0/go.mod h1:tJAKo0fV9CJfwNowdzVo4HJ5Y6uaL5HF9XRTHXr21KA=
+github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.1.0 h1:epKcbFAeWRRw1i1jZnYzLIEm9sgUPaL1RftuRjjUKGw=
+github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.1.0/go.mod h1:S4ZQwf5/LhpOi8JXSAese/6QQDk87nTdicJPlZ5q9UQ=
+github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.1.0 h1:Wpa3gDW2tNxxdcUzVL6u34ltPF4tI3SnFP1IIOnlROw=
+github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.1.0/go.mod h1:0NWhkh5Ok8t/qHWOn8LUZsG5rTxhwQWyrsI3xu1/PO0=
 github.com/cosmos/ibc-go/modules/capability v1.0.1 h1:ibwhrpJ3SftEEZRxCRkH0fQZ9svjthrX2+oXdZvzgGI=
 github.com/cosmos/ibc-go/modules/capability v1.0.1/go.mod h1:rquyOV262nGJplkumH+/LeYs04P3eV8oB7ZM4Ygqk4E=
 github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.1.1 h1:mbdtYhi77oF7hKCPAnK6MJX8BqeiaUPnsdWm+1CYugo=
@@ -484,8 +484,8 @@ github.com/cosmos/ibc-go/v10 v10.1.1 h1:Mtl0Ydr9dVdOrPqmxCAG49RmX2/VDYeKYdwv3G2y
 github.com/cosmos/ibc-go/v10 v10.1.1/go.mod h1:0pJCkgEYRMygqkvUcwy6Kuf5wPfIsObRoxFU2DJEil4=
 github.com/cosmos/ics23/go v0.11.0 h1:jk5skjT0TqX5e5QJbEnwXIS2yI2vnmLOgpQPeM5RtnU=
 github.com/cosmos/ics23/go v0.11.0/go.mod h1:A8OjxPE67hHST4Icw94hOxxFEJMBG031xIGF/JHNIY0=
-github.com/cosmos/interchain-security/v7 v7.0.0 h1:jMbiIkz0l60JQB4l6M+rkzjvhMEXu5So705yZFKE2gA=
-github.com/cosmos/interchain-security/v7 v7.0.0/go.mod h1:4zYOGZLc1hdhCI8kzVE/G26D9wSqlqJl9UrH1xTGD38=
+github.com/cosmos/interchain-security/v7 v7.0.1-0.20250408183259-fc64d78fe360 h1:dcEdbU5zlDVZSQ9uE4TNeP84MXs99uHVkV1+y1omMus=
+github.com/cosmos/interchain-security/v7 v7.0.1-0.20250408183259-fc64d78fe360/go.mod h1:pcb0SYZVxy1LuY4UK9ceIdQ+kjnosa9tzE3tcCWdIZw=
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=
 github.com/cosmos/keyring v1.2.0/go.mod h1:fc+wB5KTk9wQ9sDx0kFXB3A0MaeGHM9AwRStKOQ5vOA=
 github.com/cosmos/ledger-cosmos-go v0.14.0 h1:WfCHricT3rPbkPSVKRH+L4fQGKYHuGOK9Edpel8TYpE=

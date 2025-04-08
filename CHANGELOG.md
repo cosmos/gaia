@@ -6,10 +6,12 @@
 
 *March 25, 2025*
 
+### DEPENDENCIES
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.50.13](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.13) (#3642)
+
 ### BUG FIXES
 - Add linker flags for noexec linux builds
   ([\#3666](https://github.com/cosmos/gaia/pull/3666))
-- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.50.13](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.13) (#3642)
 
 ## v23.0.0
 

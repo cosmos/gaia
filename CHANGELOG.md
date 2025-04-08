@@ -2,6 +2,13 @@
 
 ## UNRELEASED
 
+### Dependencies
+
+- Bump `@docusaurus/core` from 2.4.3 to 3.7.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
+- Bump `@docusaurus/plugin-client-redirects` from 2.4.3 to 3.7.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
+- Bump `@docusaurus/plugin-google-analytics` from 2.4.3 to 3.7.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
+- Bump `@docusaurus/plugin-google-gtag` from 2.4.3 to 3.7.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
+
 ## v23.0.1
 
 *March 25, 2025*

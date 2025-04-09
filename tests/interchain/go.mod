@@ -9,12 +9,8 @@ replace (
 	github.com/btcsuite/btcd/btcec/v2 => github.com/btcsuite/btcd/btcec/v2 v2.3.2 // 2.3.4 breaks api
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.50.9-lsm
 	github.com/cosmos/iavl => github.com/cosmos/iavl v1.1.2
-<<<<<<< HEAD
-	github.com/cosmos/interchain-security/v5 => github.com/cosmos/interchain-security/v5 v5.0.0-20240905162918-300530f18130
 	github.com/docker/distribution => github.com/docker/distribution v2.8.2+incompatible
 	github.com/docker/docker => github.com/docker/docker v24.0.9+incompatible
-=======
->>>>>>> 5bc5a64 (chore: bump rate-limiting and pfm (#3696))
 	github.com/ethereum/go-ethereum => github.com/ethereum/go-ethereum v1.14.5 // indirect
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/vedhavyas/go-subkey => github.com/strangelove-ventures/go-subkey v1.0.7
@@ -248,13 +244,8 @@ require (
 	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/exp v0.0.0-20240808152545-0cdaa3abc0fa // indirect
 	golang.org/x/net v0.34.0 // indirect
-<<<<<<< HEAD
-	golang.org/x/oauth2 v0.24.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
-=======
 	golang.org/x/oauth2 v0.25.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
->>>>>>> 5bc5a64 (chore: bump rate-limiting and pfm (#3696))
 	golang.org/x/term v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.9.0 // indirect

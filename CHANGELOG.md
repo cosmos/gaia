@@ -30,6 +30,7 @@
 - Export only validators that are participating in consensus
   ([\#3490](https://github.com/cosmos/gaia/pull/3490))
 - Fix goreleaser config to generate Linux builds again. ([\#3506](https://github.com/cosmos/gaia/pull/3506))
+- Wire IBC v1 transfer stack correctly ([\#3695](https://github.com/cosmos/gaia/pull/3695)
 
 ### IMPROVEMENTS
 

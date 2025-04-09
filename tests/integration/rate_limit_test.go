@@ -76,7 +76,7 @@ func (suite *RateLimitTestSuite) TestRateLimitResetAfterWindow() {
 	suite.Require().Equal(uint64(0), currentEpoch.EpochNumber)
 
 	suite.coordinator.IncrementTimeBy(5 * time.Hour)
-	suite.coordinator.CommitNBlocks(suite.chain, 6) // one incremented per hour every beginblock, should only have +5 (==hours elapsed) even with 5 blocks committed
+	suite.coordinator.CommitNBlocks(suite.chain, 6) // one incremented per hour every beginblock, should only have +5 (==hours elapsed) even with 6 blocks committed
 
 	currentEpoch = suite.app.RatelimitKeeper.GetHourEpoch(ctx)
 	suite.Require().Equal(uint64(5), currentEpoch.EpochNumber)

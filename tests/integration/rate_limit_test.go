@@ -1,17 +1,20 @@
 package integration
 
 import (
-	"cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	gaiaApp "github.com/cosmos/gaia/v23/app"
-	"github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
-	ibctesting "github.com/cosmos/ibc-go/v10/testing"
-	"github.com/stretchr/testify/suite"
 	"testing"
 	"time"
-)
 
-const ()
+	"github.com/stretchr/testify/suite"
+
+	"github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
+	ibctesting "github.com/cosmos/ibc-go/v10/testing"
+
+	"cosmossdk.io/math"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	gaiaApp "github.com/cosmos/gaia/v23/app"
+)
 
 type RateLimitTestSuite struct {
 	suite.Suite
@@ -64,7 +67,7 @@ func (suite *RateLimitTestSuite) TestRateLimitResetAfterWindow() {
 		Duration:         1 * time.Hour,
 		EpochStartTime:   suite.chain.LatestCommittedHeader.GetTime(),
 		EpochStartHeight: int64(suite.chain.LatestCommittedHeader.GetHeight().GetRevisionHeight()),
-	}) //set epoch start at current time
+	}) // set epoch start at current time
 
 	currentRateLimit, found := suite.app.RatelimitKeeper.GetRateLimit(ctx, "uatom", "channel-0")
 	suite.Require().True(found)

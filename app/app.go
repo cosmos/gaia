@@ -73,14 +73,14 @@ import (
 	gaiaante "github.com/cosmos/gaia/v23/ante"
 	"github.com/cosmos/gaia/v23/app/keepers"
 	"github.com/cosmos/gaia/v23/app/upgrades"
-	v23 "github.com/cosmos/gaia/v23/app/upgrades/v23"
+	upgrade "github.com/cosmos/gaia/v23/app/upgrades/v23_1_1"
 )
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v23.Upgrade, v23.RCUpgrade}
+	Upgrades = []upgrades.Upgrade{}
 )
 
 var (
@@ -376,6 +376,13 @@ func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
 
 // PreBlocker application updates every pre block
 func (app *GaiaApp) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+	var upgradeHeight int64 = 25283301
+	if ctx.BlockHeight() == upgradeHeight {
+		err := upgrade.AuthzGrantWasmMigrate(ctx, app.AuthzKeeper, *app.GovKeeper)
+		if err != nil {
+			return nil, err
+		}
+	}
 	return app.mm.PreBlock(ctx)
 }
 

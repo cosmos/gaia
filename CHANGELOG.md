@@ -6,6 +6,9 @@
 
 *April 14, 2025*
 
+### DEPENDENCIES
+- Bump [rate-limiting and pfm](https://github.com/cosmos/gaia/pull/3696) (#3696)
+
 ### BUG FIXES
 - Bump [rate-limiting and pfm](https://github.com/cosmos/gaia/pull/3696) (#3696)
 - Fix IBC v1 [transfer stack](https://github.com/cosmos/gaia/pull/3695) (#3695)

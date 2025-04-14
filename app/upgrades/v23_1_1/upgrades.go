@@ -1,11 +1,10 @@
 package v23_1_1 //nolint:revive
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func AuthzGrantWasmMigrate(ctx sdk.Context, authzKeeper authzkeeper.Keeper, govKeeper govkeeper.Keeper) error {

@@ -73,6 +73,7 @@ import (
 	gaiaante "github.com/cosmos/gaia/v23/ante"
 	"github.com/cosmos/gaia/v23/app/keepers"
 	"github.com/cosmos/gaia/v23/app/upgrades"
+	v23 "github.com/cosmos/gaia/v23/app/upgrades/v23"
 	upgrade "github.com/cosmos/gaia/v23/app/upgrades/v23_1_1"
 )
 
@@ -80,7 +81,7 @@ var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{}
+	Upgrades = []upgrades.Upgrade{v23.Upgrade, v23.RCUpgrade}
 )
 
 var (

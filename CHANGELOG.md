@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### Dependencies
+
+- Bump [golang.org/x/crypto](https://github.com/golang/crypto) from 0.32.0 to 0.35.0 ([#3708](https://github.com/cosmos/gaia/pull/3708))
+
 ## v23.0.1
 
 *March 25, 2025*

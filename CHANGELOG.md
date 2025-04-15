@@ -2,6 +2,18 @@
 
 ## UNRELEASED
 
+## v23.1.1
+
+*April 14, 2025*
+
+### DEPENDENCIES
+- Bump [rate-limiting and pfm](https://github.com/cosmos/gaia/pull/3696) (#3696)
+
+### BUG FIXES
+- Bump [rate-limiting and pfm](https://github.com/cosmos/gaia/pull/3696) (#3696)
+- Fix IBC v1 [transfer stack](https://github.com/cosmos/gaia/pull/3695) (#3695)
+- [Add upgrade handler](https://github.com/cosmos/gaia/pull/3705) (#3705)
+
 ## v23.0.1
 
 *March 25, 2025*

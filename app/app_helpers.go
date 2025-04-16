@@ -1,11 +1,9 @@
 package gaia
 
 import (
-	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
-	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
-	ibctestingtypes "github.com/cosmos/ibc-go/v8/testing/types"
-	icstest "github.com/cosmos/interchain-security/v6/testutil/integration"
-	ibcproviderkeeper "github.com/cosmos/interchain-security/v6/x/ccv/provider/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
+	icstest "github.com/cosmos/interchain-security/v7/testutil/integration"
+	ibcproviderkeeper "github.com/cosmos/interchain-security/v7/x/ccv/provider/keeper"
 )
 
 // ProviderApp interface implementations for icstest tests
@@ -15,19 +13,9 @@ func (app *GaiaApp) GetProviderKeeper() ibcproviderkeeper.Keeper { //nolint:noli
 	return app.ProviderKeeper
 }
 
-// GetStakingKeeper implements the TestingApp interface. Needed for ICS.
-func (app *GaiaApp) GetStakingKeeper() ibctestingtypes.StakingKeeper { //nolint:nolintlint
-	return app.StakingKeeper
-}
-
 // GetIBCKeeper implements the TestingApp interface.
 func (app *GaiaApp) GetIBCKeeper() *ibckeeper.Keeper { //nolint:nolintlint
 	return app.IBCKeeper
-}
-
-// GetScopedIBCKeeper implements the TestingApp interface.
-func (app *GaiaApp) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper { //nolint:nolintlint
-	return app.ScopedIBCKeeper
 }
 
 // GetTestStakingKeeper implements the ProviderApp interface.

@@ -1,5 +1,94 @@
 # CHANGELOG
 
+## UNRELEASED
+
+## v23.1.1
+
+*April 14, 2025*
+
+### DEPENDENCIES
+- Bump [rate-limiting and pfm](https://github.com/cosmos/gaia/pull/3696) (#3696)
+
+### BUG FIXES
+- Bump [rate-limiting and pfm](https://github.com/cosmos/gaia/pull/3696) (#3696)
+- Fix IBC v1 [transfer stack](https://github.com/cosmos/gaia/pull/3695) (#3695)
+- [Add upgrade handler](https://github.com/cosmos/gaia/pull/3705) (#3705)
+
+## v23.0.1
+
+*March 25, 2025*
+
+### DEPENDENCIES
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.50.13](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.13) (#3642)
+
+### BUG FIXES
+- Add linker flags for noexec linux builds
+  ([\#3666](https://github.com/cosmos/gaia/pull/3666))
+
+## v23.0.0
+
+*March 14, 2025*
+
+### DEPENDENCIES
+
+- Bump Go to 1.23 (#3556)
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v10.1.0](https://github.com/cosmos/ibc-go/tree/v10.1.0) (#3642)
+- Bump [ibc-apps/modules/rate-limiting](https://github.com/cosmos/ibc-apps/tree/main/modules/rate-limiting) to [v10.0.0](https://github.com/cosmos/ibc-apps/tree/modules/rate-limiting/v10.0.0) (#3625)
+- Bump [ibc-apps/middleware/packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) to [v10.0.0](https://github.com/cosmos/ibc-apps/tree/middleware/packet-forward-middleware/v10.0.0) (#3625)
+- Bump [ibc-go/modules/light-clients/08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) to [v10.0.0](https://github.com/cosmos/ibc-go/tree/modules/light-clients/08-wasm/v10.0.0) (#3625)
+- Bump [interchain-security](https://github.com/cosmos/interchain-security) to [v7.0.0](https://github.com/cosmos/interchain-security/tree/v7.0.0) (#3625)
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.50.12](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.12) (#3560)
+
+### BUG FIXES
+- Export only validators that are participating in consensus
+  ([\#3490](https://github.com/cosmos/gaia/pull/3490))
+- Fix goreleaser config to generate Linux builds again. ([\#3506](https://github.com/cosmos/gaia/pull/3506))
+- Wire IBC v1 transfer stack correctly ([\#3695](https://github.com/cosmos/gaia/pull/3695)
+
+### IMPROVEMENTS
+
+### FEATURES
+- Add [ibc-go/modules/light-clients/08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) ([\#3554](https://github.com/cosmos/gaia/pull/3554))
+- Add BLS Verifier Querier to 08-wasm ([\#3596](https://github.com/cosmos/gaia/pull/3596))
+
+### STATE BREAKING
+- Remove [ibc-go/modules/apps/29-fee](https://github.com/cosmos/ibc-go/tree/v8.5.3/modules/apps/29-fee) ([\#3553](https://github.com/cosmos/gaia/pull/3553))
+
+### API-Breaking
+
+## v22.2.0
+
+*February 12, 2025*
+
+### DEPENDENCIES
+- Bump [ibc-apps/middleware/packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) to
+  [v8.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv8.1.1)
+  ([\#3534](https://github.com/cosmos/gaia/pull/3534))
+- Add `v22.2.0` upgrade handler ([\#3538](https://github.com/cosmos/gaia/pull/3538))
+
+### STATE BREAKING
+- Bump [ibc-apps/middleware/packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) to
+  [v8.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv8.1.1)
+  ([\#3534](https://github.com/cosmos/gaia/pull/3534))
+- Add `v22.2.0` upgrade handler ([\#3538](https://github.com/cosmos/gaia/pull/3538))
+
+## v22.1.0
+
+February 10, 2025
+
+### DEPENDENCIES
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to
+  [v2.1.5](https://github.com/CosmWasm/wasmvm/releases/tag/v2.1.5)
+  ([\#3519](https://github.com/cosmos/gaia/pull/3519))
+- Bump [cometbft](https://github.com/cometbft/cometbft) to
+  [v0.38.17](https://github.com/cometbft/cometbft/releases/tag/v0.38.17)
+  ([\#3523](https://github.com/cosmos/gaia/pull/3523))
+
+### STATE BREAKING
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to
+  [v2.1.5](https://github.com/CosmWasm/wasmvm/releases/tag/v2.1.5)
+  ([\#3519](https://github.com/cosmos/gaia/pull/3519))
+
 ## v22.0.0
 
 *January 10, 2025*
@@ -7,8 +96,8 @@
 ### DEPENDENCIES
 
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
-    [v8.5.2](https://github.com/cosmos/ibc-go/releases/tag/v8.5.2)
-    ([\#3370](https://github.com/cosmos/gaia/pull/3370))
+  [v8.5.2](https://github.com/cosmos/ibc-go/releases/tag/v8.5.2)
+  ([\#3370](https://github.com/cosmos/gaia/pull/3370))
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
   [v0.38.15](https://github.com/cometbft/cometbft/releases/tag/v0.38.15)
   ([\#3370](https://github.com/cosmos/gaia/pull/3370))
@@ -25,8 +114,8 @@
 ### STATE BREAKING
 
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
-    [v8.5.2](https://github.com/cosmos/ibc-go/releases/tag/v8.5.2)
-    ([\#3370](https://github.com/cosmos/gaia/pull/3370))
+  [v8.5.2](https://github.com/cosmos/ibc-go/releases/tag/v8.5.2)
+  ([\#3370](https://github.com/cosmos/gaia/pull/3370))
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
   [v0.38.15](https://github.com/cometbft/cometbft/releases/tag/v0.38.15)
   ([\#3370](https://github.com/cosmos/gaia/pull/3370))
@@ -47,9 +136,9 @@
 ### BUG FIXES
 
 - Bump [cosmossdk.io/math](https://github.com/cosmos/cosmos-sdk/tree/main/math) to
-  [v1.4.0](https://github.com/cosmos/cosmos-sdk/tree/math/v1.4.0) in order to 
-  address the [ASA-2024-010](https://github.com/cosmos/cosmos-sdk/security/advisories/GHSA-7225-m954-23v7) 
-  security advisory. 
+  [v1.4.0](https://github.com/cosmos/cosmos-sdk/tree/math/v1.4.0) in order to
+  address the [ASA-2024-010](https://github.com/cosmos/cosmos-sdk/security/advisories/GHSA-7225-m954-23v7)
+  security advisory.
   ([\#3418](https://github.com/cosmos/gaia/pull/3418))
 
 ### DEPENDENCIES
@@ -82,8 +171,8 @@
 ### STATE BREAKING
 
 - Distribute all the unaccounted known denoms from  the
- consumer rewards pool.
-([\#3361](https://github.com/cosmos/gaia/pull/3361))
+  consumer rewards pool.
+  ([\#3361](https://github.com/cosmos/gaia/pull/3361))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
   [v6.3.0](https://github.com/cosmos/interchain-security/releases/tag/v6.3.0).
   ([\#3395](https://github.com/cosmos/gaia/pull/3395))
@@ -96,7 +185,7 @@
 
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
   [v6.1.0](https://github.com/cosmos/interchain-security/releases/tag/v6.1.0).
-  This release of ICS introduces several API breaking changes. 
+  This release of ICS introduces several API breaking changes.
   See the [ICS changelog](https://github.com/cosmos/interchain-security/blob/v6.1.0/CHANGELOG.md#api-breaking) for details.
   ([\#3350](https://github.com/cosmos/gaia/pull/3350))
 
@@ -114,21 +203,21 @@
   [v1.1.1](https://github.com/skip-mev/feemarket/releases/tag/v1.1.1)
   ([3306](https://github.com/cosmos/gaia/pull/3306))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
-    [v8.5.1](https://github.com/cosmos/ibc-go/releases/tag/v8.5.1)
-    ([\#3338](https://github.com/cosmos/gaia/pull/3338))
+  [v8.5.1](https://github.com/cosmos/ibc-go/releases/tag/v8.5.1)
+  ([\#3338](https://github.com/cosmos/gaia/pull/3338))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
   [v6.1.0](https://github.com/cosmos/interchain-security/releases/tag/v6.1.0).
   ([\#3350](https://github.com/cosmos/gaia/pull/3350))
 
 ### FEATURES
 
-- Set the `MaxProviderConsensusValidators` parameter of the provider module to 180. 
+- Set the `MaxProviderConsensusValidators` parameter of the provider module to 180.
   This parameter will be used to govern the number of validators participating in consensus,
   and takes over this role from the `MaxValidators` parameter of the staking module.
   ([\#3263](https://github.com/cosmos/gaia/pull/3263))
 - Set the `MaxValidators` parameter of the staking module to 200, which is the current number of 180 plus 20.
-  This is done as a result of introducing the inactive-validators feature of Interchain Security, 
-  which entails that the number of validators participating in consensus will be governed by the 
+  This is done as a result of introducing the inactive-validators feature of Interchain Security,
+  which entails that the number of validators participating in consensus will be governed by the
   `MaxProviderConsensusValidators` parameter in the provider module.
   ([\#3263](https://github.com/cosmos/gaia/pull/3263))
 - Set the metadata for launched ICS consumer chains.
@@ -138,28 +227,28 @@
   ([\#3316](https://github.com/cosmos/gaia/pull/3316))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
   [v6.1.0](https://github.com/cosmos/interchain-security/releases/tag/v6.1.0).
-  This release of ICS enables the permissionless creation of consumer chains 
-  and allows validators outside the active validator set to opt in to validate 
+  This release of ICS enables the permissionless creation of consumer chains
+  and allows validators outside the active validator set to opt in to validate
   on consumer chains.
   ([\#3350](https://github.com/cosmos/gaia/pull/3350))
 
 ### STATE BREAKING
 
-- Set the `MaxProviderConsensusValidators` parameter of the provider module to 180. 
+- Set the `MaxProviderConsensusValidators` parameter of the provider module to 180.
   This parameter will be used to govern the number of validators participating in consensus,
   and takes over this role from the `MaxValidators` parameter of the staking module.
   ([\#3263](https://github.com/cosmos/gaia/pull/3263))
 - Set the `MaxValidators` parameter of the staking module to 200, which is the current number of 180 plus 20.
-  This is done as a result of introducing the inactive-validators feature of Interchain Security, 
-  which entails that the number of validators participating in consensus will be governed by the 
+  This is done as a result of introducing the inactive-validators feature of Interchain Security,
+  which entails that the number of validators participating in consensus will be governed by the
   `MaxProviderConsensusValidators` parameter in the provider module.
   ([\#3263](https://github.com/cosmos/gaia/pull/3263))
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) to
   [v0.53.0](https://github.com/CosmWasm/wasmd/releases/tag/v0.53.0)
   ([\#3304](https://github.com/cosmos/gaia/pull/3304))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
-    [v8.5.0](https://github.com/cosmos/ibc-go/releases/tag/v8.5.0)
-    ([\#3305](https://github.com/cosmos/gaia/pull/3305))
+  [v8.5.0](https://github.com/cosmos/ibc-go/releases/tag/v8.5.0)
+  ([\#3305](https://github.com/cosmos/gaia/pull/3305))
 - Set the metadata for launched ICS consumer chains.
   ([\#3308](https://github.com/cosmos/gaia/pull/3308))
 - Migrate active ICS gov proposal to the new messages
@@ -176,14 +265,14 @@
 ### DEPENDENCIES
 
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
-    [v5.2.0](https://github.com/cosmos/interchain-security/releases/tag/v5.2.0)
-    ([\#3310](https://github.com/cosmos/gaia/pull/3310))
+  [v5.2.0](https://github.com/cosmos/interchain-security/releases/tag/v5.2.0)
+  ([\#3310](https://github.com/cosmos/gaia/pull/3310))
 
 ### STATE BREAKING
 
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
-    [v5.2.0](https://github.com/cosmos/interchain-security/releases/tag/v5.2.0)
-    ([\#3310](https://github.com/cosmos/gaia/pull/3310))
+  [v5.2.0](https://github.com/cosmos/interchain-security/releases/tag/v5.2.0)
+  ([\#3310](https://github.com/cosmos/gaia/pull/3310))
 
 ## v19.1.0
 
@@ -201,8 +290,8 @@
   [v1.1.0](https://github.com/skip-mev/feemarket/releases/tag/v1.1.0)
   ([92a2a88](https://github.com/cosmos/gaia/commit/92a2a88da512a1d8102817c61bd23cd65dda93c8))
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
-   [v0.38.11](https://github.com/cometbft/cometbft/releases/tag/v0.38.11)
-   ([\#3270](https://github.com/cosmos/gaia/pull/3270))
+  [v0.38.11](https://github.com/cometbft/cometbft/releases/tag/v0.38.11)
+  ([\#3270](https://github.com/cosmos/gaia/pull/3270))
 
 ## v19.0.0
 
@@ -211,26 +300,26 @@
 ### DEPENDENCIES
 
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
-    [v0.38.9](https://github.com/cometbft/cometbft/releases/tag/v0.38.9)
-    ([\#3171](https://github.com/cosmos/gaia/pull/3171))
+  [v0.38.9](https://github.com/cometbft/cometbft/releases/tag/v0.38.9)
+  ([\#3171](https://github.com/cosmos/gaia/pull/3171))
 - Bump [feemarket](https://github.com/skip-mev/feemarket) to
-    [v1.0.4](https://github.com/skip-mev/feemarket/releases/tag/v1.0.4)
-    ([\#3221](https://github.com/cosmos/gaia/pull/3221))
+  [v1.0.4](https://github.com/skip-mev/feemarket/releases/tag/v1.0.4)
+  ([\#3221](https://github.com/cosmos/gaia/pull/3221))
 - Bump [ibc-rate-limiting](https://github.com/cosmos/ibc-apps/blob/main/modules/rate-limiting) to
-    [v8](https://github.com/cosmos/ibc-apps/releases/tag/modules/rate-limiting/v8.0.0)
-    ([\#3227](https://github.com/cosmos/gaia/pull/3227))
+  [v8](https://github.com/cosmos/ibc-apps/releases/tag/modules/rate-limiting/v8.0.0)
+  ([\#3227](https://github.com/cosmos/gaia/pull/3227))
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) to
-    [v0.51.0](https://github.com/CosmWasm/wasmd/releases/tag/v0.51.0)
-    ([\#3230](https://github.com/cosmos/gaia/pull/3230))
+  [v0.51.0](https://github.com/CosmWasm/wasmd/releases/tag/v0.51.0)
+  ([\#3230](https://github.com/cosmos/gaia/pull/3230))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
-    [v8.4.0](https://github.com/cosmos/ibc-go/releases/tag/v8.4.0)
-    ([\#3233](https://github.com/cosmos/gaia/pull/3233))
+  [v8.4.0](https://github.com/cosmos/ibc-go/releases/tag/v8.4.0)
+  ([\#3233](https://github.com/cosmos/gaia/pull/3233))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
-    [v5.1.1](https://github.com/cosmos/interchain-security/releases/tag/v5.1.1)
-    ([\#3237](https://github.com/cosmos/gaia/pull/3237))
+  [v5.1.1](https://github.com/cosmos/interchain-security/releases/tag/v5.1.1)
+  ([\#3237](https://github.com/cosmos/gaia/pull/3237))
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
-    [v0.50.9-lsm](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.9-lsm)
-    ([\#3249](https://github.com/cosmos/gaia/pull/3249))
+  [v0.50.9-lsm](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.9-lsm)
+  ([\#3249](https://github.com/cosmos/gaia/pull/3249))
 
 ### IMPROVEMENTS
 
@@ -240,26 +329,26 @@
 ### STATE BREAKING
 
 - Bump [cometbft](https://github.com/cometbft/cometbft) to
-    [v0.38.9](https://github.com/cometbft/cometbft/releases/tag/v0.38.9)
-    ([\#3171](https://github.com/cosmos/gaia/pull/3171))
+  [v0.38.9](https://github.com/cometbft/cometbft/releases/tag/v0.38.9)
+  ([\#3171](https://github.com/cosmos/gaia/pull/3171))
 - Bump [feemarket](https://github.com/skip-mev/feemarket) to
-    [v1.0.4](https://github.com/skip-mev/feemarket/releases/tag/v1.0.4)
-    ([\#3221](https://github.com/cosmos/gaia/pull/3221))
+  [v1.0.4](https://github.com/skip-mev/feemarket/releases/tag/v1.0.4)
+  ([\#3221](https://github.com/cosmos/gaia/pull/3221))
 - Bump [ibc-rate-limiting](https://github.com/cosmos/ibc-apps/blob/main/modules/rate-limiting) to
-    [v8](https://github.com/cosmos/ibc-apps/releases/tag/modules/rate-limiting/v8.0.0)
-    ([\#3227](https://github.com/cosmos/gaia/pull/3227))
+  [v8](https://github.com/cosmos/ibc-apps/releases/tag/modules/rate-limiting/v8.0.0)
+  ([\#3227](https://github.com/cosmos/gaia/pull/3227))
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) to
-    [v0.51.0](https://github.com/CosmWasm/wasmd/releases/tag/v0.51.0)
-    ([\#3230](https://github.com/cosmos/gaia/pull/3230))
+  [v0.51.0](https://github.com/CosmWasm/wasmd/releases/tag/v0.51.0)
+  ([\#3230](https://github.com/cosmos/gaia/pull/3230))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
-    [v8.4.0](https://github.com/cosmos/ibc-go/releases/tag/v8.4.0)
-    ([\#3233](https://github.com/cosmos/gaia/pull/3233))
+  [v8.4.0](https://github.com/cosmos/ibc-go/releases/tag/v8.4.0)
+  ([\#3233](https://github.com/cosmos/gaia/pull/3233))
 - Bump [ICS](https://github.com/cosmos/interchain-security) to
-    [v5.1.1](https://github.com/cosmos/interchain-security/releases/tag/v5.1.1)
-    ([\#3237](https://github.com/cosmos/gaia/pull/3237))
+  [v5.1.1](https://github.com/cosmos/interchain-security/releases/tag/v5.1.1)
+  ([\#3237](https://github.com/cosmos/gaia/pull/3237))
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
-    [v0.50.9-lsm](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.9-lsm)
-    ([\#3249](https://github.com/cosmos/gaia/pull/3249))
+  [v0.50.9-lsm](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.50.9-lsm)
+  ([\#3249](https://github.com/cosmos/gaia/pull/3249))
 
 ## v18.0.0
 
@@ -299,10 +388,10 @@
   MinBaseGasPrice = 0.005 // same as previously enforced by `x/globalfee`
   MaxBlockUtilization = 30_000_000 // the default value 
   ```
-  
+
 - Add the wasmd module.
   ([\#3051](https://github.com/cosmos/gaia/pull/3051))
-- Enable both `MsgSoftwareUpgrade` and `MsgCancelUpgrade` to be expedited. 
+- Enable both `MsgSoftwareUpgrade` and `MsgCancelUpgrade` to be expedited.
   ([\#3149](https://github.com/cosmos/gaia/pull/3149))
 
 ### STATE BREAKING
@@ -316,7 +405,7 @@
 - Bump [interchain-security](https://github.com/cosmos/interchain-security) to
   [v4.3.0-lsm](https://github.com/cosmos/interchain-security/releases/tag/v4.3.0-lsm).
   ([\#3149](https://github.com/cosmos/gaia/pull/3149))
-- Enable both `MsgSoftwareUpgrade` and `MsgCancelUpgrade` to be expedited. 
+- Enable both `MsgSoftwareUpgrade` and `MsgCancelUpgrade` to be expedited.
   ([\#3149](https://github.com/cosmos/gaia/pull/3149))
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
   [v7.6.0](https://github.com/cosmos/ibc-go/releases/tag/v7.6.0)
@@ -377,7 +466,7 @@
 
 ### FEATURES
 
-- Add ICS 2.0 aka Partial Set Security (PSS). 
+- Add ICS 2.0 aka Partial Set Security (PSS).
   See the [PSS docs](https://cosmos.github.io/interchain-security/features/partial-set-security) for more details.
   ([\#3103](https://github.com/cosmos/gaia/pull/3103))
 
@@ -482,8 +571,8 @@
 - Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) to `v7.1.3-0.20240228213828-cce7f56d000b`.
   ([\#2982](https://github.com/cosmos/gaia/pull/2982))
 - Mint and transfer missing assets in escrow accounts
- to reach parity with counterparty chain supply.
- ([\#2993](https://github.com/cosmos/gaia/pull/2993))
+  to reach parity with counterparty chain supply.
+  ([\#2993](https://github.com/cosmos/gaia/pull/2993))
 
 ## v15.0.0
 
@@ -491,19 +580,19 @@
 
 ### API BREAKING
 
-- Reject `MsgVote` messages from accounts with less than 1 atom staked. 
+- Reject `MsgVote` messages from accounts with less than 1 atom staked.
   ([\#2912](https://github.com/cosmos/gaia/pull/2912))
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
   [v0.47.10-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.10-ics-lsm).
-  As compared to [v0.47.10](https://github.com/cosmos/cosmos-sdk/tree/v0.47.10), 
+  As compared to [v0.47.10](https://github.com/cosmos/cosmos-sdk/tree/v0.47.10),
   this special branch of cosmos-sdk has the following API-breaking changes:
   ([\#2967](https://github.com/cosmos/gaia/pull/2967))
-  - Limit the accepted deposit coins for a proposal to the minimum proposal deposit denoms (e.g., `uatom` for Cosmos Hub). ([sdk-#19302](https://github.com/cosmos/cosmos-sdk/pull/19302))
-  - Add denom check to reject denoms outside of those listed in `MinDeposit`. A new `MinDepositRatio` param is added (with a default value of `0.01`) and now deposits are required to be at least `MinDepositRatio*MinDeposit` to be accepted. ([sdk-#19312](https://github.com/cosmos/cosmos-sdk/pull/19312))
-  - Disable the `DenomOwners` query. ([sdk-#19266](https://github.com/cosmos/cosmos-sdk/pull/19266))
-- The consumer CCV genesis state obtained from the provider chain needs to be 
-  transformed to be compatible with older versions of consumer chains 
-  (see [ICS docs](https://cosmos.github.io/interchain-security/consumer-development/consumer-genesis-transformation)). 
+    - Limit the accepted deposit coins for a proposal to the minimum proposal deposit denoms (e.g., `uatom` for Cosmos Hub). ([sdk-#19302](https://github.com/cosmos/cosmos-sdk/pull/19302))
+    - Add denom check to reject denoms outside of those listed in `MinDeposit`. A new `MinDepositRatio` param is added (with a default value of `0.01`) and now deposits are required to be at least `MinDepositRatio*MinDeposit` to be accepted. ([sdk-#19312](https://github.com/cosmos/cosmos-sdk/pull/19312))
+    - Disable the `DenomOwners` query. ([sdk-#19266](https://github.com/cosmos/cosmos-sdk/pull/19266))
+- The consumer CCV genesis state obtained from the provider chain needs to be
+  transformed to be compatible with older versions of consumer chains
+  (see [ICS docs](https://cosmos.github.io/interchain-security/consumer-development/consumer-genesis-transformation)).
   ([\#2967](https://github.com/cosmos/gaia/pull/2967))
 
 ### BUG FIXES
@@ -512,23 +601,23 @@
   1 atom staked. ([\#2912](https://github.com/cosmos/gaia/pull/2912))
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
   [v0.47.10-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.10-ics-lsm).
-  This special branch of cosmos-sdk backports a series of fixes for issues found 
+  This special branch of cosmos-sdk backports a series of fixes for issues found
   during the [Oak Security audit of SDK 0.47](https://github.com/oak-security/audit-reports/blob/master/Cosmos%20SDK/2024-01-23%20Audit%20Report%20-%20Cosmos%20SDK%20v1.0.pdf).
   ([\#2967](https://github.com/cosmos/gaia/pull/2967))
-  - Backport [sdk-#18146](https://github.com/cosmos/cosmos-sdk/pull/18146): Add denom check to reject denoms outside of those listed in `MinDeposit`. A new `MinDepositRatio` param is added (with a default value of `0.01`) and now deposits are required to be at least `MinDepositRatio*MinDeposit` to be accepted. ([sdk-#19312](https://github.com/cosmos/cosmos-sdk/pull/19312))
-  - Partially backport [sdk-#18047](https://github.com/cosmos/cosmos-sdk/pull/18047): Add a limit of 200 grants pruned per `EndBlock` in the feegrant module. ([sdk-#19314](https://github.com/cosmos/cosmos-sdk/pull/19314))
-  - Partially backport [skd-#18737](https://github.com/cosmos/cosmos-sdk/pull/18737): Add a limit of 200 grants pruned per `BeginBlock` in the authz module. ([sdk-#19315](https://github.com/cosmos/cosmos-sdk/pull/19315))
-  - Backport [sdk-#18173](https://github.com/cosmos/cosmos-sdk/pull/18173): Gov Hooks now returns error and are "blocking" if they fail. Expect for `AfterProposalFailedMinDeposit` and `AfterProposalVotingPeriodEnded` that will log the error and continue. ([sdk-#19305](https://github.com/cosmos/cosmos-sdk/pull/19305))
-  - Backport [sdk-#18189](https://github.com/cosmos/cosmos-sdk/pull/18189): Limit the accepted deposit coins for a proposal to the minimum proposal deposit denoms. ([sdk-#19302](https://github.com/cosmos/cosmos-sdk/pull/19302))
-  - Backport [sdk-#18214](https://github.com/cosmos/cosmos-sdk/pull/18214) and [sdk-#17352](https://github.com/cosmos/cosmos-sdk/pull/17352): Ensure that modifying the argument to `NewUIntFromBigInt` and `NewIntFromBigInt` doesn't mutate the returned value. ([sdk-#19293](https://github.com/cosmos/cosmos-sdk/pull/19293))
-  
+    - Backport [sdk-#18146](https://github.com/cosmos/cosmos-sdk/pull/18146): Add denom check to reject denoms outside of those listed in `MinDeposit`. A new `MinDepositRatio` param is added (with a default value of `0.01`) and now deposits are required to be at least `MinDepositRatio*MinDeposit` to be accepted. ([sdk-#19312](https://github.com/cosmos/cosmos-sdk/pull/19312))
+    - Partially backport [sdk-#18047](https://github.com/cosmos/cosmos-sdk/pull/18047): Add a limit of 200 grants pruned per `EndBlock` in the feegrant module. ([sdk-#19314](https://github.com/cosmos/cosmos-sdk/pull/19314))
+    - Partially backport [skd-#18737](https://github.com/cosmos/cosmos-sdk/pull/18737): Add a limit of 200 grants pruned per `BeginBlock` in the authz module. ([sdk-#19315](https://github.com/cosmos/cosmos-sdk/pull/19315))
+    - Backport [sdk-#18173](https://github.com/cosmos/cosmos-sdk/pull/18173): Gov Hooks now returns error and are "blocking" if they fail. Expect for `AfterProposalFailedMinDeposit` and `AfterProposalVotingPeriodEnded` that will log the error and continue. ([sdk-#19305](https://github.com/cosmos/cosmos-sdk/pull/19305))
+    - Backport [sdk-#18189](https://github.com/cosmos/cosmos-sdk/pull/18189): Limit the accepted deposit coins for a proposal to the minimum proposal deposit denoms. ([sdk-#19302](https://github.com/cosmos/cosmos-sdk/pull/19302))
+    - Backport [sdk-#18214](https://github.com/cosmos/cosmos-sdk/pull/18214) and [sdk-#17352](https://github.com/cosmos/cosmos-sdk/pull/17352): Ensure that modifying the argument to `NewUIntFromBigInt` and `NewIntFromBigInt` doesn't mutate the returned value. ([sdk-#19293](https://github.com/cosmos/cosmos-sdk/pull/19293))
+
 
 ### DEPENDENCIES
 
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
   [v7.3.1](https://github.com/cosmos/ibc-go/releases/tag/v7.3.1)
   ([\#2852](https://github.com/cosmos/gaia/pull/2852))
-- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware)
   to [v7.1.2](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv7.1.2)
   ([\#2852](https://github.com/cosmos/gaia/pull/2852))
 - Bump [CometBFT](https://github.com/cometbft/cometbft)
@@ -538,13 +627,13 @@
   [v0.47.10-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.10-ics-lsm).
   This is a special cosmos-sdk branch with support for both ICS and LSM.
   ([\#2967](https://github.com/cosmos/gaia/pull/2967))
-- Bump [ICS](https://github.com/cosmos/interchain-security) to 
-  [v3.3.3-lsm](https://github.com/cosmos/interchain-security/releases/tag/v3.3.3-lsm) 
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+  [v3.3.3-lsm](https://github.com/cosmos/interchain-security/releases/tag/v3.3.3-lsm)
   ([\#2967](https://github.com/cosmos/gaia/pull/2967))
 
 ### FEATURES
 
-- Add support for metaprotocols using Tx extension options. 
+- Add support for metaprotocols using Tx extension options.
   ([\#2960](https://github.com/cosmos/gaia/pull/2960))
 
 ### STATE BREAKING
@@ -552,35 +641,35 @@
 - Bump [ibc-go](https://github.com/cosmos/ibc-go) to
   [v7.3.1](https://github.com/cosmos/ibc-go/releases/tag/v7.3.1)
   ([\#2852](https://github.com/cosmos/gaia/pull/2852))
-- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware)
   to [v7.1.2](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv7.1.2)
   ([\#2852](https://github.com/cosmos/gaia/pull/2852))
 - Bump [CometBFT](https://github.com/cometbft/cometbft)
   to [v0.37.4](https://github.com/cometbft/cometbft/releases/tag/v0.37.4)
   ([\#2852](https://github.com/cosmos/gaia/pull/2852))
 - Set min commission rate staking parameter to `5%`
- ([prop 826](https://www.mintscan.io/cosmos/proposals/826))
- and update the commission rate for all validators that have a commission
- rate less than `5%`. ([\#2855](https://github.com/cosmos/gaia/pull/2855))
-- Migrate the signing infos of validators for which the consensus address is missing. 
-([\#2886](https://github.com/cosmos/gaia/pull/2886))
+  ([prop 826](https://www.mintscan.io/cosmos/proposals/826))
+  and update the commission rate for all validators that have a commission
+  rate less than `5%`. ([\#2855](https://github.com/cosmos/gaia/pull/2855))
+- Migrate the signing infos of validators for which the consensus address is missing.
+  ([\#2886](https://github.com/cosmos/gaia/pull/2886))
 - Migrate vesting funds from "cosmos145hytrc49m0hn6fphp8d5h4xspwkawcuzmx498"
- to community pool according to signal prop [860](https://www.mintscan.io/cosmos/proposals/860).
- ([\#2891](https://github.com/cosmos/gaia/pull/2891))
+  to community pool according to signal prop [860](https://www.mintscan.io/cosmos/proposals/860).
+  ([\#2891](https://github.com/cosmos/gaia/pull/2891))
 - Add ante handler that only allows `MsgVote` messages from accounts with at least
   1 atom staked. ([\#2912](https://github.com/cosmos/gaia/pull/2912))
 - Remove `GovPreventSpamDecorator` and initialize the `MinInitialDepositRatio` gov
-  param to `10%`. 
+  param to `10%`.
   ([\#2913](https://github.com/cosmos/gaia/pull/2913))
-- Add support for metaprotocols using Tx extension options. 
+- Add support for metaprotocols using Tx extension options.
   ([\#2960](https://github.com/cosmos/gaia/pull/2960))
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
   [v0.47.10-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.47.10-ics-lsm).
   This is a special cosmos-sdk branch with support for both ICS and LSM.
   ([\#2967](https://github.com/cosmos/gaia/pull/2967))
-  - Skip running `addDenomReverseIndex` in `bank/v3` migration as it is prohibitively expensive to run on the Cosmos Hub. ([sdk-#19266](https://github.com/cosmos/cosmos-sdk/pull/19266))
-- Bump [ICS](https://github.com/cosmos/interchain-security) to 
-  [v3.3.3-lsm](https://github.com/cosmos/interchain-security/releases/tag/v3.3.3-lsm) 
+    - Skip running `addDenomReverseIndex` in `bank/v3` migration as it is prohibitively expensive to run on the Cosmos Hub. ([sdk-#19266](https://github.com/cosmos/cosmos-sdk/pull/19266))
+- Bump [ICS](https://github.com/cosmos/interchain-security) to
+  [v3.3.3-lsm](https://github.com/cosmos/interchain-security/releases/tag/v3.3.3-lsm)
   ([\#2967](https://github.com/cosmos/gaia/pull/2967))
 
 ## v14.2.0
@@ -613,8 +702,8 @@
 
 ### FEATURES
 
-- Set in the v14 upgrade handler the min evidence height for `neutron-1` 
-  at `4552189` and for `stride-1` at `6375035`. 
+- Set in the v14 upgrade handler the min evidence height for `neutron-1`
+  at `4552189` and for `stride-1` at `6375035`.
   ([\#2821](https://github.com/cosmos/gaia/pull/2821))
 - Introducing the cryptographic verification of equivocation feature to the ICS provider module ([\#2825](https://github.com/cosmos/gaia/pull/2825))
 
@@ -651,7 +740,7 @@
 ### BUG FIXES
 
 - Bump [cosmos/ledger-cosmos-go](https://github.com/cosmos/ledger-cosmos-go) to
-  [v0.12.4](https://github.com/cosmos/ledger-cosmos-go/releases/tag/v0.12.4) 
+  [v0.12.4](https://github.com/cosmos/ledger-cosmos-go/releases/tag/v0.12.4)
   to fix signing with ledger through the binary on newest versions of macOS and Xcode
   ([\#2763](https://github.com/cosmos/gaia/pull/2763))
 
@@ -661,13 +750,13 @@
 
 ### BUG FIXES
 
-- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware)
   to [v4.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.1)
   ([\#2771](https://github.com/cosmos/gaia/pull/2771))
 
 ### DEPENDENCIES
 
-- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware)
   to [v4.1.1](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.1)
   ([\#2771](https://github.com/cosmos/gaia/pull/2771))
 
@@ -695,13 +784,13 @@
 
 ### API BREAKING
 
-- Add Liquid Staking Module (LSM) and initialize the LSM params: 
+- Add Liquid Staking Module (LSM) and initialize the LSM params:
   ValidatorBondFactor, ValidatorLiquidStakingCap, GlobalLiquidStakingCap
   ([\#2643](https://github.com/cosmos/gaia/pull/2643))
 
 ### BUG FIXES
 
-- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware)
   to [v4.1.0](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.0)
   ([\#2677](https://github.com/cosmos/gaia/pull/2677))
 
@@ -713,22 +802,22 @@
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to
   [v0.45.16-ics-lsm](https://github.com/cosmos/cosmos-sdk/tree/v0.45.16-ics-lsm)
   ([\#2643](https://github.com/cosmos/gaia/pull/2643))
-- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware)
   to [v4.1.0](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.0)
   ([\#2677](https://github.com/cosmos/gaia/pull/2677))
 
 ### FEATURES
 
-- Add Liquid Staking Module (LSM) and initialize the LSM params: 
+- Add Liquid Staking Module (LSM) and initialize the LSM params:
   ValidatorBondFactor, ValidatorLiquidStakingCap, GlobalLiquidStakingCap
   ([\#2643](https://github.com/cosmos/gaia/pull/2643))
 
 ### STATE BREAKING
 
-- Add Liquid Staking Module (LSM) and initialize the LSM params: 
+- Add Liquid Staking Module (LSM) and initialize the LSM params:
   ValidatorBondFactor, ValidatorLiquidStakingCap, GlobalLiquidStakingCap
   ([\#2643](https://github.com/cosmos/gaia/pull/2643))
-- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware) 
+- Bump [PFM](https://github.com/cosmos/ibc-apps/tree/main/middleware)
   to [v4.1.0](https://github.com/cosmos/ibc-apps/releases/tag/middleware%2Fpacket-forward-middleware%2Fv4.1.0)
   ([\#2677](https://github.com/cosmos/gaia/pull/2677))
 
@@ -739,54 +828,54 @@
 ### API BREAKING
 
 - [GlobalFee](x/globalfee)
-  - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
-    globalfee params. `bypass-min-fee-msg-types` in `config/app.toml` is
-    deprecated ([\#2424](https://github.com/cosmos/gaia/pull/2424))
+    - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
+      globalfee params. `bypass-min-fee-msg-types` in `config/app.toml` is
+      deprecated ([\#2424](https://github.com/cosmos/gaia/pull/2424))
 
 ### BUG FIXES
 
-- Fix logic bug in `GovPreventSpamDecorator` that allows bypassing the 
-  `MinInitialDeposit` requirement 
+- Fix logic bug in `GovPreventSpamDecorator` that allows bypassing the
+  `MinInitialDeposit` requirement
   ([a759409](https://github.com/cosmos/gaia/commit/a759409c9da2780663244308b430a7847b95139b))
 
 ### DEPENDENCIES
 
-- Bump [PFM](https://github.com/strangelove-ventures/packet-forward-middleware) to 
+- Bump [PFM](https://github.com/strangelove-ventures/packet-forward-middleware) to
   [v4.0.5](https://github.com/strangelove-ventures/packet-forward-middleware/releases/tag/v4.0.5)
   ([\#2185](https://github.com/cosmos/gaia/issues/2185))
 - Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to
   [v2.0.0](https://github.com/cosmos/interchain-security/releases/tag/v2.0.0)
   ([\#2616](https://github.com/cosmos/gaia/pull/2616))
-- Bump [Liquidity](https://github.com/Gravity-Devs/liquidity) to 
-  [v1.6.0-forced-withdrawal](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.6.0-forced-withdrawal) 
+- Bump [Liquidity](https://github.com/Gravity-Devs/liquidity) to
+  [v1.6.0-forced-withdrawal](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.6.0-forced-withdrawal)
   ([\#2652](https://github.com/cosmos/gaia/pull/2652))
 
 ### STATE BREAKING
 
 - General
-  - Fix logic bug in `GovPreventSpamDecorator` that allows bypassing the
-    `MinInitialDeposit` requirement
-    ([a759409](https://github.com/cosmos/gaia/commit/a759409c9da2780663244308b430a7847b95139b))
-  - Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to
-    [v2.0.0](https://github.com/cosmos/interchain-security/releases/tag/v2.0.0)
-    ([\#2616](https://github.com/cosmos/gaia/pull/2616))
-  - Bump [Liquidity](https://github.com/Gravity-Devs/liquidity) to
-    [v1.6.0-forced-withdrawal](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.6.0-forced-withdrawal)
-    ([\#2652](https://github.com/cosmos/gaia/pull/2652))
+    - Fix logic bug in `GovPreventSpamDecorator` that allows bypassing the
+      `MinInitialDeposit` requirement
+      ([a759409](https://github.com/cosmos/gaia/commit/a759409c9da2780663244308b430a7847b95139b))
+    - Bump [Interchain-Security](https://github.com/cosmos/interchain-security) to
+      [v2.0.0](https://github.com/cosmos/interchain-security/releases/tag/v2.0.0)
+      ([\#2616](https://github.com/cosmos/gaia/pull/2616))
+    - Bump [Liquidity](https://github.com/Gravity-Devs/liquidity) to
+      [v1.6.0-forced-withdrawal](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.6.0-forced-withdrawal)
+      ([\#2652](https://github.com/cosmos/gaia/pull/2652))
 - [GlobalFee](x/globalfee)
-  - Create the upgrade handler and params migration for the new Gloabal Fee module
-    parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424)
-    ([\#2352](https://github.com/cosmos/gaia/pull/2352))
-  - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
-    globalfee params ([\#2424](https://github.com/cosmos/gaia/pull/2424))
-  - Update Global Fee's AnteHandler to check tx fees against the network min gas
-    prices in DeliverTx mode ([\#2447](https://github.com/cosmos/gaia/pull/2447))
+    - Create the upgrade handler and params migration for the new Gloabal Fee module
+      parameters introduced in [#2424](https://github.com/cosmos/gaia/pull/2424)
+      ([\#2352](https://github.com/cosmos/gaia/pull/2352))
+    - Add `bypass-min-fee-msg-types` and `maxTotalBypassMinFeeMsgGagUsage` to
+      globalfee params ([\#2424](https://github.com/cosmos/gaia/pull/2424))
+    - Update Global Fee's AnteHandler to check tx fees against the network min gas
+      prices in DeliverTx mode ([\#2447](https://github.com/cosmos/gaia/pull/2447))
 
 ## v10.0.2
 
 *July 03, 2023*
 
-This release bumps several dependencies and enables extra queries. 
+This release bumps several dependencies and enables extra queries.
 
 ### DEPENDENCIES
 
@@ -809,10 +898,10 @@ This release bumps several dependencies and enables extra queries.
 
 ## [v10.0.0] 2023-05-19
 
-* (deps) [#2498](https://github.com/cosmos/gaia/pull/2498) Bump multiple dependencies. 
-  * Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.16-ics](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16-ics). See the [v0.45.16 release notes](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16) for details. 
-  * Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.0](https://github.com/cosmos/ibc-go/releases/tag/v4.4.0).
-  * Bump [CometBFT](https://github.com/cometbft/cometbft) to [v0.34.28](https://github.com/cometbft/cometbft/releases/tag/v0.34.28).
+* (deps) [#2498](https://github.com/cosmos/gaia/pull/2498) Bump multiple dependencies.
+    * Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.16-ics](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16-ics). See the [v0.45.16 release notes](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.16) for details.
+    * Bump [ibc-go](https://github.com/cosmos/ibc-go) to [v4.4.0](https://github.com/cosmos/ibc-go/releases/tag/v4.4.0).
+    * Bump [CometBFT](https://github.com/cometbft/cometbft) to [v0.34.28](https://github.com/cometbft/cometbft/releases/tag/v0.34.28).
 * (gaia) Bump Golang prerequisite from 1.18 to 1.20. See (https://go.dev/blog/go1.20) for details.
 
 ## [v9.1.1] - 2023-05-25
@@ -829,7 +918,7 @@ The first fix is to enable the use of multisigs and Ledger devices when assignin
 
 ### Multisig fix
 
-On April 25th (a week and a half ago), we began receiving reports that validators using multisigs and Ledger devices were getting errors reading Error: unable to resolve type URL /interchain_security.ccv.provider.v1.MsgAssignConsumerKey: tx parse error when attempting to assign consensus keys for consumer chains. 
+On April 25th (a week and a half ago), we began receiving reports that validators using multisigs and Ledger devices were getting errors reading Error: unable to resolve type URL /interchain_security.ccv.provider.v1.MsgAssignConsumerKey: tx parse error when attempting to assign consensus keys for consumer chains.
 
 This was surprising because we had never seen this error before, even though we have done many testnets. The reason for this is probably because people don’t bother to use high security key management techniques in testnets.
 
@@ -847,7 +936,7 @@ Note: The fee of 10 Atoms was originally intended to be a parameter that could b
 
 ## [v9.0.3] - 2023-04-19
 * (deps) [#2399](https://github.com/cosmos/gaia/pull/2399) Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.15-ics](https://github.com/cosmos/cosmos
-sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/cometbft/cometbft).
+  sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/cometbft/cometbft).
 
 ## [v9.0.2] - 2023-04-03
 * (feat) Bump [Interchain-Security](https://github.com/cosmos/interchain-security) [v1.1.0](https://github.com/cosmos/interchain-security/releases/tag/v1.1.0) provider module. See the [release notes](https://github.com/cosmos/interchain-security/releases/tag/v1.1.0) for details.
@@ -904,7 +993,7 @@ sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/come
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.6). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.6/CHANGELOG.md) for details.
 * (gaia) bump [Liquidity](https://github.com/Gravity-Devs/liquidity) module to [v1.5.1](https://github.com/Gravity-Devs/liquidity/releases/tag/v1.5.1).
 * (gaia) bump [cosmos ledger](https://github.com/cosmos/ledger-go) to [v0.9.3](https://github.com/cosmos/ledger-go/releases/tag/v0.9.3) to fix issue [#1573](https://github.com/cosmos/gaia/issues/1573) - Ledger Nano S Plus not detected by gaiad.
-* 
+*
 ## [v7.0.2] -2022-05-09
 
 * (gaia) bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.45.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.4). See [CHANGELOG.md](https://github.com/cosmos/cosmos-sdk/blob/v0.45.4/CHANGELOG.md#v0454---2022-04-25) for details.
@@ -936,7 +1025,7 @@ sdk/releases/tag/v0.45.15-ics) and migrate to [CometBFT](https://github.com/come
 * (gaia) [#1135](https://github.com/cosmos/gaia/pull/1135) Fix rocksdb build tag usage.
 * (gaia) [#1160](https://github.com/cosmos/gaia/pull/1160) Improvement: update state sync configs.
 * (gaia) [#1208](https://github.com/cosmos/gaia/pull/1208) Update statesync.bash.
-  * * (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
+    * * (gaia) Bump [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk) to [v0.44.6](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.44.6)
 * (gaia) Bump [Versions](https://github.com/cosmos/gaia/pull/1100) of various smaller dependencies, remove the Cosmos SDK replace statement, update `initiClientCtx` params, ensure `stdout` and `stderr` are handled correctly in the CLI.
 
 ## [v6.0.3] - 2022-02-18
@@ -1359,4 +1448,3 @@ See the [Tendermint v0.34.7 SDK changelog](https://github.com/tendermint/tenderm
 [v2.0.1]: https://github.com/cosmos/gaia/releases/tag/v2.0.1
 [v2.0.0]: https://github.com/cosmos/gaia/releases/tag/v2.0.0
 [v1.0.0]: https://github.com/cosmos/gaia/releases/tag/v1.0.0
-

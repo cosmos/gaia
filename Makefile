@@ -21,7 +21,7 @@ BUILDDIR ?= $(CURDIR)/build
 TEST_DOCKER_REPO=cosmos/contrib-gaiatest
 
 GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
-REQUIRE_GO_VERSION = 1.22
+REQUIRE_GO_VERSION = 1.23
 
 export GO111MODULE = on
 
@@ -71,15 +71,23 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=gaia \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
 			-X github.com/cometbft/cometbft/version.TMCoreSemVer=$(TM_VERSION)
 
+UNAME_S = $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+  extldflags += -z noexecstack
+endif
 ifeq (cleveldb,$(findstring cleveldb,$(GAIA_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
 endif
 ifeq ($(LINK_STATICALLY),true)
-  ldflags += -linkmode=external -extldflags "-Wl,-z,muldefs -static"
+  extldflags += -Wl,-z,muldefs -static -z noexecstack
+  ldflags += -linkmode=external
 endif
 ifeq (,$(findstring nostrip,$(GAIA_BUILD_OPTIONS)))
   ldflags += -w -s
 endif
+extldflags += $(EXTLDFLAGS)
+extldflags := $(strip $(extldflags))
+ldflags += -extldflags "$(extldflags)"
 ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
 
@@ -146,7 +154,7 @@ distclean: clean
 ###############################################################################
 
 GO_VERSION := $(shell cat go.mod | grep -E 'go [0-9].[0-9]+' | cut -d ' ' -f 2)
-GORELEASER_IMAGE := ghcr.io/goreleaser/goreleaser-cross:v$(GO_VERSION)
+GORELEASER_IMAGE := ghcr.io/goreleaser/goreleaser-cross:v$(REQUIRE_GO_VERSION)
 COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm/v2 | sed 's/.* //')
 
 # create tag and run goreleaser without publishing

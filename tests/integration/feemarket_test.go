@@ -6,7 +6,7 @@ import (
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 	"github.com/stretchr/testify/suite"
 
-	ibctesting "github.com/cosmos/ibc-go/v8/testing"
+	ibctesting "github.com/cosmos/ibc-go/v10/testing"
 
 	"cosmossdk.io/math"
 
@@ -45,7 +45,7 @@ func (suite *FeeMarketTestSuite) SetupTest() {
 	chain, ok := suite.coordinator.Chains[ibctesting.GetChainID(1)]
 	suite.Require().True(ok, "chain not found")
 	suite.chain = chain
-	suite.chain.CurrentHeader.ProposerAddress = sdk.ConsAddress(suite.chain.Vals.Validators[0].Address)
+	suite.chain.ProposedHeader.ProposerAddress = sdk.ConsAddress(suite.chain.Vals.Validators[0].Address)
 
 	app, ok := chain.App.(*gaiaApp.GaiaApp)
 	suite.Require().True(ok, "expected App to be GaiaApp")

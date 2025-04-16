@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -8,9 +9,13 @@ import (
 
 	"cosmossdk.io/math"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
+	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v23/tests/e2e/msg"
+	"github.com/cosmos/gaia/v23/tests/e2e/query"
 	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
 )
 
@@ -18,29 +23,30 @@ import (
 var underBuffer = math.NewInt(5_000_000)
 
 func (s *IntegrationTestSuite) testLiquid() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
-	validatorA := s.chainA.validators[0]
-	validatorAAddr, _ := validatorA.keyInfo.GetAddress()
+	validatorA := s.Resources.ChainA.Validators[0]
+	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
 
 	validatorAddressA := sdk.ValAddress(validatorAAddr).String()
 
-	s.writeLiquidStakingParamsUpdateProposal(s.chainA, 25, 50)
-	proposalCounter++
-	submitGovFlags := []string{configFile(proposalLiquidParamUpdateFilename)}
-	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
+	err := msg.WriteLiquidStakingParamsUpdateProposal(s.Resources.ChainA, 25, 50)
+	s.Require().NoError(err)
+	s.TestCounters.ProposalCounter++
+	submitGovFlags := []string{configFile(common.ProposalLiquidParamUpdateFilename)}
+	depositGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), "yes"}
 
 	// gov proposing Liquid parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
-	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.T().Logf("Proposal number: %d", s.TestCounters.ProposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: Set parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)")
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), proposalCounter, "liquidtypes.MsgUpdateProposal",
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.TestCounters.ProposalCounter, "liquidtypes.MsgUpdateProposal",
 		submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
 		func() bool {
-			proposal, err := queryGovProposal(chainEndpoint, proposalCounter)
+			proposal, err := query.GovProposal(chainEndpoint, s.TestCounters.ProposalCounter)
 			s.Require().NoError(err)
 			return proposal.GetProposal().Status == govv1beta1.StatusPassed
 		},
@@ -50,7 +56,7 @@ func (s *IntegrationTestSuite) testLiquid() {
 
 	s.Require().Eventually(
 		func() bool {
-			liquidParams, err := queryLiquidParams(chainEndpoint)
+			liquidParams, err := query.LiquidParams(chainEndpoint)
 			s.T().Logf("After Liquid parameters update proposal")
 			s.Require().NoError(err)
 
@@ -62,20 +68,20 @@ func (s *IntegrationTestSuite) testLiquid() {
 		15*time.Second,
 		5*time.Second,
 	)
-	delegatorAddress, _ := s.chainA.genesisAccounts[2].keyInfo.GetAddress()
+	delegatorAddress, _ := s.Resources.ChainA.GenesisAccounts[2].KeyInfo.GetAddress()
 
-	fees := sdk.NewCoin(uatomDenom, math.NewInt(1))
+	fees := sdk.NewCoin(common.UAtomDenom, math.NewInt(1))
 
 	delegationAmount := math.NewInt(500000000)
-	delegation := sdk.NewCoin(uatomDenom, delegationAmount) // 500 atom
+	delegation := sdk.NewCoin(common.UAtomDenom, delegationAmount) // 500 atom
 
 	// Alice delegate uatom to Validator A
-	s.execDelegate(s.chainA, 0, delegation.String(), validatorAddressA, delegatorAddress.String(), gaiaHomePath, fees.String())
+	s.ExecDelegate(s.Resources.ChainA, 0, delegation.String(), validatorAddressA, delegatorAddress.String(), common.GaiaHomePath, fees.String())
 
 	// Validate delegation successful
 	s.Require().Eventually(
 		func() bool {
-			res, err := queryDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
+			res, err := query.Delegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
@@ -87,13 +93,13 @@ func (s *IntegrationTestSuite) testLiquid() {
 
 	// Tokenize shares
 	tokenizeAmount := math.NewInt(200000000)
-	tokenize := sdk.NewCoin(uatomDenom, tokenizeAmount) // 200 atom
-	s.executeTokenizeShares(s.chainA, 0, tokenize.String(), validatorAddressA, delegatorAddress.String(), gaiaHomePath, fees.String())
+	tokenize := sdk.NewCoin(common.UAtomDenom, tokenizeAmount) // 200 atom
+	s.executeTokenizeShares(s.Resources.ChainA, 0, tokenize.String(), validatorAddressA, delegatorAddress.String(), common.GaiaHomePath, fees.String())
 
 	// Validate delegation reduced
 	s.Require().Eventually(
 		func() bool {
-			res, err := queryDelegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
+			res, err := query.Delegation(chainEndpoint, validatorAddressA, delegatorAddress.String())
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
@@ -108,7 +114,7 @@ func (s *IntegrationTestSuite) testLiquid() {
 	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressA), strconv.Itoa(recordID))
 	s.Require().Eventually(
 		func() bool {
-			res, err := getSpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
+			res, err := query.SpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
 			s.Require().NoError(err)
 			return res.Amount.Equal(tokenizeAmount)
 		},
@@ -118,15 +124,15 @@ func (s *IntegrationTestSuite) testLiquid() {
 
 	// Bank send Liquid token
 	sendAmount := sdk.NewCoin(shareDenom, tokenizeAmount)
-	s.execBankSend(s.chainA, 0, delegatorAddress.String(), validatorAAddr.String(), sendAmount.String(), standardFees.String(), false)
+	s.ExecBankSend(s.Resources.ChainA, 0, delegatorAddress.String(), validatorAAddr.String(), sendAmount.String(), common.StandardFees.String(), false)
 
 	// Validate tokens are sent properly
 	s.Require().Eventually(
 		func() bool {
-			afterSenderShareDenomBalance, err := getSpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
+			afterSenderShareDenomBalance, err := query.SpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
 			s.Require().NoError(err)
 
-			afterRecipientShareDenomBalance, err := getSpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
+			afterRecipientShareDenomBalance, err := query.SpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
 			s.Require().NoError(err)
 
 			decremented := afterSenderShareDenomBalance.IsNil() || afterSenderShareDenomBalance.IsZero()
@@ -139,12 +145,12 @@ func (s *IntegrationTestSuite) testLiquid() {
 	)
 
 	// transfer reward ownership
-	s.executeTransferTokenizeShareRecord(s.chainA, 0, strconv.Itoa(recordID), delegatorAddress.String(), validatorAAddr.String(), gaiaHomePath, standardFees.String())
+	s.executeTransferTokenizeShareRecord(s.Resources.ChainA, 0, strconv.Itoa(recordID), delegatorAddress.String(), validatorAAddr.String(), common.GaiaHomePath, common.StandardFees.String())
 	tokenizeShareRecord := liquidtypes.TokenizeShareRecord{}
 	// Validate ownership transferred correctly
 	s.Require().Eventually(
 		func() bool {
-			record, err := queryTokenizeShareRecordByID(chainEndpoint, recordID)
+			record, err := query.TokenizeShareRecordByID(chainEndpoint, recordID)
 			s.Require().NoError(err)
 			tokenizeShareRecord = record
 			return record.Owner == validatorAAddr.String()
@@ -156,12 +162,12 @@ func (s *IntegrationTestSuite) testLiquid() {
 
 	// IBC transfer Liquid token
 	ibcTransferAmount := sdk.NewCoin(shareDenom, math.NewInt(100000000))
-	sendRecipientAddr, _ := s.chainB.validators[0].keyInfo.GetAddress()
-	s.sendIBC(s.chainA, 0, validatorAAddr.String(), sendRecipientAddr.String(), ibcTransferAmount.String(), standardFees.String(), "memo", false)
+	sendRecipientAddr, _ := s.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
+	s.SendIBC(s.Resources.ChainA, 0, validatorAAddr.String(), sendRecipientAddr.String(), ibcTransferAmount.String(), common.StandardFees.String(), "memo", common.TransferChannel, nil, false)
 
 	s.Require().Eventually(
 		func() bool {
-			afterSenderShareBalance, err := getSpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
+			afterSenderShareBalance, err := query.SpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
 			s.Require().NoError(err)
 
 			decremented := afterSenderShareBalance.Add(ibcTransferAmount).IsEqual(sendAmount)
@@ -173,19 +179,19 @@ func (s *IntegrationTestSuite) testLiquid() {
 
 	// Redeem tokens for shares
 	redeemAmount := sendAmount.Sub(ibcTransferAmount)
-	s.executeRedeemShares(s.chainA, 0, redeemAmount.String(), validatorAAddr.String(), gaiaHomePath, fees.String())
+	s.executeRedeemShares(s.Resources.ChainA, 0, redeemAmount.String(), validatorAAddr.String(), common.GaiaHomePath, fees.String())
 
 	// check redeem success
 	s.Require().Eventually(
 		func() bool {
-			balanceRes, err := getSpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
+			balanceRes, err := query.SpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
 			s.Require().NoError(err)
 			if !balanceRes.Amount.IsNil() && balanceRes.Amount.IsZero() {
 				return false
 			}
 
 			// check that tokenize share record module account received some rewards, since it unbonded during redeem tx execution
-			balanceRes, err = getSpecificBalance(chainEndpoint, tokenizeShareRecord.GetModuleAddress().String(), uatomDenom)
+			balanceRes, err = query.SpecificBalance(chainEndpoint, tokenizeShareRecord.GetModuleAddress().String(), common.UAtomDenom)
 			s.Require().NoError(err)
 			if balanceRes.Amount.IsNil() || balanceRes.Amount.IsZero() {
 				return false
@@ -199,31 +205,32 @@ func (s *IntegrationTestSuite) testLiquid() {
 
 // testLiquidGlobalLimit validates the global liquid staking cap
 func (s *IntegrationTestSuite) testLiquidGlobalLimit() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
-	validatorA := s.chainA.validators[0]
-	validatorAAddr, _ := validatorA.keyInfo.GetAddress()
-	validatorB := s.chainA.validators[1]
-	validatorBAddr, _ := validatorB.keyInfo.GetAddress()
+	validatorA := s.Resources.ChainA.Validators[0]
+	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
+	validatorB := s.Resources.ChainA.Validators[1]
+	validatorBAddr, _ := validatorB.KeyInfo.GetAddress()
 
 	validatorAddressB := sdk.ValAddress(validatorBAddr).String()
 
-	s.writeLiquidStakingParamsUpdateProposal(s.chainA, 25, 100)
-	proposalCounter++
-	submitGovFlags := []string{configFile(proposalLiquidParamUpdateFilename)}
-	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
+	err := msg.WriteLiquidStakingParamsUpdateProposal(s.Resources.ChainA, 25, 100)
+	s.Require().NoError(err)
+	s.TestCounters.ProposalCounter++
+	submitGovFlags := []string{configFile(common.ProposalLiquidParamUpdateFilename)}
+	depositGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), "yes"}
 
 	// gov proposing Liquid parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
-	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.T().Logf("Proposal number: %d", s.TestCounters.ProposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: Set parameters (global liquid staking cap, validator liquid staking cap)")
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), proposalCounter, "liquidtypes.MsgUpdateProposal",
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.TestCounters.ProposalCounter, "liquidtypes.MsgUpdateProposal",
 		submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
 		func() bool {
-			proposal, err := queryGovProposal(chainEndpoint, proposalCounter)
+			proposal, err := query.GovProposal(chainEndpoint, s.TestCounters.ProposalCounter)
 			s.Require().NoError(err)
 			return proposal.GetProposal().Status == govv1beta1.StatusPassed
 		},
@@ -233,7 +240,7 @@ func (s *IntegrationTestSuite) testLiquidGlobalLimit() {
 
 	s.Require().Eventually(
 		func() bool {
-			liquidParams, err := queryLiquidParams(chainEndpoint)
+			liquidParams, err := query.LiquidParams(chainEndpoint)
 			s.T().Logf("After Liquid parameters update proposal")
 			s.Require().NoError(err)
 
@@ -245,28 +252,28 @@ func (s *IntegrationTestSuite) testLiquidGlobalLimit() {
 		15*time.Second,
 		5*time.Second,
 	)
-	delegatorAddress, _ := s.chainA.genesisAccounts[3].keyInfo.GetAddress()
+	delegatorAddress, _ := s.Resources.ChainA.GenesisAccounts[3].KeyInfo.GetAddress()
 
-	fees := sdk.NewCoin(uatomDenom, math.NewInt(1))
+	fees := sdk.NewCoin(common.UAtomDenom, math.NewInt(1))
 
-	pool, err := queryPool(chainEndpoint)
+	pool, err := query.Pool(chainEndpoint)
 	s.Require().NoError(err)
-	tokens, err := queryTotalLiquidStaked(chainEndpoint)
+	tokens, err := query.TotalLiquidStaked(chainEndpoint)
 	s.Require().NoError(err)
 	liquidStakedAmount, err := strconv.ParseInt(tokens, 10, 64)
 	s.Require().NoError(err)
 
 	delegationAmount := math.LegacyNewDec(pool.BondedTokens.Int64()).QuoInt(math.NewInt(4)).Sub(math.LegacyNewDec(
 		liquidStakedAmount)).TruncateInt().Sub(underBuffer)
-	delegation := sdk.NewCoin(uatomDenom, delegationAmount)
+	delegation := sdk.NewCoin(common.UAtomDenom, delegationAmount)
 
 	// Alice delegate uatom to Validator A
-	s.execDelegate(s.chainA, 0, delegation.String(), validatorAddressB, delegatorAddress.String(), gaiaHomePath, fees.String())
+	s.ExecDelegate(s.Resources.ChainA, 0, delegation.String(), validatorAddressB, delegatorAddress.String(), common.GaiaHomePath, fees.String())
 
 	// Validate delegation successful
 	s.Require().Eventually(
 		func() bool {
-			res, err := queryDelegation(chainEndpoint, validatorAddressB, delegatorAddress.String())
+			res, err := query.Delegation(chainEndpoint, validatorAddressB, delegatorAddress.String())
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
@@ -278,17 +285,17 @@ func (s *IntegrationTestSuite) testLiquidGlobalLimit() {
 
 	// Tokenize shares
 	tokenizeAmount := delegationAmount
-	tokenize := sdk.NewCoin(uatomDenom, tokenizeAmount)
-	s.executeTokenizeShares(s.chainA, 0, tokenize.String(), validatorAddressB, delegatorAddress.String(), gaiaHomePath, fees.String())
+	tokenize := sdk.NewCoin(common.UAtomDenom, tokenizeAmount)
+	s.executeTokenizeShares(s.Resources.ChainA, 0, tokenize.String(), validatorAddressB, delegatorAddress.String(), common.GaiaHomePath, fees.String())
 
-	recordID, err := queryLastTokenizeShareRecordID(chainEndpoint)
+	recordID, err := query.LastTokenizeShareRecordID(chainEndpoint)
 	s.Require().NoError(err)
 
 	// Validate balance increased
 	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressB), strconv.Itoa(int(recordID)))
 	s.Require().Eventually(
 		func() bool {
-			res, err := getSpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
+			res, err := query.SpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
 			s.Require().NoError(err)
 			return res.Amount.Equal(tokenizeAmount)
 		},
@@ -298,18 +305,18 @@ func (s *IntegrationTestSuite) testLiquidGlobalLimit() {
 
 	// Try to tokenize over the limit
 	secondTokenizeAmount := math.NewInt(5)
-	secondTokenize := sdk.NewCoin(uatomDenom, secondTokenizeAmount)
-	s.executeTokenizeSharesFailure(s.chainA, 0, secondTokenize.String(), validatorAddressB, delegatorAddress.String(),
-		gaiaHomePath, fees.String())
+	secondTokenize := sdk.NewCoin(common.UAtomDenom, secondTokenizeAmount)
+	s.executeTokenizeSharesFailure(s.Resources.ChainA, 0, secondTokenize.String(), validatorAddressB, delegatorAddress.String(),
+		common.GaiaHomePath, fees.String())
 
 	// Redeem tokens for shares
 	redeemAmount := sdk.NewCoin(shareDenom, tokenizeAmount)
-	s.executeRedeemShares(s.chainA, 0, redeemAmount.String(), delegatorAddress.String(), gaiaHomePath, fees.String())
+	s.executeRedeemShares(s.Resources.ChainA, 0, redeemAmount.String(), delegatorAddress.String(), common.GaiaHomePath, fees.String())
 
 	// check redeem success
 	s.Require().Eventually(
 		func() bool {
-			balanceRes, err := getSpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
+			balanceRes, err := query.SpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
 			s.Require().NoError(err)
 			if !balanceRes.Amount.IsNil() && balanceRes.Amount.IsZero() {
 				return false
@@ -323,31 +330,32 @@ func (s *IntegrationTestSuite) testLiquidGlobalLimit() {
 
 // testLiquidValidatorLimit validates the validator liquid staking cap
 func (s *IntegrationTestSuite) testLiquidValidatorLimit() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.valResources[s.chainA.id][0].GetHostPort("1317/tcp"))
+	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
 
-	validatorA := s.chainA.validators[0]
-	validatorAAddr, _ := validatorA.keyInfo.GetAddress()
-	validatorB := s.chainA.validators[1]
-	validatorBAddr, _ := validatorB.keyInfo.GetAddress()
+	validatorA := s.Resources.ChainA.Validators[0]
+	validatorAAddr, _ := validatorA.KeyInfo.GetAddress()
+	validatorB := s.Resources.ChainA.Validators[1]
+	validatorBAddr, _ := validatorB.KeyInfo.GetAddress()
 
 	validatorAddressB := sdk.ValAddress(validatorBAddr).String()
 
-	s.writeLiquidStakingParamsUpdateProposal(s.chainA, 100, 10)
-	proposalCounter++
-	submitGovFlags := []string{configFile(proposalLiquidParamUpdateFilename)}
-	depositGovFlags := []string{strconv.Itoa(proposalCounter), depositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(proposalCounter), "yes"}
+	err := msg.WriteLiquidStakingParamsUpdateProposal(s.Resources.ChainA, 100, 10)
+	s.Require().NoError(err)
+	s.TestCounters.ProposalCounter++
+	submitGovFlags := []string{configFile(common.ProposalLiquidParamUpdateFilename)}
+	depositGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), common.DepositAmount.String()}
+	voteGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), "yes"}
 
 	// gov proposing Liquid parameters (global liquid staking cap, validator liquid staking cap, validator bond factor)
-	s.T().Logf("Proposal number: %d", proposalCounter)
+	s.T().Logf("Proposal number: %d", s.TestCounters.ProposalCounter)
 	s.T().Logf("Submitting, deposit and vote legacy Gov Proposal: Set parameters (global liquid staking cap, validator liquid staking cap)")
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), proposalCounter, "liquidtypes.MsgUpdateProposal",
+	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.TestCounters.ProposalCounter, "liquidtypes.MsgUpdateProposal",
 		submitGovFlags, depositGovFlags, voteGovFlags, "vote")
 
 	// query the proposal status and new fee
 	s.Require().Eventually(
 		func() bool {
-			proposal, err := queryGovProposal(chainEndpoint, proposalCounter)
+			proposal, err := query.GovProposal(chainEndpoint, s.TestCounters.ProposalCounter)
 			s.Require().NoError(err)
 			return proposal.GetProposal().Status == govv1beta1.StatusPassed
 		},
@@ -357,7 +365,7 @@ func (s *IntegrationTestSuite) testLiquidValidatorLimit() {
 
 	s.Require().Eventually(
 		func() bool {
-			liquidParams, err := queryLiquidParams(chainEndpoint)
+			liquidParams, err := query.LiquidParams(chainEndpoint)
 			s.T().Logf("After Liquid parameters update proposal")
 			s.Require().NoError(err)
 
@@ -369,25 +377,25 @@ func (s *IntegrationTestSuite) testLiquidValidatorLimit() {
 		15*time.Second,
 		5*time.Second,
 	)
-	delegatorAddress, _ := s.chainA.genesisAccounts[4].keyInfo.GetAddress()
+	delegatorAddress, _ := s.Resources.ChainA.GenesisAccounts[4].KeyInfo.GetAddress()
 
-	fees := sdk.NewCoin(uatomDenom, math.NewInt(1))
+	fees := sdk.NewCoin(common.UAtomDenom, math.NewInt(1))
 
-	valB, err := queryValidator(chainEndpoint, validatorAddressB)
+	valB, err := query.Validator(chainEndpoint, validatorAddressB)
 	s.Require().NoError(err)
 
 	// delegationAmount should put us at exactly 10% of validator's delegator shares
 	// delegationAmount := valB.DelegatorShares.TruncateInt().Quo(math.NewInt(9))
 	delegationAmount := valB.DelegatorShares.Quo(math.LegacyNewDecFromInt(math.NewInt(9))).TruncateInt().Sub(underBuffer)
-	delegation := sdk.NewCoin(uatomDenom, delegationAmount)
+	delegation := sdk.NewCoin(common.UAtomDenom, delegationAmount)
 
 	// Alice delegate uatom to Validator B
-	s.execDelegate(s.chainA, 0, delegation.String(), validatorAddressB, delegatorAddress.String(), gaiaHomePath, fees.String())
+	s.ExecDelegate(s.Resources.ChainA, 0, delegation.String(), validatorAddressB, delegatorAddress.String(), common.GaiaHomePath, fees.String())
 
 	// Validate delegation successful
 	s.Require().Eventually(
 		func() bool {
-			res, err := queryDelegation(chainEndpoint, validatorAddressB, delegatorAddress.String())
+			res, err := query.Delegation(chainEndpoint, validatorAddressB, delegatorAddress.String())
 			amt := res.GetDelegationResponse().GetDelegation().GetShares()
 			s.Require().NoError(err)
 
@@ -399,17 +407,17 @@ func (s *IntegrationTestSuite) testLiquidValidatorLimit() {
 
 	// Tokenize shares
 	tokenizeAmount := delegationAmount
-	tokenize := sdk.NewCoin(uatomDenom, tokenizeAmount)
-	s.executeTokenizeShares(s.chainA, 0, tokenize.String(), validatorAddressB, delegatorAddress.String(), gaiaHomePath, fees.String())
+	tokenize := sdk.NewCoin(common.UAtomDenom, tokenizeAmount)
+	s.executeTokenizeShares(s.Resources.ChainA, 0, tokenize.String(), validatorAddressB, delegatorAddress.String(), common.GaiaHomePath, fees.String())
 
-	recordID, err := queryLastTokenizeShareRecordID(chainEndpoint)
+	recordID, err := query.LastTokenizeShareRecordID(chainEndpoint)
 	s.Require().NoError(err)
 
 	// Validate balance increased
 	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressB), strconv.Itoa(int(recordID)))
 	s.Require().Eventually(
 		func() bool {
-			res, err := getSpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
+			res, err := query.SpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
 			s.Require().NoError(err)
 			return res.Amount.Equal(tokenizeAmount)
 		},
@@ -419,18 +427,18 @@ func (s *IntegrationTestSuite) testLiquidValidatorLimit() {
 
 	// Try to tokenize over the limit
 	secondTokenizeAmount := math.NewInt(5)
-	secondTokenize := sdk.NewCoin(uatomDenom, secondTokenizeAmount)
-	s.executeTokenizeSharesFailure(s.chainA, 0, secondTokenize.String(), validatorAddressB, delegatorAddress.String(),
-		gaiaHomePath, fees.String())
+	secondTokenize := sdk.NewCoin(common.UAtomDenom, secondTokenizeAmount)
+	s.executeTokenizeSharesFailure(s.Resources.ChainA, 0, secondTokenize.String(), validatorAddressB, delegatorAddress.String(),
+		common.GaiaHomePath, fees.String())
 
 	// Redeem tokens for shares
 	redeemAmount := sdk.NewCoin(shareDenom, tokenizeAmount)
-	s.executeRedeemShares(s.chainA, 0, redeemAmount.String(), delegatorAddress.String(), gaiaHomePath, fees.String())
+	s.executeRedeemShares(s.Resources.ChainA, 0, redeemAmount.String(), delegatorAddress.String(), common.GaiaHomePath, fees.String())
 
 	// check redeem success
 	s.Require().Eventually(
 		func() bool {
-			balanceRes, err := getSpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
+			balanceRes, err := query.SpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
 			s.Require().NoError(err)
 			if !balanceRes.Amount.IsNil() && balanceRes.Amount.IsZero() {
 				return false
@@ -440,4 +448,114 @@ func (s *IntegrationTestSuite) testLiquidValidatorLimit() {
 		20*time.Second,
 		5*time.Second,
 	)
+}
+
+func (s *IntegrationTestSuite) executeTokenizeSharesFailure(c *common.Chain, valIdx int, amount, valOperAddress,
+	delegatorAddr, home, delegateFees string,
+) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx liquid tokenize-share %s", c.ID)
+
+	gaiaCommand := []string{
+		common.GaiadBinary,
+		common.TxCommand,
+		liquidtypes.ModuleName,
+		"tokenize-share",
+		valOperAddress,
+		amount,
+		delegatorAddr,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
+		fmt.Sprintf("--%s=%d", flags.FlagGas, 1000000),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.ExpectErrExecValidation(c, valIdx, true))
+	s.T().Logf("%s expected failure on execution of tokenize share tx from %s", delegatorAddr, valOperAddress)
+}
+
+func (s *IntegrationTestSuite) executeTokenizeShares(c *common.Chain, valIdx int, amount, valOperAddress, delegatorAddr, home, delegateFees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx liquid tokenize-share %s", c.ID)
+
+	gaiaCommand := []string{
+		common.GaiadBinary,
+		common.TxCommand,
+		liquidtypes.ModuleName,
+		"tokenize-share",
+		valOperAddress,
+		amount,
+		delegatorAddr,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
+		fmt.Sprintf("--%s=%d", flags.FlagGas, 1000000),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.DefaultExecValidation(c, valIdx))
+	s.T().Logf("%s successfully executed tokenize share tx from %s", delegatorAddr, valOperAddress)
+}
+
+func (s *IntegrationTestSuite) executeRedeemShares(c *common.Chain, valIdx int, amount, delegatorAddr, home, delegateFees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx liquid redeem-tokens %s", c.ID)
+
+	gaiaCommand := []string{
+		common.GaiadBinary,
+		common.TxCommand,
+		liquidtypes.ModuleName,
+		"redeem-tokens",
+		amount,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, delegatorAddr),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, delegateFees),
+		fmt.Sprintf("--%s=%d", flags.FlagGas, 1000000),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.DefaultExecValidation(c, valIdx))
+	s.T().Logf("%s successfully executed redeem share tx for %s", delegatorAddr, amount)
+}
+
+func (s *IntegrationTestSuite) executeTransferTokenizeShareRecord(c *common.Chain, valIdx int, recordID, owner, newOwner, home, txFees string) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	s.T().Logf("Executing gaiad tx liquid transfer-tokenize-share-record %s", c.ID)
+
+	gaiaCommand := []string{
+		common.GaiadBinary,
+		common.TxCommand,
+		liquidtypes.ModuleName,
+		"transfer-tokenize-share-record",
+		recordID,
+		newOwner,
+		fmt.Sprintf("--%s=%s", flags.FlagFrom, owner),
+		fmt.Sprintf("--%s=%s", flags.FlagChainID, c.ID),
+		fmt.Sprintf("--%s=%s", flags.FlagGasPrices, txFees),
+		"--keyring-backend=test",
+		fmt.Sprintf("--%s=%s", flags.FlagHome, home),
+		"--output=json",
+		"-y",
+	}
+
+	s.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, s.DefaultExecValidation(c, valIdx))
+	s.T().Logf("%s successfully executed transfer tokenize share record for %s", owner, recordID)
 }

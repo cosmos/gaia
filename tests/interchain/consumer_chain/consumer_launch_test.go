@@ -44,7 +44,7 @@ func (s *ConsumerLaunchSuite) TestChainLaunch() {
 					{
 						Repository: chainsuite.HyphaICSRepo,
 						Version:    s.OtherChainVersionPreUpgrade,
-						UidGid:     chainsuite.ICSUidGuid,
+						UIDGID:     chainsuite.ICSUidGuid,
 					},
 				},
 			},

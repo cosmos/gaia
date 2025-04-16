@@ -17,13 +17,13 @@ import (
 	"github.com/tidwall/sjson"
 	"go.uber.org/multierr"
 
-	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types"
-	ccvclient "github.com/cosmos/interchain-security/v5/x/ccv/provider/client"
+	clienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
+	ccvclient "github.com/cosmos/interchain-security/v7/x/ccv/provider/client"
 
 	sdkmath "cosmossdk.io/math"
 
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	providertypes "github.com/cosmos/interchain-security/v5/x/ccv/provider/types"
+	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 )
 
 type ConsumerBootstrapCb func(ctx context.Context, consumer *cosmos.CosmosChain)

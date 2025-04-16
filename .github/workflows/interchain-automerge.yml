@@ -1,0 +1,38 @@
+name: interchaintest-automerge
+on:
+  pull_request_target:
+    types:
+      - labeled
+  pull_request_review:
+    types:
+      - submitted
+  check_suite:
+    types:
+      - completed
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            tests:
+              - 'tests/interchain/**'
+            src:
+              - '**/*'
+              - '!tests/interchain/**'
+          predicate-quantifier: 'every'
+      - if: steps.changes.outputs.tests == 'true' && steps.changes.outputs.src == 'false'
+        id: automerge
+        name: automerge tests
+        uses: "pascalgn/automerge-action@v0.16.4"
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          MERGE_FORKS: "false"
+          MERGE_METHOD: "squash"
+          MERGE_REQUIRED_APPROVALS: "1"
+          MERGE_LABELS: "automerge"

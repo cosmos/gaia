@@ -89,6 +89,7 @@ builds:
       - linux
     goarch:
       - amd64
+    mod_timestamp: "{{ .CommitTimestamp }}"
     tags:
       - muslc
       - ledger
@@ -103,12 +104,12 @@ builds:
     ldflags:
       - -s -w
       - -linkmode=external
-      - -extldflags "-Wl,-z,muldefs -static"
+      - -extldflags "-Wl,-z,muldefs -static -z noexecstack"
       - -X main.commit={{.Commit}}
       - -X main.date={{ .CommitDate }}
       - -X github.com/cosmos/cosmos-sdk/version.Name=gaia
       - -X github.com/cosmos/cosmos-sdk/version.AppName=gaiad
-      - -X github.com/cosmos/cosmos-sdk/version.Version={{ .Version }}
+      - -X github.com/cosmos/cosmos-sdk/version.Version=v{{ .Version }}
       - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
       - -X github.com/cosmos/cosmos-sdk/version.BuildTags=muslc,ledger
       - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.TM_VERSION }}

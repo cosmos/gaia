@@ -2,9 +2,11 @@ package v24
 
 import (
 	"context"
+	"fmt"
+
 	errorsmod "cosmossdk.io/errors"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
-	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
@@ -55,11 +57,7 @@ func MigrateLSMState(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 
 	migrateLastTokenizeShareRecordID(ctx, sk, lsmk)
 	migrateTotalLiquidStakedTokens(ctx, sk, lsmk)
-
-	err = migrateTokenizeShareLocks(ctx, sk, lsmk)
-	if err != nil {
-		return fmt.Errorf("error migrating tokenize records: %w", err)
-	}
+	migrateTokenizeShareLocks(ctx, sk, lsmk)
 
 	return nil
 }
@@ -108,7 +106,7 @@ func migrateTotalLiquidStakedTokens(ctx sdk.Context, sk *stakingkeeper.Keeper, l
 	lsmk.SetTotalLiquidStakedTokens(ctx, totalLiquidStaked)
 }
 
-func migrateTokenizeShareLocks(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk *liquidkeeper.Keeper) error {
+func migrateTokenizeShareLocks(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk *liquidkeeper.Keeper) {
 	tokenizeShareLocks := sk.GetAllTokenizeSharesLocks(ctx)
 	converted := make([]liquidtypes.TokenizeShareLock, len(tokenizeShareLocks))
 	for i, tokenizeShareLock := range tokenizeShareLocks {
@@ -119,6 +117,4 @@ func migrateTokenizeShareLocks(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk *
 		}
 	}
 	lsmk.SetTokenizeShareLocks(ctx, converted)
-
-	return nil
 }

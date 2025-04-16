@@ -2,6 +2,10 @@
 
 ## UNRELEASED
 
+### Dependencies
+
+- Bump [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) from 2.0.6 to 2.0.9 ([#3710](https://github.com/cosmos/gaia/pull/3710))
+
 ## v23.1.1
 
 *April 14, 2025*

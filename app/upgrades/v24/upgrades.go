@@ -2,11 +2,9 @@ package v24
 
 import (
 	"context"
-	"fmt"
-
 	errorsmod "cosmossdk.io/errors"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
-
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
@@ -112,14 +110,15 @@ func migrateTotalLiquidStakedTokens(ctx sdk.Context, sk *stakingkeeper.Keeper, l
 
 func migrateTokenizeShareLocks(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk *liquidkeeper.Keeper) error {
 	tokenizeShareLocks := sk.GetAllTokenizeSharesLocks(ctx)
-	for _, lock := range tokenizeShareLocks {
-		accAddr, err := sdk.AccAddressFromBech32(lock.Address)
-		if err != nil {
-			return err
+	converted := make([]liquidtypes.TokenizeShareLock, len(tokenizeShareLocks))
+	for i, tokenizeShareLock := range tokenizeShareLocks {
+		converted[i] = liquidtypes.TokenizeShareLock{
+			Address:        tokenizeShareLock.Address,
+			Status:         tokenizeShareLock.Status,
+			CompletionTime: tokenizeShareLock.CompletionTime,
 		}
-		lsmk.AddTokenizeSharesLock(ctx, accAddr)
-		lsmk.SetTokenizeSharesUnlockTime(ctx, accAddr, lock.CompletionTime)
 	}
+	lsmk.SetTokenizeShareLocks(ctx, converted)
 
 	return nil
 }

@@ -33,7 +33,14 @@ func (k Keeper) InitGenesis(ctx context.Context, data *types.GenesisState) {
 	// Set the tokenize shares locks for accounts that have disabled tokenizing shares
 	// The lock can either be in status LOCKED or LOCK_EXPIRING
 	// If it is in status LOCK_EXPIRING, the unlocking must also be queued
-	for _, tokenizeShareLock := range data.TokenizeShareLocks {
+	k.SetTotalLiquidStakedTokens(ctx, data.TotalLiquidStakedTokens)
+}
+
+func (k Keeper) SetTokenizeShareLocks(ctx sdk.Context, tokenizeShareLocks []types.TokenizeShareLock) {
+	// Set the tokenize shares locks for accounts that have disabled tokenizing shares
+	// The lock can either be in status LOCKED or LOCK_EXPIRING
+	// If it is in status LOCK_EXPIRING, the unlocking must also be queued
+	for _, tokenizeShareLock := range tokenizeShareLocks {
 		address, err := k.authKeeper.AddressCodec().StringToBytes(tokenizeShareLock.Address)
 		if err != nil {
 			panic(err)

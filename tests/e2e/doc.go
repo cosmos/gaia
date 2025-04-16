@@ -1,4 +1,4 @@
-// package e2e defines an integration testing suite used for full end-to-end
+// Package e2e defines an integration testing suite used for full end-to-end
 // testing functionality.
 //
 // The file e2e_suite_test.go defines the testing suite and contains the core

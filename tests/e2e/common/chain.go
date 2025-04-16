@@ -34,6 +34,7 @@ import (
 
 	gaia "github.com/cosmos/gaia/v23/app"
 	gaiaparams "github.com/cosmos/gaia/v23/app/params"
+	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
 	metaprotocoltypes "github.com/cosmos/gaia/v23/x/metaprotocols/types"
 )
 
@@ -67,6 +68,7 @@ func init() {
 	metaprotocoltypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 	ratelimittypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 	wasmclienttypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+	liquidtypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 
 	ibcv2types.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 

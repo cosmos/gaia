@@ -78,7 +78,6 @@ type Chain struct {
 	DataDir    string
 	ID         string
 	Validators []*validator
-	accounts   []*account //nolint:unused
 	// initial accounts in genesis
 	GenesisAccounts        []*account
 	GenesisVestingAccounts map[string]sdk.AccAddress
@@ -133,51 +132,6 @@ func (c *Chain) CreateAndInitValidators(count int) error {
 
 		// create keys
 		if err := node.createKey("val"); err != nil {
-			return err
-		}
-		if err := node.createNodeKey(); err != nil {
-			return err
-		}
-		if err := node.createConsensusKey(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (c *Chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []string) error { //nolint:unused // this is called during e2e tests
-	tempApplication := gaia.NewGaiaApp(
-		log.NewNopLogger(),
-		dbm.NewMemDB(),
-		nil,
-		true,
-		map[int64]bool{},
-		gaia.DefaultNodeHome,
-		gaia.EmptyAppOptions{},
-		gaia.EmptyWasmOptions,
-	)
-	defer func() {
-		if err := tempApplication.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	genesisState := tempApplication.ModuleBasics.DefaultGenesis(EncodingConfig.Marshaler)
-
-	for i := 0; i < count; i++ {
-		// create node
-		node := c.createValidator(i)
-
-		// generate genesis files
-		if err := node.init(genesisState); err != nil {
-			return err
-		}
-
-		c.Validators = append(c.Validators, node)
-
-		// create keys
-		if err := node.createKeyFromMnemonic("val", mnemonics[i]); err != nil {
 			return err
 		}
 		if err := node.createNodeKey(); err != nil {

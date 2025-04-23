@@ -278,6 +278,9 @@ replace (
 	// Use cosmos keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
+	// Use special SDK v0.50.x release with support for both ICS and LSM
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.50.11-lsm.0.20250423173756-a145735af411
+
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2
 

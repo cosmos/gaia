@@ -1,9 +1,10 @@
 package ante
 
 import (
-	feemarketante "github.com/skip-mev/feemarket/x/feemarket/ante"
-	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
-
+	evmcosmosante "github.com/cosmos/evm/ante/cosmos"
+	evmante "github.com/cosmos/evm/ante/evm"
+	anteinterfaces "github.com/cosmos/evm/ante/interfaces"
+	evmtypes "github.com/cosmos/evm/x/vm/types"
 	ibcante "github.com/cosmos/ibc-go/v10/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
@@ -14,9 +15,11 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errortypes "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	sdkvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -24,9 +27,6 @@ import (
 
 	gaiaerrors "github.com/cosmos/gaia/v23/types/errors"
 )
-
-// UseFeeMarketDecorator to make the integration testing easier: we can switch off its ante and post decorators with this flag
-var UseFeeMarketDecorator = true
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
 // channel keeper.
@@ -36,44 +36,70 @@ type HandlerOptions struct {
 	SignModeHandler        *txsigning.HandlerMap
 	SigGasConsumer         func(meter storetypes.GasMeter, sig signing.SignatureV2, params authtypes.Params) error
 
-	AccountKeeper         feemarketante.AccountKeeper
-	BankKeeper            feemarketante.BankKeeper
+	AccountKeeper         anteinterfaces.AccountKeeper
+	BankKeeper            anteinterfaces.BankKeeper
 	Codec                 codec.BinaryCodec
 	IBCkeeper             *ibckeeper.Keeper
 	StakingKeeper         *stakingkeeper.Keeper
-	FeeMarketKeeper       *feemarketkeeper.Keeper
 	TxFeeChecker          ante.TxFeeChecker
 	TXCounterStoreService corestoretypes.KVStoreService
 	WasmConfig            *wasmtypes.NodeConfig
+
+	// TODO -- isn't this in module params in skip-mev/feemarket?
+	MaxTxGasWanted  uint64
+	FeeMarketKeeper anteinterfaces.FeeMarketKeeper
+	EvmKeeper       anteinterfaces.EVMKeeper
 }
 
-func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
+func (opts *HandlerOptions) Validate() error {
 	if opts.AccountKeeper == nil {
-		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "account keeper is required for AnteHandler")
+		return errorsmod.Wrap(gaiaerrors.ErrLogic, "account keeper is required for AnteHandler")
 	}
 	if opts.BankKeeper == nil {
-		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "bank keeper is required for AnteHandler")
+		return errorsmod.Wrap(gaiaerrors.ErrLogic, "bank keeper is required for AnteHandler")
 	}
 	if opts.SignModeHandler == nil {
-		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "sign mode handler is required for AnteHandler")
+		return errorsmod.Wrap(gaiaerrors.ErrLogic, "sign mode handler is required for AnteHandler")
 	}
 	if opts.IBCkeeper == nil {
-		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "IBC keeper is required for AnteHandler")
+		return errorsmod.Wrap(gaiaerrors.ErrLogic, "IBC keeper is required for AnteHandler")
 	}
 	if opts.FeeMarketKeeper == nil {
-		return nil, errorsmod.Wrap(gaiaerrors.ErrLogic, "FeeMarket keeper is required for AnteHandler")
+		return errorsmod.Wrap(gaiaerrors.ErrLogic, "FeeMarket keeper is required for AnteHandler")
 	}
-
+	if opts.EvmKeeper == nil {
+		return errorsmod.Wrap(gaiaerrors.ErrLogic, "EvmKeeper keeper is required for AnteHandler")
+	}
 	if opts.StakingKeeper == nil {
-		return nil, errorsmod.Wrap(gaiaerrors.ErrNotFound, "staking param store is required for AnteHandler")
+		return errorsmod.Wrap(gaiaerrors.ErrNotFound, "staking param store is required for AnteHandler")
 	}
+	return nil
+}
 
+func NewEvmAnteHandler(opts HandlerOptions) sdk.AnteHandler {
+	return sdk.ChainAnteDecorators(
+		evmante.NewEVMMonoDecorator(
+			opts.AccountKeeper,
+			opts.FeeMarketKeeper,
+			opts.EvmKeeper,
+			opts.MaxTxGasWanted,
+		),
+	)
+}
+
+func NewCosmosAnteHandler(opts HandlerOptions) sdk.AnteHandler {
 	sigGasConsumer := opts.SigGasConsumer
 	if sigGasConsumer == nil {
 		sigGasConsumer = ante.DefaultSigVerificationGasConsumer
 	}
 
 	anteDecorators := []sdk.AnteDecorator{
+		evmcosmosante.NewRejectMessagesDecorator(), // reject MsgEthereumTxs
+		evmcosmosante.NewAuthzLimiterDecorator( // disable the Msg types that cannot be included on an authz.MsgExec msgs field
+			sdk.MsgTypeURL(&evmtypes.MsgEthereumTx{}),
+			// TODO -- do we care about vesting accounts here?
+			sdk.MsgTypeURL(&sdkvesting.MsgCreateVestingAccount{}),
+		),
 		ante.NewSetUpContextDecorator(),                                               // outermost AnteDecorator. SetUpContext must be called first
 		wasmkeeper.NewLimitSimulationGasDecorator(opts.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
 		wasmkeeper.NewCountTXDecorator(opts.TXCounterStoreService),
@@ -81,6 +107,8 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
+		// TODO -- can I disable feemarket anymore?
+		evmcosmosante.NewMinGasPriceDecorator(opts.FeeMarketKeeper, opts.EvmKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		NewGovVoteDecorator(opts.Codec, opts.StakingKeeper),
 		NewGovExpeditedProposalsDecorator(opts.Codec),
@@ -90,21 +118,49 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
 		ante.NewIncrementSequenceDecorator(opts.AccountKeeper),
 		ibcante.NewRedundantRelayDecorator(opts.IBCkeeper),
+		evmante.NewGasWantedDecorator(opts.EvmKeeper, opts.FeeMarketKeeper),
 	}
 
-	if UseFeeMarketDecorator {
-		anteDecorators = append(anteDecorators,
-			feemarketante.NewFeeMarketCheckDecorator(
-				opts.AccountKeeper,
-				opts.BankKeeper,
-				opts.FeegrantKeeper,
-				opts.FeeMarketKeeper,
-				ante.NewDeductFeeDecorator(
-					opts.AccountKeeper,
-					opts.BankKeeper,
-					opts.FeegrantKeeper,
-					opts.TxFeeChecker)))
-	}
+	return sdk.ChainAnteDecorators(anteDecorators...)
+}
 
-	return sdk.ChainAnteDecorators(anteDecorators...), nil
+func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
+	if err := options.Validate(); err != nil {
+		return nil, err
+	}
+	return func(ctx sdk.Context, tx sdk.Tx, sim bool) (newCtx sdk.Context, err error) {
+		var anteHandler sdk.AnteHandler
+
+		txWithExtensions, ok := tx.(ante.HasExtensionOptionsTx)
+		if ok {
+			opts := txWithExtensions.GetExtensionOptions()
+			if len(opts) > 0 {
+				switch typeURL := opts[0].GetTypeUrl(); typeURL {
+				case "/os.evm.v1.ExtensionOptionsEthereumTx":
+					// handle as *evmtypes.MsgEthereumTx
+					anteHandler = NewEvmAnteHandler(options)
+				case "/os.types.v1.ExtensionOptionDynamicFeeTx":
+					// cosmos-sdk tx with dynamic fee extension
+					anteHandler = NewCosmosAnteHandler(options)
+				default:
+					return ctx, errorsmod.Wrapf(
+						errortypes.ErrUnknownExtensionOptions,
+						"rejecting tx with unsupported extension option: %s", typeURL,
+					)
+				}
+
+				return anteHandler(ctx, tx, sim)
+			}
+		}
+
+		// handle as totally normal Cosmos SDK tx
+		switch tx.(type) {
+		case sdk.Tx:
+			anteHandler = NewCosmosAnteHandler(options)
+		default:
+			return ctx, errorsmod.Wrapf(errortypes.ErrUnknownRequest, "invalid transaction type: %T", tx)
+		}
+
+		return anteHandler(ctx, tx, sim)
+	}, nil
 }

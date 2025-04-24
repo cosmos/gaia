@@ -16,6 +16,11 @@ import (
 	tmcli "github.com/cometbft/cometbft/libs/cli"
 
 	dbm "github.com/cosmos/cosmos-db"
+	evmcmd "github.com/cosmos/evm/client"
+	evmkeyring "github.com/cosmos/evm/crypto/keyring"
+	evmserver "github.com/cosmos/evm/server"
+	evmserverconfig "github.com/cosmos/evm/server/config"
+	srvflags "github.com/cosmos/evm/server/flags"
 
 	"cosmossdk.io/client/v2/autocli"
 	"cosmossdk.io/log"
@@ -76,7 +81,7 @@ func NewRootCmd() *cobra.Command {
 		tempDir,
 		initAppOptions,
 		gaia.EmptyWasmOptions,
-		gaia.EVMAppOptions,
+		gaia.NoOpEVMOptions,
 	)
 	defer func() {
 		if err := tempApplication.Close(); err != nil {
@@ -94,7 +99,10 @@ func NewRootCmd() *cobra.Command {
 		WithInput(os.Stdin).
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithHomeDir(gaia.DefaultNodeHome).
-		WithViper("")
+		WithViper("").
+		WithBroadcastMode(flags.FlagBroadcastMode).
+		WithKeyringOptions(evmkeyring.Option()).
+		WithLedgerHasProtobuf(true)
 
 	rootCmd := &cobra.Command{
 		Use:   "gaiad",
@@ -180,6 +188,10 @@ func initAppConfig() (string, interface{}) {
 	type CustomAppConfig struct {
 		serverconfig.Config
 
+		EVM     evmserverconfig.EVMConfig
+		JSONRPC evmserverconfig.JSONRPCConfig
+		TLS     evmserverconfig.TLSConfig
+
 		Wasm wasmtypes.NodeConfig `mapstructure:"wasm"`
 	}
 
@@ -189,11 +201,16 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.StateSync.SnapshotKeepRecent = 10
 
 	customAppConfig := CustomAppConfig{
-		Config: *srvCfg,
-		Wasm:   wasmtypes.DefaultNodeConfig(),
+		Config:  *srvCfg,
+		EVM:     *evmserverconfig.DefaultEVMConfig(),
+		JSONRPC: *evmserverconfig.DefaultJSONRPCConfig(),
+		TLS:     *evmserverconfig.DefaultTLSConfig(),
+		Wasm:    wasmtypes.DefaultNodeConfig(),
 	}
 
-	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate()
+	defaultAppTemplate := serverconfig.DefaultConfigTemplate +
+		wasmtypes.DefaultConfigTemplate() +
+		evmserverconfig.DefaultEVMConfigTemplate
 
 	return defaultAppTemplate, customAppConfig
 }
@@ -219,19 +236,33 @@ func initRootCmd(rootCmd *cobra.Command,
 		snapshot.Cmd(ac.newApp),
 	)
 
-	server.AddCommands(rootCmd, gaia.DefaultNodeHome, ac.newApp, ac.appExport, addModuleInitFlags)
+	evmserver.AddCommands(
+		rootCmd,
+		evmserver.NewDefaultStartOptions(ac.newApp, gaia.DefaultNodeHome),
+		ac.appExport,
+		addModuleInitFlags,
+	)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
+		// TODO -- does this still work?
 		server.StatusCommand(),
 		genesisCommand(txConfig, basicManager),
 		queryCommand(),
 		txCommand(basicManager),
+		// TODO I think I should disable this?
 		keys.Commands(),
+		evmcmd.KeyCommands(gaia.DefaultNodeHome, true),
 	)
 
 	// add rosetta
 	rootCmd.AddCommand(rosettaCmd.RosettaCommand(interfaceRegistry, cdc))
+
+	var err error
+	_, err = srvflags.AddTxFlags(rootCmd)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {

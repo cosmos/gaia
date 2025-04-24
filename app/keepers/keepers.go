@@ -1,15 +1,23 @@
 package keepers
 
 import (
-	"errors"
 	"fmt"
-	erc20keeper "github.com/cosmos/evm/x/erc20/keeper"
-	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
 	"os"
 	"path/filepath"
 
 	wasmvm "github.com/CosmWasm/wasmvm/v2"
+	"github.com/spf13/cast"
 
+	srvflags "github.com/cosmos/evm/server/flags"
+	erc20keeper "github.com/cosmos/evm/x/erc20/keeper"
+	erc20types "github.com/cosmos/evm/x/erc20/types"
+	feemarketkeeper "github.com/cosmos/evm/x/feemarket/keeper"
+	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
+	"github.com/cosmos/evm/x/ibc/transfer"
+	evmtransferkeeper "github.com/cosmos/evm/x/ibc/transfer/keeper"
+	transferv2 "github.com/cosmos/evm/x/ibc/transfer/v2"
+	evmkeeper "github.com/cosmos/evm/x/vm/keeper"
+	evmtypes "github.com/cosmos/evm/x/vm/types"
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward"
 	pfmrouterkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/keeper"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/types"
@@ -29,10 +37,7 @@ import (
 	icahosttypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host/types"
 	ibccallbacks "github.com/cosmos/ibc-go/v10/modules/apps/callbacks"
 	ibccallbacksv2 "github.com/cosmos/ibc-go/v10/modules/apps/callbacks/v2"
-	"github.com/cosmos/ibc-go/v10/modules/apps/transfer"
-	ibctransferkeeper "github.com/cosmos/ibc-go/v10/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
-	transferv2 "github.com/cosmos/ibc-go/v10/modules/apps/transfer/v2"
 	ibcclienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
 	ibcconnectiontypes "github.com/cosmos/ibc-go/v10/modules/core/03-connection/types"
 	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
@@ -89,9 +94,6 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	feemarketkeeper "github.com/cosmos/evm/x/feemarket/keeper"
-	evmkeeper "github.com/cosmos/evm/x/vm/keeper"
-
 	gaiaparams "github.com/cosmos/gaia/v23/app/params"
 )
 
@@ -114,12 +116,13 @@ type AppKeepers struct {
 	ParamsKeeper   paramskeeper.Keeper
 	WasmKeeper     wasmkeeper.Keeper
 	// IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	IBCKeeper             *ibckeeper.Keeper
-	WasmClientKeeper      ibcwasmkeeper.Keeper
-	ICAHostKeeper         icahostkeeper.Keeper
-	ICAControllerKeeper   icacontrollerkeeper.Keeper
-	EvidenceKeeper        evidencekeeper.Keeper
-	TransferKeeper        ibctransferkeeper.Keeper
+	IBCKeeper           *ibckeeper.Keeper
+	WasmClientKeeper    ibcwasmkeeper.Keeper
+	ICAHostKeeper       icahostkeeper.Keeper
+	ICAControllerKeeper icacontrollerkeeper.Keeper
+	EvidenceKeeper      evidencekeeper.Keeper
+	// TransferKeeper is wrapped by Cosmos EVM
+	TransferKeeper        evmtransferkeeper.Keeper
 	FeeGrantKeeper        feegrantkeeper.Keeper
 	AuthzKeeper           authzkeeper.Keeper
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
@@ -458,7 +461,7 @@ func NewAppKeeper(
 		govAuthority,
 	)
 
-	appKeepers.TransferKeeper = ibctransferkeeper.NewKeeper(
+	appKeepers.TransferKeeper = evmtransferkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[ibctransfertypes.StoreKey]),
 		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
@@ -467,6 +470,7 @@ func NewAppKeeper(
 		bApp.MsgServiceRouter(),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
+		appKeepers.Erc20Keeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
@@ -499,16 +503,56 @@ func NewAppKeeper(
 		wasmOpts...,
 	)
 
-	// wasmStackIBCHandler is injected into both ICA and transfer stacks
-	wasmStackIBCHandler := wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper,
-		appKeepers.IBCKeeper.ChannelKeeper)
-
 	appKeepers.FeeMarketKeeper = feemarketkeeper.NewKeeper(
 		appCodec,
 		authtypes.NewModuleAddress(govtypes.ModuleName),
 		appKeepers.keys[feemarkettypes.StoreKey],
 		appKeepers.tkeys[feemarkettypes.TransientKey],
 	)
+
+	appKeepers.EVMKeeper = evmkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[evmtypes.StoreKey],
+		appKeepers.tkeys[evmtypes.TransientKey],
+		authtypes.NewModuleAddress(govtypes.ModuleName),
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.StakingKeeper,
+		appKeepers.FeeMarketKeeper,
+		&appKeepers.Erc20Keeper,
+		cast.ToString(appOpts.Get(srvflags.EVMTracer)),
+	)
+
+	appKeepers.Erc20Keeper = erc20keeper.NewKeeper(
+		appKeepers.keys[erc20types.StoreKey],
+		appCodec,
+		authtypes.NewModuleAddress(govtypes.ModuleName),
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.EVMKeeper,
+		appKeepers.StakingKeeper,
+		appKeepers.AuthzKeeper,
+		&appKeepers.TransferKeeper,
+	)
+
+	// Configure EVM precompiles
+	appKeepers.EVMKeeper.WithStaticPrecompiles(
+		NewAvailableStaticPrecompiles(
+			*appKeepers.StakingKeeper,
+			appKeepers.DistrKeeper,
+			appKeepers.BankKeeper,
+			appKeepers.Erc20Keeper,
+			appKeepers.AuthzKeeper,
+			appKeepers.TransferKeeper,
+			*appKeepers.IBCKeeper.ChannelKeeper,
+			appKeepers.EVMKeeper,
+			*appKeepers.GovKeeper,
+		),
+	)
+
+	// wasmStackIBCHandler is injected into both ICA and transfer stacks
+	wasmStackIBCHandler := wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper)
 
 	// Create Transfer Stack (from bottom to top of stack)
 	// - core IBC
@@ -612,18 +656,4 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(wasmtypes.ModuleName)
 
 	return paramsKeeper
-}
-
-type DefaultFeemarketDenomResolver struct{}
-
-func (r *DefaultFeemarketDenomResolver) ConvertToDenom(_ sdk.Context, coin sdk.DecCoin, denom string) (sdk.DecCoin, error) {
-	if coin.Denom == denom {
-		return coin, nil
-	}
-
-	return sdk.DecCoin{}, errors.New("error resolving denom")
-}
-
-func (r *DefaultFeemarketDenomResolver) ExtraDenoms(_ sdk.Context) ([]string, error) {
-	return []string{}, nil
 }

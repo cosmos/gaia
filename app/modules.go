@@ -1,11 +1,12 @@
 package gaia
 
 import (
+	"github.com/cosmos/evm/x/erc20"
 	erc20types "github.com/cosmos/evm/x/erc20/types"
+	"github.com/cosmos/evm/x/feemarket"
 	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
+	evm "github.com/cosmos/evm/x/vm"
 	evmtypes "github.com/cosmos/evm/x/vm/types"
-	"github.com/skip-mev/feemarket/x/feemarket"
-
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/types"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10"
@@ -121,7 +122,9 @@ func appModules(
 		app.RateLimitModule,
 		app.ProviderModule,
 		metaprotocols.NewAppModule(),
-		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
+		evm.NewAppModule(app.EVMKeeper, app.AccountKeeper),
+		feemarket.NewAppModule(app.FeeMarketKeeper),
+		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper),
 		tendermint.NewAppModule(tmLightClientModule),
 	}
 }
@@ -203,7 +206,9 @@ func orderBeginBlockers() []string {
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
+		erc20types.ModuleName,
 		feemarkettypes.ModuleName,
+		evmtypes.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
@@ -242,7 +247,9 @@ func orderEndBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		evmtypes.ModuleName,
 		feemarkettypes.ModuleName,
+		erc20types.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
@@ -278,6 +285,7 @@ func orderInitBlockers() []string {
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		evmtypes.ModuleName,
 		// The feemarket module should ideally be initialized before the genutil module in theory:
 		// The feemarket antehandler performs checks in DeliverTx, which is called by gentx.
 		// When the fee > 0, gentx needs to pay the fee. However, this is not expected.
@@ -286,6 +294,7 @@ func orderInitBlockers() []string {
 		// A similar issue existed for the 'globalfee' module, which was previously used instead of 'feemarket'.
 		// For more details, please refer to the following link: https://github.com/cosmos/gaia/issues/2489
 		feemarkettypes.ModuleName,
+		erc20types.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,

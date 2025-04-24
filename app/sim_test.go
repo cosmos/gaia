@@ -51,7 +51,7 @@ func TestAppStateDeterminism(t *testing.T) {
 	}
 
 	// since we can't provide tx fees to SimulateFromSeed(), we must switch off the feemarket
-	ante.UseFeeMarketDecorator = false
+	// ante.UseFeeMarketDecorator = false
 
 	config := sim.NewConfigFromFlags()
 	config.InitialBlockHeight = 1

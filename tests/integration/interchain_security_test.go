@@ -17,7 +17,6 @@ import (
 	crysistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v23/ante"
 	gaiaApp "github.com/cosmos/gaia/v23/app"
 )
 
@@ -31,11 +30,11 @@ func init() {
 		// Pass in ibctesting.AppIniters for gaia (provider) and consumer.
 		GaiaAppIniterTempDir, icstestingutils.ConsumerAppIniter, []string{})
 
-	ante.UseFeeMarketDecorator = false
+	// ante.UseFeeMarketDecorator = false
 }
 
 func TestCCVTestSuite(t *testing.T) {
-	ante.UseFeeMarketDecorator = false
+	// ante.UseFeeMarketDecorator = false
 	// Run tests
 	suite.Run(t, ccvSuite)
 }

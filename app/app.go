@@ -7,10 +7,15 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
-	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	"github.com/spf13/cast"
+
+	// Tracer import
+	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
+	// Tracer import
+	_ "github.com/ethereum/go-ethereum/eth/tracers/native"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
@@ -18,6 +23,12 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	dbm "github.com/cosmos/cosmos-db"
+	cosmosevmante "github.com/cosmos/evm/ante"
+	evmante "github.com/cosmos/evm/ante/evm"
+	srvflags "github.com/cosmos/evm/server/flags"
+	cosmosevmtypes "github.com/cosmos/evm/types"
+	"github.com/cosmos/evm/utils"
+	evmtypes "github.com/cosmos/evm/x/vm/types"
 	"github.com/cosmos/gogoproto/proto"
 	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10"
 	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/keeper"
@@ -30,9 +41,7 @@ import (
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 	"cosmossdk.io/client/v2/autocli"
 	"cosmossdk.io/core/appmodule"
-	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/log"
-	"cosmossdk.io/math"
 	"cosmossdk.io/x/tx/signing"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
@@ -52,12 +61,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	sigtypes "github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
@@ -69,12 +76,6 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-
-	// EVM
-
-	feemarketkeeper "github.com/cosmos/evm/x/feemarket/keeper"
-	_ "github.com/cosmos/evm/x/vm/core/tracers/js"
-	_ "github.com/cosmos/evm/x/vm/core/tracers/native"
 
 	gaiaante "github.com/cosmos/gaia/v23/ante"
 	"github.com/cosmos/gaia/v23/app/keepers"
@@ -191,16 +192,14 @@ func NewGaiaApp(
 		invCheckPeriod:    invCheckPeriod,
 	}
 
-	moduleAccountAddresses := app.ModuleAccountAddrs()
-
 	// Setup keepers
 	app.AppKeepers = keepers.NewAppKeeper(
 		appCodec,
 		bApp,
 		legacyAmino,
 		maccPerms,
-		moduleAccountAddresses,
-		app.BlockedModuleAccountAddrs(moduleAccountAddresses),
+		app.ModuleAccountAddrs(),
+		app.BlockedAccountAddrs(),
 		skipUpgradeHeights,
 		homePath,
 		invCheckPeriod,
@@ -302,37 +301,26 @@ func NewGaiaApp(
 			BankKeeper:      app.BankKeeper,
 			FeegrantKeeper:  app.FeeGrantKeeper,
 			SignModeHandler: txConfig.SignModeHandler(),
-			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+
+			FeeMarketKeeper:        app.FeeMarketKeeper,
+			EvmKeeper:              app.EVMKeeper,
+			ExtensionOptionChecker: cosmosevmtypes.HasDynamicFeeExtensionOption,
+			SigGasConsumer:         cosmosevmante.SigVerificationGasConsumer,
+			MaxTxGasWanted:         cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted)),
+			TxFeeChecker:           evmante.NewDynamicFeeChecker(app.FeeMarketKeeper),
 
 			Codec:                 appCodec,
 			IBCkeeper:             app.IBCKeeper,
 			StakingKeeper:         app.StakingKeeper,
-			FeeMarketKeeper:       app.FeeMarketKeeper,
 			WasmConfig:            &wasmConfig,
 			TXCounterStoreService: runtime.NewKVStoreService(app.AppKeepers.GetKey(wasmtypes.StoreKey)),
-			TxFeeChecker: func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
-				return minTxFeesChecker(ctx, tx, *app.FeeMarketKeeper)
-			},
 		},
 	)
 	if err != nil {
 		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
 	}
 
-	postHandlerOptions := PostHandlerOptions{
-		AccountKeeper:   app.AccountKeeper,
-		BankKeeper:      app.BankKeeper,
-		FeeMarketKeeper: app.FeeMarketKeeper,
-	}
-	postHandler, err := NewPostHandler(postHandlerOptions)
-	if err != nil {
-		panic(err)
-	}
-
-	// set ante and post handlers
 	app.SetAnteHandler(anteHandler)
-	app.SetPostHandler(postHandler)
-
 	app.SetInitChainer(app.InitChainer)
 	app.SetPreBlocker(app.PreBlocker)
 	app.SetBeginBlocker(app.BeginBlocker)
@@ -445,6 +433,24 @@ func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[s
 	delete(modAccAddrs, authtypes.NewModuleAddress(providertypes.ConsumerRewardsPool).String())
 
 	return modAccAddrs
+}
+
+func (app *GaiaApp) BlockedAccountAddrs() map[string]bool {
+	// Add module accounts
+	moduleAccountAddresses := app.ModuleAccountAddrs()
+	blockedAddrs := app.BlockedModuleAccountAddrs(moduleAccountAddresses)
+
+	// Add EVM precompile addrs
+	// TODO -- this needs to be updated on every hard fork?
+	blockedPrecompilesHex := evmtypes.AvailableStaticPrecompiles
+	for _, addr := range vm.PrecompiledAddressesBerlin {
+		blockedPrecompilesHex = append(blockedPrecompilesHex, addr.Hex())
+	}
+	for _, precompile := range blockedPrecompilesHex {
+		blockedAddrs[utils.EthHexToCosmosAddr(precompile).String()] = true
+	}
+
+	return blockedAddrs
 }
 
 // LegacyAmino returns GaiaApp's amino codec.
@@ -610,43 +616,4 @@ var EmptyWasmOptions []wasmkeeper.Option
 // Get implements AppOptions
 func (ao EmptyAppOptions) Get(_ string) interface{} {
 	return nil
-}
-
-// minTxFeesChecker will be executed only if the feemarket module is disabled.
-// In this case, the auth module's DeductFeeDecorator is executed, and
-// we use the minTxFeesChecker to enforce the minimum transaction fees.
-// Min tx fees are calculated as gas_limit * feemarket_min_base_gas_price
-func minTxFeesChecker(ctx sdk.Context, tx sdk.Tx, feemarketKp feemarketkeeper.Keeper) (sdk.Coins, int64, error) {
-	feeTx, ok := tx.(sdk.FeeTx)
-	if !ok {
-		return nil, 0, errorsmod.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
-	}
-
-	// To keep the gentxs with zero fees, we need to skip the validation in the first block
-	if ctx.BlockHeight() == 0 {
-		return feeTx.GetFee(), 0, nil
-	}
-
-	feeMarketParams, err := feemarketKp.GetParams(ctx)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	feeRequired := sdk.NewCoins(
-		sdk.NewCoin(
-			feeMarketParams.FeeDenom,
-			feeMarketParams.MinBaseGasPrice.MulInt(math.NewIntFromUint64(feeTx.GetGas())).Ceil().RoundInt()))
-
-	feeCoins := feeTx.GetFee()
-	if len(feeCoins) != 1 {
-		return nil, 0, fmt.Errorf(
-			"expected exactly one fee coin; got %s, required: %s", feeCoins.String(), feeRequired.String())
-	}
-
-	if !feeCoins.IsAnyGTE(feeRequired) {
-		return nil, 0, fmt.Errorf(
-			"not enough fees provided; got %s, required: %s", feeCoins.String(), feeRequired.String())
-	}
-
-	return feeTx.GetFee(), 0, nil
 }

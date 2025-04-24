@@ -3,12 +3,12 @@ package keepers
 import (
 	"errors"
 	"fmt"
+	erc20keeper "github.com/cosmos/evm/x/erc20/keeper"
+	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
 	"os"
 	"path/filepath"
 
 	wasmvm "github.com/CosmWasm/wasmvm/v2"
-	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward"
 	pfmrouterkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/keeper"
@@ -89,6 +89,9 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	feemarketkeeper "github.com/cosmos/evm/x/feemarket/keeper"
+	evmkeeper "github.com/cosmos/evm/x/vm/keeper"
+
 	gaiaparams "github.com/cosmos/gaia/v23/app/params"
 )
 
@@ -120,7 +123,6 @@ type AppKeepers struct {
 	FeeGrantKeeper        feegrantkeeper.Keeper
 	AuthzKeeper           authzkeeper.Keeper
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
-	FeeMarketKeeper       *feemarketkeeper.Keeper
 
 	// ICS
 	ProviderKeeper icsproviderkeeper.Keeper
@@ -134,6 +136,11 @@ type AppKeepers struct {
 	PFMRouterModule pfmrouter.AppModule
 	RateLimitModule ratelimit.AppModule
 	ProviderModule  icsprovider.AppModule
+
+	// EVM
+	FeeMarketKeeper feemarketkeeper.Keeper
+	EVMKeeper       *evmkeeper.Keeper
+	Erc20Keeper     erc20keeper.Keeper
 }
 
 func NewAppKeeper(
@@ -264,14 +271,6 @@ func NewAppKeeper(
 			appKeepers.SlashingKeeper.Hooks(),
 			appKeepers.ProviderKeeper.Hooks(),
 		),
-	)
-
-	appKeepers.FeeMarketKeeper = feemarketkeeper.NewKeeper(
-		appCodec,
-		appKeepers.keys[feemarkettypes.StoreKey],
-		appKeepers.AccountKeeper,
-		&DefaultFeemarketDenomResolver{},
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	// UpgradeKeeper must be created before IBCKeeper
@@ -503,6 +502,13 @@ func NewAppKeeper(
 	// wasmStackIBCHandler is injected into both ICA and transfer stacks
 	wasmStackIBCHandler := wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper)
+
+	appKeepers.FeeMarketKeeper = feemarketkeeper.NewKeeper(
+		appCodec,
+		authtypes.NewModuleAddress(govtypes.ModuleName),
+		appKeepers.keys[feemarkettypes.StoreKey],
+		appKeepers.tkeys[feemarkettypes.TransientKey],
+	)
 
 	// Create Transfer Stack (from bottom to top of stack)
 	// - core IBC

@@ -145,6 +145,7 @@ func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 		dir,
 		appOptions,
 		emptyWasmOpts,
+		gaiaapp.EVMAppOptions,
 	)
 	return gaiaApp, gaiaApp.ModuleBasics.DefaultGenesis(gaiaApp.AppCodec())
 }

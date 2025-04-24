@@ -76,6 +76,7 @@ func NewRootCmd() *cobra.Command {
 		tempDir,
 		initAppOptions,
 		gaia.EmptyWasmOptions,
+		gaia.EVMAppOptions,
 	)
 	defer func() {
 		if err := tempApplication.Close(); err != nil {
@@ -382,6 +383,7 @@ func (a appCreator) newApp(
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		appOpts,
 		wasmOpts,
+		gaia.EVMAppOptions,
 		baseappOptions...,
 	)
 }
@@ -427,6 +429,7 @@ func (a appCreator) appExport(
 		homePath,
 		appOpts,
 		emptyWasmOpts,
+		gaia.EVMAppOptions,
 	)
 
 	if height != -1 {

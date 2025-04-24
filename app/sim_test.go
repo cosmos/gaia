@@ -100,6 +100,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				dir,
 				appOptions,
 				emptyWasmOption,
+				gaia.EVMAppOptions,
 				interBlockCacheOpt(),
 				baseapp.SetChainID(AppChainID),
 			)

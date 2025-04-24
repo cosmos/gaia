@@ -70,6 +70,12 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	// EVM
+
+	feemarketkeeper "github.com/cosmos/evm/x/feemarket/keeper"
+	_ "github.com/cosmos/evm/x/vm/core/tracers/js"
+	_ "github.com/cosmos/evm/x/vm/core/tracers/native"
+
 	gaiaante "github.com/cosmos/gaia/v23/ante"
 	"github.com/cosmos/gaia/v23/app/keepers"
 	"github.com/cosmos/gaia/v23/app/upgrades"
@@ -131,6 +137,7 @@ func NewGaiaApp(
 	homePath string,
 	appOpts servertypes.AppOptions,
 	wasmOpts []wasmkeeper.Option,
+	evmAppOptions EVMOptionsFn,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *GaiaApp {
 	legacyAmino := codec.NewLegacyAmino()
@@ -169,6 +176,11 @@ func NewGaiaApp(
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 	bApp.SetTxEncoder(txConfig.TxEncoder())
+
+	if err := evmAppOptions(); err != nil {
+		// Initialize the EVM application configuration
+		panic(fmt.Errorf("failed to initialize EVM app configuration: %w", err))
+	}
 
 	app := &GaiaApp{
 		BaseApp:           bApp,

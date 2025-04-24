@@ -112,6 +112,7 @@ func (c *Chain) CreateAndInitValidators(count int) error {
 		tempAppDir,
 		gaia.EmptyAppOptions{},
 		gaia.EmptyWasmOptions,
+		gaia.EVMAppOptions,
 	)
 	defer func() {
 		if err := tempApplication.Close(); err != nil {
@@ -156,6 +157,7 @@ func (c *Chain) createAndInitValidatorsWithMnemonics(count int, mnemonics []stri
 		gaia.DefaultNodeHome,
 		gaia.EmptyAppOptions{},
 		gaia.EmptyWasmOptions,
+		gaia.EVMAppOptions,
 	)
 	defer func() {
 		if err := tempApplication.Close(); err != nil {

@@ -1,8 +1,6 @@
 package keepers
 
 import (
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
-
 	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/types"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
@@ -30,6 +28,10 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
+	erc20types "github.com/cosmos/evm/x/erc20/types"
+	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
+	evmtypes "github.com/cosmos/evm/x/vm/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {
@@ -57,9 +59,11 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		ratelimittypes.StoreKey,
 		providertypes.StoreKey,
 		consensusparamtypes.StoreKey,
-		feemarkettypes.StoreKey,
 		wasmtypes.StoreKey,
 		ibcwasmtypes.StoreKey,
+		evmtypes.StoreKey,
+		feemarkettypes.StoreKey,
+		erc20types.StoreKey,
 	)
 
 	// Define transient store keys

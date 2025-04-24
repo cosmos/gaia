@@ -36,6 +36,7 @@ func TestGaiaApp_BlockedModuleAccountAddrs(t *testing.T) {
 		gaia.DefaultNodeHome,
 		EmptyAppOptions{},
 		emptyWasmOption,
+		gaia.EVMAppOptions,
 	)
 
 	moduleAccountAddresses := app.ModuleAccountAddrs()

@@ -1,8 +1,10 @@
 package gaia
 
 import (
+	erc20types "github.com/cosmos/evm/x/erc20/types"
+	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
+	evmtypes "github.com/cosmos/evm/x/vm/types"
 	"github.com/skip-mev/feemarket/x/feemarket"
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/types"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
@@ -76,8 +78,9 @@ var maccPerms = map[string][]string{
 	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
 	providertypes.ConsumerRewardsPool: nil,
 	wasmtypes.ModuleName:              {authtypes.Burner},
-	feemarkettypes.ModuleName:         nil,
-	feemarkettypes.FeeCollectorName:   nil,
+	evmtypes.ModuleName:               {authtypes.Minter, authtypes.Burner}, // Allows EVM module to mint/burn
+	feemarkettypes.ModuleName:         nil,                                  // Fee market doesn't need permissions
+	erc20types.ModuleName:             {authtypes.Minter, authtypes.Burner}, // Allows erc20 module to mint/burn for token pairs
 }
 
 func appModules(

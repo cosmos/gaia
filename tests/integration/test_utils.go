@@ -43,7 +43,9 @@ func GaiaAppIniterTempDir() (ibctesting.TestingApp, map[string]json.RawMessage) 
 		map[int64]bool{},
 		tmpDir,
 		gaiaApp.EmptyAppOptions{},
-		gaiaApp.EmptyWasmOptions)
+		gaiaApp.EmptyWasmOptions,
+		gaiaApp.EVMAppOptions,
+	)
 
 	testApp := ibctesting.TestingApp(app)
 
@@ -60,7 +62,9 @@ func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
 		map[int64]bool{},
 		gaiaApp.DefaultNodeHome,
 		gaiaApp.EmptyAppOptions{},
-		gaiaApp.EmptyWasmOptions)
+		gaiaApp.EmptyWasmOptions,
+		gaiaApp.EVMAppOptions,
+	)
 
 	testApp := ibctesting.TestingApp(app)
 

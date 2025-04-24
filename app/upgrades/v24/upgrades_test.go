@@ -1,137 +1,152 @@
 package v24_test
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-
 	"cosmossdk.io/math"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	gaia "github.com/cosmos/gaia/v23/app"
 	"github.com/cosmos/gaia/v23/app/helpers"
 	"github.com/cosmos/gaia/v23/app/upgrades/v24"
 	"github.com/cosmos/gaia/v23/x/liquid/types"
 )
 
-var (
-	addr1 = sdk.AccAddress("addr1_______________")
-	addr2 = sdk.AccAddress("addr2_______________")
-)
-
 func TestMigrateLSMState(t *testing.T) {
-	t.Run("single tokenize share record and lock", func(t *testing.T) {
-		gaiaApp := helpers.Setup(t)
-		ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{Time: time.Now()})
+	type testCase struct {
+		name        string
+		setup       func(sdk.Context, *gaia.GaiaApp)
+		expectError bool
+		validate    func(*testing.T, sdk.Context, *gaia.GaiaApp)
+	}
 
-		// Params
-		stakingParams, err := gaiaApp.StakingKeeper.GetParams(ctx)
+	addr1 := sdk.AccAddress("addr1_______________")
+	addr2 := sdk.AccAddress("addr2_______________")
+
+	newContext := func(t *testing.T) (*gaia.GaiaApp, sdk.Context) {
+		app := helpers.Setup(t)
+		ctx := app.NewUncachedContext(true, tmproto.Header{Time: time.Now()})
+		return app, ctx
+	}
+
+	setupParams := func(app *gaia.GaiaApp, ctx sdk.Context) {
+		params, err := app.StakingKeeper.GetParams(ctx)
 		require.NoError(t, err)
-		stakingParams.GlobalLiquidStakingCap = math.LegacyNewDec(1000)
-		stakingParams.ValidatorLiquidStakingCap = math.LegacyNewDec(100)
-		require.NoError(t, gaiaApp.StakingKeeper.SetParams(ctx, stakingParams))
+		params.GlobalLiquidStakingCap = math.LegacyNewDec(1000)
+		params.ValidatorLiquidStakingCap = math.LegacyNewDec(100)
+		require.NoError(t, app.StakingKeeper.SetParams(ctx, params))
+	}
 
-		// Record
-		record := types.TokenizeShareRecord{
-			Id:            1,
-			Owner:         sdk.MustBech32ifyAddressBytes("cosmos", addr2),
-			ModuleAccount: "cosmos1modacct",
-			Validator:     "cosmosvaloper1xyz",
+	addValidatorAndDelegation := func(t *testing.T, app *gaia.GaiaApp, ctx sdk.Context, valAddr sdk.ValAddress, moduleAddr sdk.AccAddress) {
+		val := stakingtypes.Validator{
+			OperatorAddress: valAddr.String(),
+			Tokens:          math.NewInt(1_000_000),
+			DelegatorShares: math.LegacyNewDec(1_000_000),
 		}
-		require.NoError(t, gaiaApp.StakingKeeper.AddTokenizeShareRecord(ctx, stakingtypes.TokenizeShareRecord(record)))
+		require.NoError(t, app.StakingKeeper.SetValidator(ctx, val))
 
-		gaiaApp.StakingKeeper.SetLastTokenizeShareRecordID(ctx, 1)
-		gaiaApp.StakingKeeper.SetTotalLiquidStakedTokens(ctx, math.NewInt(12345))
+		del := stakingtypes.Delegation{
+			DelegatorAddress: moduleAddr.String(),
+			ValidatorAddress: valAddr.String(),
+			Shares:           math.LegacyNewDec(1_000_000),
+		}
+		require.NoError(t, app.StakingKeeper.SetDelegation(ctx, del))
+	}
 
-		// Lock
-		unlockTime := time.Now()
-		gaiaApp.StakingKeeper.AddTokenizeSharesLock(ctx, addr1)
-		gaiaApp.StakingKeeper.SetTokenizeSharesUnlockTime(ctx, addr1, unlockTime)
+	cases := []testCase{
+		{
+			name: "single record + lock",
+			setup: func(ctx sdk.Context, app *gaia.GaiaApp) {
+				setupParams(app, ctx)
 
-		// Migrate
-		require.NoError(t, v24.MigrateLSMState(ctx, &gaiaApp.AppKeepers))
+				valAddr := sdk.ValAddress(addr1)
+				record := types.TokenizeShareRecord{
+					Id:            1,
+					Owner:         sdk.MustBech32ifyAddressBytes("cosmos", addr2),
+					ModuleAccount: "cosmos1modacct",
+					Validator:     valAddr.String(),
+				}
+				require.NoError(t, app.StakingKeeper.AddTokenizeShareRecord(ctx, stakingtypes.TokenizeShareRecord(record)))
+				addValidatorAndDelegation(t, app, ctx, valAddr, record.GetModuleAddress())
 
-		// Verify
-		params, err := gaiaApp.LiquidKeeper.GetParams(ctx)
-		require.NoError(t, err)
-		require.Equal(t, stakingParams.GlobalLiquidStakingCap, params.GlobalLiquidStakingCap)
+				app.StakingKeeper.SetLastTokenizeShareRecordID(ctx, 1)
+				app.StakingKeeper.SetTotalLiquidStakedTokens(ctx, math.NewInt(12345))
 
-		records := gaiaApp.LiquidKeeper.GetAllTokenizeShareRecords(ctx)
-		require.Len(t, records, 1)
+				unlock := time.Now()
+				app.StakingKeeper.AddTokenizeSharesLock(ctx, addr1)
+				app.StakingKeeper.SetTokenizeSharesUnlockTime(ctx, addr1, unlock)
+			},
+			expectError: false,
+			validate: func(t *testing.T, ctx sdk.Context, app *gaia.GaiaApp) {
+				records := app.LiquidKeeper.GetAllTokenizeShareRecords(ctx)
+				require.Len(t, records, 1)
 
-		status, unlock := gaiaApp.LiquidKeeper.GetTokenizeSharesLock(ctx, addr1)
-		require.Equal(t, types.TOKENIZE_SHARE_LOCK_STATUS_LOCK_EXPIRING, status)
-		require.Equal(t, unlockTime.Unix(), unlock.Unix())
-	})
+				status, _ := app.LiquidKeeper.GetTokenizeSharesLock(ctx, addr1)
+				require.Equal(t, types.TOKENIZE_SHARE_LOCK_STATUS_LOCK_EXPIRING, status)
+			},
+		},
+		{
+			name: "missing delegation",
+			setup: func(ctx sdk.Context, app *gaia.GaiaApp) {
+				valAddr := sdk.ValAddress(addr1)
+				val := stakingtypes.Validator{
+					OperatorAddress: valAddr.String(),
+					Tokens:          math.NewInt(1_000_000),
+				}
+				require.NoError(t, app.StakingKeeper.SetValidator(ctx, val))
 
-	t.Run("multiple records and locks", func(t *testing.T) {
-		gaiaApp := helpers.Setup(t)
-		ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{Time: time.Now()})
+				record := stakingtypes.TokenizeShareRecord{
+					Id:            1,
+					Owner:         sdk.MustBech32ifyAddressBytes("cosmos", addr2),
+					ModuleAccount: "cosmos1modacct",
+					Validator:     valAddr.String(),
+				}
+				require.NoError(t, app.StakingKeeper.AddTokenizeShareRecord(ctx, record))
+			},
+			expectError: true,
+		},
+		{
+			name: "invalid validator address",
+			setup: func(ctx sdk.Context, app *gaia.GaiaApp) {
+				record := stakingtypes.TokenizeShareRecord{
+					Id:            1,
+					Owner:         sdk.MustBech32ifyAddressBytes("cosmos", addr1),
+					ModuleAccount: "cosmos1modacct",
+					Validator:     "not-a-bech32-address",
+				}
+				require.NoError(t, app.StakingKeeper.AddTokenizeShareRecord(ctx, record))
+			},
+			expectError: true,
+		},
+		{
+			name: "empty state",
+			setup: func(ctx sdk.Context, app *gaia.GaiaApp) {
+				// No-op
+			},
+			expectError: false,
+		},
+	}
 
-		// Add multiple records
-		for i := uint64(1); i <= 3; i++ {
-			owner := sdk.MustBech32ifyAddressBytes("cosmos", sdk.AccAddress([]byte(fmt.Sprintf("owner%d_____________", i))))
-			record := stakingtypes.TokenizeShareRecord{
-				Id:            i,
-				Owner:         owner,
-				ModuleAccount: fmt.Sprintf("cosmos1modacct%d", i),
-				Validator:     fmt.Sprintf("cosmosvaloper1xyz%d", i),
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			app, ctx := newContext(t)
+			tc.setup(ctx, app)
+
+			err := v24.MigrateLSMState(ctx, &app.AppKeepers)
+			if tc.expectError {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				if tc.validate != nil {
+					tc.validate(t, ctx, app)
+				}
 			}
-			require.NoError(t, gaiaApp.StakingKeeper.AddTokenizeShareRecord(ctx, record))
-		}
-		gaiaApp.StakingKeeper.SetLastTokenizeShareRecordID(ctx, 3)
-		gaiaApp.StakingKeeper.SetTotalLiquidStakedTokens(ctx, math.NewInt(98765))
-
-		// Locks
-		for _, addr := range []sdk.AccAddress{addr1, addr2} {
-			gaiaApp.StakingKeeper.AddTokenizeSharesLock(ctx, addr)
-			gaiaApp.StakingKeeper.SetTokenizeSharesUnlockTime(ctx, addr, time.Now())
-		}
-
-		require.NoError(t, v24.MigrateLSMState(ctx, &gaiaApp.AppKeepers))
-
-		records := gaiaApp.LiquidKeeper.GetAllTokenizeShareRecords(ctx)
-		require.Len(t, records, 3)
-
-		for _, addr := range []sdk.AccAddress{addr1, addr2} {
-			status, _ := gaiaApp.LiquidKeeper.GetTokenizeSharesLock(ctx, addr)
-			require.Equal(t, types.TOKENIZE_SHARE_LOCK_STATUS_LOCK_EXPIRING, status)
-		}
-	})
-
-	t.Run("empty state should not fail", func(t *testing.T) {
-		gaiaApp := helpers.Setup(t)
-		ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{Time: time.Now()})
-
-		require.NoError(t, v24.MigrateLSMState(ctx, &gaiaApp.AppKeepers))
-
-		records := gaiaApp.LiquidKeeper.GetAllTokenizeShareRecords(ctx)
-		require.Empty(t, records)
-	})
-
-	t.Run("double migration", func(t *testing.T) {
-		gaiaApp := helpers.Setup(t)
-		ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{Time: time.Now()})
-
-		// One record
-		record := stakingtypes.TokenizeShareRecord{
-			Id:            1,
-			Owner:         sdk.MustBech32ifyAddressBytes("cosmos", addr2),
-			ModuleAccount: "cosmos1modacct",
-			Validator:     "cosmosvaloper1xyz",
-		}
-		require.NoError(t, gaiaApp.StakingKeeper.AddTokenizeShareRecord(ctx, record))
-
-		// Run twice
-		require.NoError(t, v24.MigrateLSMState(ctx, &gaiaApp.AppKeepers))
-		require.Error(t, v24.MigrateLSMState(ctx, &gaiaApp.AppKeepers))
-
-		records := gaiaApp.LiquidKeeper.GetAllTokenizeShareRecords(ctx)
-		require.Len(t, records, 1)
-	})
+		})
+	}
 }

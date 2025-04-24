@@ -172,8 +172,11 @@ func (k Keeper) DecreaseTotalLiquidStakedTokens(ctx context.Context, amount math
 // and the total liquid staked shares cannot exceed the validator bond cap
 //  1. (TotalLiquidStakedTokens / TotalStakedTokens) <= ValidatorLiquidStakingCap
 //  2. LiquidShares <= (ValidatorBondShares * ValidatorBondFactor)
-func (k Keeper) SafelyIncreaseValidatorLiquidShares(ctx context.Context, valAddress sdk.ValAddress,
-	shares math.LegacyDec, sharesAlreadyBonded bool,
+func (k Keeper) SafelyIncreaseValidatorLiquidShares(
+	ctx context.Context,
+	valAddress sdk.ValAddress,
+	shares math.LegacyDec,
+	sharesAlreadyBonded bool,
 ) (types.LiquidValidator, error) {
 	validator, err := k.GetLiquidValidator(ctx, valAddress)
 	if err != nil {

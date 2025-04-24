@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	errorsmod "cosmossdk.io/errors"
+	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -50,13 +51,12 @@ func MigrateLSMState(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 		return fmt.Errorf("error migrating params: %w", err)
 	}
 
-	err = migrateTokenizeShareRecords(ctx, sk, lsmk)
+	err = migrateTokenizeShares(ctx, sk, lsmk)
 	if err != nil {
 		return fmt.Errorf("error migrating tokenize records: %w", err)
 	}
 
 	migrateLastTokenizeShareRecordID(ctx, sk, lsmk)
-	migrateTotalLiquidStakedTokens(ctx, sk, lsmk)
 	migrateTokenizeShareLocks(ctx, sk, lsmk)
 
 	return nil
@@ -79,7 +79,10 @@ func migrateParams(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk *liquidkeeper
 	return lsmk.SetParams(ctx, liquidParams)
 }
 
-func migrateTokenizeShareRecords(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk *liquidkeeper.Keeper) error {
+func migrateTokenizeShares(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk *liquidkeeper.Keeper) error {
+	totalLiquidStaked := math.ZeroInt()
+	liquidValidators := make(map[string]liquidtypes.LiquidValidator)
+
 	tokenizeShareRecords := sk.GetAllTokenizeShareRecords(ctx)
 	for _, record := range tokenizeShareRecords {
 		lsmRecord := liquidtypes.TokenizeShareRecord{
@@ -91,6 +94,40 @@ func migrateTokenizeShareRecords(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk
 		if err := lsmk.AddTokenizeShareRecord(ctx, lsmRecord); err != nil {
 			return err
 		}
+
+		valAddress, err := sdk.ValAddressFromBech32(record.Validator)
+		if err != nil {
+			return fmt.Errorf("invalid validator address: %w", err)
+		}
+
+		validator, err := sk.GetValidator(ctx, valAddress)
+		if err != nil {
+			return fmt.Errorf("invalid validator address: %w", err)
+		}
+
+		delegation, err := sk.GetDelegation(ctx, record.GetModuleAddress(), valAddress)
+		if err != nil {
+			return fmt.Errorf("unable to get delegation: %w", err)
+		}
+
+		liquidVal, found := liquidValidators[record.Validator]
+		if !found {
+			liquidValidators[record.Validator] = liquidtypes.NewLiquidValidator(validator.OperatorAddress)
+			liquidVal = liquidValidators[record.Validator]
+		}
+
+		liquidStatedTokensInDelegation := validator.TokensFromShares(delegation.Shares).TruncateInt()
+		liquidVal.LiquidShares = liquidVal.LiquidShares.Add(delegation.Shares)
+		liquidValidators[record.Validator] = liquidVal
+		totalLiquidStaked = totalLiquidStaked.Add(liquidStatedTokensInDelegation)
+	}
+
+	lsmk.SetTotalLiquidStakedTokens(ctx, totalLiquidStaked)
+
+	for _, liquidVal := range liquidValidators {
+		if err := lsmk.SetLiquidValidator(ctx, liquidVal); err != nil {
+			return fmt.Errorf("error migrating liquid validator: %w", err)
+		}
 	}
 
 	return nil
@@ -99,11 +136,6 @@ func migrateTokenizeShareRecords(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk
 func migrateLastTokenizeShareRecordID(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk *liquidkeeper.Keeper) {
 	lastTokenizeShareRecordID := sk.GetLastTokenizeShareRecordID(ctx)
 	lsmk.SetLastTokenizeShareRecordID(ctx, lastTokenizeShareRecordID)
-}
-
-func migrateTotalLiquidStakedTokens(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk *liquidkeeper.Keeper) {
-	totalLiquidStaked := sk.GetTotalLiquidStakedTokens(ctx)
-	lsmk.SetTotalLiquidStakedTokens(ctx, totalLiquidStaked)
 }
 
 func migrateTokenizeShareLocks(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk *liquidkeeper.Keeper) {

@@ -10,23 +10,20 @@ import (
 	gaiatypes "github.com/cosmos/gaia/v23/types"
 )
 
-// TODO eric fixme
-var chainID = "foobar"
-
 // EVMOptionsFn defines a function type for setting app options specifically for
 // the app. The function should receive the chainID and return an error if
 // any.
-type EVMOptionsFn func() error
+type EVMOptionsFn func(string) error
 
 // NoOpEVMOptions is a no-op function that can be used when the app does not
 // need any specific configuration.
-func NoOpEVMOptions() error {
+func NoOpEVMOptions(_ string) error {
 	return nil
 }
 
 // EVMAppOptions performs setup of the global configuration
 // for the chain.
-func EVMAppOptions() error {
+func EVMAppOptions(chainID string) error {
 	// set the denom info for the chain
 	if err := setBaseDenom(gaiatypes.UAtomCoinInfo); err != nil {
 		return err
@@ -38,6 +35,7 @@ func EVMAppOptions() error {
 	}
 
 	// TODO eric -- pull the chain ID from state somewhere
+	// TODO -- the chain ID mapping concept is used a bunch in cosmos evm, we should just change that wholesale
 	ethCfg := evmtypes.DefaultChainConfig(chainID)
 
 	return evmtypes.NewEVMConfigurator().

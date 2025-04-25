@@ -23,7 +23,7 @@ require (
 	github.com/cometbft/cometbft-db v1.0.4
 	github.com/cosmos/cosmos-db v1.1.1
 	github.com/cosmos/cosmos-sdk v0.50.13
-	github.com/cosmos/evm v0.1.1-0.20250410120756-77e425ea765d
+	github.com/cosmos/evm v0.1.1-0.20250425190153-483a1c76e3ae
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.1.0
@@ -310,9 +310,6 @@ replace (
 
 	// Use special SDK v0.50.x release with support for both ICS and LSM
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.50.11-lsm
-
-	// TODO: remove this once we have gotten all changes in upstream evm
-	github.com/cosmos/evm => ../evm
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

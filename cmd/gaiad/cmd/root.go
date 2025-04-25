@@ -36,7 +36,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
@@ -251,7 +250,7 @@ func initRootCmd(rootCmd *cobra.Command,
 		queryCommand(),
 		txCommand(basicManager),
 		// TODO I think I should disable this?
-		keys.Commands(),
+		// keys.Commands(),
 		evmcmd.KeyCommands(gaia.DefaultNodeHome, true),
 	)
 

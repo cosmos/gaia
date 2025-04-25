@@ -30,6 +30,8 @@ func TestMigrateLSMState(t *testing.T) {
 	addr2 := sdk.AccAddress("addr2_______________")
 
 	newContext := func(t *testing.T) (*gaia.GaiaApp, sdk.Context) {
+		t.Helper()
+
 		app := helpers.Setup(t)
 		ctx := app.NewUncachedContext(true, tmproto.Header{Time: time.Now()})
 		return app, ctx
@@ -44,6 +46,8 @@ func TestMigrateLSMState(t *testing.T) {
 	}
 
 	addValidatorAndDelegation := func(t *testing.T, app *gaia.GaiaApp, ctx sdk.Context, valAddr sdk.ValAddress, moduleAddr sdk.AccAddress) {
+		t.Helper()
+
 		val := stakingtypes.Validator{
 			OperatorAddress: valAddr.String(),
 			Tokens:          math.NewInt(1_000_000),
@@ -84,6 +88,8 @@ func TestMigrateLSMState(t *testing.T) {
 			},
 			expectError: false,
 			validate: func(t *testing.T, ctx sdk.Context, app *gaia.GaiaApp) {
+				t.Helper()
+
 				records := app.LiquidKeeper.GetAllTokenizeShareRecords(ctx)
 				require.Len(t, records, 1)
 

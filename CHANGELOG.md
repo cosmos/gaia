@@ -1,6 +1,14 @@
 # CHANGELOG
 
-## UNRELEASED
+## v23.2.0
+
+*April 27, 2025*
+
+### STATE BREAKING
+- [Break out LSM module from SDK](https://github.com/cosmos/gaia/pull/3711) (#3711)
+
+### FEATURES
+- [Restrict transfer on blocked addresses](https://github.com/cosmos/gaia/pull/3713) (#3713)
 
 ## v23.1.1
 

@@ -74,14 +74,18 @@ import (
 	"github.com/cosmos/gaia/v23/app/keepers"
 	"github.com/cosmos/gaia/v23/app/upgrades"
 	v23 "github.com/cosmos/gaia/v23/app/upgrades/v23"
+<<<<<<< HEAD
 	upgrade "github.com/cosmos/gaia/v23/app/upgrades/v23_1_1"
+=======
+	"github.com/cosmos/gaia/v23/app/upgrades/v23_2_0"
+>>>>>>> f24974d (chore: Add 23.2.0 upgrade (#3716))
 )
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v23.Upgrade, v23.RCUpgrade}
+	Upgrades = []upgrades.Upgrade{v23.Upgrade, v23.RCUpgrade, v23_2_0.Upgrade}
 )
 
 var (

@@ -31,7 +31,8 @@ func CreateUpgradeHandler(
 		}
 
 		ctx.Logger().Info("Starting Migrate IBC Wasm...")
-		if err = MigrateIBCWasm(ctx, keepers.WasmClientKeeper); err != nil {
+		if err = MigrateIBCWasm(ctx, keepers.WasmClientKeeper, HexChecksum, MigrateMsgBase64, ClientId,
+			SignerAccount); err != nil {
 			ctx.Logger().Info("Error running migrate for IBC Wasm client", "message", err.Error())
 		}
 
@@ -40,22 +41,21 @@ func CreateUpgradeHandler(
 	}
 }
 
-func MigrateIBCWasm(ctx sdk.Context, wasmClientKeeper ibcwasmkeeper.Keeper) error {
-	hexChecksum := "b92e9904aab2292916507f0db04b7ab6d024c2fdb57a9d52e6725f69b2e684c1"
+func MigrateIBCWasm(ctx sdk.Context, wasmClientKeeper ibcwasmkeeper.Keeper, hexChecksum string,
+	migrateMsgB64 string, clientId string, signerAcc string) error {
 	checksumBz, err := hex.DecodeString(hexChecksum)
 	if err != nil {
 		return err
 	}
 
-	migrateMsgBase64 := "eyJtaWdyYXRpb24iOnsidXBkYXRlX2ZvcmtfcGFyYW1ldGVycyI6eyJnZW5lc2lzX2ZvcmtfdmVyc2lvbiI6IjB4MDAwMDAwMDAiLCJnZW5lc2lzX3Nsb3QiOjAsImFsdGFpciI6eyJ2ZXJzaW9uIjoiMHgwMTAwMDAwMCIsImVwb2NoIjo3NDI0MH0sImJlbGxhdHJpeCI6eyJ2ZXJzaW9uIjoiMHgwMjAwMDAwMCIsImVwb2NoIjoxNDQ4OTZ9LCJjYXBlbGxhIjp7InZlcnNpb24iOiIweDAzMDAwMDAwIiwiZXBvY2giOjE5NDA0OH0sImRlbmViIjp7InZlcnNpb24iOiIweDA0MDAwMDAwIiwiZXBvY2giOjI2OTU2OH0sImVsZWN0cmEiOnsidmVyc2lvbiI6IjB4MDUwMDAwMDAiLCJlcG9jaCI6MzY0MDMyfX19fQ"
-	migrateMsgBz, err := base64.StdEncoding.DecodeString(migrateMsgBase64)
+	migrateMsgBz, err := base64.RawStdEncoding.DecodeString(migrateMsgB64)
 	if err != nil {
 		return err
 	}
 
 	_, err = wasmClientKeeper.MigrateContract(ctx, &ibcwasmtypes.MsgMigrateContract{
-		Signer:   "cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn",
-		ClientId: "08-wasm-1369",
+		Signer:   signerAcc,
+		ClientId: clientId,
 		Checksum: checksumBz,
 		Msg:      migrateMsgBz,
 	})

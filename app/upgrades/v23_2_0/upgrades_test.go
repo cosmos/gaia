@@ -1,19 +1,22 @@
 package v23_2_0_test
 
 import (
-	_ "embed"
 	"encoding/hex"
-	"github.com/cosmos/gaia/v23/app/upgrades/v23_2_0"
-	"github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
-	clienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
-	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
-	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
+	_ "embed"
+
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
+	"github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
+	clienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
+	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
+
 	"github.com/cosmos/gaia/v23/app/helpers"
+	"github.com/cosmos/gaia/v23/app/upgrades/v23_2_0"
 )
 
 const (
@@ -64,5 +67,4 @@ func TestMigrateIBCWasm(t *testing.T) {
 	err = v23_2_0.MigrateIBCWasm(ctx, gaiaApp.WasmClientKeeper, v23_2_0.HexChecksum, v23_2_0.MigrateMsgBase64,
 		"08-wasm-0", v23_2_0.SignerAccount)
 	require.NoError(t, err)
-
 }

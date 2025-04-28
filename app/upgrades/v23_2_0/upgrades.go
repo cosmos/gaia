@@ -31,7 +31,7 @@ func CreateUpgradeHandler(
 		}
 
 		ctx.Logger().Info("Starting Migrate IBC Wasm...")
-		if err = MigrateIBCWasm(ctx, keepers.WasmClientKeeper, HexChecksum, MigrateMsgBase64, ClientId,
+		if err = MigrateIBCWasm(ctx, keepers.WasmClientKeeper, HexChecksum, MigrateMsgBase64, ClientID,
 			SignerAccount); err != nil {
 			ctx.Logger().Info("Error running migrate for IBC Wasm client", "message", err.Error())
 		}
@@ -42,7 +42,8 @@ func CreateUpgradeHandler(
 }
 
 func MigrateIBCWasm(ctx sdk.Context, wasmClientKeeper ibcwasmkeeper.Keeper, hexChecksum string,
-	migrateMsgB64 string, clientId string, signerAcc string) error {
+	migrateMsgB64 string, clientID string, signerAcc string,
+) error {
 	checksumBz, err := hex.DecodeString(hexChecksum)
 	if err != nil {
 		return err
@@ -55,7 +56,7 @@ func MigrateIBCWasm(ctx sdk.Context, wasmClientKeeper ibcwasmkeeper.Keeper, hexC
 
 	_, err = wasmClientKeeper.MigrateContract(ctx, &ibcwasmtypes.MsgMigrateContract{
 		Signer:   signerAcc,
-		ClientId: clientId,
+		ClientId: clientID,
 		Checksum: checksumBz,
 		Msg:      migrateMsgBz,
 	})

@@ -5,8 +5,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
+	liquidtypes "github.com/cosmos/gaia/v24/x/liquid/types"
 )
 
 func LiquidParams(endpoint string) (liquidtypes.QueryParamsResponse, error) {

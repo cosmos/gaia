@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
 )
 
 func (h *TestingSuite) RegisterICAAccount(c *common.Chain, valIdx int, sender, connectionID, fees string) {

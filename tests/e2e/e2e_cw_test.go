@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	query2 "github.com/cosmos/gaia/v23/tests/e2e/query"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
+	query2 "github.com/cosmos/gaia/v24/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) testCWCounter() {

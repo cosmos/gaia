@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
 )
 
 func (h *TestingSuite) AddWasmClientCounterparty(ctx context.Context, c *common.Chain, sender string, valIdx int) {

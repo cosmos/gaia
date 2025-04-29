@@ -3,8 +3,8 @@ package v24
 import (
 	storetypes "cosmossdk.io/store/types"
 
-	"github.com/cosmos/gaia/v23/app/upgrades"
-	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
+	"github.com/cosmos/gaia/v24/app/upgrades"
+	liquidtypes "github.com/cosmos/gaia/v24/x/liquid/types"
 )
 
 const (

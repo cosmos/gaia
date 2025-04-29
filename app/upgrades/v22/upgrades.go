@@ -12,7 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/cosmos/gaia/v23/app/keepers"
+	"github.com/cosmos/gaia/v24/app/keepers"
 )
 
 // CreateUpgradeHandler returns an upgrade handler for Gaia v22.

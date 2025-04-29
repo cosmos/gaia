@@ -228,7 +228,6 @@ func (s *IntegrationTestSuite) testPeriodicVestingAccount(api string) { //nolint
 
 		expectedBalance := sdk.NewCoin(common.UAtomDenom, math.NewInt(0))
 		for _, period := range acc.VestingPeriods {
-			// _, coin := ante.Find(period.Amount, uatomDenom)
 			_, coin := period.Amount.Find(common.UAtomDenom)
 			expectedBalance = expectedBalance.Add(coin)
 		}

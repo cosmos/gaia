@@ -247,6 +247,7 @@ func (v *validator) BuildCreateValidatorMsg(amount sdk.Coin) (sdk.Msg, error) {
 		amount,
 		description,
 		commissionRates,
+		// math.OneInt(),
 	)
 }
 

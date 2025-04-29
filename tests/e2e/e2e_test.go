@@ -13,7 +13,7 @@ var (
 	runStakingAndDistributionTest = true
 	runVestingTest                = true
 	runRestInterfacesTest         = true
-	runLsmTest                    = true
+	runLiquidTest                 = true
 	runRateLimitTest              = true
 	runTxExtensionsTest           = true
 	runCWTest                     = true
@@ -108,11 +108,13 @@ func (s *IntegrationTestSuite) TestVesting() {
 	// s.testPeriodicVestingAccount(chainAAPI) TODO: add back when v0.45 adds the missing CLI command.
 }
 
-func (s *IntegrationTestSuite) TestLSM() {
-	if !runLsmTest {
+func (s *IntegrationTestSuite) TestLiquid() {
+	if !runLiquidTest {
 		s.T().Skip()
 	}
-	s.testLSM()
+	s.testLiquid()
+	s.testLiquidGlobalLimit()
+	s.testLiquidValidatorLimit()
 }
 
 func (s *IntegrationTestSuite) TestRateLimit() {

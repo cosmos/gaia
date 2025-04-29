@@ -163,10 +163,10 @@ jobs:
       # the old gaiad binary version is hardcoded, need to be updated each major release.
       - name: Install Old Gaiad
         run: |
-          curl -LO https://github.com/cosmos/gaia/releases/download/v22.2.0/gaiad-v22.2.0-linux-amd64
-          chmod a+x gaiad-v22.2.0-linux-amd64
+          curl -LO https://github.com/cosmos/gaia/releases/download/v23.1.1/gaiad-v23.1.1-linux-amd64
+          chmod a+x gaiad-v23.1.1-linux-amd64
           mkdir build
-          mv ./gaiad-v22.2.0-linux-amd64 ./build/gaiadold
+          mv ./gaiad-v23.1.1-linux-amd64 ./build/gaiadold
         if: env.GIT_DIFF
       - name: Install New Gaiad
         run: |

@@ -2,6 +2,19 @@
 
 ## UNRELEASED
 
+### FEATURES
+- Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
+
+### STATE BREAKING
+- Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
+
+## v23.2.0
+
+*April 28, 2025*
+
+### STATE BREAKING
+- Migrate Ethereum IBC client for hardfork ([\#3716](https://github.com/cosmos/gaia/pull/3716))
+
 ## v23.1.1
 
 *April 14, 2025*

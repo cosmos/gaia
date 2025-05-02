@@ -299,7 +299,7 @@ $ %s tx distribution withdraw-all-tokenize-share-rewards --from mykey
 // WithdrawTokenizeShareRecordReward defines a method to withdraw reward for an owning TokenizeShareRecord
 func NewWithdrawTokenizeShareRecordRewardCmd(ac address.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "withdraw-tokenize-share-rewards",
+		Use:   "withdraw-tokenize-share-rewards [record-id]",
 		Args:  cobra.ExactArgs(1),
 		Short: "Withdraw reward for an owning TokenizeShareRecord",
 		Long: strings.TrimSpace(

@@ -221,13 +221,6 @@ func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string
 	})
 }
 
-func (s *IntegrationTestSuite) submitGovCommandExpectingFailure(sender string, govCommand string, proposalFlags []string) {
-	s.Run(fmt.Sprintf("Running failing expedited tx gov %s -- expecting error", govCommand), func() {
-		// should return an error -- the Tx fails at the ante handler
-		s.RunGovExec(s.Resources.ChainA, 0, sender, govCommand, proposalFlags, common.StandardFees.String(), s.ExpectTxSubmitError("unsupported expedited proposal type"))
-	})
-}
-
 // testSetBlocksPerEpoch tests that we can change `BlocksPerEpoch` through a governance proposal
 func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))

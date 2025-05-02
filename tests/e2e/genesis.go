@@ -24,7 +24,7 @@ import (
 	govlegacytypes "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
 )
 
 func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, basefee string, denom string) error {

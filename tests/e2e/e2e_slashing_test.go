@@ -1,8 +1,8 @@
 package e2e
 
 import (
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/query"
 )
 
 const jailedValidatorKey = "jailed"

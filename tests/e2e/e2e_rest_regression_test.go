@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
 )
 
 // /*

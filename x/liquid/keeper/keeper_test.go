@@ -21,9 +21,9 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	lsmkeeper "github.com/cosmos/gaia/v23/x/liquid/keeper"
-	lsmtypes "github.com/cosmos/gaia/v23/x/liquid/types"
-	"github.com/cosmos/gaia/v23/x/liquid/types/mocks"
+	lsmkeeper "github.com/cosmos/gaia/v24/x/liquid/keeper"
+	lsmtypes "github.com/cosmos/gaia/v24/x/liquid/types"
+	"github.com/cosmos/gaia/v24/x/liquid/types/mocks"
 )
 
 type KeeperTestSuite struct {

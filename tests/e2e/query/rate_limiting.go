@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
 )
 
 func AllRateLimits(endpoint string) ([]types.RateLimit, error) {

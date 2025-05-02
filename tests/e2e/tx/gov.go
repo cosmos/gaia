@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
 )
 
 func (h *TestingSuite) RunGovExec(c *common.Chain, valIdx int, submitterAddr, govCommand string, proposalFlags []string, fees string, validationFunc func([]byte, []byte) bool) {

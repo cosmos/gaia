@@ -21,8 +21,8 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 
-	"github.com/cosmos/gaia/v23/app/helpers"
-	v20 "github.com/cosmos/gaia/v23/app/upgrades/v20"
+	"github.com/cosmos/gaia/v24/app/helpers"
+	v20 "github.com/cosmos/gaia/v24/app/upgrades/v20"
 )
 
 func GetTestMsgConsumerAddition() providertypes.MsgConsumerAddition { //nolint:staticcheck

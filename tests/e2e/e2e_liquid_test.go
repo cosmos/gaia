@@ -13,10 +13,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/msg"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
-	liquidtypes "github.com/cosmos/gaia/v23/x/liquid/types"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/msg"
+	"github.com/cosmos/gaia/v24/tests/e2e/query"
+	liquidtypes "github.com/cosmos/gaia/v24/x/liquid/types"
 )
 
 // underBuffer is the number of tokens under the limit to tokenize

@@ -15,7 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 
-	"github.com/cosmos/gaia/v23/x/liquid/types"
+	"github.com/cosmos/gaia/v24/x/liquid/types"
 )
 
 // NewTxCmd returns a root CLI command handler for all x/liquid transaction commands.

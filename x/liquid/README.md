@@ -60,256 +60,34 @@ https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/liquid.proto#
 
 ## Messages
 
-In this section we describe the processing of the staking messages and the corresponding updates to the state. All created/modified state objects specified by each message are defined within the [state](#state) section.
-
-### MsgCreateValidator
-
-A validator is created using the `MsgCreateValidator` message.
-The validator must be created with an initial delegation from the operator.
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L20-L21
-```
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L50-L73
-```
-
-This message is expected to fail if:
-
-* another validator with this operator address is already registered
-* another validator with this pubkey is already registered
-* the initial self-delegation tokens are of a denom not specified as the bonding denom
-* the commission parameters are faulty, namely:
-    * `MaxRate` is either > 1 or < 0
-    * the initial `Rate` is either negative or > `MaxRate`
-    * the initial `MaxChangeRate` is either negative or > `MaxRate`
-* the description fields are too large
-
-This message creates and stores the `Validator` object at appropriate indexes.
-Additionally a self-delegation is made with the initial tokens delegation
-tokens `Delegation`. The validator always starts as unbonded but may be bonded
-in the first end-block.
-
-### MsgEditValidator
-
-The `Description`, `CommissionRate` of a validator can be updated using the
-`MsgEditValidator` message.
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L23-L24
-```
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L78-L97
-```
-
-This message is expected to fail if:
-
-* the initial `CommissionRate` is either negative or > `MaxRate`
-* the `CommissionRate` has already been updated within the previous 24 hours
-* the `CommissionRate` is > `MaxChangeRate`
-* the description fields are too large
-
-This message stores the updated `Validator` object.
-
-### MsgDelegate
-
-Within this message the delegator provides coins, and in return receives
-some amount of their validator's (newly created) delegator-shares that are
-assigned to `Delegation.Shares`.
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L26-L28
-```
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L102-L114
-```
-
-This message is expected to fail if:
-
-* the validator does not exist
-* the `Amount` `Coin` has a denomination different than one defined by `params.BondDenom`
-* the exchange rate is invalid, meaning the validator has no tokens (due to slashing) but there are outstanding shares
-* the amount delegated is less than the minimum allowed delegation
-* the delegator is a liquid staking provider and the delegation exceeds
-either the `GlobalLiquidStakingCap`, the `ValidatorLiquidStakingCap` or the validator bond cap.
-
-If an existing `Delegation` object for provided addresses does not already
-exist then it is created as part of this message otherwise the existing
-`Delegation` is updated to include the newly received shares.
-
-If the delegation if is a validator bond, the `ValidatorBondShares` of the validator is increased.
-
-If the delegator is a liquid staking provider, the `TotalLiquidStakedTokens`
-and the validator `LiquidShares` are incremented.
-
-The delegator receives newly minted shares at the current exchange rate.
-The exchange rate is the number of existing shares in the validator divided by
-the number of currently delegated tokens.
-
-The validator is updated in the `ValidatorByPower` index, and the delegation is
-tracked in validator object in the `Validators` index.
-
-It is possible to delegate to a jailed validator, the only difference being it
-will not be added to the power index until it is unjailed.
-
-![Delegation sequence](https://raw.githubusercontent.com/cosmos/cosmos-sdk/release/v0.46.x/docs/uml/svg/delegation_sequence.svg)
-
-### MsgUndelegate
-
-The `MsgUndelegate` message allows delegators to undelegate their tokens from
-validator.
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L34-L36
-```
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L140-L152
-```
-
-This message returns a response containing the completion time of the undelegation:
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L154-L158
-```
-
-This message is expected to fail if:
-
-* the delegation doesn't exist
-* the validator doesn't exist
-* the delegation has less shares than the ones worth of `Amount`
-* existing `UnbondingDelegation` has maximum entries as defined by `params.MaxEntries`
-* the `Amount` has a denomination different than one defined by `params.BondDenom`
-* the unbonded delegation is a `ValidatorBond` and the reduction in validator bond would cause the existing liquid delegation to exceed the cap.
-
-When this message is processed the following actions occur:
-
-* if the delegation is a validator bond, the `ValidatorBondShares` of the validator is decreased.
- 
-* if the delegator is a liquid staking provider, the `TotalLiquidStakedTokens`
-and the validator's `LiquidShares` are decreased.
-
-* validator's `DelegatorShares` and the delegation's `Shares` are both reduced by the message `SharesAmount`
-* calculate the token worth of the shares remove that amount tokens held within the validator
-* with those removed tokens, if the validator is:
-    * `Bonded` - add them to an entry in `UnbondingDelegation` (create `UnbondingDelegation` if it doesn't exist) with a completion time a full unbonding period from the current time. Update pool shares to reduce BondedTokens and increase NotBondedTokens by token worth of the shares.
-    * `Unbonding` - add them to an entry in `UnbondingDelegation` (create `UnbondingDelegation` if it doesn't exist) with the same completion time as the validator (`UnbondingMinTime`).
-    * `Unbonded` - then send the coins the message `DelegatorAddr`
-* if there are no more `Shares` in the delegation, then the delegation object is removed from the store
-    * under this situation if the delegation is the validator's self-delegation then also jail the validator.
-
-![Unbond sequence](https://raw.githubusercontent.com/cosmos/cosmos-sdk/release/v0.46.x/docs/uml/svg/unbond_sequence.svg)
-
-### MsgCancelUnbondingDelegation
-
-The `MsgCancelUnbondingDelegation` message allows delegators to cancel the `unbondingDelegation` entry and delegate back to a previous validator.
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L38-L42
-```
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L160-L175
-```
-
-This message is expected to fail if:
-
-* the `unbondingDelegation` entry is already processed.
-* the `cancel unbonding delegation` amount is greater than the `unbondingDelegation` entry balance.
-* the `cancel unbonding delegation` height doesn't exist in the `unbondingDelegationQueue` of the delegator.
-
-When this message is processed the following actions occur:
-
-* if the `unbondingDelegation` Entry balance is zero
-    * in this condition `unbondingDelegation` entry will be removed from `unbondingDelegationQueue`.
-    * otherwise `unbondingDelegationQueue` will be updated with new `unbondingDelegation` entry balance and initial balance
-* the validator's `DelegatorShares` and the delegation's `Shares` are both increased by the message `Amount`.
-
-### MsgBeginRedelegate
-
-The redelegation command allows delegators to instantly switch validators. Once
-the unbonding period has passed, the redelegation is automatically completed in
-the EndBlocker.
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L30-L32
-```
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L119-L132
-```
-
-This message returns a response containing the completion time of the redelegation:
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L133-L138
-```
-
-This message is expected to fail if:
-
-* the delegation doesn't exist
-* the source or destination validators don't exist
-* the delegation has less shares than the ones worth of `Amount`
-* the source validator has a receiving redelegation which is not matured (aka. the redelegation may be transitive)
-* existing `Redelegation` has maximum entries as defined by `params.MaxEntries`
-* the `Amount` `Coin` has a denomination different than one defined by `params.BondDenom`
-* the delegation is a `ValidatorBond` and the reduction in validator bond would cause the existing liquid delegation to exceed the cap.
-* the delegator is a liquid staking provider and the delegation exceeds
-either the `GlobalLiquidStakingCap`, the `ValidatorLiquidStakingCap` or the validator bond cap.
-
-When this message is processed the following actions occur:
-
-* if the delegation if is a validator bond, the `ValidatorBondShares` of the source validator is decreased.
-* if the delegator is a liquid staking provider,
- the source validator's `LiquidShares` increased and the destination validator's `LiquidShares` is decreased.
-* the source validator's `DelegatorShares` and the delegations `Shares` are both reduced by the message `SharesAmount`
-* calculate the token worth of the shares remove that amount tokens held within the source validator.
-* if the source validator is:
-    * `Bonded` - add an entry to the `Redelegation` (create `Redelegation` if it doesn't exist) with a completion time a full unbonding period from the current time. Update pool shares to reduce BondedTokens and increase NotBondedTokens by token worth of the shares (this may be effectively reversed in the next step however).
-    * `Unbonding` - add an entry to the `Redelegation` (create `Redelegation` if it doesn't exist) with the same completion time as the validator (`UnbondingMinTime`).
-    * `Unbonded` - no action required in this step
-* Delegate the token worth to the destination validator, possibly moving tokens back to the bonded state.
-* if there are no more `Shares` in the source delegation, then the source delegation object is removed from the store
-    * under this situation if the delegation is the validator's self-delegation then also jail the validator.
-
-![Begin redelegation sequence](https://raw.githubusercontent.com/cosmos/cosmos-sdk/release/v0.46.x/docs/uml/svg/begin_redelegation_sequence.svg)
+In this section we describe the processing of the liquid messages and the corresponding updates to the state. All created/modified state objects specified by each message are defined within the [state](#state) section.
 
 ## MsgTokenizeShares
 
 The `MsgTokenizeShares` message allows users to tokenize their delegated tokens. Share tokens have denom using the validator address and record id of the underlying delegation with the format `{validatorAddress}/{recordId}`.
 
 ```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L49-L50
-```
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L190-L199
+https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L78-L91
 ```
 
 This message returns a response containing the number of tokens generated:
 
 ```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L201-L204
+https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L93-L96
 ```
 
 This message is expected to fail if:
 
-* the delegation is a `ValidatorBond`
 * the delegator sender's address has disabled tokenization, meaning that the account 
 lock status is either `LOCKED` or `LOCK_EXPIRING`.
 * the account is a vesting account and the free delegation (non-vesting delegation) is exceeding the tokenized share amount.
-* the sender is NOT a liquid staking provider and the tokenized shares exceeds 
-either the `GlobalLiquidStakingCap`, the `ValidatorLiquidStakingCap` or the validator bond cap.
+* the tokenized shares exceeds either the `GlobalLiquidStakingCap`, the `ValidatorLiquidStakingCap`.
 
 
 When this message is processed the following actions occur:
 
-* If delegator is a NOT liquid staking provider (otherwise the shares are already included)
-    * Increment the `GlobalLiquidStakingCap`
-    * Increment the validator's `ValidatorLiquidStakingCap`
+* Increment the `GlobalLiquidStakingCap`
+* Increment the validator's `ValidatorLiquidStakingCap`
 * Unbond the delegation shares and transfer the coins back to delegator
 * Create an equivalent amount of tokenized shares that the initial delegation shares
 * Mint the liquid coins and send them to delegator
@@ -323,17 +101,13 @@ The `MsgRedeemTokensForShares` message allows users to redeem their native deleg
 
 
 ```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L52-L54
-```
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L206-L213
+https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L100-L110
 ```
 
 This message returns a response containing the amount of staked tokens redeemed:
 
 ```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L215-L218
+https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L112-L116
 ```
 
 This message is expected to fail if:
@@ -346,9 +120,8 @@ When this message is processed the following actions occur:
 * Get the tokenized shares record
 * Get the validator that issued the tokenized shares from the record
 * Unbond the delegation associated with the tokenized shares
-* The delegator is NOT a liquid staking provider:
-    * Decrease the `ValidatorLiquidStakingCap`
-    * Decrease the validator's `LiquidShares`
+* Decrease the `ValidatorLiquidStakingCap`
+* Decrease the validator's `LiquidShares`
 * Burn the liquid coins equivalent of the tokenized shares
 * Delete the tokenized shares record
 * Send equivalent amount of tokens to the delegator
@@ -359,11 +132,7 @@ When this message is processed the following actions occur:
 The `MsgTransferTokenizeShareRecord` message enables users to transfer the ownership of rewards generated from the tokenized amount of delegation.
 
 ```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L56-L58
-```
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L220-L228
+https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L119-L129
 ```
 
 This message is expected to fail if:
@@ -381,17 +150,14 @@ The `MsgEnableTokenizeShares` message begins the countdown after which tokenizin
 
 
 ```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L63-L65
+https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L153-L162
 ```
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L244-L250
-```
 
 This message returns a response containing the time at which the lock is completely removed:
 
 ```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L252-L255
+https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L166-L169
 ```
 
 This message is expected to fail if:
@@ -409,11 +175,7 @@ When this message is processed the following actions occur:
 The `MsgDisableTokenizeShares` message prevents the sender delegator address from tokenizing any of its delegations.
 
 ```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L60-L61
-```
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L233-L239
+https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L137-L146
 ```
 
 This message is expected to fail if:
@@ -428,77 +190,52 @@ it cancels the pending unlock authorizations by removing them from the queue.
 * Create a new tokenization lock for the sender's account. Note that
 if there is a lock expiration in progress, it is overridden.
 
-## MsgValidatorBond
-
-The `MsgValidatorBond` message designates a delegation as a validator bond.
-It enables validators to receive more liquid staking delegations
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L67-L68
-```
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L257-L265
-```
-
-This message is expected to fail if:
-
-* the delegator is a liquid staking provider
-
-When this message is processed the following actions occur:
-
-* If the delegation is not already a `ValidatorBond`:
-    * Enable the delegation's `ValidatorBond` flag
-    * Update validator's `ValidatorBondShares`
-
-## MsgUnbondValidator
-
-The `MsgTransferTokenizeShareRecord` message allows validator to change their
-status from transfers from `Bonded` to `Unbonding` without experiencing slashing.
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L36-L38
-```
-
-```protobuf reference
-https://github.com/cosmos/gaia/blob/v0.45.16-ics-lsm/proto/gaia/liquid/v1beta1/tx.proto#L165-L169
-```
-
-This message is expected to fail if:
-
-* the validator isn't registered or is already jailed
-
-When this message is processed the following actions occur:
-
-* the validator is jailed
-* the validator status changes from `Bonded` to `Unbonding`
-
 ### MsgUpdateParams
 
-The `MsgUpdateParams` update the staking module parameters.
+The `MsgUpdateParams` updates the liquid module parameters.
 The params are updated through a governance proposal where the signer is the gov module account address.
 
 ```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/tx.proto#L182-L195
+https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L59-L71
 ```
 
 The message handling can fail if:
 
-* signer is not the authority defined in the staking keeper (usually the gov module account).
+* signer is not the authority defined in the liquid keeper (usually the gov module account).
+
+### MsgWithdrawTokenizeShareRecordReward
+
+The `MsgWithdrawTokenizeShareRecordReward` withdraws distribution rewards that have been distributed to the owner of 
+a single tokenize share record.
+
+```protobuf reference
+https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L173-L182
+```
+
+The message handling can fail if:
+
+* signer is not the authority defined in the liquid keeper (usually the gov module account).
+
+### MsgWithdrawAllTokenizeShareRecordReward
+
+The `MsgWithdrawAllTokenizeShareRecordReward` withdraws distribution rewards that have been distributed to the owner for
+any tokenize share record they own.
+
+```protobuf reference
+https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L190-L198
+```
+
+The message handling can fail if:
+
+* signer is not the authority defined in the liquid keeper (usually the gov module account).
+
+
 
 ## Begin-Block
 
 ### RemoveExpiredTokenizeShareLocks
 Each abci begin block call, the liquid module will prune expired tokenize share locks.
 
-
-### Queues
-
-Within staking, certain state-transitions are not instantaneous but take place
-over a duration of time (typically the unbonding period). When these
-transitions are mature certain operations must take place in order to complete
-the state operation. This is achieved through the use of queues which are
-checked/processed at the end of each block.
 
 ## Events
 

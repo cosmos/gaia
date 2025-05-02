@@ -8,20 +8,46 @@ order: 3
 As of the `v24.x` release of Gaia, the Cosmos SDK based Liquid Staking Module is deprecated. The `v24` release line 
 will still have all the types from the forked SDK version, but all the API endpoints will be disabled.
 
-## Intro
+## Migration
 
-The `x/staking` module used by the Hub includes extensions that enable liquid staking
-You can read more about it in our [LSM documentation](https://github.com/cosmos/cosmos-sdk/tree/v0.50.9-lsm/x/staking#totalliquidstakedtokens).
+The following outlines the key differences between the Cosmos SDK LSM and the x/liquid module, including message and 
+API removals between the two, as well as parameter and limit changes. In general an effort was made to keep as much 
+as possible the same between the two. Cases where removals were made were largely due to no longer be able to 
+properly track state from outside the staking module.
 
-## What are LSM shares
+The state associated with each account currently on a live network which is using the SDK LSM will be migrated to 
+use the liquid module. There should be no change to the existing liquid staking denoms, tokenize share records, or 
+rewards associated with any owner of a tokenize share record.
 
-LSM shares are derivatives of the delegation shares. They are tied to a delegator and a validator pair and they represent the underlying delegation shares.
-By issuing LSM shares, the underlying staked ATOM can become "liquid" while still being slashable. The LSM shares are tokens that can be used in various DeFi protocols and transferred between users or between chains via IBC.
+### Removals
+- MsgUnbondValidator
+- MsgValidatorBond
 
-LSM shares are not fungible (as they are tied to a delegator/validator pair) and are issued by the Hub directly and thus don't depend on the security of any entity other than the Cosmos Hub itself.
+Both the message types and the APIs for Validator Bonds have been removed. The `min_self_delegation` field in the 
+SDK's staking module, which had previously been marked as deprecated, has been restored to its upstream state.
 
-## Benefits
+Note that if you created a validator after the field was deprecated, you may end up with `0` self delegation and a 
+`min_self_delegation` of `1`. This should be minimally invasive and will only affect you if you try to  call 
+`EditValidator` or potentially in an `Unjail` scenario. The resolution for this is to self delegate a minimal amount 
+of stake.
 
-By tokenizing your staked ATOM into LSM shares, you maintain the benefits of staking while gaining flexibility in using these shares in DeFi protocols and platforms.
+- Limits changes
 
-The LSM shares issued by the Hub are powering liquid staking derivatives like stATOM or dATOM and they are the backbone of the Hydro platform.
+The `GlobalLiquidStakingCap` and `ValidatorLiquidStakingCap` are now the only protocol limits and are enforced 
+solely on tokenized shares through the x/liquid module itself. Previously this tracked delegations via ICA as 
+counting towards these limits, but the new tallies do not take that into account.
+
+### Migrations
+All messages and APIs have been moved.
+
+For protobuf, the types within the distribution and staking modules have all been moved to
+```protobuf
+gaia.liquid.v1beta1.*
+```
+
+For API paths, the module-specific paths have all been moved to
+```
+/gaia/liquid/v1beta1/
+```
+
+CLI interactions with the liquid module should use `gaiad q liquid` or `gaiad tx liquid`, etc.

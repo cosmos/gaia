@@ -23,7 +23,7 @@ import (
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
-	"github.com/cosmos/gaia/v23/app/keepers"
+	"github.com/cosmos/gaia/v24/app/keepers"
 )
 
 // Constants for the new parameters in the v20 upgrade.

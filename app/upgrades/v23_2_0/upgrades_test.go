@@ -15,8 +15,8 @@ import (
 	clienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 
-	"github.com/cosmos/gaia/v23/app/helpers"
-	"github.com/cosmos/gaia/v23/app/upgrades/v23_2_0"
+	"github.com/cosmos/gaia/v24/app/helpers"
+	"github.com/cosmos/gaia/v24/app/upgrades/v23_2_0"
 )
 
 const (

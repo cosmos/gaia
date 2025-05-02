@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/gaia/v23/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v24/tests/interchain/chainsuite"
 	"github.com/gorilla/websocket"
 	dto "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"

@@ -6,8 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/query"
 )
 
 // /*

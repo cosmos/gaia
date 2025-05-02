@@ -15,9 +15,9 @@ import (
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/msg"
-	"github.com/cosmos/gaia/v23/tests/e2e/query"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/msg"
+	"github.com/cosmos/gaia/v24/tests/e2e/query"
 )
 
 /*
@@ -221,13 +221,6 @@ func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string
 	})
 }
 
-func (s *IntegrationTestSuite) submitGovCommandExpectingFailure(sender string, govCommand string, proposalFlags []string) {
-	s.Run(fmt.Sprintf("Running failing expedited tx gov %s -- expecting error", govCommand), func() {
-		// should return an error -- the Tx fails at the ante handler
-		s.RunGovExec(s.Resources.ChainA, 0, sender, govCommand, proposalFlags, common.StandardFees.String(), s.ExpectTxSubmitError("unsupported expedited proposal type"))
-	})
-}
-
 // testSetBlocksPerEpoch tests that we can change `BlocksPerEpoch` through a governance proposal
 func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
@@ -277,22 +270,6 @@ func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 		15*time.Second,
 		5*time.Second,
 	)
-}
-
-// ExpeditedProposalRejected tests that expediting a ParamChange proposal fails.
-func (s *IntegrationTestSuite) ExpeditedProposalRejected() {
-	defaultBlocksPerEpoch := providertypes.DefaultParams().BlocksPerEpoch
-
-	// attempt to change but nothing should happen -> proposal fails at ante handler
-	expectedBlocksPerEpoch := defaultBlocksPerEpoch + 100
-	err := msg.WriteFailingExpeditedProposal(s.Resources.ChainA, expectedBlocksPerEpoch)
-	s.Require().NoError(err)
-
-	validatorAAddr, _ := s.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
-	submitGovFlags := []string{configFile(common.ProposalFailExpedited)}
-
-	s.T().Logf("Submitting, deposit and vote Gov Proposal: Change BlocksPerEpoch parameter - expecting to fail")
-	s.submitGovCommandExpectingFailure(validatorAAddr.String(), "submit-proposal", submitGovFlags)
 }
 
 // MsgSoftwareUpgrade can be expedited but it can only be submitted using "tx gov submit-proposal" command.

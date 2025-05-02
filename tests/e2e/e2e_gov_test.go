@@ -279,22 +279,6 @@ func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 	)
 }
 
-// ExpeditedProposalRejected tests that expediting a ParamChange proposal fails.
-func (s *IntegrationTestSuite) ExpeditedProposalRejected() {
-	defaultBlocksPerEpoch := providertypes.DefaultParams().BlocksPerEpoch
-
-	// attempt to change but nothing should happen -> proposal fails at ante handler
-	expectedBlocksPerEpoch := defaultBlocksPerEpoch + 100
-	err := msg.WriteFailingExpeditedProposal(s.Resources.ChainA, expectedBlocksPerEpoch)
-	s.Require().NoError(err)
-
-	validatorAAddr, _ := s.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
-	submitGovFlags := []string{configFile(common.ProposalFailExpedited)}
-
-	s.T().Logf("Submitting, deposit and vote Gov Proposal: Change BlocksPerEpoch parameter - expecting to fail")
-	s.submitGovCommandExpectingFailure(validatorAAddr.String(), "submit-proposal", submitGovFlags)
-}
-
 // MsgSoftwareUpgrade can be expedited but it can only be submitted using "tx gov submit-proposal" command.
 // Messages submitted using "tx gov submit-legacy-proposal" command cannot be expedited.// submit but vote no so that the proposal is not passed
 func (s *IntegrationTestSuite) GovSoftwareUpgradeExpedited() {

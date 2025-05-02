@@ -4,6 +4,7 @@
 
 ### FEATURES
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
+- Remove expedited gov prop type restrictions ([\#3723](https://github.com/cosmos/gaia/pull/3723))
 
 ### STATE BREAKING
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))

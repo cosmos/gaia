@@ -201,7 +201,7 @@ There are three PR templates. The [default template](./.github/PULL_REQUEST_TEMP
 
 - The [production template](./.github/PULL_REQUEST_TEMPLATE/production.md) is for types `fix`, `feat`, `deps`, and `refactor`. 
 - The [docs template](./.github/PULL_REQUEST_TEMPLATE/docs.md) is for documentation changes.
-- The [other template](./.github/PULL_REQUEST_TEMPLATE/other.md) is for changes that do not affect production code. 
+- The [others template](./.github/PULL_REQUEST_TEMPLATE/others.md) is for changes that do not affect production code. 
 
 ### Requesting Reviews
 
@@ -214,7 +214,7 @@ that you would like early feedback and tagging whoever you would like to receive
 Codeowners are marked automatically as the reviewers.
 
 All PRs require at least two review approvals before they can be merged (one review might be acceptable in
-the case of minor changes to [docs](./.github/PULL_REQUEST_TEMPLATE/docs.md) or [other](./.github/PULL_REQUEST_TEMPLATE/other.md) changes that do not affect production code). Each PR template has a reviewers checklist that must be completed before the PR can be merged. Each reviewer is responsible
+the case of minor changes to [docs](./.github/PULL_REQUEST_TEMPLATE/docs.md) or [others](./.github/PULL_REQUEST_TEMPLATE/others.md) changes that do not affect production code). Each PR template has a reviewers checklist that must be completed before the PR can be merged. Each reviewer is responsible
 for all checked items unless they have indicated otherwise by leaving their handle next to specific
 items. In addition, use the following review explanations:
 

@@ -38,8 +38,9 @@ links for each one.
 
 ## gaia specific modules
 
-- [Metaprotocols](./metaprotocols.md)
-- [LSM staking](./lsm-staking.md)
+- [x/metaprotocols](./metaprotocols.md)
+- [x/liquid](./liquid.md)
+- [Cosmos SDK LSM (deprecated)](./lsm-migration.md)
 
 ## other modules
 

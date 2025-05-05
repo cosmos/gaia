@@ -1,16 +1,5 @@
 # CHANGELOG
 
-## UNRELEASED
-
-<<<<<<< HEAD
-=======
-### FEATURES
-- Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
-- Remove expedited gov prop type restrictions ([\#3723](https://github.com/cosmos/gaia/pull/3723))
-
-### STATE BREAKING
-- Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
-
 ## v23.3.0
 
 *May 5, 2025*
@@ -37,7 +26,6 @@
 - Fix IBC v1 [transfer stack](https://github.com/cosmos/gaia/pull/3695) (#3695)
 - [Add upgrade handler](https://github.com/cosmos/gaia/pull/3705) (#3705)
 
->>>>>>> 54e5915 (fix!: Handle wrapped message in vote antehandler (#3726))
 ## v23.0.1
 
 *March 25, 2025*

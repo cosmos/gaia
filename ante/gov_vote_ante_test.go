@@ -256,34 +256,11 @@ func TestVoteSpamDecoratorGovV1Beta1(t *testing.T) {
 		}
 
 		// Create vote message
-		msgVote := govv1beta1.NewMsgVote(
+		msg := govv1beta1.NewMsgVote(
 			delegator,
 			0,
 			govv1beta1.OptionYes,
 		)
-
-		anyVote, err := codectypes.NewAnyWithValue(
-			msgVote,
-		)
-
-		anyExecVote, err := codectypes.NewAnyWithValue(
-			&authz.MsgExec{
-				Grantee: sdk.AccAddress{}.String(),
-				Msgs: []*codectypes.Any{
-					anyVote,
-				},
-			},
-		)
-		if err != nil {
-			panic(err)
-		}
-
-		msg := &authz.MsgExec{
-			Grantee: sdk.AccAddress{}.String(),
-			Msgs: []*codectypes.Any{
-				anyExecVote,
-			},
-		}
 
 		// Validate vote message
 		err = decorator.ValidateVoteMsgs(ctx, []sdk.Msg{msg})

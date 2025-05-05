@@ -9,6 +9,13 @@
 ### STATE BREAKING
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
 
+## v23.3.0
+
+*May 5, 2025*
+
+### STATE BREAKING
+- Handle wrapped vote messages in Antehandler ([\#3726](https://github.com/cosmos/gaia/pull/3726))
+
 ## v23.2.0
 
 *April 28, 2025*

@@ -9,8 +9,10 @@ import (
 
 	"cosmossdk.io/math"
 
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -18,6 +20,131 @@ import (
 	"github.com/cosmos/gaia/v24/ante"
 	"github.com/cosmos/gaia/v24/app/helpers"
 )
+
+// Test that the GovVoteDecorator rejects votes too deeply wrapped by MsgExec
+func TestVoteSpamDecoratorMsgExecGovV1Beta1(t *testing.T) {
+	gaiaApp := helpers.Setup(t)
+	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
+	decorator := ante.NewGovVoteDecorator(gaiaApp.AppCodec(), gaiaApp.StakingKeeper)
+	stakingKeeper := gaiaApp.StakingKeeper
+
+	// Get validator
+	validators, err := stakingKeeper.GetAllValidators(ctx)
+	require.NoError(t, err)
+	valAddr1, err := stakingKeeper.ValidatorAddressCodec().StringToBytes(validators[0].GetOperator())
+	require.NoError(t, err)
+	valAddr1 = sdk.ValAddress(valAddr1)
+
+	// Create one more validator
+	pk := ed25519.GenPrivKeyFromSecret([]byte{uint8(13)}).PubKey()
+	validator2, err := stakingtypes.NewValidator(
+		sdk.ValAddress(pk.Address()).String(),
+		pk,
+		stakingtypes.Description{},
+	)
+	require.NoError(t, err)
+	valAddr2, err := stakingKeeper.ValidatorAddressCodec().StringToBytes(validator2.GetOperator())
+	valAddr2 = sdk.ValAddress(valAddr2)
+	require.NoError(t, err)
+	// Make sure the validator is bonded so it's not removed on Undelegate
+	validator2.Status = stakingtypes.Bonded
+	err = stakingKeeper.SetValidator(ctx, validator2)
+	require.NoError(t, err)
+	err = stakingKeeper.SetValidatorByConsAddr(ctx, validator2)
+	require.NoError(t, err)
+	err = stakingKeeper.SetNewValidatorByPowerIndex(ctx, validator2)
+	require.NoError(t, err)
+	err = stakingKeeper.Hooks().AfterValidatorCreated(ctx, valAddr2)
+	require.NoError(t, err)
+
+	// Get delegator (this account was created during setup)
+	addr, err := gaiaApp.AccountKeeper.Accounts.Indexes.Number.MatchExact(ctx, 0)
+	require.NoError(t, err)
+	delegator, err := sdk.AccAddressFromBech32(addr.String())
+	require.NoError(t, err)
+
+	tests := []struct {
+		name          string
+		bondAmt       math.Int
+		validators    []sdk.ValAddress
+		wrappedAmount int
+		expectPass    bool
+	}{
+		{
+			name:          "Non-Wrapped vote baseline",
+			bondAmt:       math.NewInt(10000000),
+			validators:    []sdk.ValAddress{valAddr1},
+			wrappedAmount: 0,
+			expectPass:    true,
+		},
+		{
+			name:          "Wrapped vote passes",
+			bondAmt:       math.NewInt(10000000),
+			validators:    []sdk.ValAddress{valAddr1},
+			wrappedAmount: 10,
+			expectPass:    true,
+		},
+		{
+			name:          "Wrapped vote failure",
+			bondAmt:       math.NewInt(10000000),
+			validators:    []sdk.ValAddress{valAddr1},
+			wrappedAmount: 20,
+			expectPass:    false,
+		},
+	}
+
+	for _, tc := range tests {
+		// Unbond all tokens for this delegator
+		delegations, err := stakingKeeper.GetAllDelegatorDelegations(ctx, delegator)
+		require.NoError(t, err)
+		for _, del := range delegations {
+			valAddr, err := sdk.ValAddressFromBech32(del.GetValidatorAddr())
+			require.NoError(t, err)
+			_, _, err = stakingKeeper.Undelegate(ctx, delegator, valAddr, del.GetShares())
+			require.NoError(t, err)
+		}
+
+		// Delegate tokens
+		if !tc.bondAmt.IsZero() {
+			amt := tc.bondAmt.Quo(math.NewInt(int64(len(tc.validators))))
+			for _, valAddr := range tc.validators {
+				val, err := stakingKeeper.GetValidator(ctx, valAddr)
+				require.NoError(t, err)
+				_, err = stakingKeeper.Delegate(ctx, delegator, amt, stakingtypes.Unbonded, val, true)
+				require.NoError(t, err)
+			}
+		}
+
+		// Create vote message
+		var currMsg sdk.Msg = govv1beta1.NewMsgVote(
+			delegator,
+			0,
+			govv1beta1.OptionYes,
+		)
+		// Wrap the message in MsgExec
+		for i := 0; i < tc.wrappedAmount; i++ {
+			anyMsg, err := codectypes.NewAnyWithValue(currMsg)
+			if err != nil {
+				panic(err)
+			}
+
+			currMsg = &authz.MsgExec{
+				Grantee: sdk.AccAddress{}.String(),
+				Msgs: []*codectypes.Any{
+					anyMsg,
+				},
+			}
+		}
+
+		// Validate vote message
+		err = decorator.ValidateVoteMsgs(ctx, []sdk.Msg{currMsg})
+		if tc.expectPass {
+			require.NoError(t, err, "expected %v to pass", tc.name)
+		} else {
+			require.Error(t, err, "expected %v to fail", tc.name)
+		}
+	}
+}
 
 // Test that the GovVoteDecorator rejects v1beta1 vote messages from accounts with less than 1 atom staked
 // Submitting v1beta1.VoteMsg should not be possible through the CLI, but it's still possible to craft a transaction

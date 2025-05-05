@@ -2,6 +2,42 @@
 
 ## UNRELEASED
 
+<<<<<<< HEAD
+=======
+### FEATURES
+- Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
+- Remove expedited gov prop type restrictions ([\#3723](https://github.com/cosmos/gaia/pull/3723))
+
+### STATE BREAKING
+- Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
+
+## v23.3.0
+
+*May 5, 2025*
+
+### STATE BREAKING
+- Handle wrapped vote messages in Antehandler ([\#3726](https://github.com/cosmos/gaia/pull/3726))
+
+## v23.2.0
+
+*April 28, 2025*
+
+### STATE BREAKING
+- Migrate Ethereum IBC client for hardfork ([\#3716](https://github.com/cosmos/gaia/pull/3716))
+
+## v23.1.1
+
+*April 14, 2025*
+
+### DEPENDENCIES
+- Bump [rate-limiting and pfm](https://github.com/cosmos/gaia/pull/3696) (#3696)
+
+### BUG FIXES
+- Bump [rate-limiting and pfm](https://github.com/cosmos/gaia/pull/3696) (#3696)
+- Fix IBC v1 [transfer stack](https://github.com/cosmos/gaia/pull/3695) (#3695)
+- [Add upgrade handler](https://github.com/cosmos/gaia/pull/3705) (#3705)
+
+>>>>>>> 54e5915 (fix!: Handle wrapped message in vote antehandler (#3726))
 ## v23.0.1
 
 *March 25, 2025*

@@ -5,8 +5,8 @@
 ### DEPENDENCIES
 - Bump [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) from 2.0.6 to 2.0.9 ([#3710](https://github.com/cosmos/gaia/pull/3710))
 - Bump [golang.org/x/crypto](https://github.com/golang/crypto) from 0.32.0 to 0.35.0 ([#3709](https://github.com/cosmos/gaia/pull/3709))
+- Bump [golang.org/x/crypto](https://github.com/golang/crypto) from 0.32.0 to 0.35.0 ([#3708](https://github.com/cosmos/gaia/pull/3708))
 
-<<<<<<< HEAD
 ### FEATURES
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
 - Remove expedited gov prop type restrictions ([\#3723](https://github.com/cosmos/gaia/pull/3723))

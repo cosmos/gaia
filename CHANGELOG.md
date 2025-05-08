@@ -21,6 +21,7 @@
 - Bump [github.com/spf13/viper](https://github.com/spf13/viper) from 1.19.0 to 1.20.0 ([#3651](https://github.com/cosmos/gaia/pull/3651))
 - Bump [github.com/cosmos/ibc-go/](https://github.com/cosmos/ibc-go) from 10.0.0 to 10.1.0 ([#3650](https://github.com/cosmos/gaia/pull/3650))
 - Bump [golang.org/x/net](https://github.com/golang/net) from 0.34.0 to 0.36.0 ([#3639](https://github.com/cosmos/gaia/pull/3639))
+- Bump [github.com/prometheus/client_golang](https://github.com/prometheus/client_golang) from 1.20.5 to 1.21.0 ([#3548](https://github.com/cosmos/gaia/pull/3548))
 
 ### FEATURES
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))

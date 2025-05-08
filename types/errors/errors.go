@@ -37,4 +37,6 @@ var (
 
 	// ErrInvalidExpeditedProposal is used when an expedite proposal is submitted for an unsupported proposal type.
 	ErrInvalidExpeditedProposal = errorsmod.Register(codespace, 10, "unsupported expedited proposal type")
+
+	ErrNestedMessageLimitExceeded = errorsmod.Register(codespace, 11, "nested message limit exceeded")
 )

@@ -13,6 +13,7 @@
 - Bump `@react` from 17.0.2 to 18.0.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
 - Bump `@react-dom` from 17.0.2 to 18.0.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
 - Bump `@mdx-js/react` from 1.6.22 to 3.0.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
+- Bump [cosmossdk.io/store](https://github.com/cosmos/cosmos-sdk) from 1.1.1 to 1.1.2 ([#3687](https://github.com/cosmos/gaia/pull/3687))
 
 ### FEATURES
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))

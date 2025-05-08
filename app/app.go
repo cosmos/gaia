@@ -198,7 +198,7 @@ func NewGaiaApp(
 	)
 
 	// Create IBC Tendermint Light Client Stack
-	clientKeeper := app.AppKeepers.IBCKeeper.ClientKeeper
+	clientKeeper := app.IBCKeeper.ClientKeeper
 	tmLightClientModule := ibctm.NewLightClientModule(appCodec, clientKeeper.GetStoreProvider())
 	clientKeeper.AddRoute(ibctm.ModuleName, &tmLightClientModule)
 
@@ -297,7 +297,7 @@ func NewGaiaApp(
 			StakingKeeper:         app.StakingKeeper,
 			FeeMarketKeeper:       app.FeeMarketKeeper,
 			WasmConfig:            &wasmConfig,
-			TXCounterStoreService: runtime.NewKVStoreService(app.AppKeepers.GetKey(wasmtypes.StoreKey)),
+			TXCounterStoreService: runtime.NewKVStoreService(app.GetKey(wasmtypes.StoreKey)),
 			TxFeeChecker: func(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
 				return minTxFeesChecker(ctx, tx, *app.FeeMarketKeeper)
 			},
@@ -328,7 +328,7 @@ func NewGaiaApp(
 
 	if manager := app.SnapshotManager(); manager != nil {
 		err = manager.RegisterExtensions(
-			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.AppKeepers.WasmKeeper),
+			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmKeeper),
 			ibcwasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.WasmClientKeeper),
 		)
 		if err != nil {
@@ -357,9 +357,9 @@ func NewGaiaApp(
 			tmos.Exit(fmt.Sprintf("failed to load latest version: %s", err))
 		}
 
-		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+		ctx := app.NewUncachedContext(true, tmproto.Header{})
 
-		if err := app.AppKeepers.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
+		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
 			tmos.Exit(fmt.Sprintf("WasmKeeper failed initialize pinned codes %s", err))
 		}
 
@@ -489,14 +489,14 @@ func (app *GaiaApp) RegisterNodeService(clientCtx client.Context, cfg config.Con
 
 // RegisterTxService implements the Application.RegisterTxService method.
 func (app *GaiaApp) RegisterTxService(clientCtx client.Context) {
-	authtx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.BaseApp.Simulate, app.interfaceRegistry)
+	authtx.RegisterTxService(app.GRPCQueryRouter(), clientCtx, app.Simulate, app.interfaceRegistry)
 }
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
 func (app *GaiaApp) RegisterTendermintService(clientCtx client.Context) {
 	cmtservice.RegisterTendermintService(
 		clientCtx,
-		app.BaseApp.GRPCQueryRouter(),
+		app.GRPCQueryRouter(),
 		app.interfaceRegistry,
 		app.Query,
 	)
@@ -586,7 +586,7 @@ func (app *GaiaApp) GetTxConfig() client.TxConfig {
 
 // GetTestGovKeeper implements the TestingApp interface.
 func (app *GaiaApp) GetTestGovKeeper() *govkeeper.Keeper {
-	return app.AppKeepers.GovKeeper
+	return app.GovKeeper
 }
 
 // EmptyAppOptions is a stub implementing AppOptions

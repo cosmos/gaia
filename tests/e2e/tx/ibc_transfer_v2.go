@@ -31,7 +31,7 @@ func (h *TestingSuite) CreateIBCV2RecvPacketTx(timeoutTimestamp uint64, amount, 
 
 	packet := types.MsgRecvPacket{
 		Packet: types.Packet{
-			Sequence:          uint64(h.TestCounters.IBCV2PacketSequence),
+			Sequence:          uint64(h.TestCounters.IBCV2PacketSequence), //nolint:gosec
 			SourceClient:      common.CounterpartyID,
 			DestinationClient: common.V2TransferClient,
 			TimeoutTimestamp:  timeoutTimestamp,

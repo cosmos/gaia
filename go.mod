@@ -2,6 +2,8 @@ module github.com/cosmos/gaia/v24
 
 go 1.23.6
 
+toolchain go1.24.1
+
 require (
 	cosmossdk.io/api v0.7.6
 	cosmossdk.io/client/v2 v2.0.0-beta.7

@@ -165,7 +165,7 @@ $ %s tx liquid transfer-tokenize-share-record 1 %s1gghjut3ccd8ay0zduzj64hwre2fxs
 				return err
 			}
 
-			recordID, err := strconv.Atoi(args[0])
+			recordID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -178,7 +178,7 @@ $ %s tx liquid transfer-tokenize-share-record 1 %s1gghjut3ccd8ay0zduzj64hwre2fxs
 
 			msg := &types.MsgTransferTokenizeShareRecord{
 				Sender:                clientCtx.GetFromAddress().String(),
-				TokenizeShareRecordId: uint64(recordID),
+				TokenizeShareRecordId: recordID,
 				NewOwner:              ownerAddr,
 			}
 
@@ -321,12 +321,12 @@ $ %s tx distribution withdraw-tokenize-share-rewards 1 --from mykey
 				return err
 			}
 
-			recordID, err := strconv.Atoi(args[0])
+			recordID, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgWithdrawTokenizeShareRecordReward(ownerAddr, uint64(recordID))
+			msg := types.NewMsgWithdrawTokenizeShareRecordReward(ownerAddr, recordID)
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},

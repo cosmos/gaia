@@ -19,6 +19,7 @@
 - Bump [cosmossdk.io/log](https://github.com/cosmos/cosmos-sdk) from 1.5.0 to 1.5.1 ([#3681](https://github.com/cosmos/gaia/pull/3681))
 - Bump [cosmossdk.io/errors](https://github.com/cosmos/cosmos-sdk) from 1.0.1 to 1.0.2 ([#3680](https://github.com/cosmos/gaia/pull/3680))
 - Bump [github.com/spf13/viper](https://github.com/spf13/viper) from 1.19.0 to 1.20.0 ([#3651](https://github.com/cosmos/gaia/pull/3651))
+- Bump [github.com/cosmos/ibc-go/](https://github.com/cosmos/ibc-go) from 10.0.0 to 10.1.0 ([#3650](https://github.com/cosmos/gaia/pull/3650))
 
 ### FEATURES
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))

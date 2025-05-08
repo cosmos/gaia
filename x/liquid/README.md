@@ -39,8 +39,31 @@ it can be updated with governance or the address with authority.
 
 * Params: `0x51 | ProtocolBuffer(Params)`
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/liquid.proto#L13-L35
+```protobuf
+// Params defines the parameters for the x/liquid module.
+message Params {
+  option (amino.name) = "gaia/x/liquid/Params";
+  option (gogoproto.equal) = true;
+
+  // global_liquid_staking_cap represents a cap on the portion of stake that
+  // comes from liquid staking providers
+  string global_liquid_staking_cap = 8 [
+    (gogoproto.moretags) = "yaml:\"global_liquid_staking_cap\"",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true,
+    (cosmos_proto.scalar) = "cosmos.Dec"
+  ];
+  // validator_liquid_staking_cap represents a cap on the portion of stake that
+  // comes from liquid staking providers for a specific validator
+  string validator_liquid_staking_cap = 9 [
+    (gogoproto.moretags) = "yaml:\"validator_liquid_staking_cap\"",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true,
+    (cosmos_proto.scalar) = "cosmos.Dec"
+  ];
+}
 ```
 
 ### TotalLiquidStakedTokens
@@ -54,8 +77,10 @@ TotalLiquidStakedTokens stores the total liquid staked tokens monitoring the pro
 
 PendingTokenizeShareAuthorizations stores a queue of addresses that have their tokenize share re-enablement/unlocking in progress. When an address is enqueued, it will sit for 1 unbonding period before the tokenize share lock is removed.
 
-```go reference
-https://github.com/cosmos/gaia/blob/main/proto/gaia/liquid/v1beta1/liquid.proto#L48-L50
+```protobuf
+// PendingTokenizeShareAuthorizations stores a list of addresses that have their
+// tokenize share enablement in progress
+message PendingTokenizeShareAuthorizations { repeated string addresses = 1; }
 ```
 
 ## Messages
@@ -64,24 +89,43 @@ In this section we describe the processing of the liquid messages and the corres
 
 ## MsgTokenizeShares
 
-The `MsgTokenizeShares` message allows users to tokenize their delegated tokens. Share tokens have denom using the validator address and record id of the underlying delegation with the format `{validatorAddress}/{recordId}`.
+The `MsgTokenizeShares` message allows users to tokenize their delegated tokens. Created denoms combine the validator 
+address and record id of the underlying delegation, i.e. the denom of a created token would look like the following: `
+{validatorAddress}/{recordId}`.
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L78-L91
+```protobuf
+// MsgTokenizeShares tokenizes a delegation
+message MsgTokenizeShares {
+  option (cosmos.msg.v1.signer) = "delegator_address";
+  option (amino.name) = "gaia/MsgTokenizeShares";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string delegator_address = 1
+  [ (gogoproto.moretags) = "yaml:\"delegator_address\"" ];
+  string validator_address = 2
+  [ (gogoproto.moretags) = "yaml:\"validator_address\"" ];
+  cosmos.base.v1beta1.Coin amount = 3 [ (gogoproto.nullable) = false ];
+  string tokenized_share_owner = 4;
+}
 ```
 
 This message returns a response containing the number of tokens generated:
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L93-L96
+```protobuf
+// MsgTokenizeSharesResponse defines the Msg/MsgTokenizeShares response type.
+message MsgTokenizeSharesResponse {
+  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
+}
 ```
 
 This message is expected to fail if:
 
-* the delegator sender's address has disabled tokenization, meaning that the account 
+* The delegator sender's address has disabled tokenization, meaning that the account 
 lock status is either `LOCKED` or `LOCK_EXPIRING`.
-* the account is a vesting account and the free delegation (non-vesting delegation) is exceeding the tokenized share amount.
-* the tokenized shares exceeds either the `GlobalLiquidStakingCap`, the `ValidatorLiquidStakingCap`.
+* The account is a vesting account and the free delegation (non-vesting delegation) is exceeding the tokenized share amount.
+* The tokenized shares exceeds either the `GlobalLiquidStakingCap`, the `ValidatorLiquidStakingCap`.
 
 
 When this message is processed the following actions occur:
@@ -100,19 +144,35 @@ When this message is processed the following actions occur:
 The `MsgRedeemTokensForShares` message allows users to redeem their native delegations from share tokens.
 
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L100-L110
+```protobuf
+// MsgRedeemTokensForShares redeems a tokenized share back into a native
+// delegation
+message MsgRedeemTokensForShares {
+  option (cosmos.msg.v1.signer) = "delegator_address";
+  option (amino.name) = "gaia/MsgRedeemTokensForShares";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string delegator_address = 1
+  [ (gogoproto.moretags) = "yaml:\"delegator_address\"" ];
+  cosmos.base.v1beta1.Coin amount = 2 [ (gogoproto.nullable) = false ];
+}
 ```
 
 This message returns a response containing the amount of staked tokens redeemed:
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L112-L116
+```protobuf
+// MsgRedeemTokensForSharesResponse defines the Msg/MsgRedeemTokensForShares
+// response type.
+message MsgRedeemTokensForSharesResponse {
+  cosmos.base.v1beta1.Coin amount = 1 [ (gogoproto.nullable) = false ];
+}
 ```
 
 This message is expected to fail if:
 
-* if the sender's balance doesn't have enough liquid tokens 
+* If the sender's balance doesn't have enough liquid tokens 
 
 
 When this message is processed the following actions occur:
@@ -131,61 +191,98 @@ When this message is processed the following actions occur:
 
 The `MsgTransferTokenizeShareRecord` message enables users to transfer the ownership of rewards generated from the tokenized amount of delegation.
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L119-L129
+```protobuf
+// MsgTransferTokenizeShareRecord transfer a tokenize share record
+message MsgTransferTokenizeShareRecord {
+  option (cosmos.msg.v1.signer) = "sender";
+  option (amino.name) = "gaia/MsgTransferTokenizeShareRecord";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  uint64 tokenize_share_record_id = 1;
+  string sender = 2;
+  string new_owner = 3;
+}
 ```
 
 This message is expected to fail if:
 
-* the tokenized shares record doesn't exist
-* the sender address doesn't match the owner address in the record 
+* The tokenized shares record doesn't exist
+* The sender address doesn't match the owner address in the record 
 
 When this message is processed the following actions occur:
 
-* the tokenized shares record is updated with the new owner address
+* The tokenized shares record is updated with the new owner address
 
 ## MsgEnableTokenizeShares
 
 The `MsgEnableTokenizeShares` message begins the countdown after which tokenizing shares by the sender delegator address is re-allowed, which will complete after the unbonding period.
 
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L153-L162
+```protobuf
+// MsgEnableTokenizeShares re-enables tokenization of shares for a given address
+message MsgEnableTokenizeShares {
+  option (cosmos.msg.v1.signer) = "delegator_address";
+  option (amino.name) = "gaia/MsgEnableTokenizeShares";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string delegator_address = 1
+  [ (gogoproto.moretags) = "yaml:\"delegator_address\"" ];
+}
 ```
 
 
 This message returns a response containing the time at which the lock is completely removed:
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L166-L169
+```protobuf
+// MsgEnableTokenizeSharesResponse defines the Msg/EnableTokenizeShares response
+// type.
+message MsgEnableTokenizeSharesResponse {
+  google.protobuf.Timestamp completion_time = 1
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+}
 ```
 
 This message is expected to fail if:
 
-*  if the sender's account lock status is either equal to `UNLOCKED` or `LOCK_EXPIRING`,
+* If the sender's account lock status is either equal to `UNLOCKED` or `LOCK_EXPIRING`,
 meaning that the tokenized shares aren't currently disabled.
 
 
 When this message is processed the following actions occur:
 
-* queue the unlock authorization.
+* Queue the unlock authorization.
 
 ## MsgDisableTokenizeShares
 
 The `MsgDisableTokenizeShares` message prevents the sender delegator address from tokenizing any of its delegations.
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L137-L146
+```protobuf
+// MsgDisableTokenizeShares prevents the tokenization of shares for a given
+// address
+message MsgDisableTokenizeShares {
+  option (cosmos.msg.v1.signer) = "delegator_address";
+  option (amino.name) = "gaia/MsgDisableTokenizeShares";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string delegator_address = 1
+  [ (gogoproto.moretags) = "yaml:\"delegator_address\"" ];
+}
 ```
 
 This message is expected to fail if:
 
-*  the sender's account already has the `LOCKED` lock status
+* The sender's account already has the `LOCKED` lock status
 
 
 When this message is processed the following actions occur:
 
-* if the sender's account lock status is equal to `LOCK_EXPIRING`,
+* If the sender's account lock status is equal to `LOCK_EXPIRING`,
 it cancels the pending unlock authorizations by removing them from the queue.
 * Create a new tokenization lock for the sender's account. Note that
 if there is a lock expiration in progress, it is overridden.
@@ -195,41 +292,73 @@ if there is a lock expiration in progress, it is overridden.
 The `MsgUpdateParams` updates the liquid module parameters.
 The params are updated through a governance proposal where the signer is the gov module account address.
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L59-L71
+```protobuf
+// MsgUpdateParams is the Msg/UpdateParams request type.
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "gaia/liquid/MsgUpdateParams";
+
+  // authority is the address that controls the module (defaults to x/gov unless
+  // overwritten).
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // params defines the x/liquid parameters to update.
+  //
+  // NOTE: All parameters must be supplied.
+  Params params = 2
+      [ (gogoproto.nullable) = false, (amino.dont_omitempty) = true ];
+};
 ```
 
 The message handling can fail if:
 
-* signer is not the authority defined in the liquid keeper (usually the gov module account).
+* Signer is not the authority defined in the liquid keeper (usually the gov module account).
 
 ### MsgWithdrawTokenizeShareRecordReward
 
 The `MsgWithdrawTokenizeShareRecordReward` withdraws distribution rewards that have been distributed to the owner of 
 a single tokenize share record.
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L173-L182
+```protobuf
+// MsgWithdrawTokenizeShareRecordReward withdraws tokenize share rewards for a
+// specific record
+message MsgWithdrawTokenizeShareRecordReward {
+  option (cosmos.msg.v1.signer) = "owner_address";
+  option (amino.name) = "gaia/MsgWithdrawTokenizeShareRecordReward";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string owner_address = 1 [ (gogoproto.moretags) = "yaml:\"owner_address\"" ];
+  uint64 record_id = 2;
+}
 ```
 
 The message handling can fail if:
 
-* signer is not the authority defined in the liquid keeper (usually the gov module account).
+* Signer is not the owner of the tokenize share record.
 
 ### MsgWithdrawAllTokenizeShareRecordReward
 
 The `MsgWithdrawAllTokenizeShareRecordReward` withdraws distribution rewards that have been distributed to the owner for
 any tokenize share record they own.
 
-```protobuf reference
-https://github.com/cosmos/gaia/blob/c9879860b18c6041aa3010e5b23fc697c220f174/proto/gaia/liquid/v1beta1/tx.proto#L190-L198
+```protobuf
+// MsgWithdrawAllTokenizeShareRecordReward withdraws tokenize share rewards or
+// all records owned by the designated owner
+message MsgWithdrawAllTokenizeShareRecordReward {
+  option (cosmos.msg.v1.signer) = "owner_address";
+  option (amino.name) = "gaia/MsgWithdrawAllTokenizeShareRecordReward";
+
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string owner_address = 1 [ (gogoproto.moretags) = "yaml:\"owner_address\"" ];
+}
 ```
 
 The message handling can fail if:
 
-* signer is not the authority defined in the liquid keeper (usually the gov module account).
-
-
+* Signer is not the owner of the tokenize share record.
 
 ## Begin-Block
 
@@ -676,7 +805,7 @@ gaiad tx liquid transfer-tokenize-share-record [record-id] [new-owner] [flags]
 Example:
 
 ```bash
-gaiad tx liquid transfer-tokenize-share-record 1 cosmosvaloper1vuvl27z833dksv89vz2205mrwhadez3k3egzrh
+gaiad tx liquid transfer-tokenize-share-record 1 cosmos15ty20clrlwmph2v8k7qzr4lklpz883zdd89ckp
 ```
 
 ##### withdraw-all-tokenize-share-rewards
@@ -1127,7 +1256,7 @@ Example Output:
 The `TokenizeShareRecordReward` REST endpoint queries the rewards for the provided record owner.
 
 ```bash
-/gaia/liquid/v1beta1/{owner_address}/tokenize_share_record_rewards"
+/gaia/liquid/v1beta1/{owner_address}/tokenize_share_record_rewards
 ```
 
 Example:
@@ -1174,7 +1303,7 @@ Example Output:
 The `TokenizeShareRecordsOwned` REST endpoint queries the records account address.
 
 ```bash
-/gaia/liquid/v1beta1/tokenize_share_record_owned/{owner}"
+/gaia/liquid/v1beta1/tokenize_share_record_owned/{owner}
 ```
 
 Example:
@@ -1204,7 +1333,7 @@ Example Output:
 The `TotalLiquidStaked` REST endpoint queries the total amount of tokens liquid staked.
 
 ```bash
-/gaia/liquid/v1beta1/total_liquid_staked"
+/gaia/liquid/v1beta1/total_liquid_staked
 ```
 
 Example:
@@ -1226,7 +1355,7 @@ Example Output:
 The `TotalTokenizeSharedAssets` REST endpoint queries the total amount of tokenized assets.
 
 ```bash
-/gaia/liquid/v1beta1/total_tokenize_shared_assets"
+/gaia/liquid/v1beta1/total_tokenize_shared_assets
 ```
 
 Example:
@@ -1251,7 +1380,7 @@ Example Output:
 The `Params` REST endpoint queries the module Params.
 
 ```bash
-/gaia/liquid/v1beta1/params"
+/gaia/liquid/v1beta1/params
 ```
 
 Example:

@@ -2,9 +2,31 @@
 
 ## UNRELEASED
 
+### DEPENDENCIES
+- Bump [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) from 2.0.6 to 2.0.9 ([#3710](https://github.com/cosmos/gaia/pull/3710))
+- Bump [golang.org/x/crypto](https://github.com/golang/crypto) from 0.32.0 to 0.35.0 ([#3709](https://github.com/cosmos/gaia/pull/3709))
+- Bump [golang.org/x/crypto](https://github.com/golang/crypto) from 0.32.0 to 0.35.0 ([#3708](https://github.com/cosmos/gaia/pull/3708))
+- Bump `@docusaurus/core` from 2.4.3 to 3.7.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
+- Bump `@docusaurus/plugin-client-redirects` from 2.4.3 to 3.7.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
+- Bump `@docusaurus/plugin-google-analytics` from 2.4.3 to 3.7.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
+- Bump `@docusaurus/plugin-google-gtag` from 2.4.3 to 3.7.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
+- Bump `@react` from 17.0.2 to 18.0.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
+- Bump `@react-dom` from 17.0.2 to 18.0.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
+- Bump `@mdx-js/react` from 1.6.22 to 3.0.0 ([#3693](https://github.com/cosmos/gaia/pull/3693))
+- Bump [cosmossdk.io/store](https://github.com/cosmos/cosmos-sdk) from 1.1.1 to 1.1.2 ([#3687](https://github.com/cosmos/gaia/pull/3687))
+- Bump [image-size](https://github.com/image-size/image-size) from 1.1.1 to 1.2.1 ([#3684](https://github.com/cosmos/gaia/pull/3684))
+- Bump [cosmossdk.io/math](https://github.com/cosmos/cosmos-sdk) from 1.5.0 to 1.5.1 ([#3682](https://github.com/cosmos/gaia/pull/3682))
+- Bump [cosmossdk.io/log](https://github.com/cosmos/cosmos-sdk) from 1.5.0 to 1.5.1 ([#3681](https://github.com/cosmos/gaia/pull/3681))
+- Bump [cosmossdk.io/errors](https://github.com/cosmos/cosmos-sdk) from 1.0.1 to 1.0.2 ([#3680](https://github.com/cosmos/gaia/pull/3680))
+- Bump [github.com/spf13/viper](https://github.com/spf13/viper) from 1.19.0 to 1.20.0 ([#3651](https://github.com/cosmos/gaia/pull/3651))
+- Bump [github.com/cosmos/ibc-go/](https://github.com/cosmos/ibc-go) from 10.0.0 to 10.1.0 ([#3650](https://github.com/cosmos/gaia/pull/3650))
+- Bump [golang.org/x/net](https://github.com/golang/net) from 0.34.0 to 0.36.0 ([#3639](https://github.com/cosmos/gaia/pull/3639))
+- Bump [github.com/prometheus/client_golang](https://github.com/prometheus/client_golang) from 1.20.5 to 1.21.0 ([#3548](https://github.com/cosmos/gaia/pull/3548))
+
 ### FEATURES
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
 - Remove expedited gov prop type restrictions ([\#3723](https://github.com/cosmos/gaia/pull/3723))
+- Add liquid validator query to x/liquid ([\#3735](https://github.com/cosmos/gaia/pull/3735))
 
 ### STATE BREAKING
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))

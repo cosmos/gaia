@@ -16,4 +16,5 @@ jobs:
     - uses: actions/checkout@v4
     - uses: crambl/dependabot-changelog-writer@trunk # Always use the latest RELEASED version of this action
       with:
+        section-header: "DEPENDENCIES"
         changelog-entry-pattern: 'Bump [dep] from [old] to [new] ([pr-link])'

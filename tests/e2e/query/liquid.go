@@ -9,6 +9,25 @@ import (
 	liquidtypes "github.com/cosmos/gaia/v24/x/liquid/types"
 )
 
+func LiquidValidator(endpoint string, valAddr string) (liquidtypes.QueryLiquidValidatorResponse, error) {
+	resp, err := http.Get(fmt.Sprintf("%s/gaia/liquid/v1beta1/liquid_validator/%s", endpoint, valAddr))
+	if err != nil {
+		return liquidtypes.QueryLiquidValidatorResponse{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+	}
+
+	bz, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return liquidtypes.QueryLiquidValidatorResponse{}, err
+	}
+
+	var lvr liquidtypes.QueryLiquidValidatorResponse
+	if err := common.Cdc.UnmarshalJSON(bz, &lvr); err != nil {
+		return liquidtypes.QueryLiquidValidatorResponse{}, err
+	}
+
+	return lvr, nil
+}
+
 func LiquidParams(endpoint string) (liquidtypes.QueryParamsResponse, error) {
 	resp, err := http.Get(fmt.Sprintf("%s/gaia/liquid/v1beta1/params", endpoint))
 	if err != nil {

@@ -37,6 +37,11 @@ The `GlobalLiquidStakingCap` and `ValidatorLiquidStakingCap` are now the only pr
 solely on tokenized shares through the x/liquid module itself. Previously this tracked delegations via ICA as 
 counting towards these limits, but the new tallies do not take that into account.
 
+Additionally, the `liquid_shares` field of the `Validator` object returned in staking module queries will no longer 
+be updated. Its removal is planned in v25, but as of v24 that value will still show up, but will not be updated and 
+is not used in limits calculations. To query the same information, you can use the `QueryLiquidValidator` request 
+added to the x/liquid module.
+
 ### Migrations
 All messages and APIs have been moved.
 

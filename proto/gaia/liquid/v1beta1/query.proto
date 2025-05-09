@@ -14,6 +14,13 @@ option go_package = "github.com/cosmos/gaia/x/liquid/types";
 // Query defines the gRPC querier service.
 service Query {
 
+  // Query for an individual liquid validator by validator address
+  rpc LiquidValidator(QueryLiquidValidatorRequest)
+      returns (QueryLiquidValidatorResponse) {
+    option (google.api.http).get =
+        "/gaia/liquid/v1beta1/liquid_validator/{validator_addr}";
+  }
+
   // Query for individual tokenize share record information by share by id
   rpc TokenizeShareRecordById(QueryTokenizeShareRecordByIdRequest)
       returns (QueryTokenizeShareRecordByIdResponse) {
@@ -82,6 +89,16 @@ service Query {
     option (google.api.http).get =
         "/gaia/liquid/v1beta1/{owner_address}/tokenize_share_record_rewards";
   }
+}
+
+// QueryLiquidValidatorRequest is the request type for the Query/LiquidValidator RPC method.
+message QueryLiquidValidatorRequest {
+  string validator_addr = 1;
+}
+
+// QueryLiquidValidatorResponse is the response type for the Query/LiquidValidator RPC method.
+message QueryLiquidValidatorResponse {
+  LiquidValidator liquid_validator = 1 [ (gogoproto.nullable) = false, (amino.dont_omitempty) = true ];
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.

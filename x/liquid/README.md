@@ -844,6 +844,32 @@ gaiad tx liquid withdraw-all-tokenize-share-rewards 1 --from=myKey
 
 A user can query the `liquid` module using gRPC endpoints.
 
+#### LiquidValidator
+
+The `LiquidValidator` endpoint queries for a single validator's liquid shares.
+
+```bash
+gaia.liquid.v1beta1.Query/LiquidValidator
+```
+
+Example:
+
+```bash
+grpcurl -plaintext -d '{"validator_addr": "cosmosvaloper12xw6ylce2enratz3m942xd9jnjc4qrkk0yqnmr"}' \
+localhost:9090 gaia.liquid.v1beta1.Query/LiquidValidator
+```
+
+Example Output:
+
+```bash
+{
+  "liquidValidator": {
+    "operatorAddress": "cosmosvaloper12xw6ylce2enratz3m942xd9jnjc4qrkk0yqnmr",
+    "liquidShares": "20000"
+  }
+}
+```
+
 #### AllTokenizeShareRecords
 
 The `AllTokenizeShareRecords` endpoint queries all tokenize share records.

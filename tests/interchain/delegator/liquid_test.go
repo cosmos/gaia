@@ -54,27 +54,6 @@ func (s *LSMSuite) TestLSMHappyPath() {
 
 	strideWallet := s.Stride.ValidatorWallets[0]
 
-	s.Run("Validator Bond", func() {
-		delegatorShares1, err := s.Chain.QueryJSON(s.GetContext(), "validator.delegator_shares", "staking", "validator", providerWallet.ValoperAddress)
-		s.Require().NoError(err)
-		validatorBondShares1, err := s.Chain.QueryJSON(s.GetContext(), "validator.validator_bond_shares", "staking", "validator", providerWallet.ValoperAddress)
-		s.Require().NoError(err)
-
-		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.LSMWallets[lsmBondingMoniker].FormattedAddress(),
-			"staking", "delegate", providerWallet.ValoperAddress, fmt.Sprintf("%d%s", delegation, s.Chain.Config().Denom))
-		s.Require().NoError(err)
-		delegatorShares2, err := s.Chain.QueryJSON(s.GetContext(), "validator.delegator_shares", "staking", "validator", providerWallet.ValoperAddress)
-		s.Require().NoError(err)
-		s.checkAMinusBEqualsX(delegatorShares2.String(), delegatorShares1.String(), sdkmath.NewInt(delegation))
-
-		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.LSMWallets[lsmBondingMoniker].FormattedAddress(),
-			"staking", "validator-bond", providerWallet.ValoperAddress)
-		s.Require().NoError(err)
-		validatorBondShares2, err := s.Chain.QueryJSON(s.GetContext(), "validator.validator_bond_shares", "staking", "validator", providerWallet.ValoperAddress)
-		s.Require().NoError(err)
-		s.checkAMinusBEqualsX(validatorBondShares2.String(), validatorBondShares1.String(), sdkmath.NewInt(delegation).Mul(s.ShareFactor))
-	})
-
 	var tokenizedDenom string
 	s.Run("Tokenize", func() {
 		delegatorShares1, err := s.Chain.QueryJSON(s.GetContext(), "validator.delegator_shares", "staking", "validator", providerWallet.ValoperAddress)
@@ -89,10 +68,11 @@ func (s *LSMSuite) TestLSMHappyPath() {
 		sharesPreTokenize, err := s.Chain.QueryJSON(s.GetContext(), "validator.liquid_shares", "staking", "validator", providerWallet.ValoperAddress)
 		s.Require().NoError(err)
 		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.LSMWallets[lsmLiquid1Moniker].FormattedAddress(),
-			"staking", "tokenize-share",
+			"liquid", "tokenize-share",
 			providerWallet.ValoperAddress, fmt.Sprintf("%d%s", tokenize, s.Chain.Config().Denom), s.LSMWallets[lsmLiquid1Moniker].FormattedAddress(),
 			"--gas", "auto")
 		s.Require().NoError(err)
+		// todo -- eric this won't work since we don't expose the liquid validator via query
 		sharesPostTokenize, err := s.Chain.QueryJSON(s.GetContext(), "validator.liquid_shares", "staking", "validator", providerWallet.ValoperAddress)
 		s.Require().NoError(err)
 		s.checkAMinusBEqualsX(sharesPostTokenize.String(), sharesPreTokenize.String(), sdkmath.NewInt(tokenize).Mul(s.ShareFactor))
@@ -108,28 +88,32 @@ func (s *LSMSuite) TestLSMHappyPath() {
 	})
 
 	s.Run("Transfer Ownership", func() {
-		recordIDResult, err := s.Chain.QueryJSON(s.GetContext(), "record.id", "staking", "tokenize-share-record-by-denom", tokenizedDenom)
+		recordIDResult, err := s.Chain.QueryJSON(s.GetContext(), "record.id", "liquid",
+			"tokenize-share-record-by-denom", tokenizedDenom)
 		s.Require().NoError(err)
 		recordID := recordIDResult.String()
 
-		ownerResult, err := s.Chain.QueryJSON(s.GetContext(), "record.owner", "staking", "tokenize-share-record-by-denom", tokenizedDenom)
+		ownerResult, err := s.Chain.QueryJSON(s.GetContext(), "record.owner", "liquid",
+			"tokenize-share-record-by-denom", tokenizedDenom)
 		s.Require().NoError(err)
 		owner := ownerResult.String()
 
 		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), owner,
-			"staking", "transfer-tokenize-share-record", recordID, s.LSMWallets[lsmOwnerMoniker].FormattedAddress())
+			"liquid", "transfer-tokenize-share-record", recordID, s.LSMWallets[lsmOwnerMoniker].FormattedAddress())
 		s.Require().NoError(err)
 
-		ownerResult, err = s.Chain.QueryJSON(s.GetContext(), "record.owner", "staking", "tokenize-share-record-by-denom", tokenizedDenom)
+		ownerResult, err = s.Chain.QueryJSON(s.GetContext(), "record.owner", "liquid",
+			"tokenize-share-record-by-denom", tokenizedDenom)
 		s.Require().NoError(err)
 		owner = ownerResult.String()
 		s.Require().Equal(s.LSMWallets[lsmOwnerMoniker].FormattedAddress(), owner)
 
 		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), owner,
-			"staking", "transfer-tokenize-share-record", recordID, s.LSMWallets[lsmLiquid1Moniker].FormattedAddress())
+			"liquid", "transfer-tokenize-share-record", recordID, s.LSMWallets[lsmLiquid1Moniker].FormattedAddress())
 		s.Require().NoError(err)
 
-		ownerResult, err = s.Chain.QueryJSON(s.GetContext(), "record.owner", "staking", "tokenize-share-record-by-denom", tokenizedDenom)
+		ownerResult, err = s.Chain.QueryJSON(s.GetContext(), "record.owner", "liquid",
+			"tokenize-share-record-by-denom", tokenizedDenom)
 		s.Require().NoError(err)
 		owner = ownerResult.String()
 		s.Require().Equal(s.LSMWallets[lsmLiquid1Moniker].FormattedAddress(), owner)
@@ -175,12 +159,12 @@ func (s *LSMSuite) TestLSMHappyPath() {
 	var happyLiquid1DelegationBalance string
 	s.Run("Redeem Tokens", func() {
 		_, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.LSMWallets[lsmLiquid1Moniker].FormattedAddress(),
-			"staking", "redeem-tokens", fmt.Sprintf("%d%s", liquid1Redeem, tokenizedDenom),
+			"liquid", "redeem-tokens", fmt.Sprintf("%d%s", liquid1Redeem, tokenizedDenom),
 			"--gas", "auto")
 		s.Require().NoError(err)
 
 		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.LSMWallets[lsmLiquid2Moniker].FormattedAddress(),
-			"staking", "redeem-tokens", fmt.Sprintf("%d%s", bankSend, tokenizedDenom),
+			"liquid", "redeem-tokens", fmt.Sprintf("%d%s", bankSend, tokenizedDenom),
 			"--gas", "auto")
 		s.Require().NoError(err)
 
@@ -194,7 +178,7 @@ func (s *LSMSuite) TestLSMHappyPath() {
 		s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 5, s.Chain))
 
 		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.LSMWallets[lsmLiquid3Moniker].FormattedAddress(),
-			"staking", "redeem-tokens", fmt.Sprintf("%d%s", ibcTransfer, tokenizedDenom),
+			"liquid", "redeem-tokens", fmt.Sprintf("%d%s", ibcTransfer, tokenizedDenom),
 			"--gas", "auto")
 		s.Require().NoError(err)
 
@@ -231,6 +215,7 @@ func (s *LSMSuite) TestLSMHappyPath() {
 		s.checkAMinusBEqualsX(happyLiquid3DelegationBalance, "0", sdkmath.NewInt(ibcTransfer))
 	})
 	s.Run("Cleanup", func() {
+		// todo --eric this won't work either
 		validatorBondSharesBeforeResult, err := s.Chain.QueryJSON(s.GetContext(), "validator.validator_bond_shares", "staking", "validator", providerWallet.ValoperAddress)
 		s.Require().NoError(err)
 		validatorBondSharesBefore := validatorBondSharesBeforeResult.String()
@@ -316,6 +301,7 @@ func (s *LSMSuite) TestICADelegate() {
 		s.Require().Truef(bondShares2Int.Sub(expectedShares).Abs().LTE(sdkmath.NewInt(1)), "bondShares2: %s, expectedShares: %s", bondShares2, expectedShares)
 	})
 
+	// todo -- eric, this doesn't apply anymore since we don't count ICA staking against limits
 	s.Run("Delegate via ICA", func() {
 		preDelegationTokensResult, err := s.Chain.QueryJSON(s.GetContext(), "validator.tokens", "staking", "validator", providerWallet.ValoperAddress)
 		s.Require().NoError(err)
@@ -413,7 +399,8 @@ func (s *LSMSuite) TestTokenizeVested() {
 
 	// try to tokenize full amount. Should fail.
 	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), vestingAccount.FormattedAddress(),
-		"staking", "tokenize-share", validatorWallet.ValoperAddress, fmt.Sprintf("%d%s", vestingAmount, s.Chain.Config().Denom), vestingAccount.FormattedAddress(),
+		"liquid", "tokenize-share", validatorWallet.ValoperAddress, fmt.Sprintf("%d%s", vestingAmount,
+			s.Chain.Config().Denom), vestingAccount.FormattedAddress(),
 		"--gas", "auto")
 	s.Require().Error(err)
 
@@ -424,7 +411,8 @@ func (s *LSMSuite) TestTokenizeVested() {
 	// try to tokenize vested amount (i.e. half) should succeed if upgraded
 	tokenizeAmount := vestingAmount / 2
 	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), vestingAccount.FormattedAddress(),
-		"staking", "tokenize-share", validatorWallet.ValoperAddress, fmt.Sprintf("%d%s", tokenizeAmount, s.Chain.Config().Denom), vestingAccount.FormattedAddress(),
+		"liquid", "tokenize-share", validatorWallet.ValoperAddress, fmt.Sprintf("%d%s", tokenizeAmount,
+			s.Chain.Config().Denom), vestingAccount.FormattedAddress(),
 		"--gas", "auto")
 	s.Require().NoError(err)
 	sharesPostTokenizeResult, err := s.Chain.QueryJSON(s.GetContext(), "validator.liquid_shares", "staking", "validator", validatorWallet.ValoperAddress)

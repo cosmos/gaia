@@ -35,7 +35,6 @@ For instructions to join as a validator, please also see the [Validator Guide](.
 
 ### Overview
 <!-- DON'T FORGET TO KEEP INDEX UP TO DATE -->
-- [Join the Cosmos Hub Mainnet](#join-the-cosmos-hub-mainnet)
   - [Release History](#release-history)
     - [Overview](#overview)
   - [Explorers](#explorers)
@@ -261,8 +260,6 @@ Make sure to consult the [hardware](#hardware) section for guidance on the best 
 Blocksync is faster than traditional consensus and syncs the chain from genesis by downloading blocks and verifying against the merkle tree of validators. For more information see [CometBFT's Blocksync Docs](https://docs.cometbft.com/v0.37/core/block-sync)
 
 When syncing via Blocksync, node operators will either need to manually upgrade the chain or set up [Cosmovisor](#cosmovisor) to upgrade automatically.
-
-For more information on performing the manual upgrades, see [Releases & Upgrades](#releases--upgrades).
 
 It is possible to sync from previous versions of the Cosmos Hub. See the matrix below for the correct `gaia` version. See the [mainnet archive](https://github.com/cosmos/mainnet) for historical genesis files.
 

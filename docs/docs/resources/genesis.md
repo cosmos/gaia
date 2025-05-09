@@ -331,5 +331,3 @@ A `gentx` can be added manually to the genesis file, or via the following comman
 ```bash
 gaiad collect-gentxs
 ```
-
-This command will add all the `gentxs` stored in `~/.gaia/config/gentx` to the genesis file. In order to create a genesis transaction, click [here](../validators/validator-setup.md#participate-in-genesis-as-a-validator).

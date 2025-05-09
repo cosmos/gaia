@@ -292,7 +292,7 @@ func (s *IntegrationTestSuite) testLiquidGlobalLimit() {
 	s.Require().NoError(err)
 
 	// Validate balance increased
-	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressB), strconv.Itoa(int(recordID)))
+	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressB), strconv.Itoa(int(recordID))) //nolint:gosec
 	s.Require().Eventually(
 		func() bool {
 			res, err := query.SpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
@@ -414,7 +414,7 @@ func (s *IntegrationTestSuite) testLiquidValidatorLimit() {
 	s.Require().NoError(err)
 
 	// Validate balance increased
-	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressB), strconv.Itoa(int(recordID)))
+	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressB), strconv.Itoa(int(recordID))) //nolint:gosec
 	s.Require().Eventually(
 		func() bool {
 			res, err := query.SpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)

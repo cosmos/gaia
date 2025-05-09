@@ -32,7 +32,7 @@ jobs:
         if: "${{ env.GITHUB_EVENT_NAME != 'schedule' }}"
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v3.3.0
+        uses: docker/login-action@v3.4.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -46,7 +46,7 @@ jobs:
           flavor: "latest=false"
 
       - name: Build and push docker image
-        uses: docker/build-push-action@v6.14.0
+        uses: docker/build-push-action@v6.15.0
         with:
           context: .
           file: Dockerfile

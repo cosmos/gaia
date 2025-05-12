@@ -132,6 +132,40 @@ func TestMigrateLSMState(t *testing.T) {
 			expectError: true,
 		},
 		{
+			name: "0 liquid shares migrated",
+			setup: func(ctx sdk.Context, app *gaia.GaiaApp) {
+				setupParams(app, ctx)
+
+				valAddr1 := sdk.ValAddress(addr1)
+				val1 := stakingtypes.Validator{
+					OperatorAddress: valAddr1.String(),
+					Tokens:          math.NewInt(1_000_000),
+				}
+				require.NoError(t, app.StakingKeeper.SetValidator(ctx, val1))
+				valAddr2 := sdk.ValAddress(addr2)
+				val2 := stakingtypes.Validator{
+					OperatorAddress: valAddr2.String(),
+					Tokens:          math.NewInt(1_000_000),
+				}
+				require.NoError(t, app.StakingKeeper.SetValidator(ctx, val2))
+
+				app.StakingKeeper.SetLastTokenizeShareRecordID(ctx, 1)
+				app.StakingKeeper.SetTotalLiquidStakedTokens(ctx, math.NewInt(12345))
+			},
+			validate: func(t *testing.T, ctx sdk.Context, app *gaia.GaiaApp) {
+				t.Helper()
+
+				lv1, err := app.LiquidKeeper.GetLiquidValidator(ctx, sdk.ValAddress(addr1))
+				require.NoError(t, err)
+				require.True(t, math.LegacyZeroDec().Equal(lv1.LiquidShares))
+
+				lv2, err := app.LiquidKeeper.GetLiquidValidator(ctx, sdk.ValAddress(addr2))
+				require.NoError(t, err)
+				require.True(t, math.LegacyZeroDec().Equal(lv2.LiquidShares))
+			},
+			expectError: false,
+		},
+		{
 			name: "empty state",
 			setup: func(ctx sdk.Context, app *gaia.GaiaApp) {
 				// No-op

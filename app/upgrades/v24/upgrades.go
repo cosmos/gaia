@@ -124,6 +124,17 @@ func migrateTokenizeShares(ctx sdk.Context, sk *stakingkeeper.Keeper, lsmk *liqu
 
 	lsmk.SetTotalLiquidStakedTokens(ctx, totalLiquidStaked)
 
+	// Also add zero-ed out liquid vals
+	allVals, err := sk.GetAllValidators(ctx)
+	if err != nil {
+		return fmt.Errorf("unable to get all validators: %w", err)
+	}
+	for _, val := range allVals {
+		if _, ok := liquidValidators[val.OperatorAddress]; !ok {
+			liquidValidators[val.OperatorAddress] = liquidtypes.NewLiquidValidator(val.OperatorAddress)
+		}
+	}
+
 	for _, liquidVal := range liquidValidators {
 		if err := lsmk.SetLiquidValidator(ctx, liquidVal); err != nil {
 			return fmt.Errorf("error migrating liquid validator: %w", err)

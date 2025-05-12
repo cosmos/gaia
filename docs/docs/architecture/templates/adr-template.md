@@ -2,15 +2,15 @@
 order: false
 -->
 
-# ADR {ADR-NUMBER}: {TITLE}
+# ADR {'{'}ADR-NUMBER{'}'}: {'{'}TITLE{'}'}
 
 ## Changelog
 
-- {date}: {changelog}
+- {'{'}date{'}'}: {'{'}changelog{'}'}
 
 ## Status
 
-{DRAFT | PROPOSED} Not Implemented
+{'{'}DRAFT | PROPOSED{'}'} Not Implemented
 
 > Please have a look at the [PROCESS](../adr/PROCESS#adr-status) page.
 > Use DRAFT if the ADR is in a draft stage (draft PR) or PROPOSED if it's in review.
@@ -41,18 +41,18 @@ If the proposed change will be large, please also indicate a way to do the chang
 
 ### Positive
 
-> {positive consequences}
+> {'{'}positive consequences{'}'}
 
 ### Negative
 
-> {negative consequences}
+> {'{'}negative consequences{'}'}
 
 ### Neutral
 
-> {neutral consequences}
+> {'{'}neutral consequences{'}'}
 
 ## References
 
 > Are there any relevant PR comments, issues that led up to this, or articles referenced for why we made the given design choice? If so link them here!
 
-* {reference link}
+* {'{'}reference link{'}'}

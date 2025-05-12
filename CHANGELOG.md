@@ -31,6 +31,10 @@
 ### STATE BREAKING
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
 
+### Dependencies
+
+- Bump [github.com/ory/dockertest/v3](https://github.com/ory/dockertest) from 3.11.0 to 3.12.0 ([#3749](https://github.com/cosmos/gaia/pull/3749))
+
 ## v23.3.0
 
 *May 5, 2025*

@@ -73,7 +73,7 @@ thereby removing the old validator set and introducing a new set suitable for lo
 it enables developers to configure their local environments to reflect mainnet conditions more accurately.
 
 Example:
-	simd testnet unsafe-start-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pukey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q==" --accounts-to-fund="cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl" [other_server_start_flags]
+	simd testnet unsafe-start-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pubkey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q==" --accounts-to-fund="cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl" [other_server_start_flags]
 	`
 	cmd.Flags().String(flagValidatorOperatorAddress, "", "Validator operator address e.g. cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r")
 	cmd.Flags().String(flagValidatorPubKey, "", "Validator tendermint/PubKeyEd25519 consensus public key from the priv_validato_key.json file")
@@ -212,29 +212,50 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		return err
 	}
 
-	store := appCtx.KVStore(app.GetKey(stakingtypes.ModuleName))
+	// store := appCtx.KVStore(app.GetKey(stakingtypes.ModuleName))
 	validators, err := app.StakingKeeper.GetAllValidators(appCtx)
 	if err != nil {
 		return err
 	}
 	for _, v := range validators {
-		valConsAddr, err := v.GetConsAddr()
-		if err != nil {
-			return err
-		}
+		// Update the validator's tokens and delegator shares
+		newTokens := math.NewInt(1000)                                   // Set new token amount
+		newDelegatorShares := math.LegacyMustNewDecFromStr("1000000000") // Set new delegator shares
 
-		// delete the old validator record
-		valAddr, err := app.StakingKeeper.ValidatorAddressCodec().StringToBytes(v.GetOperator())
+		v.Tokens = newTokens
+		v.DelegatorShares = newDelegatorShares
+
+		// Save the updated validator back to the store
+		app.StakingKeeper.SetValidator(appCtx, v)
+
+		// Update the power index and other related keys
+		err := app.StakingKeeper.SetValidatorByConsAddr(appCtx, v)
 		if err != nil {
 			return err
 		}
-		store.Delete(stakingtypes.GetValidatorKey(valAddr))
-		store.Delete(stakingtypes.GetValidatorByConsAddrKey(valConsAddr))
-		store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(appCtx), app.StakingKeeper.ValidatorAddressCodec()))
-		store.Delete(stakingtypes.GetLastValidatorPowerKey(valAddr))
-		if v.IsUnbonding() {
-			app.StakingKeeper.DeleteValidatorQueueTimeSlice(appCtx, v.UnbondingTime, v.UnbondingHeight)
+		app.StakingKeeper.SetValidatorByPowerIndex(appCtx, v)
+		operatorAddress, err := sdk.ValAddressFromBech32(v.GetOperator())
+		if err != nil {
+			return err
 		}
+		app.StakingKeeper.SetLastValidatorPower(appCtx, operatorAddress, v.GetConsensusPower(app.StakingKeeper.PowerReduction(appCtx)))
+		// valConsAddr, err := v.GetConsAddr()
+		// if err != nil {
+		// 	return err
+		// }
+
+		// // delete the old validator record
+		// valAddr, err := app.StakingKeeper.ValidatorAddressCodec().StringToBytes(v.GetOperator())
+		// if err != nil {
+		// 	return err
+		// }
+		// store.Delete(stakingtypes.GetValidatorKey(valAddr))
+		// store.Delete(stakingtypes.GetValidatorByConsAddrKey(valConsAddr))
+		// store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(appCtx), app.StakingKeeper.ValidatorAddressCodec()))
+		// store.Delete(stakingtypes.GetLastValidatorPowerKey(valAddr))
+		// if v.IsUnbonding() {
+		// 	app.StakingKeeper.DeleteValidatorQueueTimeSlice(appCtx, v.UnbondingTime, v.UnbondingHeight)
+		// }
 	}
 
 	// Add our validator to power and last validators store

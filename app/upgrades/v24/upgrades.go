@@ -37,7 +37,7 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "migrating LSM state to x/liquid")
 		}
 
-		ctx.Logger().Info("Upgrade v23 complete")
+		ctx.Logger().Info("Upgrade v24 complete")
 		return vm, nil
 	}
 }

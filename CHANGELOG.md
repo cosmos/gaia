@@ -31,6 +31,10 @@
 ### STATE BREAKING
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
 
+### Dependencies
+
+- Bump [github.com/spf13/viper](https://github.com/spf13/viper) from 1.20.0 to 1.20.1 ([#3747](https://github.com/cosmos/gaia/pull/3747))
+
 ## v23.3.0
 
 *May 5, 2025*

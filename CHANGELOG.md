@@ -31,6 +31,10 @@
 ### STATE BREAKING
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
 
+### Dependencies
+
+- Bump [github.com/CosmWasm/wasmvm/v2](https://github.com/CosmWasm/wasmvm) from 2.2.3 to 2.2.4 ([#3744](https://github.com/cosmos/gaia/pull/3744))
+
 ## v23.3.0
 
 *May 5, 2025*

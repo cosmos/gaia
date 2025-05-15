@@ -33,11 +33,11 @@ pull_request_rules:
         branches:
           - release/v23.x
 
-  - name: Backport patches to the release/v22.x branch
+  - name: Backport patches to the release/v24.x branch
     conditions:
       - base=main
-      - label=A:backport/v22.x
+      - label=A:backport/v24.x
     actions:
       backport:
         branches:
-          - release/v22.x
+          - release/v24.x

@@ -41,7 +41,7 @@ import (
 )
 
 const (
-	valVotingPower int64 = 900000000000000
+	valVotingPower int64 = 1000000000000000
 )
 
 var (
@@ -49,6 +49,10 @@ var (
 	flagValidatorPubKey          = "validator-pubkey"
 	flagValidatorPrivKey         = "validator-privkey"
 	flagAccountsToFund           = "accounts-to-fund"
+	flagAppendValidator          = "append-validator"
+	flagReplaceValidator         = "replace-validator"
+	flagReplacedOperatorAddress  = "replaced-operator-address"
+	flagReplacedConsensusAddress = "replaced-consensus-address"
 )
 
 type valArgs struct {
@@ -57,6 +61,10 @@ type valArgs struct {
 	validatorConsPrivKey     crypto.PrivKey   // validator's consensus private key
 	accountsToFund           []sdk.AccAddress // list of accounts to fund and use for testing later on
 	homeDir                  string
+	appendValidator          bool   // if set, adds a validator to the existing validator set
+	replaceValidator         bool   // if set, replaces a validator with new keys
+	replacedOperatorAddress  string // operator address of the validator to be replaced
+	replacedConsensusAddress string // consensus address of the validator to be replaced
 }
 
 func init() {
@@ -79,6 +87,10 @@ Example:
 	cmd.Flags().String(flagValidatorPubKey, "", "Validator tendermint/PubKeyEd25519 consensus public key from the priv_validato_key.json file")
 	cmd.Flags().String(flagValidatorPrivKey, "", "Validator tendermint/PrivKeyEd25519 consensus private key from the priv_validato_key.json file")
 	cmd.Flags().String(flagAccountsToFund, "", "Comma-separated list of account addresses that will be funded for testing purposes")
+	cmd.Flags().Bool(flagAppendValidator, false, "Adds a new validator to the existing validator set")
+	cmd.Flags().Bool(flagReplaceValidator, false, "Replaces a specified validator with the new keys")
+	cmd.Flags().String(flagReplacedOperatorAddress, "", "Operator address of the validator to be replaced")
+	cmd.Flags().String(flagReplacedConsensusAddress, "", "Consensus address of the validator to be replaced")
 
 	return cmd
 }
@@ -132,6 +144,29 @@ func getCommandArgs(appOpts servertypes.AppOptions) (valArgs, error) {
 		}
 	}
 
+	appendValidator := cast.ToBool(appOpts.Get(flagAppendValidator))
+	args.appendValidator = appendValidator
+
+	replaceValidator := cast.ToBool(appOpts.Get(flagReplaceValidator))
+	args.replaceValidator = replaceValidator
+	if replaceValidator {
+		replacedOperatorAddress := cast.ToString(appOpts.Get(flagReplacedOperatorAddress))
+		if replacedOperatorAddress == "" {
+			return args, errors.New("invalid replaced validator operator address string")
+		}
+		_, err := sdk.ValAddressFromBech32(replacedOperatorAddress)
+		if err != nil {
+			return args, fmt.Errorf("invalid replaced validator operator address format %w", err)
+		}
+		args.replacedOperatorAddress = replacedOperatorAddress
+
+		replacedConsensusAddress := cast.ToString(appOpts.Get(flagReplacedConsensusAddress))
+		if replacedConsensusAddress == "" {
+			return args, errors.New("invalid replaced validator consensus address string")
+		}
+		args.replacedConsensusAddress = replacedConsensusAddress
+	}
+
 	// home dir
 	homeDir := cast.ToString(appOpts.Get(flags.FlagHome))
 	if homeDir == "" {
@@ -161,14 +196,19 @@ func (a appCreator) newTestingApp(
 		panic(err)
 	}
 
-	// Update app state
-	err = updateApplicationState(gaiaApp, args)
+	if args.replaceValidator {
+		logger.Info("Replacing validator", "operator_address", args.replacedOperatorAddress, "consensus_address", args.replacedConsensusAddress)
+	} else if args.appendValidator {
+		logger.Info("Adding validator")
+	} else {
+		logger.Info("Clearing the validator set")
+	}
+
+	err = updateConsensusState(logger, appOpts, gaiaApp.CommitMultiStore().LatestVersion(), args)
 	if err != nil {
 		panic(err)
 	}
-
-	// Update consensus state
-	err = updateConsensusState(logger, appOpts, gaiaApp.CommitMultiStore().LatestVersion(), args)
+	err = updateApplicationState(gaiaApp, args)
 	if err != nil {
 		panic(err)
 	}
@@ -193,7 +233,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		Jailed:          false,
 		Status:          stakingtypes.Bonded,
 		Tokens:          math.NewInt(valVotingPower),
-		DelegatorShares: math.LegacyMustNewDecFromStr("10000000"),
+		DelegatorShares: math.LegacyMustNewDecFromStr("1000000000000000"),
 		Description: stakingtypes.Description{
 			Moniker: "Testnet Validator",
 		},
@@ -212,50 +252,41 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		return err
 	}
 
-	// store := appCtx.KVStore(app.GetKey(stakingtypes.ModuleName))
+	store := appCtx.KVStore(app.GetKey(stakingtypes.ModuleName))
 	validators, err := app.StakingKeeper.GetAllValidators(appCtx)
 	if err != nil {
 		return err
 	}
+
+	foundTargetValidator := false
 	for _, v := range validators {
-		// Update the validator's tokens and delegator shares
-		newTokens := math.NewInt(1000)                                   // Set new token amount
-		newDelegatorShares := math.LegacyMustNewDecFromStr("1000000000") // Set new delegator shares
+		if (args.replaceValidator && v.GetOperator() == args.replacedOperatorAddress) || (!args.replaceValidator && !args.appendValidator) {
+			valConsAddr, err := v.GetConsAddr()
+			if err != nil {
+				return err
+			}
 
-		v.Tokens = newTokens
-		v.DelegatorShares = newDelegatorShares
-
-		// Save the updated validator back to the store
-		app.StakingKeeper.SetValidator(appCtx, v)
-
-		// Update the power index and other related keys
-		err := app.StakingKeeper.SetValidatorByConsAddr(appCtx, v)
-		if err != nil {
-			return err
+			// delete the old validator record
+			valAddr, err := app.StakingKeeper.ValidatorAddressCodec().StringToBytes(v.GetOperator())
+			if err != nil {
+				return err
+			}
+			store.Delete(stakingtypes.GetValidatorKey(valAddr))
+			store.Delete(stakingtypes.GetValidatorByConsAddrKey(valConsAddr))
+			store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(appCtx), app.StakingKeeper.ValidatorAddressCodec()))
+			store.Delete(stakingtypes.GetLastValidatorPowerKey(valAddr))
+			if v.IsUnbonding() {
+				app.StakingKeeper.DeleteValidatorQueueTimeSlice(appCtx, v.UnbondingTime, v.UnbondingHeight)
+			}
+			if args.replaceValidator {
+				found = foundTargetValidator
+				appCtx.Logger().Info("Found validator to replace", "operator_address", v.GetOperator())
+				break
+			}
 		}
-		app.StakingKeeper.SetValidatorByPowerIndex(appCtx, v)
-		operatorAddress, err := sdk.ValAddressFromBech32(v.GetOperator())
-		if err != nil {
-			return err
-		}
-		app.StakingKeeper.SetLastValidatorPower(appCtx, operatorAddress, v.GetConsensusPower(app.StakingKeeper.PowerReduction(appCtx)))
-		// valConsAddr, err := v.GetConsAddr()
-		// if err != nil {
-		// 	return err
-		// }
-
-		// // delete the old validator record
-		// valAddr, err := app.StakingKeeper.ValidatorAddressCodec().StringToBytes(v.GetOperator())
-		// if err != nil {
-		// 	return err
-		// }
-		// store.Delete(stakingtypes.GetValidatorKey(valAddr))
-		// store.Delete(stakingtypes.GetValidatorByConsAddrKey(valConsAddr))
-		// store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(appCtx), app.StakingKeeper.ValidatorAddressCodec()))
-		// store.Delete(stakingtypes.GetLastValidatorPowerKey(valAddr))
-		// if v.IsUnbonding() {
-		// 	app.StakingKeeper.DeleteValidatorQueueTimeSlice(appCtx, v.UnbondingTime, v.UnbondingHeight)
-		// }
+	}
+	if !foundTargetValidator && args.replaceValidator {
+		return fmt.Errorf("validator with operator address %s not found", args.replacedOperatorAddress)
 	}
 
 	// Add our validator to power and last validators store
@@ -269,7 +300,6 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(appCtx, newValAddr); err != nil {
 		return err
 	}
-
 	// DISTRIBUTION
 	// Initialize records for this validator across all distribution stores
 	app.DistrKeeper.SetValidatorHistoricalRewards(appCtx, newValAddr, 0, distrtypes.NewValidatorHistoricalRewards(sdk.DecCoins{}, 1))
@@ -330,9 +360,9 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 
 func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, appHeight int64, args valArgs) error {
 	// create validator set from the local validator
+
 	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(args.validatorConsPubKeyByte), valVotingPower)
-	vals := []*tmtypes.Validator{newTmVal}
-	validatorSet := tmtypes.NewValidatorSet(vals)
+	logger.Info("Creating new validator:", "validator", newTmVal)
 
 	// CHANGE STATE CONSENSUS STORE
 	stateDB, err := openDB(args.homeDir, "state", cometdbm.BackendType(server.GetAppDBBackend(appOpts)))
@@ -356,33 +386,12 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 		}
 	}()
 
-	state.LastValidators = validatorSet
-	state.Validators = validatorSet
-	state.NextValidators = validatorSet
-	// save state store
-	if err = stateStore.Save(state); err != nil {
-		return err
-	}
-
 	// last voting data must be updated because the distribution module will allocate tokens based on the last saved votes,
 	// and the voting validator address has to be present in the staking module, which is not the case for old validator
 	valInfo, err := loadValidatorsInfo(stateDB, state.LastBlockHeight)
 	if err != nil {
 		return err
 	}
-
-	protoValSet, err := validatorSet.ToProto()
-	if err != nil {
-		return err
-	}
-	valInfo.ValidatorSet = protoValSet
-	valInfo.LastHeightChanged = state.LastBlockHeight
-
-	// when the storeState is saved in consensus it is done for the nextBlock+1,
-	// that is why we need to update 2 future blocks
-	saveValidatorsInfo(stateDB, state.LastBlockHeight, valInfo)
-	saveValidatorsInfo(stateDB, state.LastBlockHeight+1, valInfo)
-	saveValidatorsInfo(stateDB, state.LastBlockHeight+2, valInfo)
 
 	// CHANGE BLOCK CONSENSUS STORE
 	// we need to change the last commit data by updating the signature's info. Consensus will match the validator's set length
@@ -400,31 +409,135 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 
 	blockStore := store.NewBlockStore(blockStoreDB)
 	lastCommit := blockStore.LoadSeenCommit(state.LastBlockHeight)
-
 	var vote *tmtypes.Vote
-	for idx, commitSig := range lastCommit.Signatures {
-		if commitSig.BlockIDFlag == tmtypes.BlockIDFlagAbsent {
-			continue
+	currentValidators := state.Validators.Copy()
+	if args.replaceValidator {
+		// Replace the target validator
+		replaced := false
+		for i, v := range currentValidators.Validators {
+			if v.Address.String() == args.replacedConsensusAddress { // oldAddress = old consensus address
+				currentValidators.Validators[i] = newTmVal // newTmVal = new tmtypes.Validator with new pubkey
+				replaced = true
+				break
+			}
 		}
-		vote = lastCommit.GetVote(int32(idx))
-		break
-	}
-	if vote == nil {
-		return errors.New("cannot get the vote from the last commit")
+		if !replaced {
+			return fmt.Errorf("validator to replace not found in consensus set")
+		}
+		currentValidators.Proposer = newTmVal
+
+		var sigIndex int
+		for idx, commitSig := range lastCommit.Signatures {
+			if commitSig.BlockIDFlag == tmtypes.BlockIDFlagAbsent {
+				continue
+			}
+			validatorAddress := commitSig.ValidatorAddress
+			// logger.Info("Commit signature", "idx", idx, "address", fmt.Sprintf("%X", validatorAddress), "commitSig", commitSig)
+			if validatorAddress.String() == args.replacedConsensusAddress {
+				logger.Info("Found validator to replace", "idx", idx, "consensus_address", fmt.Sprintf("%X", validatorAddress))
+				vote = lastCommit.GetVote(int32(idx))
+				sigIndex = idx
+				break
+			}
+		}
+		if vote == nil {
+			return errors.New("cannot get the vote from the last commit")
+		}
+
+		voteSignBytes := tmtypes.VoteSignBytes(state.ChainID, vote.ToProto())
+		signatureBytes, err := args.validatorConsPrivKey.Sign(voteSignBytes)
+		if err != nil {
+			return err
+		}
+
+		lastCommit.Signatures[sigIndex] = tmtypes.CommitSig{
+			BlockIDFlag:      tmtypes.BlockIDFlagCommit,
+			ValidatorAddress: newTmVal.Address,
+			Timestamp:        vote.Timestamp,
+			Signature:        []byte(signatureBytes),
+		}
+	} else if args.appendValidator {
+		currentValidators.Validators = append(currentValidators.Validators, newTmVal)
+		currentValidators.Proposer = newTmVal
+
+		for idx, commitSig := range lastCommit.Signatures {
+			if commitSig.BlockIDFlag == tmtypes.BlockIDFlagAbsent {
+				continue
+			}
+			vote = lastCommit.GetVote(int32(idx))
+			break
+		}
+		if vote == nil {
+			return errors.New("cannot get the vote from the last commit")
+		}
+
+		voteSignBytes := tmtypes.VoteSignBytes(state.ChainID, vote.ToProto())
+		signatureBytes, err := args.validatorConsPrivKey.Sign(voteSignBytes)
+		if err != nil {
+			return err
+		}
+
+		lastCommit.Signatures = append(
+			lastCommit.Signatures,
+			tmtypes.CommitSig{
+				BlockIDFlag:      tmtypes.BlockIDFlagCommit,
+				ValidatorAddress: newTmVal.Address,
+				Timestamp:        vote.Timestamp,
+				Signature:        []byte(signatureBytes),
+			},
+		)
+
+	} else {
+		// Clear the validator set
+		vals := []*tmtypes.Validator{newTmVal}
+		currentValidators = tmtypes.NewValidatorSet(vals)
+
+		for idx, commitSig := range lastCommit.Signatures {
+			if commitSig.BlockIDFlag == tmtypes.BlockIDFlagAbsent {
+				continue
+			}
+			vote = lastCommit.GetVote(int32(idx))
+			break
+		}
+		if vote == nil {
+			return errors.New("cannot get the vote from the last commit")
+		}
+
+		voteSignBytes := tmtypes.VoteSignBytes(state.ChainID, vote.ToProto())
+		signatureBytes, err := args.validatorConsPrivKey.Sign(voteSignBytes)
+		if err != nil {
+			return err
+		}
+
+		lastCommit.Signatures = []tmtypes.CommitSig{{
+			BlockIDFlag:      tmtypes.BlockIDFlagCommit,
+			ValidatorAddress: newTmVal.Address,
+			Timestamp:        vote.Timestamp,
+			Signature:        []byte(signatureBytes),
+		}}
 	}
 
-	voteSignBytes := tmtypes.VoteSignBytes(state.ChainID, vote.ToProto())
-	signatureBytes, err := args.validatorConsPrivKey.Sign(voteSignBytes)
-	if err != nil {
+	// Update the state with the new validator set
+	state.LastValidators = currentValidators
+	state.Validators = currentValidators
+	state.NextValidators = currentValidators
+	// save state store
+	if err = stateStore.Save(state); err != nil {
 		return err
 	}
 
-	lastCommit.Signatures = []tmtypes.CommitSig{{
-		BlockIDFlag:      tmtypes.BlockIDFlagCommit,
-		ValidatorAddress: newTmVal.Address,
-		Timestamp:        vote.Timestamp,
-		Signature:        []byte(signatureBytes),
-	}}
+	protoValSet, err := currentValidators.ToProto()
+	if err != nil {
+		return err
+	}
+	valInfo.ValidatorSet = protoValSet
+	valInfo.LastHeightChanged = state.LastBlockHeight
+
+	// when the storeState is saved in consensus it is done for the nextBlock+1,
+	// that is why we need to update 2 future blocks
+	saveValidatorsInfo(stateDB, state.LastBlockHeight, valInfo)
+	saveValidatorsInfo(stateDB, state.LastBlockHeight+1, valInfo)
+	saveValidatorsInfo(stateDB, state.LastBlockHeight+2, valInfo)
 
 	// if store height is greater than app height and state height, we will remove the last block from the store to avoid
 	// replaying this block to the app. If only the state height is lower, we do not delete the block from the store because

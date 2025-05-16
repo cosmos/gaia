@@ -41,7 +41,8 @@ import (
 )
 
 const (
-	valVotingPower int64 = 1000000000000000
+	valVotingPower int64 = 1000000
+	valTokens int64      = 1000000000000
 )
 
 var (
@@ -224,8 +225,8 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		ConsensusPubkey: pubkeyAny,
 		Jailed:          false,
 		Status:          stakingtypes.Bonded,
-		Tokens:          math.NewInt(valVotingPower),
-		DelegatorShares: math.LegacyMustNewDecFromStr("1000000000000000"),
+		Tokens:          math.NewInt(valTokens),
+		DelegatorShares: math.LegacyMustNewDecFromStr(string(valTokens)),
 		Description: stakingtypes.Description{
 			Moniker: "Testnet Validator",
 		},

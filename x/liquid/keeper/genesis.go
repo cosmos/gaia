@@ -11,7 +11,11 @@ import (
 
 // InitGenesis sets liquid information for genesis
 func (k Keeper) InitGenesis(ctx context.Context, data *types.GenesisState) {
-	//
+	// Set the x/liquid module parameters
+	if err := k.SetParams(ctx, data.Params); err != nil {
+		panic(err)
+	}
+
 	// Set the total liquid staked tokens
 	k.SetTotalLiquidStakedTokens(ctx, data.TotalLiquidStakedTokens)
 

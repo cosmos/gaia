@@ -17,6 +17,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			Service: types.Query_serviceDesc.ServiceName,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
+					RpcMethod: "LiquidValidators",
+					Use:       "liquid-validators",
+					Short:     "Query for all liquid validators",
+					Example:   fmt.Sprintf("$ %s query liquid liquid-validators", version.AppName),
+				},
+				{
 					RpcMethod: "LiquidValidator",
 					Use:       "liquid-validator [validator-address]",
 					Short:     "Query individual liquid validator by validator address",

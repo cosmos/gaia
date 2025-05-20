@@ -41,8 +41,8 @@ import (
 )
 
 const (
-	valVotingPower int64 = 1000000
-	valTokens int64      = 1000000000000
+	valVotingPower int64 = 1000000000
+	valTokens      int64 = 1000000000000000
 )
 
 var (
@@ -80,11 +80,14 @@ thereby removing the old validator set and introducing a new set suitable for lo
 it enables developers to configure their local environments to reflect mainnet conditions more accurately.
 
 Example:
+	# Wipes the entire validator set and replaces it with a single validator
 	simd testnet unsafe-start-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pubkey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q==" --accounts-to-fund="cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl" [other_server_start_flags]
+	# Replaces the specified validator with the new keys
+	simd testnet unsafe-start-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pubkey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q==" --accounts-to-fund="cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl" --replace-validator -- replaced-operator-address="cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv" --replaced-consensus-address="04B333F6E43751948C2D56B273DC41C3E13E5932" [other_server_start_flags]
 	`
 	cmd.Flags().String(flagValidatorOperatorAddress, "", "Validator operator address e.g. cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r")
-	cmd.Flags().String(flagValidatorPubKey, "", "Validator tendermint/PubKeyEd25519 consensus public key from the priv_validato_key.json file")
-	cmd.Flags().String(flagValidatorPrivKey, "", "Validator tendermint/PrivKeyEd25519 consensus private key from the priv_validato_key.json file")
+	cmd.Flags().String(flagValidatorPubKey, "", "Validator tendermint/PubKeyEd25519 consensus public key from the priv_validator_key.json file")
+	cmd.Flags().String(flagValidatorPrivKey, "", "Validator tendermint/PrivKeyEd25519 consensus private key from the priv_validator_key.json file")
 	cmd.Flags().String(flagAccountsToFund, "", "Comma-separated list of account addresses that will be funded for testing purposes")
 	cmd.Flags().Bool(flagReplaceValidator, false, "Replaces a specified validator with the new keys")
 	cmd.Flags().String(flagReplacedOperatorAddress, "", "Operator address of the validator to be replaced")
@@ -226,7 +229,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		Jailed:          false,
 		Status:          stakingtypes.Bonded,
 		Tokens:          math.NewInt(valTokens),
-		DelegatorShares: math.LegacyMustNewDecFromStr(string(valTokens)),
+		DelegatorShares: math.LegacyMustNewDecFromStr(fmt.Sprintf("%d", valTokens)),
 		Description: stakingtypes.Description{
 			Moniker: "Testnet Validator",
 		},
@@ -278,7 +281,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 			}
 		}
 	}
-	if !foundTargetValidator && args.replaceValidator {
+	if args.replaceValidator && !foundTargetValidator {
 		return fmt.Errorf("validator with operator address %s not found", args.replacedOperatorAddress)
 	}
 

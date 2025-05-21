@@ -64,14 +64,14 @@ func (k Querier) LiquidValidators(c context.Context, req *types.QueryLiquidValid
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(c))
 	valStore := prefix.NewStore(store, types.LiquidValidatorPrefix)
 
-	vals := types.LiquidValidators{}
+	var liquidValidators []types.LiquidValidator
 
 	pageRes, err := query.Paginate(valStore, req.Pagination, func(key, value []byte) error {
 		var val types.LiquidValidator
 		if err := k.cdc.Unmarshal(value, &val); err != nil {
 			return err
 		}
-		vals.LiquidValidators = append(vals.LiquidValidators, val)
+		liquidValidators = append(liquidValidators, val)
 		return nil
 	})
 	if err != nil {
@@ -79,7 +79,7 @@ func (k Querier) LiquidValidators(c context.Context, req *types.QueryLiquidValid
 	}
 
 	return &types.QueryLiquidValidatorsResponse{
-		LiquidValidators: vals.LiquidValidators,
+		LiquidValidators: liquidValidators,
 		Pagination:       pageRes,
 	}, nil
 }

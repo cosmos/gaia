@@ -21,6 +21,7 @@ import (
 	evmserver "github.com/cosmos/evm/server"
 	evmserverconfig "github.com/cosmos/evm/server/config"
 	srvflags "github.com/cosmos/evm/server/flags"
+	evmtypes "github.com/cosmos/evm/types"
 
 	"cosmossdk.io/client/v2/autocli"
 	"cosmossdk.io/log"
@@ -221,6 +222,8 @@ func initRootCmd(rootCmd *cobra.Command,
 	txConfig client.TxConfig,
 ) {
 	cfg := sdk.GetConfig()
+	cfg.SetCoinType(evmtypes.Bip44CoinType)
+	cfg.SetPurpose(sdk.Purpose)
 	cfg.Seal()
 
 	ac := appCreator{}

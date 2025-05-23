@@ -55,6 +55,35 @@ func (k Querier) LiquidValidator(c context.Context, req *types.QueryLiquidValida
 	return &types.QueryLiquidValidatorResponse{LiquidValidator: lv}, nil
 }
 
+// LiquidValidators queries for all LiquidValidator records
+func (k Querier) LiquidValidators(c context.Context, req *types.QueryLiquidValidatorsRequest) (*types.QueryLiquidValidatorsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(c))
+	valStore := prefix.NewStore(store, types.LiquidValidatorPrefix)
+
+	var liquidValidators []types.LiquidValidator
+
+	pageRes, err := query.Paginate(valStore, req.Pagination, func(key, value []byte) error {
+		var val types.LiquidValidator
+		if err := k.cdc.Unmarshal(value, &val); err != nil {
+			return err
+		}
+		liquidValidators = append(liquidValidators, val)
+		return nil
+	})
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryLiquidValidatorsResponse{
+		LiquidValidators: liquidValidators,
+		Pagination:       pageRes,
+	}, nil
+}
+
 // TokenizeShareRecordById queries for individual tokenize share record information by share by id
 func (k Querier) TokenizeShareRecordById(c context.Context, req *types.QueryTokenizeShareRecordByIdRequest) (*types.QueryTokenizeShareRecordByIdResponse, error) { //nolint:revive // fixing this would require changing the .proto files, so we might as well leave it alone
 	if req == nil {

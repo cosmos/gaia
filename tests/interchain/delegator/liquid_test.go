@@ -450,7 +450,6 @@ func (s *LSMSuite) TestLSMParams() {
 		tokenizedDenom, err := s.Chain.QueryJSON(s.GetContext(), "balances.@reverse.1.denom", "bank", "balances", s.Chain.ValidatorWallets[0].Address)
 		s.Require().NoError(err)
 		chainsuite.GetLogger(s.GetContext()).Sugar().Infof("Tokenized denom: %s", tokenizedDenom)
-		// liquid_denom= $(./gaiad-v24 q bank balances $WALLET_1 --home $HOME_1 -o json | jq -r '.balances[-2].denom')
 		// Redeem tokenized amount
 		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Address, "liquid", "redeem-tokens",
 			fmt.Sprintf("%d%s", validatorSuccessAmount, tokenizedDenom))

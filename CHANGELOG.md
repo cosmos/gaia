@@ -28,6 +28,9 @@
 - Remove expedited gov prop type restrictions ([\#3723](https://github.com/cosmos/gaia/pull/3723))
 - Add liquid validator query to x/liquid ([\#3735](https://github.com/cosmos/gaia/pull/3735))
 
+### BUG-FIXES
+- Set x/liquid params during InitGenesis ([\#3759](https://github.com/cosmos/gaia/pull/3759))
+
 ### STATE BREAKING
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
 

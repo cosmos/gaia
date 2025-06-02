@@ -13,10 +13,8 @@ import (
 	"github.com/spf13/cast"
 
 	abci "github.com/cometbft/cometbft/abci/types"
+	tmproto "github.com/cometbft/cometbft/api/cometbft/types/v1"
 	tmjson "github.com/cometbft/cometbft/libs/json"
-	tmos "github.com/cometbft/cometbft/libs/os"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/gogoproto/proto"
 	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10"
@@ -230,6 +228,7 @@ func NewGaiaApp(
 	// NOTE: upgrade module is required to be prioritized
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
+		authtypes.ModuleName,
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
@@ -286,7 +285,7 @@ func NewGaiaApp(
 
 	anteHandler, err := gaiaante.NewAnteHandler(
 		gaiaante.HandlerOptions{
-			AccountKeeper:   app.AccountKeeper,
+			AccountKeeper:   &app.AccountKeeper,
 			BankKeeper:      app.BankKeeper,
 			FeegrantKeeper:  app.FeeGrantKeeper,
 			SignModeHandler: txConfig.SignModeHandler(),
@@ -354,13 +353,13 @@ func NewGaiaApp(
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
-			tmos.Exit(fmt.Sprintf("failed to load latest version: %s", err))
+			panic(fmt.Sprintf("failed to load latest version: %s", err))
 		}
 
 		ctx := app.NewUncachedContext(true, tmproto.Header{})
 
 		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
-			tmos.Exit(fmt.Sprintf("WasmKeeper failed initialize pinned codes %s", err))
+			panic(fmt.Sprintf("WasmKeeper failed initialize pinned codes %s", err))
 		}
 
 		if err := app.WasmClientKeeper.InitializePinnedCodes(ctx); err != nil {
@@ -375,7 +374,7 @@ func NewGaiaApp(
 func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
 
 // PreBlocker application updates every pre block
-func (app *GaiaApp) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+func (app *GaiaApp) PreBlocker(ctx sdk.Context, _ *abci.FinalizeBlockRequest) (*sdk.ResponsePreBlock, error) {
 	return app.mm.PreBlock(ctx)
 }
 
@@ -390,7 +389,7 @@ func (app *GaiaApp) EndBlocker(ctx sdk.Context) (sdk.EndBlock, error) {
 }
 
 // InitChainer application update at chain initialization
-func (app *GaiaApp) InitChainer(ctx sdk.Context, req *abci.RequestInitChain) (*abci.ResponseInitChain, error) {
+func (app *GaiaApp) InitChainer(ctx sdk.Context, req *abci.InitChainRequest) (*abci.InitChainResponse, error) {
 	var genesisState GenesisState
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		panic(err)

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"sort"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmproto "github.com/cometbft/cometbft/api/cometbft/types/v1"
 
 	storetypes "cosmossdk.io/store/types"
 

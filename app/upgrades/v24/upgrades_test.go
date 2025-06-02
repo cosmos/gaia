@@ -13,10 +13,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaia "github.com/cosmos/gaia/v24/app"
-	"github.com/cosmos/gaia/v24/app/helpers"
-	"github.com/cosmos/gaia/v24/app/upgrades/v24"
-	"github.com/cosmos/gaia/v24/x/liquid/types"
+	gaia "github.com/cosmos/gaia/v25/app"
+	"github.com/cosmos/gaia/v25/app/helpers"
+	"github.com/cosmos/gaia/v25/app/upgrades/v24"
+	"github.com/cosmos/gaia/v25/x/liquid/types"
 )
 
 func TestMigrateLSMState(t *testing.T) {

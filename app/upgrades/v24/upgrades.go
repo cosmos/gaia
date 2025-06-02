@@ -12,9 +12,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
-	"github.com/cosmos/gaia/v24/app/keepers"
-	liquidkeeper "github.com/cosmos/gaia/v24/x/liquid/keeper"
-	liquidtypes "github.com/cosmos/gaia/v24/x/liquid/types"
+	"github.com/cosmos/gaia/v25/app/keepers"
+	liquidkeeper "github.com/cosmos/gaia/v25/x/liquid/keeper"
+	liquidtypes "github.com/cosmos/gaia/v25/x/liquid/types"
 )
 
 // CreateUpgradeHandler returns an upgrade handler for Gaia v24.

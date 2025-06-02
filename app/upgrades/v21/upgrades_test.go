@@ -9,8 +9,8 @@ import (
 
 	govparams "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 
-	"github.com/cosmos/gaia/v24/app/helpers"
-	v21 "github.com/cosmos/gaia/v24/app/upgrades/v21"
+	"github.com/cosmos/gaia/v25/app/helpers"
+	v21 "github.com/cosmos/gaia/v25/app/upgrades/v21"
 )
 
 func TestHasExpectedChainIDSanityCheck(t *testing.T) {

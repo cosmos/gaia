@@ -11,7 +11,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/gaia/v23/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v24/tests/interchain/chainsuite"
 	transfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 	"github.com/strangelove-ventures/interchaintest/v8"

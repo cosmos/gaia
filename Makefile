@@ -281,6 +281,13 @@ PACKAGES_E2E=$(shell cd tests/e2e && go list ./... | grep '/e2e')
 TEST_PACKAGES=./...
 TEST_TARGETS := test-unit test-unit-cover test-race test-e2e
 
+mocks: gen-mocks format
+
+gen-mocks:
+	@echo "--> generating mocks"
+	@go install github.com/vektra/mockery/v2
+	@go run github.com/vektra/mockery/v2
+
 test-unit: ARGS=-timeout=5m -tags='norace'
 test-unit: TEST_PACKAGES=$(PACKAGES_UNIT)
 test-unit-cover: ARGS=-timeout=5m -tags='norace' -coverprofile=coverage.txt -covermode=atomic
@@ -316,21 +323,21 @@ docker-build-all: docker-build-debug docker-build-hermes
 ###                                Linting                                  ###
 ###############################################################################
 golangci_lint_cmd=golangci-lint
-golangci_version=v1.60.1
+golangci_version=v2.1.6
 
 lint:
 	@echo "--> Running linter"
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(golangci_version)
+	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(golangci_version)
 	@$(golangci_lint_cmd) run --timeout=10m
 
 lint-fix:
 	@echo "--> Running linter"
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(golangci_version)
+	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(golangci_version)
 	@$(golangci_lint_cmd) run --fix --out-format=tab --issues-exit-code=0
 
 format:
 	@go install mvdan.cc/gofumpt@latest
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(golangci_version)
+	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(golangci_version)
 	find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" -not -path "./client/docs/statik/statik.go" -not -path "./tests/mocks/*" -not -name "*.pb.go" -not -name "*.pb.gw.go" -not -name "*.pulsar.go" -not -path "./crypto/keys/secp256k1/*" | xargs gofumpt -w -l
 	$(golangci_lint_cmd) run --fix
 .PHONY: format
@@ -374,7 +381,7 @@ test-docker-push: test-docker
 ###############################################################################
 ###                                Protobuf                                 ###
 ###############################################################################
-protoVer=0.13.0
+protoVer=0.15.2
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 

@@ -31,6 +31,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
+	liquidtypes "github.com/cosmos/gaia/v24/x/liquid/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {
@@ -63,6 +65,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		evmtypes.StoreKey,
 		feemarkettypes.StoreKey,
 		erc20types.StoreKey,
+		liquidtypes.StoreKey,
 	)
 
 	// Define transient store keys

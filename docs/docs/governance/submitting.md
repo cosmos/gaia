@@ -42,7 +42,7 @@ See the relevant section for the type of proposal you are drafting:
 
 - [Text Proposals](./formatting.md#text)
 - [Community Pool Spend Proposals](./formatting.md#community-pool-spend)
-- [Parameter Change Proposals](./formatting.md#parameter-change)
+- [Parameter Change Proposals](./formatting.md#legacy-param-change)
 
 Once on-chain, most people will rely upon block explorers to interpret this information with a graphical user interface (GUI).
 

@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
 )
 
 type TestingSuite struct {
@@ -81,7 +81,7 @@ func (h *TestingSuite) ExecEncode(
 	return encoded
 }
 
-func (h *TestingSuite) expectErrExecValidation(chain *common.Chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
+func (h *TestingSuite) ExpectErrExecValidation(chain *common.Chain, valIdx int, expectErr bool) func([]byte, []byte) bool {
 	return func(stdOut []byte, stdErr []byte) bool {
 		var txResp types.TxResponse
 		gotErr := common.Cdc.UnmarshalJSON(stdOut, &txResp) != nil

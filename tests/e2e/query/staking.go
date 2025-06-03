@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
 )
 
 func StakingParams(endpoint string) (types.QueryParamsResponse, error) {
@@ -77,16 +77,16 @@ func Validators(endpoint string) (types.Validators, error) {
 	return types.Validators{Validators: res.Validators}, nil
 }
 
-func TokenizeShareRecordByID(endpoint string, recordID int) (types.TokenizeShareRecord, error) {
-	var res types.QueryTokenizeShareRecordByIdResponse
-
-	body, err := common.HTTPGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/tokenize_share_record_by_id/%d", endpoint, recordID))
+func Pool(endpoint string) (types.Pool, error) {
+	var res types.QueryPoolResponse
+	body, err := common.HTTPGet(fmt.Sprintf("%s/cosmos/staking/v1beta1/pool", endpoint))
 	if err != nil {
-		return types.TokenizeShareRecord{}, fmt.Errorf("failed to execute HTTP request: %w", err)
+		return types.Pool{}, fmt.Errorf("failed to execute HTTP request: %w", err)
 	}
 
 	if err := common.Cdc.UnmarshalJSON(body, &res); err != nil {
-		return types.TokenizeShareRecord{}, err
+		return types.Pool{}, err
 	}
-	return res.Record, nil
+
+	return res.Pool, nil
 }

@@ -10,8 +10,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v23/app/helpers"
-	v23 "github.com/cosmos/gaia/v23/app/upgrades/v23"
+	"github.com/cosmos/gaia/v24/app/helpers"
+	v23 "github.com/cosmos/gaia/v24/app/upgrades/v23"
 )
 
 func TestGrantIBCWasmAuth(t *testing.T) {

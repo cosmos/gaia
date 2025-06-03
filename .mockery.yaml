@@ -1,0 +1,12 @@
+quiet: False
+disable-version-string: True
+with-expecter: True
+mockname: "{{.InterfaceName}}"
+filename: "{{.MockName}}.go"
+dir: "{{ .InterfaceDirRelative }}/mocks"
+outpkg: mocks
+packages:
+  github.com/cosmos/gaia/v22/x/lsm/types:
+    config:
+      recursive: True
+      include-regex: ".*Keeper"

@@ -62,7 +62,7 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaia "github.com/cosmos/gaia/v23/app"
+	gaia "github.com/cosmos/gaia/v24/app"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the

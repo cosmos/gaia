@@ -94,7 +94,9 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaparams "github.com/cosmos/gaia/v23/app/params"
+	gaiaparams "github.com/cosmos/gaia/v24/app/params"
+	liquidkeeper "github.com/cosmos/gaia/v24/x/liquid/keeper"
+	liquidtypes "github.com/cosmos/gaia/v24/x/liquid/types"
 )
 
 type AppKeepers struct {
@@ -110,6 +112,7 @@ type AppKeepers struct {
 	SlashingKeeper slashingkeeper.Keeper
 	MintKeeper     mintkeeper.Keeper
 	DistrKeeper    distrkeeper.Keeper
+	LiquidKeeper   *liquidkeeper.Keeper
 	GovKeeper      *govkeeper.Keeper
 	CrisisKeeper   *crisiskeeper.Keeper
 	UpgradeKeeper  *upgradekeeper.Keeper
@@ -266,6 +269,16 @@ func NewAppKeeper(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
+	appKeepers.LiquidKeeper = liquidkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(appKeepers.keys[liquidtypes.StoreKey]),
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.StakingKeeper,
+		appKeepers.DistrKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
 	appKeepers.StakingKeeper.SetHooks(
@@ -273,6 +286,7 @@ func NewAppKeeper(
 			appKeepers.DistrKeeper.Hooks(),
 			appKeepers.SlashingKeeper.Hooks(),
 			appKeepers.ProviderKeeper.Hooks(),
+			appKeepers.LiquidKeeper.Hooks(),
 		),
 	)
 

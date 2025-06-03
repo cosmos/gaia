@@ -13,7 +13,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	gaiaApp "github.com/cosmos/gaia/v23/app"
+	gaiaApp "github.com/cosmos/gaia/v24/app"
 )
 
 type RateLimitTestSuite struct {
@@ -66,7 +66,7 @@ func (suite *RateLimitTestSuite) TestRateLimitResetAfterWindow() {
 		EpochNumber:      0,
 		Duration:         1 * time.Hour,
 		EpochStartTime:   suite.chain.LatestCommittedHeader.GetTime(),
-		EpochStartHeight: int64(suite.chain.LatestCommittedHeader.GetHeight().GetRevisionHeight()),
+		EpochStartHeight: int64(suite.chain.LatestCommittedHeader.GetHeight().GetRevisionHeight()), //nolint:gosec
 	}) // set epoch start at current time
 
 	currentRateLimit, found := suite.app.RatelimitKeeper.GetRateLimit(ctx, "uatom", "channel-0")

@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/types"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
 )
 
 func ICAAccountAddress(endpoint, owner, connectionID string) (string, error) {

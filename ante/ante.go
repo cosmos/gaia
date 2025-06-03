@@ -25,7 +25,7 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaerrors "github.com/cosmos/gaia/v23/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v24/types/errors"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC
@@ -111,7 +111,6 @@ func NewCosmosAnteHandler(opts HandlerOptions) sdk.AnteHandler {
 		evmcosmosante.NewMinGasPriceDecorator(opts.FeeMarketKeeper, opts.EvmKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		NewGovVoteDecorator(opts.Codec, opts.StakingKeeper),
-		NewGovExpeditedProposalsDecorator(opts.Codec),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),

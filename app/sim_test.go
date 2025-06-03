@@ -23,11 +23,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
-	"github.com/cosmos/gaia/v23/ante"
-	gaia "github.com/cosmos/gaia/v23/app"
-	// "github.com/cosmos/gaia/v11/app/helpers"
-	// "github.com/cosmos/gaia/v11/app/params"
-	"github.com/cosmos/gaia/v23/app/sim"
+	"github.com/cosmos/gaia/v24/ante"
+	gaia "github.com/cosmos/gaia/v24/app"
+	"github.com/cosmos/gaia/v24/app/sim"
 )
 
 // AppChainID hardcoded chainID for simulation
@@ -108,10 +106,6 @@ func TestAppStateDeterminism(t *testing.T) {
 			// NOTE: setting to zero to avoid failing the simulation
 			// due to the minimum staked tokens required to submit a vote
 			ante.SetMinStakedTokens(math.LegacyZeroDec())
-
-			// NOTE: setting to zero to avoid failing the simulation
-			// gaia ante allows only certain proposals to be expedited - the simulation doesn't know about this
-			ante.SetExpeditedProposalsEnabled(false)
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",

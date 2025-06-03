@@ -7,10 +7,9 @@ import (
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v23/tests/e2e/common"
-	"github.com/cosmos/gaia/v23/tests/e2e/data"
+	"github.com/cosmos/gaia/v24/tests/e2e/common"
+	"github.com/cosmos/gaia/v24/tests/e2e/data"
 )
 
 func WriteGovCommunitySpendProposal(c *common.Chain, amount sdk.Coin, recipient string) error {
@@ -93,21 +92,14 @@ func WriteCancelSoftwareUpgradeProposal(c *common.Chain) error {
 	return nil
 }
 
-func WriteLiquidStakingParamsUpdateProposal(c *common.Chain, oldParams stakingtypes.Params) error {
+func WriteLiquidStakingParamsUpdateProposal(c *common.Chain, global int64, val int64) error {
 	template := `
 	{
 		"messages": [
 		 {
-		  "@type": "/cosmos.staking.v1beta1.MsgUpdateParams",
+		  "@type": "/gaia.liquid.v1beta1.MsgUpdateParams",
 		  "authority": "%s",
 		  "params": {
-		   "unbonding_time": "%s",
-		   "max_validators": %d,
-		   "max_entries": %d,
-		   "historical_entries": %d,
-		   "bond_denom": "%s",
-		   "min_commission_rate": "%s",
-		   "validator_bond_factor": "%s",
 		   "global_liquid_staking_cap": "%s",
 		   "validator_liquid_staking_cap": "%s"
 		  }
@@ -115,28 +107,18 @@ func WriteLiquidStakingParamsUpdateProposal(c *common.Chain, oldParams stakingty
 		],
 		"metadata": "ipfs://CID",
 		"deposit": "100uatom",
-		"title": "Update LSM Params",
-		"summary": "e2e-test updating LSM staking params",
+		"title": "Update Liquid Params",
+		"summary": "e2e-test updating Liquid staking params",
 		"expedited": false
 	   }`
 	propMsgBody := fmt.Sprintf(template,
 		common.GovAuthority,
-		oldParams.UnbondingTime,
-		oldParams.MaxValidators,
-		oldParams.MaxEntries,
-		oldParams.HistoricalEntries,
-		oldParams.BondDenom,
-		oldParams.MinCommissionRate,
-		math.LegacyNewDec(250),           // validator bond factor
-		math.LegacyNewDecWithPrec(25, 2), // 25 global_liquid_staking_cap
-		math.LegacyNewDecWithPrec(50, 2), // 50 validator_liquid_staking_cap
+		math.LegacyNewDecWithPrec(global, 2), // global_liquid_staking_cap
+		math.LegacyNewDecWithPrec(val, 2),    // validator_liquid_staking_cap
 	)
 
-	err := common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalLSMParamUpdateFilename), []byte(propMsgBody))
-	if err != nil {
-		return err
-	}
-	return nil
+	return common.WriteFile(filepath.Join(c.Validators[0].ConfigDir(), "config", common.ProposalLiquidParamUpdateFilename),
+		[]byte(propMsgBody))
 }
 
 // WriteGovParamChangeProposalBlocksPerEpoch writes a governance proposal JSON file to change the `BlocksPerEpoch`

@@ -3,7 +3,7 @@ package consumer_chain_test
 import (
 	"testing"
 
-	"github.com/cosmos/gaia/v24/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v25/tests/interchain/chainsuite"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/mod/semver"

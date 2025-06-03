@@ -89,9 +89,9 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaparams "github.com/cosmos/gaia/v24/app/params"
-	liquidkeeper "github.com/cosmos/gaia/v24/x/liquid/keeper"
-	liquidtypes "github.com/cosmos/gaia/v24/x/liquid/types"
+	gaiaparams "github.com/cosmos/gaia/v25/app/params"
+	liquidkeeper "github.com/cosmos/gaia/v25/x/liquid/keeper"
+	liquidtypes "github.com/cosmos/gaia/v25/x/liquid/types"
 )
 
 type AppKeepers struct {

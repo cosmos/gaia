@@ -8,7 +8,7 @@ import (
 	"time"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/gaia/v24/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v25/tests/interchain/chainsuite"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 	"github.com/strangelove-ventures/interchaintest/v8/testutil"
@@ -299,7 +299,6 @@ func (s *LSMSuite) TestLSMParams() {
 	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("Starting global liquid staking cap: %s", startingGlobalCap)
 
 	s.Run("Update params", func() {
-
 		authority, err := s.Chain.GetGovernanceAddress(s.GetContext())
 		s.Require().NoError(err)
 
@@ -365,7 +364,6 @@ func (s *LSMSuite) TestLSMParams() {
 		globalLiquidCapFloat := globalLiquidCapParam.Float()
 		s.Require().Equal(validatorCap, validatorLiquidCapFloat)
 		s.Require().Equal(globalCap, globalLiquidCapFloat)
-
 	})
 
 	s.Run("Test liquid caps", func() {
@@ -460,7 +458,6 @@ func (s *LSMSuite) TestLSMParams() {
 		s.Require().NoError(err)
 		_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.Chain.ValidatorWallets[0].Address, "staking", "unbond", s.Chain.ValidatorWallets[2].ValoperAddress, fmt.Sprintf("%d%s", delegation, chainsuite.Uatom))
 		s.Require().NoError(err)
-
 	})
 
 	s.Run("Restore params", func() {

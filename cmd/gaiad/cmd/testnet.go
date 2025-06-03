@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net"
 	"os"
 	"path/filepath"
@@ -12,7 +13,6 @@ import (
 	"github.com/spf13/pflag"
 
 	cmtconfig "github.com/cometbft/cometbft/config"
-	tmrand "github.com/cometbft/cometbft/libs/rand"
 	"github.com/cometbft/cometbft/types"
 	tmtime "github.com/cometbft/cometbft/types/time"
 
@@ -51,6 +51,7 @@ var (
 	flagAPIAddress         = "api.address"
 	flagPrintMnemonic      = "print-mnemonic"
 	unsafeStartValidatorFn UnsafeStartValidatorCmdCreator
+	strChars               = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" // 62 characters
 )
 
 type UnsafeStartValidatorCmdCreator func(ac appCreator) *cobra.Command
@@ -219,8 +220,12 @@ func initTestnetFiles(
 	genBalIterator banktypes.GenesisBalancesIterator,
 	args initArgs,
 ) error {
+	chainID := []byte("chain-")
+	for i := 0; i < 6; i++ {
+		chainID = append(chainID, strChars[rand.Int()%len(strChars)])
+	}
 	if args.chainID == "" {
-		args.chainID = "chain-" + tmrand.Str(6)
+		args.chainID = string(chainID)
 	}
 	nodeIDs := make([]string, args.numValidators)
 	valPubKeys := make([]cryptotypes.PubKey, args.numValidators)

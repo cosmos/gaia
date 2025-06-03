@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	abci "github.com/cometbft/cometbft/abci/types"
-	tmproto "github.com/cometbft/cometbft/api/cometbft/types/v1"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtypes "github.com/cometbft/cometbft/types"
 
 	dbm "github.com/cosmos/cosmos-db"
@@ -105,7 +105,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 
 	// init chain will set the validator set and initialize the genesis accounts
 	_, err = gaiaApp.InitChain(
-		&abci.InitChainRequest{
+		&abci.RequestInitChain{
 			Validators:      []abci.ValidatorUpdate{},
 			ConsensusParams: DefaultConsensusParams,
 			AppStateBytes:   stateBytes,
@@ -114,7 +114,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 	require.NoError(t, err)
 
 	require.NoError(t, err)
-	_, err = gaiaApp.FinalizeBlock(&abci.FinalizeBlockRequest{
+	_, err = gaiaApp.FinalizeBlock(&abci.RequestFinalizeBlock{
 		Height:             gaiaApp.LastBlockHeight() + 1,
 		Hash:               gaiaApp.LastCommitID().Hash,
 		NextValidatorsHash: valSet.Hash(),

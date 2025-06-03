@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"sort"
 
-	tmproto "github.com/cometbft/cometbft/api/cometbft/types/v1"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	storetypes "cosmossdk.io/store/types"
 
@@ -80,9 +80,6 @@ func (app *GaiaApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs [
 		}
 		allowedAddrsMap[addr] = true
 	}
-
-	/* Just to be safe, assert the invariants on current state. */
-	app.CrisisKeeper.AssertInvariants(ctx)
 
 	/* Handle fee distribution state. */
 

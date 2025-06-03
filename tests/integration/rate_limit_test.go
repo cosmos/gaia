@@ -13,7 +13,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	gaiaApp "github.com/cosmos/gaia/v24/app"
+	gaiaApp "github.com/cosmos/gaia/v25/app"
 )
 
 type RateLimitTestSuite struct {

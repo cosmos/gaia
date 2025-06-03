@@ -1,4 +1,4 @@
-module github.com/cosmos/gaia/v24
+module github.com/cosmos/gaia/v25
 
 go 1.23.6
 

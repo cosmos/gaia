@@ -18,7 +18,7 @@ import (
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govparams "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 
-	"github.com/cosmos/gaia/v24/app/keepers"
+	"github.com/cosmos/gaia/v25/app/keepers"
 )
 
 // Neutron and Stride denoms that were not whitelisted but the consumer rewards pool contains amounts of those denoms.

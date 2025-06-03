@@ -22,8 +22,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking/testutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	liquidkeeper "github.com/cosmos/gaia/v24/x/liquid/keeper"
-	liquidtypes "github.com/cosmos/gaia/v24/x/liquid/types"
+	liquidkeeper "github.com/cosmos/gaia/v25/x/liquid/keeper"
+	liquidtypes "github.com/cosmos/gaia/v25/x/liquid/types"
 )
 
 func TestTokenizeSharesAndRedeemTokens(t *testing.T) {

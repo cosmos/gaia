@@ -6,7 +6,7 @@ import (
 	"cosmossdk.io/x/evidence/exported"
 	"cosmossdk.io/x/evidence/types"
 
-	"github.com/cosmos/gaia/v24/tests/e2e/common"
+	"github.com/cosmos/gaia/v25/tests/e2e/common"
 )
 
 func evidence(endpoint, hash string) (types.QueryEvidenceResponse, error) { //nolint:unused // this is called during e2e tests

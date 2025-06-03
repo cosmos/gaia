@@ -15,7 +15,7 @@ import (
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 
-	"github.com/cosmos/gaia/v24/app/keepers"
+	"github.com/cosmos/gaia/v25/app/keepers"
 )
 
 // CreateRCUpgradeHandler returns an upgrade handler for Gaia v23.0.0-rc3.

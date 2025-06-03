@@ -25,7 +25,7 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaerrors "github.com/cosmos/gaia/v24/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v25/types/errors"
 )
 
 // HandlerOptions extend the SDK's AnteHandler options by requiring the IBC

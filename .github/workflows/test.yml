@@ -100,12 +100,6 @@ jobs:
         if: env.GIT_DIFF
         with:
           name: "${{ github.sha }}-coverage"
-      - name: sonarcloud
-        if: ${{ env.SONAR_TOKEN != null && env.GIT_DIFF && !github.event.pull_request.draft }}
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   liveness-test:
     runs-on: Gaia-Runner-medium

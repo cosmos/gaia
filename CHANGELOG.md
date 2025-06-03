@@ -8,6 +8,10 @@
 ### STATE BREAKING
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
 
+### Dependencies
+
+- Bump [github.com/go-jose/go-jose/v4](https://github.com/go-jose/go-jose) from 4.0.4 to 4.0.5 ([#3774](https://github.com/cosmos/gaia/pull/3774))
+
 ## v24.0.0
 
 *May 30, 2025*

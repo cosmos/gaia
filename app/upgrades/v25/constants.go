@@ -3,6 +3,8 @@ package v25
 import (
 	storetypes "cosmossdk.io/store/types"
 
+	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
+
 	"github.com/cosmos/gaia/v25/app/upgrades"
 )
 
@@ -14,5 +16,9 @@ const (
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
 	CreateUpgradeHandler: CreateUpgradeHandler,
-	StoreUpgrades:        storetypes.StoreUpgrades{},
+	StoreUpgrades: storetypes.StoreUpgrades{
+		Deleted: []string{
+			crisistypes.ModuleName,
+		},
+	},
 }

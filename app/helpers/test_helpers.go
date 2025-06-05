@@ -28,9 +28,12 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	evmserver "github.com/cosmos/evm/server/flags"
+
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
 	gaiaapp "github.com/cosmos/gaia/v25/app"
+	"github.com/cosmos/gaia/v25/types"
 )
 
 // SimAppChainID hardcoded chainID for simulation
@@ -135,6 +138,7 @@ func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 	emptyWasmOpts := []wasmkeeper.Option{}
 	appOptions[server.FlagInvCheckPeriod] = 5
 	appOptions[server.FlagMinGasPrices] = "0uatom"
+	appOptions[evmserver.EVMChainID] = types.DefaultEVMChainID
 
 	gaiaApp := gaiaapp.NewGaiaApp(
 		log.NewNopLogger(),

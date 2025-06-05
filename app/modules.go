@@ -124,7 +124,7 @@ func appModules(
 		app.RateLimitModule,
 		app.ProviderModule,
 		metaprotocols.NewAppModule(),
-		evm.NewAppModule(app.EVMKeeper, app.AccountKeeper),
+		evm.NewAppModule(app.EVMKeeper, app.AccountKeeper, app.AccountKeeper.AddressCodec()),
 		feemarket.NewAppModule(app.FeeMarketKeeper),
 		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper),
 		tendermint.NewAppModule(tmLightClientModule),

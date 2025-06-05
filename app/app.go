@@ -2,15 +2,14 @@ package gaia
 
 import (
 	"fmt"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
-
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
 
 	// Tracer import
 	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
@@ -23,7 +22,6 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	dbm "github.com/cosmos/cosmos-db"
-	cosmosevmante "github.com/cosmos/evm/ante"
 	evmante "github.com/cosmos/evm/ante/evm"
 	evmencoding "github.com/cosmos/evm/encoding"
 	srvflags "github.com/cosmos/evm/server/flags"
@@ -137,15 +135,16 @@ func NewGaiaApp(
 	evmAppOptions EVMOptionsFn,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *GaiaApp {
-	encodingConfig := evmencoding.MakeConfig()
+	// App Opts
+	evmChainID := cast.ToUint64(appOpts.Get(srvflags.EVMChainID))
+	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
+	invCheckPeriod := cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod))
+
+	encodingConfig := evmencoding.MakeConfig(evmChainID)
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 	appCodec := encodingConfig.Codec
 	legacyAmino := encodingConfig.Amino
 	txConfig := encodingConfig.TxConfig
-
-	// App Opts
-	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
-	invCheckPeriod := cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod))
 
 	bApp := baseapp.NewBaseApp(
 		appName,
@@ -159,7 +158,7 @@ func NewGaiaApp(
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 	bApp.SetTxEncoder(txConfig.TxEncoder())
 
-	if err := evmAppOptions(bApp.ChainID()); err != nil {
+	if err := evmAppOptions(evmChainID); err != nil {
 		// Initialize the EVM application configuration
 		panic(fmt.Errorf("failed to initialize EVM app configuration: %w", err))
 	}
@@ -206,6 +205,7 @@ func NewGaiaApp(
 	// NOTE: upgrade module is required to be prioritized
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
+		authtypes.ModuleName,
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
@@ -270,7 +270,7 @@ func NewGaiaApp(
 			FeeMarketKeeper:        app.FeeMarketKeeper,
 			EvmKeeper:              app.EVMKeeper,
 			ExtensionOptionChecker: cosmosevmtypes.HasDynamicFeeExtensionOption,
-			SigGasConsumer:         cosmosevmante.SigVerificationGasConsumer,
+			SigGasConsumer:         gaiaante.SigVerificationGasConsumer,
 			MaxTxGasWanted:         cast.ToUint64(appOpts.Get(srvflags.EVMMaxTxGasWanted)),
 			TxFeeChecker:           evmante.NewDynamicFeeChecker(app.FeeMarketKeeper),
 
@@ -412,7 +412,7 @@ func (app *GaiaApp) BlockedAccountAddrs() map[string]bool {
 		blockedPrecompilesHex = append(blockedPrecompilesHex, addr.Hex())
 	}
 	for _, precompile := range blockedPrecompilesHex {
-		blockedAddrs[utils.EthHexToCosmosAddr(precompile).String()] = true
+		blockedAddrs[utils.Bech32StringFromHexAddress(precompile)] = true
 	}
 
 	return blockedAddrs

@@ -545,18 +545,17 @@ func NewAppKeeper(
 		appKeepers.BankKeeper,
 		appKeepers.EVMKeeper,
 		appKeepers.StakingKeeper,
-		appKeepers.AuthzKeeper,
 		&appKeepers.TransferKeeper,
 	)
 
 	// Configure EVM precompiles
 	appKeepers.EVMKeeper.WithStaticPrecompiles(
 		NewAvailableStaticPrecompiles(
+			appCodec,
 			*appKeepers.StakingKeeper,
 			appKeepers.DistrKeeper,
 			appKeepers.BankKeeper,
 			appKeepers.Erc20Keeper,
-			appKeepers.AuthzKeeper,
 			appKeepers.TransferKeeper,
 			*appKeepers.IBCKeeper.ChannelKeeper,
 			appKeepers.EVMKeeper,

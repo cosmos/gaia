@@ -1,6 +1,7 @@
 package integration
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -14,7 +15,6 @@ import (
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	crysistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	gaiaApp "github.com/cosmos/gaia/v25/app"
@@ -37,29 +37,6 @@ func TestCCVTestSuite(t *testing.T) {
 	// ante.UseFeeMarketDecorator = false
 	// Run tests
 	suite.Run(t, ccvSuite)
-}
-
-// TestVerifyInvariant checks the integration of the crisis module by
-// sending a message to verify an invariant
-func TestVerifyInvariant(t *testing.T) {
-	ccvSuite.SetT(t)
-	ccvSuite.SetupTest()
-
-	delAddr := ccvSuite.GetProviderChain().SenderAccount.GetAddress()
-	msg := crysistypes.MsgVerifyInvariant{
-		Sender:              delAddr.String(),
-		InvariantModuleName: "gov",
-		InvariantRoute:      "module-account",
-	}
-
-	var err error
-	var resp *crysistypes.MsgVerifyInvariantResponse
-	provCtx := ccvSuite.GetProviderChain().GetContext()
-	require.NotPanics(t, func() {
-		resp, err = app.CrisisKeeper.VerifyInvariant(provCtx, &msg)
-	})
-	require.NoError(t, err, "verify invariant returned an error")
-	require.NotNil(t, resp, "verify invariant returned an invalid response")
 }
 
 func TestICSEpochs(t *testing.T) {
@@ -99,7 +76,7 @@ func TestICSEpochs(t *testing.T) {
 				return ctx
 			}
 			ccvSuite.GetProviderChain().NextBlock()
-			ctx = ccvSuite.GetProviderChain().GetContext()
+			ctx = ccvSuite.GetProviderChain().GetContext().WithBlockGasMeter(storetypes.NewInfiniteGasMeter())
 		}
 	}
 

@@ -17,7 +17,6 @@ import (
 
 	dbm "github.com/cosmos/cosmos-db"
 	evmcmd "github.com/cosmos/evm/client"
-	evmkeyring "github.com/cosmos/evm/crypto/keyring"
 	evmserver "github.com/cosmos/evm/server"
 	evmserverconfig "github.com/cosmos/evm/server/config"
 	srvflags "github.com/cosmos/evm/server/flags"
@@ -63,6 +62,7 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	gaia "github.com/cosmos/gaia/v25/app"
+	gaiatypes "github.com/cosmos/gaia/v25/types"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -101,7 +101,7 @@ func NewRootCmd() *cobra.Command {
 		WithHomeDir(gaia.DefaultNodeHome).
 		WithViper("").
 		WithBroadcastMode(flags.FlagBroadcastMode).
-		WithKeyringOptions(evmkeyring.Option()).
+		WithKeyringOptions(gaia.KeyringOption()).
 		WithLedgerHasProtobuf(true)
 
 	rootCmd := &cobra.Command{
@@ -200,9 +200,12 @@ func initAppConfig() (string, interface{}) {
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
 
+	evmCfg := *evmserverconfig.DefaultEVMConfig()
+	evmCfg.EVMChainID = gaiatypes.DefaultEVMChainID
+
 	customAppConfig := CustomAppConfig{
 		Config:  *srvCfg,
-		EVM:     *evmserverconfig.DefaultEVMConfig(),
+		EVM:     evmCfg,
 		JSONRPC: *evmserverconfig.DefaultJSONRPCConfig(),
 		TLS:     *evmserverconfig.DefaultTLSConfig(),
 		Wasm:    wasmtypes.DefaultNodeConfig(),
@@ -252,8 +255,6 @@ func initRootCmd(rootCmd *cobra.Command,
 		genesisCommand(txConfig, basicManager),
 		queryCommand(),
 		txCommand(basicManager),
-		// TODO I think I should disable this?
-		// keys.Commands(),
 		evmcmd.KeyCommands(gaia.DefaultNodeHome, true),
 	)
 

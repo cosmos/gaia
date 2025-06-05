@@ -1,47 +1,59 @@
 package gaia
 
 import (
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	evmhd "github.com/cosmos/evm/crypto/hd"
 	evmtypes "github.com/cosmos/evm/x/vm/types"
 
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	gaiatypes "github.com/cosmos/gaia/v23/types"
+	gaiatypes "github.com/cosmos/gaia/v25/types"
 )
+
+var (
+	SupportedKeyAlgorithms = keyring.SigningAlgoList{hd.Secp256k1, evmhd.EthSecp256k1}
+	sealed                 = false
+)
+
+func KeyringOption() keyring.Option {
+	return func(options *keyring.Options) {
+		options.SupportedAlgos = SupportedKeyAlgorithms
+		options.SupportedAlgosLedger = SupportedKeyAlgorithms
+	}
+}
 
 // EVMOptionsFn defines a function type for setting app options specifically for
 // the app. The function should receive the chainID and return an error if
 // any.
-type EVMOptionsFn func(string) error
+type EVMOptionsFn func(uint64) error
 
 // NoOpEVMOptions is a no-op function that can be used when the app does not
 // need any specific configuration.
-func NoOpEVMOptions(_ string) error {
+func NoOpEVMOptions(uint64) error {
 	return nil
 }
 
 // EVMAppOptions performs setup of the global configuration
 // for the chain.
-func EVMAppOptions(chainID string) error {
+func EVMAppOptions(chainID uint64) error {
+	if sealed {
+		return nil
+	}
+	sealed = true
 	// set the denom info for the chain
 	if err := setBaseDenom(gaiatypes.UAtomCoinInfo); err != nil {
 		return err
 	}
 
-	baseDenom, err := sdk.GetBaseDenom()
-	if err != nil {
-		return err
-	}
-
-	// TODO eric -- pull the chain ID from state somewhere
-	// TODO -- the chain ID mapping concept is used a bunch in cosmos evm, we should just change that wholesale
 	ethCfg := evmtypes.DefaultChainConfig(chainID)
 
 	return evmtypes.NewEVMConfigurator().
 		WithChainConfig(ethCfg).
 		// NOTE: we're using the 18 decimals
-		WithEVMCoinInfo(baseDenom, uint8(gaiatypes.UAtomCoinInfo.Decimals)).
+		WithEVMCoinInfo(gaiatypes.UAtomCoinInfo).
 		Configure()
 }
 

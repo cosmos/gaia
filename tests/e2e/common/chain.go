@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 	"strconv"
 
-	tmrand "github.com/cometbft/cometbft/libs/rand"
-
 	dbm "github.com/cosmos/cosmos-db"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
@@ -41,6 +39,7 @@ import (
 const (
 	keyringPassphrase = "testpassphrase"
 	KeyringAppName    = "testnet"
+	strChars          = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 )
 
 var (
@@ -91,9 +90,13 @@ func NewChain() (*Chain, error) {
 	if err != nil {
 		return nil, err
 	}
+	chainID := []byte("chain-")
+	for i := 0; i < 6; i++ {
+		chainID = append(chainID, strChars[rand.Int()%len(strChars)])
+	}
 
 	return &Chain{
-		ID:      "chain-" + tmrand.Str(6),
+		ID:      string(chainID),
 		DataDir: tmpDir,
 	}, nil
 }

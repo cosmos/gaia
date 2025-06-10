@@ -157,7 +157,7 @@ func (s *IntegrationTestSuite) initNodes(c *common.Chain) {
 	}
 
 	s.Require().NoError(
-		modifyGenesis(val0ConfigDir, "", common.InitBalanceStr, addrAll, common.InitialBaseFeeAmt, common.UAtomDenom),
+		modifyGenesis(val0ConfigDir, "", common.InitBalanceStr, addrAll, common.UAtomDenom),
 	)
 	// copy the genesis file to the remaining validators
 	for _, val := range c.Validators[1:] {

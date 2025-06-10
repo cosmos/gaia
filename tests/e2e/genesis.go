@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
-
 	icagen "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/genesis/types"
 	icatypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/types"
 
@@ -27,7 +25,7 @@ import (
 	"github.com/cosmos/gaia/v25/tests/e2e/common"
 )
 
-func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, basefee string, denom string) error {
+func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, denom string) error {
 	serverCtx := server.NewDefaultContext()
 	config := serverCtx.Config
 	config.SetRoot(path)
@@ -136,17 +134,6 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, ba
 		return fmt.Errorf("failed to marshal interchain accounts genesis state: %w", err)
 	}
 	appState[icatypes.ModuleName] = icaGenesisStateBz
-
-	feemarketState := feemarkettypes.GetGenesisStateFromAppState(common.Cdc, appState)
-	feemarketState.Params.MinBaseGasPrice = math.LegacyMustNewDecFromStr(basefee)
-	feemarketState.Params.FeeDenom = denom
-	feemarketState.Params.DistributeFees = true
-	feemarketState.State.BaseGasPrice = math.LegacyMustNewDecFromStr(basefee)
-	feemarketStateBz, err := common.Cdc.MarshalJSON(&feemarketState)
-	if err != nil {
-		return fmt.Errorf("failed to marshal feemarket genesis state: %w", err)
-	}
-	appState[feemarkettypes.ModuleName] = feemarketStateBz
 
 	stakingGenState := stakingtypes.GetGenesisStateFromAppState(common.Cdc, appState)
 	stakingGenState.Params.BondDenom = denom

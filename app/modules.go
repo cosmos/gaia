@@ -247,13 +247,13 @@ func orderEndBlockers() []string {
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		evmtypes.ModuleName,
-		feemarkettypes.ModuleName,
 		erc20types.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		wasmtypes.ModuleName,
 		ibcwasmtypes.ModuleName,
+		feemarkettypes.ModuleName,
 	}
 }
 
@@ -272,6 +272,7 @@ func orderInitBlockers() []string {
 		stakingtypes.ModuleName,
 		slashingtypes.ModuleName,
 		minttypes.ModuleName,
+		feemarkettypes.ModuleName,
 		genutiltypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
@@ -285,14 +286,6 @@ func orderInitBlockers() []string {
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		evmtypes.ModuleName,
-		// The feemarket module should ideally be initialized before the genutil module in theory:
-		// The feemarket antehandler performs checks in DeliverTx, which is called by gentx.
-		// When the fee > 0, gentx needs to pay the fee. However, this is not expected.
-		// To resolve this issue, we should initialize the feemarket module after genutil, ensuring that the
-		// min fee is empty when gentx is called.
-		// A similar issue existed for the 'globalfee' module, which was previously used instead of 'feemarket'.
-		// For more details, please refer to the following link: https://github.com/cosmos/gaia/issues/2489
-		feemarkettypes.ModuleName,
 		erc20types.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,

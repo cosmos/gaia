@@ -107,9 +107,9 @@ func NewCosmosAnteHandler(opts HandlerOptions) sdk.AnteHandler {
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
-		// TODO -- can I disable feemarket anymore?
 		evmcosmosante.NewMinGasPriceDecorator(opts.FeeMarketKeeper, opts.EvmKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
+		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper, opts.TxFeeChecker),
 		NewGovVoteDecorator(opts.Codec, opts.StakingKeeper),
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),

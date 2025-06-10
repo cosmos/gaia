@@ -194,7 +194,7 @@ func WriteFailingExpeditedProposal(c *common.Chain, blocksPerEpoch int64) error 
 	return nil
 }
 
-// MsgSoftwareUpgrade can be expedited and it can only be submitted using "tx gov submit-proposal" command.
+// WriteExpeditedSoftwareUpgradeProp can be expedited and it can only be submitted using "tx gov submit-proposal" command.
 func WriteExpeditedSoftwareUpgradeProp(c *common.Chain) error {
 	body := `{
 			 "messages": [

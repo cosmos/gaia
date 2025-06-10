@@ -272,7 +272,7 @@ func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
 	)
 }
 
-// MsgSoftwareUpgrade can be expedited but it can only be submitted using "tx gov submit-proposal" command.
+// GovSoftwareUpgradeExpedited can be expedited but it can only be submitted using "tx gov submit-proposal" command.
 // Messages submitted using "tx gov submit-legacy-proposal" command cannot be expedited.// submit but vote no so that the proposal is not passed
 func (s *IntegrationTestSuite) GovSoftwareUpgradeExpedited() {
 	chainAAPIEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))

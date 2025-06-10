@@ -51,7 +51,7 @@ func GetTokenizeShareRecordIDsByOwnerPrefix(owner sdk.AccAddress) []byte {
 	return append(TokenizeShareRecordIDByOwnerPrefix, address.MustLengthPrefix(owner)...)
 }
 
-// GetTokenizeShareRecordIdByOwnerAndIdKey returns the key of the specified owner and id. Intended for setting tokenizeShareRecord of an owner
+// GetTokenizeShareRecordIDByOwnerAndIDKey returns the key of the specified owner and id. Intended for setting tokenizeShareRecord of an owner
 func GetTokenizeShareRecordIDByOwnerAndIDKey(owner sdk.AccAddress, id uint64) []byte {
 	return append(append(TokenizeShareRecordIDByOwnerPrefix, address.MustLengthPrefix(owner)...), sdk.Uint64ToBigEndian(id)...)
 }

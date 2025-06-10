@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
 	icagen "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/genesis/types"
 	icatypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/types"
 
@@ -134,6 +135,10 @@ func modifyGenesis(path, moniker, amountStr string, addrAll []sdk.AccAddress, de
 		return fmt.Errorf("failed to marshal interchain accounts genesis state: %w", err)
 	}
 	appState[icatypes.ModuleName] = icaGenesisStateBz
+
+	fmGen := feemarkettypes.DefaultGenesisState()
+	fmGen.Params.BaseFee = math.LegacyMustNewDecFromStr(common.InitialBaseFeeAmt)
+	appState[feemarkettypes.ModuleName] = common.Cdc.MustMarshalJSON(fmGen)
 
 	stakingGenState := stakingtypes.GetGenesisStateFromAppState(common.Cdc, appState)
 	stakingGenState.Params.BondDenom = denom

@@ -2,14 +2,15 @@ package gaia
 
 import (
 	"fmt"
-	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/gorilla/mux"
-	"github.com/rakyll/statik/fs"
-	"github.com/spf13/cast"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/gorilla/mux"
+	"github.com/rakyll/statik/fs"
+	"github.com/spf13/cast"
 
 	// Tracer import
 	_ "github.com/ethereum/go-ethereum/eth/tracers/js"

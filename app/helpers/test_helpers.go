@@ -13,6 +13,7 @@ import (
 	tmtypes "github.com/cometbft/cometbft/types"
 
 	dbm "github.com/cosmos/cosmos-db"
+	evmserver "github.com/cosmos/evm/server/flags"
 
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
@@ -27,8 +28,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
-	evmserver "github.com/cosmos/evm/server/flags"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 

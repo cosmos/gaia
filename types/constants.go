@@ -10,12 +10,10 @@ const (
 	DefaultEVMChainID        = uint64(4231)
 )
 
-var (
-	// UAtomCoinInfo is the EvmCoinInfo representation of uatom
-	UAtomCoinInfo = evmtypes.EvmCoinInfo{
-		Denom:         UAtomDenom,
-		ExtendedDenom: AtomDenom,
-		DisplayDenom:  AtomDenom,
-		Decimals:      evmtypes.SixDecimals,
-	}
-)
+// UAtomCoinInfo is the EvmCoinInfo representation of uatom
+var UAtomCoinInfo = evmtypes.EvmCoinInfo{
+	Denom:         UAtomDenom,
+	ExtendedDenom: AtomDenom,
+	DisplayDenom:  AtomDenom,
+	Decimals:      evmtypes.SixDecimals,
+}

@@ -2,7 +2,6 @@ package keepers
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"maps"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -20,6 +19,7 @@ import (
 	evmkeeper "github.com/cosmos/evm/x/vm/keeper"
 	channelkeeper "github.com/cosmos/ibc-go/v10/modules/core/04-channel/keeper"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	distributionkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"

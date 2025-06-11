@@ -8,6 +8,10 @@
 ### STATE BREAKING
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
 
+### Dependencies
+
+- Bump [github.com/CosmWasm/wasmd](https://github.com/CosmWasm/wasmd) from 0.60.0 to 0.60.1 ([#3779](https://github.com/cosmos/gaia/pull/3779))
+
 ## v24.0.0
 
 *May 30, 2025*

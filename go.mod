@@ -14,7 +14,6 @@ require (
 	cosmossdk.io/simapp v0.0.0-20250602195229-601ab15623c5
 	cosmossdk.io/store v1.10.0-rc.1.0.20250610194259-ef7b561f7019
 	cosmossdk.io/tools/confix v0.2.0-rc.4
-	cosmossdk.io/tools/rosetta v0.2.1-0.20230613133644-0a778132a60f
 	cosmossdk.io/x/tx v1.2.0-alpha.1
 	github.com/CosmWasm/wasmd v0.55.0-beta.0
 	github.com/CosmWasm/wasmvm/v2 v2.2.4
@@ -106,7 +105,6 @@ require (
 	github.com/cockroachdb/pebble v1.1.5 // indirect
 	github.com/cockroachdb/redact v1.1.6 // indirect
 	github.com/cockroachdb/tokenbucket v0.0.0-20250429170803-42689b6311bb // indirect
-	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
 	github.com/cometbft/cometbft/v2 v2.0.0-main
 	github.com/containerd/continuity v0.4.3 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
@@ -114,7 +112,6 @@ require (
 	github.com/cosmos/iavl v1.2.6 // indirect
 	github.com/cosmos/ics23/go v0.11.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.14.0 // indirect
-	github.com/cosmos/rosetta-sdk-go v0.10.0 // indirect
 	github.com/creachadair/atomicfile v0.3.8 // indirect
 	github.com/creachadair/tomledit v0.0.28 // indirect
 	github.com/danieljoos/wincred v1.2.1 // indirect

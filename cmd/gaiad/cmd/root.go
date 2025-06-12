@@ -24,7 +24,6 @@ import (
 	snapshottypes "cosmossdk.io/store/snapshots/types"
 	storetypes "cosmossdk.io/store/types"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
-	rosettaCmd "cosmossdk.io/tools/rosetta/cmd"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -227,9 +226,6 @@ func initRootCmd(rootCmd *cobra.Command,
 		txCommand(basicManager),
 		keys.Commands(),
 	)
-
-	// add rosetta
-	rootCmd.AddCommand(rosettaCmd.RosettaCommand(interfaceRegistry, cdc))
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {

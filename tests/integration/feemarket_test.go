@@ -5,11 +5,11 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
+	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
 	ibctesting "github.com/cosmos/ibc-go/v10/testing"
 
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
 
 	gaiaApp "github.com/cosmos/gaia/v25/app"
 )

@@ -16,6 +16,8 @@ import (
 	"github.com/cosmos/evm/x/ibc/transfer"
 	evmtransferkeeper "github.com/cosmos/evm/x/ibc/transfer/keeper"
 	transferv2 "github.com/cosmos/evm/x/ibc/transfer/v2"
+	precisebankkeeper "github.com/cosmos/evm/x/precisebank/keeper"
+	precisebanktypes "github.com/cosmos/evm/x/precisebank/types"
 	evmkeeper "github.com/cosmos/evm/x/vm/keeper"
 	evmtypes "github.com/cosmos/evm/x/vm/types"
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward"
@@ -141,9 +143,10 @@ type AppKeepers struct {
 	ProviderModule  icsprovider.AppModule
 
 	// EVM
-	FeeMarketKeeper feemarketkeeper.Keeper
-	EVMKeeper       *evmkeeper.Keeper
-	Erc20Keeper     erc20keeper.Keeper
+	FeeMarketKeeper   feemarketkeeper.Keeper
+	EVMKeeper         *evmkeeper.Keeper
+	Erc20Keeper       erc20keeper.Keeper
+	PreciseBankKeeper precisebankkeeper.Keeper
 }
 
 func NewAppKeeper(
@@ -510,13 +513,20 @@ func NewAppKeeper(
 		appKeepers.tkeys[feemarkettypes.TransientKey],
 	)
 
+	appKeepers.PreciseBankKeeper = precisebankkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[precisebanktypes.StoreKey],
+		appKeepers.BankKeeper,
+		appKeepers.AccountKeeper,
+	)
+
 	appKeepers.EVMKeeper = evmkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[evmtypes.StoreKey],
 		appKeepers.tkeys[evmtypes.TransientKey],
 		authtypes.NewModuleAddress(govtypes.ModuleName),
 		appKeepers.AccountKeeper,
-		appKeepers.BankKeeper,
+		appKeepers.PreciseBankKeeper,
 		appKeepers.StakingKeeper,
 		appKeepers.FeeMarketKeeper,
 		&appKeepers.Erc20Keeper,
@@ -540,7 +550,7 @@ func NewAppKeeper(
 			appCodec,
 			*appKeepers.StakingKeeper,
 			appKeepers.DistrKeeper,
-			appKeepers.BankKeeper,
+			appKeepers.PreciseBankKeeper,
 			appKeepers.Erc20Keeper,
 			appKeepers.TransferKeeper,
 			*appKeepers.IBCKeeper.ChannelKeeper,

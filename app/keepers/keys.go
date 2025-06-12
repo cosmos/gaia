@@ -3,6 +3,7 @@ package keepers
 import (
 	erc20types "github.com/cosmos/evm/x/erc20/types"
 	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
+	precisebanktypes "github.com/cosmos/evm/x/precisebank/types"
 	evmtypes "github.com/cosmos/evm/x/vm/types"
 	routertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/types"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
@@ -64,6 +65,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		feemarkettypes.StoreKey,
 		erc20types.StoreKey,
 		liquidtypes.StoreKey,
+		precisebanktypes.StoreKey,
 	)
 
 	// Define transient store keys

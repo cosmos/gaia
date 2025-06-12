@@ -5,6 +5,8 @@ import (
 	erc20types "github.com/cosmos/evm/x/erc20/types"
 	"github.com/cosmos/evm/x/feemarket"
 	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
+	"github.com/cosmos/evm/x/precisebank"
+	precisebanktypes "github.com/cosmos/evm/x/precisebank/types"
 	evm "github.com/cosmos/evm/x/vm"
 	evmtypes "github.com/cosmos/evm/x/vm/types"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/types"
@@ -126,6 +128,7 @@ func appModules(
 		erc20.NewAppModule(app.Erc20Keeper, app.AccountKeeper),
 		tendermint.NewAppModule(tmLightClientModule),
 		liquid.NewAppModule(appCodec, app.LiquidKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		precisebank.NewAppModule(app.PreciseBankKeeper, app.BankKeeper, app.AccountKeeper),
 	}
 }
 
@@ -287,6 +290,7 @@ func orderInitBlockers() []string {
 		vestingtypes.ModuleName,
 		evmtypes.ModuleName,
 		erc20types.ModuleName,
+		precisebanktypes.ModuleName,
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,

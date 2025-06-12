@@ -1,0 +1,423 @@
+syntax = "proto3";
+package interchain_security.ccv.provider.v1;
+
+option go_package = "github.com/cosmos/interchain-security/v7/x/ccv/provider/types";
+
+import "google/api/annotations.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "interchain_security/ccv/provider/v1/provider.proto";
+import "interchain_security/ccv/v1/shared_consumer.proto";
+import "interchain_security/ccv/v1/wire.proto";
+import "cometbft/crypto/v1/keys.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/staking/v1beta1/staking.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+
+service Query {
+  // ConsumerGenesis queries the genesis state needed to start a consumer chain
+  // whose proposal has been accepted
+  rpc QueryConsumerGenesis(QueryConsumerGenesisRequest)
+      returns (QueryConsumerGenesisResponse) {
+    option (google.api.http) = {
+      get : "/interchain_security/ccv/provider/consumer_genesis/{consumer_id}";
+  };
+}
+
+// ConsumerChains queries active consumer chains supported by the provider
+// chain
+rpc QueryConsumerChains(QueryConsumerChainsRequest)
+    returns (QueryConsumerChainsResponse) {
+  option (google.api.http).get =
+      "/interchain_security/ccv/provider/consumer_chains/{phase}";
+}
+
+// QueryValidatorConsumerAddr queries the address
+// assigned by a validator for a consumer chain.
+rpc QueryValidatorConsumerAddr(QueryValidatorConsumerAddrRequest)
+    returns (QueryValidatorConsumerAddrResponse) {
+  option (google.api.http).get =
+      "/interchain_security/ccv/provider/validator_consumer_addr/{consumer_id}/"
+      "{provider_address}";
+}
+
+// QueryProviderAddr returns the provider chain validator
+// given a consumer chain validator address
+rpc QueryValidatorProviderAddr(QueryValidatorProviderAddrRequest)
+    returns (QueryValidatorProviderAddrResponse) {
+  option (google.api.http).get =
+      "/interchain_security/ccv/provider/validator_provider_addr/{consumer_id}/"
+      "{consumer_address}";
+}
+
+// QueryThrottleState returns the main on-chain state relevant to currently
+// throttled slash packets
+rpc QueryThrottleState(QueryThrottleStateRequest)
+    returns (QueryThrottleStateResponse) {
+  option (google.api.http).get =
+      "/interchain_security/ccv/provider/throttle_state";
+}
+
+// QueryRegisteredConsumerRewardDenoms returns a list of consumer reward
+// denoms that are registered
+rpc QueryRegisteredConsumerRewardDenoms(
+    QueryRegisteredConsumerRewardDenomsRequest)
+    returns (QueryRegisteredConsumerRewardDenomsResponse) {
+  option (google.api.http).get =
+      "/interchain_security/ccv/provider/registered_consumer_reward_denoms";
+}
+
+// QueryAllPairsValConsAddrByConsumer returns a list of pair valconsensus
+// address between provider and consumer chain
+rpc QueryAllPairsValConsAddrByConsumer(
+    QueryAllPairsValConsAddrByConsumerRequest)
+    returns (QueryAllPairsValConsAddrByConsumerResponse) {
+  option (google.api.http) = {
+    get : "/interchain_security/ccv/provider/address_pairs/{consumer_id}";
+};
+}
+
+// QueryParams returns all current values of provider parameters
+rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+  option (google.api.http).get = "/interchain_security/ccv/provider/params";
+}
+
+// QueryConsumerChainOptedInValidators returns a list of validators consensus
+// addresses that opted-in to the given consumer chain
+rpc QueryConsumerChainOptedInValidators(
+    QueryConsumerChainOptedInValidatorsRequest)
+    returns (QueryConsumerChainOptedInValidatorsResponse) {
+  option (google.api.http) = {
+    get : "/interchain_security/ccv/provider/opted_in_validators/{consumer_id}";
+};
+}
+
+// QueryConsumerChainsValidatorHasToValidate returns a list of consumer chains
+// that a given validator must validate
+rpc QueryConsumerChainsValidatorHasToValidate(
+    QueryConsumerChainsValidatorHasToValidateRequest)
+    returns (QueryConsumerChainsValidatorHasToValidateResponse) {
+  option (google.api.http).get =
+      "/interchain_security/ccv/provider/consumer_chains_per_validator/"
+      "{provider_address}";
+}
+
+// QueryValidatorConsumerCommissionRate returns the commission rate a given
+// validator charges on a given consumer chain
+rpc QueryValidatorConsumerCommissionRate(
+    QueryValidatorConsumerCommissionRateRequest)
+    returns (QueryValidatorConsumerCommissionRateResponse) {
+  option (google.api.http) = {
+    get : "/interchain_security/ccv/provider/consumer_commission_rate/"
+          "{consumer_id}/{provider_address}";
+};
+}
+
+// QueryConsumerValidators returns the latest set consumer-validator set for a
+// given consumer ID Note that this does not necessarily mean that the consumer
+// chain is using this validator set at this exact moment because a VSCPacket
+// could be delayed to be delivered on the consumer chain.
+rpc QueryConsumerValidators(QueryConsumerValidatorsRequest)
+    returns (QueryConsumerValidatorsResponse) {
+  option (google.api.http) = {
+    get : "/interchain_security/ccv/provider/consumer_validators/{consumer_id}";
+};
+}
+
+// QueryBlocksUntilNextEpoch returns the number of blocks until the next epoch
+// starts and validator updates are sent to the consumer chains
+rpc QueryBlocksUntilNextEpoch(QueryBlocksUntilNextEpochRequest)
+    returns (QueryBlocksUntilNextEpochResponse) {
+  option (google.api.http).get =
+      "/interchain_security/ccv/provider/blocks_until_next_epoch";
+}
+
+// QueryConsumerIdFromClientId returns the consumer id of the chain
+// associated with the provided client id
+rpc QueryConsumerIdFromClientId(QueryConsumerIdFromClientIdRequest)
+    returns (QueryConsumerIdFromClientIdResponse) {
+  option (google.api.http).get =
+      "/interchain_security/ccv/provider/consumer_id/{client_id}";
+}
+
+// QueryConsumerChain returns the consumer chain
+// associated with the provided consumer id
+rpc QueryConsumerChain(QueryConsumerChainRequest)
+    returns (QueryConsumerChainResponse) {
+  option (google.api.http).get =
+      "/interchain_security/ccv/provider/consumer_chain/{consumer_id}";
+}
+
+// QueryConsumerGenesisTime returns the genesis time
+// of the consumer chain associated with the provided consumer id
+rpc QueryConsumerGenesisTime(QueryConsumerGenesisTimeRequest)
+    returns (QueryConsumerGenesisTimeResponse) {
+  option (google.api.http).get =
+      "/interchain_security/ccv/provider/consumer_genesis_time/{consumer_id}";
+}
+}
+
+message QueryConsumerGenesisRequest { string consumer_id = 1; }
+
+message QueryConsumerGenesisResponse {
+  interchain_security.ccv.v1.ConsumerGenesisState genesis_state = 1
+      [ (gogoproto.nullable) = false ];
+}
+
+message QueryConsumerChainsRequest {
+  // The phase of the consumer chains returned (optional)
+  // Registered=1|Initialized=2|Launched=3|Stopped=4|Deleted=5
+  ConsumerPhase phase = 1;
+
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryConsumerChainsResponse {
+  repeated Chain chains = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message Chain {
+  string chain_id = 1;
+  string client_id = 2;
+  uint32 top_N = 3;
+  // If the chain is a Top-N chain, this is the minimum power required to be in
+  // the top N. Otherwise, this is -1.
+  int64 min_power_in_top_N = 4;
+  // Corresponds to the maximum power (percentage-wise) a validator can have on
+  // the consumer chain.
+  uint32 validators_power_cap = 5;
+  // Corresponds to the maximum number of validators that can validate a
+  // consumer chain. Only applicable to Opt In chains. Setting
+  // `validator_set_cap` on a Top N chain is a no-op.
+  uint32 validator_set_cap = 6;
+  // Corresponds to a list of provider consensus addresses of validators that
+  // are the ONLY ones that can validate the consumer chain.
+  repeated string allowlist = 7;
+  // Corresponds to a list of provider consensus addresses of validators that
+  // CANNOT validate the consumer chain.
+  repeated string denylist = 8;
+  // The phase the consumer chain
+  string phase = 9;
+  // The metadata of the consumer chain
+  ConsumerMetadata metadata = 10 [ (gogoproto.nullable) = false ];
+  // Corresponds to the minimal amount of (provider chain) stake required to
+  // validate on the consumer chain.
+  uint64 min_stake = 11;
+  // Corresponds to whether inactive validators are allowed to validate the
+  // consumer chain.
+  bool allow_inactive_vals = 12;
+  string consumer_id = 13;
+  // the reward denoms allowlisted by this consumer chain
+  AllowlistedRewardDenoms allowlisted_reward_denoms = 14;
+  // Corresponds to a list of provider consensus addresses of validators that
+  // should have PRIORITY to validate on the consumer chain, meaning as long as
+  // they are eligible/opted in to validate on the consumer chain, the validator
+  // set will be filled with these validators first, and other validators will
+  // be added to the validator set only if there are not enough eligible
+  // priority validators.
+  repeated string prioritylist = 15;
+  // Infraction parameters for slashing and jailing
+  InfractionParameters infraction_parameters = 16;
+}
+
+message QueryValidatorConsumerAddrRequest {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+  // The consensus address of the validator on the provider chain
+  string provider_address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  // The id of the consumer chain
+  string consumer_id = 2;
+}
+
+message QueryValidatorConsumerAddrResponse {
+  // The address of the validator on the consumer chain
+  string consumer_address = 1;
+}
+
+message QueryValidatorProviderAddrRequest {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+  // The consensus address of the validator on the consumer chain
+  string consumer_address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  // The id of the consumer chain
+  string consumer_id = 2;
+}
+
+message QueryValidatorProviderAddrResponse {
+  // The address of the validator on the provider chain
+  string provider_address = 1;
+}
+
+message QueryThrottleStateRequest {}
+
+message QueryThrottleStateResponse {
+  // current slash_meter state
+  int64 slash_meter = 1;
+  // allowance of voting power units (int) that the slash meter is given per
+  // replenish period this also serves as the max value for the meter.
+  int64 slash_meter_allowance = 2;
+  // next time the slash meter could potentially be replenished, iff it's not
+  // full
+  google.protobuf.Timestamp next_replenish_candidate = 3
+      [ (gogoproto.stdtime) = true, (gogoproto.nullable) = false ];
+}
+
+message QueryRegisteredConsumerRewardDenomsRequest {}
+
+message QueryRegisteredConsumerRewardDenomsResponse {
+  repeated string denoms = 1;
+}
+
+message QueryAllPairsValConsAddrByConsumerRequest {
+  // The id of the consumer chain
+  string consumer_id = 1;
+}
+
+message QueryAllPairsValConsAddrByConsumerResponse {
+  repeated PairValConAddrProviderAndConsumer pair_val_con_addr = 1;
+}
+
+message PairValConAddrProviderAndConsumer {
+  // The consensus address of the validator on the provider chain
+  string provider_address = 1
+      [ (gogoproto.moretags) = "yaml:\"provider_address\"" ];
+  // The consensus address of the validator on the consumer chain
+  string consumer_address = 2
+      [ (gogoproto.moretags) = "yaml:\"consumer_address\"" ];
+  cometbft.crypto.v1.PublicKey consumer_key = 3;
+}
+
+message QueryParamsRequest {}
+
+message QueryParamsResponse {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryConsumerChainOptedInValidatorsRequest { string consumer_id = 1; }
+
+message QueryConsumerChainOptedInValidatorsResponse {
+  // The consensus addresses of the validators on the provider chain
+  repeated string validators_provider_addresses = 1;
+}
+
+message QueryConsumerValidatorsRequest { string consumer_id = 1; }
+
+message QueryConsumerValidatorsValidator {
+  // The consensus address of the validator on the provider chain
+  string provider_address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  // The consumer public key of the validator used on the consumer chain
+  cometbft.crypto.v1.PublicKey consumer_key = 2;
+  // [DEPRECATED] use `consumer_power` instead
+  int64 power = 3 [ deprecated = true ];
+
+  // [DEPRECATED] use `consumer_commission_rate` instead
+  string rate = 4 [
+    deprecated = true,
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  // The power of the validator used on the consumer chain
+  int64 consumer_power = 5;
+  // The rate to charge delegators on the consumer chain, as a fraction
+  string consumer_commission_rate = 6 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  // The rate to charge delegators on the provider chain, as a fraction
+  string provider_commission_rate = 7 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  // description defines the description terms for the validator
+  cosmos.staking.v1beta1.Description description = 8
+      [ (gogoproto.nullable) = false ];
+  // provider_operator_address defines the address of the validator's operator
+  string provider_operator_address = 9
+      [ (cosmos_proto.scalar) = "cosmos.ValidatorAddressString" ];
+  // jailed defined whether the validator has been jailed from bonded status or
+  // not.
+  bool jailed = 10;
+  // status is the validator status (bonded/unbonding/unbonded).
+  cosmos.staking.v1beta1.BondStatus status = 11;
+  // provider_tokens defines the delegated tokens (incl. self-delegation).
+  string provider_tokens = 12 [
+    (cosmos_proto.scalar) = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable) = false
+  ];
+  // The power of the validator used on the provider chain
+  int64 provider_power = 13;
+  // validates_current_epoch defines whether the validator has to validate for
+  // the current epoch or not
+  bool validates_current_epoch = 14;
+}
+
+message QueryConsumerValidatorsResponse {
+  repeated QueryConsumerValidatorsValidator validators = 1;
+}
+
+message QueryConsumerChainsValidatorHasToValidateRequest {
+  // The consensus address of the validator on the provider chain
+  string provider_address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+}
+
+message QueryConsumerChainsValidatorHasToValidateResponse {
+  repeated string consumer_ids = 1;
+}
+
+message QueryValidatorConsumerCommissionRateRequest {
+  string consumer_id = 1;
+  // The consensus address of the validator on the provider chain
+  string provider_address = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+}
+
+message QueryValidatorConsumerCommissionRateResponse {
+  // The rate to charge delegators on the consumer chain, as a fraction
+  string rate = 1 [
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+}
+
+message QueryBlocksUntilNextEpochRequest {}
+
+message QueryBlocksUntilNextEpochResponse {
+  // The number of blocks until the next epoch starts
+  uint64 blocks_until_next_epoch = 1;
+}
+
+message QueryConsumerIdFromClientIdRequest {
+  // the client id (on the provider) that is tracking the consumer chain
+  // the client id can be found from the consumer chain by querying (i.e.,
+  // `query ccvconsumer provider-info`)
+  string client_id = 1;
+}
+
+message QueryConsumerIdFromClientIdResponse {
+  // the consumer id of the chain associated with this client id
+  string consumer_id = 1;
+}
+
+message QueryConsumerChainRequest { string consumer_id = 1; }
+
+message QueryConsumerChainResponse {
+  string consumer_id = 1;
+  string chain_id = 2;
+  string owner_address = 3;
+  string phase = 4;
+  ConsumerMetadata metadata = 5 [ (gogoproto.nullable) = false ];
+  ConsumerInitializationParameters init_params = 6;
+  PowerShapingParameters power_shaping_params = 7;
+  InfractionParameters infraction_parameters = 8;
+
+  // corresponds to the id of the client that is created during launch
+  string client_id = 9;
+}
+
+message QueryConsumerGenesisTimeRequest { string consumer_id = 1; }
+
+message QueryConsumerGenesisTimeResponse {
+  google.protobuf.Timestamp genesis_time = 1
+      [ (gogoproto.stdtime) = true, (gogoproto.nullable) = false ];
+}

@@ -12,8 +12,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	tmcfg "github.com/cometbft/cometbft/config"
-	tmcli "github.com/cometbft/cometbft/libs/cli"
+	tmcfg "github.com/cometbft/cometbft/v2/config"
+	tmcli "github.com/cometbft/cometbft/v2/libs/cli"
 
 	dbm "github.com/cosmos/cosmos-db"
 

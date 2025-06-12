@@ -21,13 +21,13 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
 
-	tmconfig "github.com/cometbft/cometbft/config"
-	"github.com/cometbft/cometbft/crypto/ed25519"
-	tmjson "github.com/cometbft/cometbft/libs/json"
-	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
+	tmconfig "github.com/cometbft/cometbft/v2/config"
+	"github.com/cometbft/cometbft/v2/crypto/ed25519"
+	tmjson "github.com/cometbft/cometbft/v2/libs/json"
+	rpchttp "github.com/cometbft/cometbft/v2/rpc/client/http"
 
 	"cosmossdk.io/math"
-	evidencetypes "cosmossdk.io/x/evidence/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -510,7 +510,7 @@ func (s *IntegrationTestSuite) runValidators(c *common.Chain, portOffset int) {
 		s.T().Logf("started Gaia %s validator container: %s", c.ID, resource.Container.ID)
 	}
 
-	rpcClient, err := rpchttp.New("tcp://localhost:26657", "/websocket")
+	rpcClient, err := rpchttp.New("tcp://localhost:26657")
 	s.Require().NoError(err)
 
 	s.Require().Eventually(

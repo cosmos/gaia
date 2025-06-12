@@ -3,8 +3,8 @@ package query
 import (
 	"fmt"
 
-	"cosmossdk.io/x/evidence/exported"
-	"cosmossdk.io/x/evidence/types"
+	"github.com/cosmos/cosmos-sdk/x/evidence/exported"
+	"github.com/cosmos/cosmos-sdk/x/evidence/types"
 
 	"github.com/cosmos/gaia/v25/tests/e2e/common"
 )

@@ -12,9 +12,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	cmtconfig "github.com/cometbft/cometbft/config"
-	"github.com/cometbft/cometbft/types"
-	tmtime "github.com/cometbft/cometbft/types/time"
+	cmtconfig "github.com/cometbft/cometbft/v2/config"
+	"github.com/cometbft/cometbft/v2/types"
+	tmtime "github.com/cometbft/cometbft/v2/types/time"
 
 	"cosmossdk.io/math"
 	"cosmossdk.io/simapp"

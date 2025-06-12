@@ -18,7 +18,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	sdkmath "cosmossdk.io/math"
-	abcitypes "github.com/cometbft/cometbft/abci/types"
+	abcitypes "github.com/cometbft/cometbft/v2/abci/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 )
 

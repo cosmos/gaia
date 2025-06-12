@@ -8,9 +8,9 @@ import (
 	"path"
 	"path/filepath"
 
-	tmcfg "github.com/cometbft/cometbft/config"
-	"github.com/cometbft/cometbft/p2p"
-	"github.com/cometbft/cometbft/privval"
+	tmcfg "github.com/cometbft/cometbft/v2/config"
+	"github.com/cometbft/cometbft/v2/p2p"
+	"github.com/cometbft/cometbft/v2/privval"
 
 	"cosmossdk.io/math"
 

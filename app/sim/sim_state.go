@@ -9,8 +9,8 @@ import (
 	"os"
 	"time"
 
-	cmtjson "github.com/cometbft/cometbft/libs/json"
-	tmtypes "github.com/cometbft/cometbft/types"
+	cmtjson "github.com/cometbft/cometbft/v2/libs/json"
+	tmtypes "github.com/cometbft/cometbft/v2/types"
 
 	"cosmossdk.io/math"
 

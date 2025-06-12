@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"cosmossdk.io/x/feegrant"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 

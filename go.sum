@@ -655,8 +655,6 @@ github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c/go.mod h1:ukJfTF
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/CosmWasm/wasmvm/v2 v2.2.4 h1:V3UwXJMA8TNOuQETppDQkaXAevF7gOWLYpKvrThPv7o=
 github.com/CosmWasm/wasmvm/v2 v2.2.4/go.mod h1:Aj/rB2KMRM8nAdbWxkO23rnQYb5KsoPuH9ZizSi0sVg=
-github.com/CosmWasm/wasmvm/v3 v3.0.0-ibc2.1 h1:fsYUiMlHpykFCyCwNjLl72LiKdtZahAVvD9pFQVIkN0=
-github.com/CosmWasm/wasmvm/v3 v3.0.0-ibc2.1/go.mod h1:oknpb1bFERvvKcY7vHRp1F/Y/z66xVrsl7n9uWkOAlM=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/DataDog/datadog-go v4.8.3+incompatible h1:fNGaYSuObuQb5nzeTQqowRAd9bpDIRRV4/gUtIBjh8Q=
 github.com/DataDog/datadog-go v4.8.3+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
@@ -807,10 +805,10 @@ github.com/cockroachdb/tokenbucket v0.0.0-20250429170803-42689b6311bb/go.mod h1:
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
 github.com/cometbft/cometbft-db v1.0.4 h1:cezb8yx/ZWcF124wqUtAFjAuDksS1y1yXedvtprUFxs=
 github.com/cometbft/cometbft-db v1.0.4/go.mod h1:M+BtHAGU2XLrpUxo3Nn1nOCcnVCiLM9yx5OuT0u5SCA=
-github.com/cometbft/cometbft/api v1.1.0-alpha.1.0.20250611063609-4e308d824f1f h1:xVCNN5smIjz+EoEnBpV1+rlqeHFPoSyonelPevBMGW8=
-github.com/cometbft/cometbft/api v1.1.0-alpha.1.0.20250611063609-4e308d824f1f/go.mod h1:Ivh6nSCTJPQOyfQo8dgnyu/T88it092sEqSrZSmTQN8=
-github.com/cometbft/cometbft/v2 v2.0.0-20250611063609-4e308d824f1f h1:Gy5kTSwgwCMc5S/xjEc75ogN3worBYkTMscpCmVv3uM=
-github.com/cometbft/cometbft/v2 v2.0.0-20250611063609-4e308d824f1f/go.mod h1:/ze08eO171CqUqTqAE7FW7ydUJIVkgp6e2svpYvIR3c=
+github.com/cometbft/cometbft/api v1.1.0-alpha.1 h1:QTHyLVEoFc2kh3uRwHb3HLfGXJ8kxrIaPPGtt7synGY=
+github.com/cometbft/cometbft/api v1.1.0-alpha.1/go.mod h1:Ivh6nSCTJPQOyfQo8dgnyu/T88it092sEqSrZSmTQN8=
+github.com/cometbft/cometbft/v2 v2.0.0-alpha.1 h1:9dcfa578PqWGoUxFKB/yfZW5ovVcl4nj/wtqf4h1bwo=
+github.com/cometbft/cometbft/v2 v2.0.0-alpha.1/go.mod h1:/ze08eO171CqUqTqAE7FW7ydUJIVkgp6e2svpYvIR3c=
 github.com/consensys/bavard v0.1.27 h1:j6hKUrGAy/H+gpNrpLU3I26n1yc+VMGmd6ID5+gAhOs=
 github.com/consensys/bavard v0.1.27/go.mod h1:k/zVjHHC4B+PQy1Pg7fgvG3ALicQw540Crag8qx+dZs=
 github.com/consensys/gnark-crypto v0.16.0 h1:8Dl4eYmUWK9WmlP1Bj6je688gBRJCJbT8Mw4KoTAawo=
@@ -1620,8 +1618,8 @@ github.com/supranational/blst v0.3.14 h1:xNMoHRJOTwMn63ip6qoWJ2Ymgvj7E2b9jY2FAwY
 github.com/supranational/blst v0.3.14/go.mod h1:jZJtfjgudtNl4en1tzwPIV3KjUnQUvG3/j+w+fVonLw=
 github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7 h1:epCh84lMvA70Z7CTTCmYQn2CKbY8j86K7/FAIr141uY=
 github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7/go.mod h1:q4W45IWZaF22tdD+VEXcAWRA037jwmWEB5VWYORlTpc=
-github.com/technicallyty/wasmd v0.0.0-20250612172639-0b4bb7b6f6a2 h1:HZk18VJNzF2Zx+Pi/tr29QgRbBKYdP/UhsP4SAT3SeU=
-github.com/technicallyty/wasmd v0.0.0-20250612172639-0b4bb7b6f6a2/go.mod h1:OKWXOi4QQptXQqSus50XQnMV2dWJNMeNjvo3AuMlRAw=
+github.com/technicallyty/wasmd v0.0.0-20250612183941-fd23269bc7fa h1:s3aYp/Z0b7yz7+6U8jF86sk5bEL4Su4MPaIhjxZV4p8=
+github.com/technicallyty/wasmd v0.0.0-20250612183941-fd23269bc7fa/go.mod h1:tkK9Zq0f9w3X/2U6/f3CcJxPBx9udyJMCfzEpjPDvPE=
 github.com/tendermint/go-amino v0.16.0 h1:GyhmgQKvqF82e2oZeuMSp9JTN0N09emoSZlb2lyGa2E=
 github.com/tendermint/go-amino v0.16.0/go.mod h1:TQU0M1i/ImAo+tYpZi73AU3V/dKeCoMC9Sphe2ZwGME=
 github.com/thomaso-mirodin/intmath v0.0.0-20160323211736-5dc6d854e46e h1:cR8/SYRgyQCt5cNCMniB/ZScMkhI9nk8U5C7SbISXjo=

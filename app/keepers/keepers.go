@@ -41,15 +41,14 @@ import (
 	icsproviderkeeper "github.com/cosmos/interchain-security/v7/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
+	"cosmossdk.io/log"
+	storetypes "cosmossdk.io/store/types"
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-
-	"cosmossdk.io/log"
-	storetypes "cosmossdk.io/store/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -475,6 +474,26 @@ func NewAppKeeper(
 		panic("error while reading wasm config: " + err.Error())
 	}
 
+	appKeepers.WasmKeeper = wasmkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(appKeepers.keys[wasmtypes.StoreKey]),
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.StakingKeeper,
+		distrkeeper.NewQuerier(appKeepers.DistrKeeper),
+		appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.TransferKeeper,
+		bApp.MsgServiceRouter(),
+		bApp.GRPCQueryRouter(),
+		wasmDir,
+		wasmConfig,
+		wasmtypes.VMConfig{},
+		wasmkeeper.BuiltInCapabilities(),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		wasmOpts...,
+	)
+
 	// wasmStackIBCHandler is injected into both ICA and transfer stacks
 	wasmStackIBCHandler := wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper)
@@ -543,28 +562,6 @@ func NewAppKeeper(
 	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
 	appKeepers.PFMRouterModule = pfmrouter.NewAppModule(appKeepers.PFMRouterKeeper, appKeepers.GetSubspace(pfmroutertypes.ModuleName))
 	appKeepers.RateLimitModule = ratelimit.NewAppModule(appCodec, appKeepers.RatelimitKeeper)
-
-	appKeepers.WasmKeeper = wasmkeeper.NewKeeper(
-		appCodec,
-		runtime.NewKVStoreService(appKeepers.keys[wasmtypes.StoreKey]),
-		appKeepers.AccountKeeper,
-		appKeepers.BankKeeper,
-		appKeepers.StakingKeeper,
-		distrkeeper.NewQuerier(appKeepers.DistrKeeper),
-		appKeepers.IBCKeeper.ChannelKeeper,
-		appKeepers.IBCKeeper.ChannelKeeper,
-		appKeepers.IBCKeeper.ChannelKeeperV2,
-		appKeepers.TransferKeeper,
-		bApp.MsgServiceRouter(),
-		bApp.GRPCQueryRouter(),
-		wasmDir,
-		wasmConfig,
-		wasmtypes.VMConfig{},
-		wasmkeeper.BuiltInCapabilities(),
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-		ibcv2Router,
-		wasmOpts...,
-	)
 
 	return appKeepers
 }

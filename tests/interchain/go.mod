@@ -18,7 +18,7 @@ replace (
 
 require (
 	cosmossdk.io/math v1.5.4-0.20250604174653-810d15dd6d16
-	github.com/cosmos/cosmos-sdk v0.54.0-alpha.0.0.20250609200650-1521447c77da
+	github.com/cosmos/cosmos-sdk v0.54.0-alpha.0.0.20250610194259-ef7b561f7019
 	github.com/cosmos/ibc-go/v10 v10.1.1
 	github.com/cosmos/interchain-security/v7 v7.0.1
 	github.com/docker/docker v28.0.0+incompatible
@@ -33,9 +33,9 @@ require (
 	github.com/tidwall/sjson v1.2.5
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.27.0
-	golang.org/x/mod v0.24.0
-	golang.org/x/sync v0.14.0
-	google.golang.org/grpc v1.72.2
+	golang.org/x/mod v0.25.0
+	golang.org/x/sync v0.15.0
+	google.golang.org/grpc v1.73.0
 )
 
 require (
@@ -51,7 +51,7 @@ require (
 	cosmossdk.io/depinject v1.2.1 // indirect
 	cosmossdk.io/errors v1.0.3-0.20250604174653-810d15dd6d16 // indirect
 	cosmossdk.io/log v1.6.1-0.20250604174653-810d15dd6d16 // indirect
-	cosmossdk.io/store v1.10.0-rc.1.0.20250604174653-810d15dd6d16 // indirect
+	cosmossdk.io/store v1.10.0-rc.1.0.20250609200650-1521447c77da // indirect
 	cosmossdk.io/x/evidence v0.1.1 // indirect
 	cosmossdk.io/x/feegrant v0.1.1 // indirect
 	cosmossdk.io/x/tx v1.2.0-alpha.0.0.20250604174653-810d15dd6d16 // indirect
@@ -238,7 +238,7 @@ require (
 	go.etcd.io/bbolt v1.4.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
-	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.58.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.60.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.59.0 // indirect
 	go.opentelemetry.io/otel v1.35.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.35.0 // indirect
@@ -247,13 +247,13 @@ require (
 	go.opentelemetry.io/otel/trace v1.35.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.5.0 // indirect
 	golang.org/x/arch v0.17.0 // indirect
-	golang.org/x/crypto v0.38.0 // indirect
+	golang.org/x/crypto v0.39.0 // indirect
 	golang.org/x/exp v0.0.0-20250506013437-ce4c2cf36ca6 // indirect
 	golang.org/x/net v0.40.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/term v0.32.0 // indirect
-	golang.org/x/text v0.25.0 // indirect
+	golang.org/x/text v0.26.0 // indirect
 	golang.org/x/time v0.10.0 // indirect
 	golang.org/x/tools v0.33.0 // indirect
 	google.golang.org/api v0.222.0 // indirect
@@ -283,3 +283,5 @@ replace github.com/strangelove-ventures/interchaintest/v8 => github.com/cosmos/i
 replace github.com/cometbft/cometbft/v2 => github.com/cometbft/cometbft/v2 v2.0.0-alpha.1
 
 replace github.com/cometbft/cometbft/api => github.com/cometbft/cometbft/api v1.1.0-alpha.1
+
+replace github.com/cosmos/ibc-go/v10 => github.com/cosmos/ibc-go/v10 v10.0.0-beta.0.0.20250611233349-11dfe65dd5c8

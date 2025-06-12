@@ -49,7 +49,6 @@ require (
 
 require (
 	cosmossdk.io/schema v1.1.0 // indirect
-	github.com/CosmWasm/wasmvm/v3 v3.0.0-ibc2.1 // indirect
 	github.com/OffchainLabs/prysm/v6 v6.0.4 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/lmittmann/tint v1.0.7 // indirect
@@ -283,11 +282,11 @@ replace (
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
 
-replace github.com/cometbft/cometbft/v2 => github.com/cometbft/cometbft/v2 v2.0.0-20250611063609-4e308d824f1f
+replace github.com/cometbft/cometbft/v2 => github.com/cometbft/cometbft/v2 v2.0.0-alpha.1
 
-replace github.com/cometbft/cometbft/api => github.com/cometbft/cometbft/api v1.1.0-alpha.1.0.20250611063609-4e308d824f1f
+replace github.com/cometbft/cometbft/api => github.com/cometbft/cometbft/api v1.1.0-alpha.1
 
-replace github.com/CosmWasm/wasmd => github.com/technicallyty/wasmd v0.0.0-20250612172639-0b4bb7b6f6a2
+replace github.com/CosmWasm/wasmd => github.com/technicallyty/wasmd v0.0.0-20250612183941-fd23269bc7fa
 
 replace github.com/cosmos/interchain-security/v7 => github.com/cosmos/interchain-security/v7 v7.0.0-20250612015043-8e7f1deb823c
 

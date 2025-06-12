@@ -5,17 +5,17 @@ go 1.24.3
 toolchain go1.24.4
 
 require (
-	cosmossdk.io/api v1.0.0-alpha.0.0.20250604174653-810d15dd6d16
-	cosmossdk.io/client/v2 v2.0.0-beta.10.0.20250604161429-8c61b74a1806
-	cosmossdk.io/core v1.1.0-alpha.1.0.20250604174653-810d15dd6d16
+	cosmossdk.io/api v1.0.0-alpha.1
+	cosmossdk.io/client/v2 v2.10.0-beta.4
+	cosmossdk.io/core v1.1.0-alpha.2
 	cosmossdk.io/errors v1.0.3-0.20250604174653-810d15dd6d16
 	cosmossdk.io/log v1.6.1-0.20250604174653-810d15dd6d16
 	cosmossdk.io/math v1.5.4-0.20250604174653-810d15dd6d16
 	cosmossdk.io/simapp v0.0.0-20250602195229-601ab15623c5
 	cosmossdk.io/store v1.10.0-rc.1.0.20250609200650-1521447c77da
-	cosmossdk.io/tools/confix v0.1.2
+	cosmossdk.io/tools/confix v0.2.0-rc.4
 	cosmossdk.io/tools/rosetta v0.2.1-0.20230613133644-0a778132a60f
-	cosmossdk.io/x/tx v1.2.0-alpha.0.0.20250604174653-810d15dd6d16
+	cosmossdk.io/x/tx v1.2.0-alpha.1
 	github.com/CosmWasm/wasmd v0.55.0-beta.0
 	github.com/CosmWasm/wasmvm/v2 v2.2.4
 	github.com/cometbft/cometbft-db v1.0.4
@@ -32,7 +32,7 @@ require (
 	github.com/ory/dockertest/v3 v3.11.0
 	github.com/prometheus/client_golang v1.22.0
 	github.com/rakyll/statik v0.1.7
-	github.com/skip-mev/feemarket v1.1.2-0.20250423211022-1831f9c724d1
+	github.com/skip-mev/feemarket v1.1.2-0.20250612161227-2e644e987746
 	github.com/spf13/cast v1.9.2
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.6

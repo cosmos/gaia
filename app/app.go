@@ -442,8 +442,8 @@ func (app *GaiaApp) AppCodec() codec.Codec {
 }
 
 // DefaultGenesis returns a default genesis from the registered AppModuleBasic's.
-func (a *GaiaApp) DefaultGenesis() map[string]json.RawMessage {
-	return a.ModuleBasics.DefaultGenesis(a.appCodec)
+func (app *GaiaApp) DefaultGenesis() map[string]json.RawMessage {
+	return app.ModuleBasics.DefaultGenesis(app.appCodec)
 }
 
 // InterfaceRegistry returns Gaia's InterfaceRegistry

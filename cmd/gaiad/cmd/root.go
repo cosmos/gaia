@@ -153,8 +153,16 @@ func NewRootCmd() *cobra.Command {
 	initRootCmd(rootCmd, tempApplication.ModuleBasics, tempApplication.AppCodec(), tempApplication.InterfaceRegistry(), tempApplication.GetTxConfig())
 
 	autoCliOpts := enrichAutoCliOpts(tempApplication.AutoCliOpts(), initClientCtx)
+	initClientCtx, _ = config.ReadFromClientConfig(initClientCtx)
+	autoCliOpts.ClientCtx = initClientCtx
 	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
 		panic(err)
+	}
+
+	if initClientCtx.ChainID != "" {
+		if err := gaia.EVMAppOptions(gaiatypes.DefaultEVMChainID); err != nil {
+			panic(err)
+		}
 	}
 
 	return rootCmd

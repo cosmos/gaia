@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-CHAINID="${CHAIN_ID:-cosmos_262144-1}"
+CHAINID="${CHAIN_ID:-262144}"
 MONIKER="localtestnet"
 # Remember to change to other types of keyring like 'file' in-case exposing to outside world,
 # otherwise your balance will be wiped quickly

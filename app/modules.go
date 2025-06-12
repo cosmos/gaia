@@ -85,6 +85,7 @@ var maccPerms = map[string][]string{
 	evmtypes.ModuleName:               {authtypes.Minter, authtypes.Burner}, // Allows EVM module to mint/burn
 	feemarkettypes.ModuleName:         nil,                                  // Fee market doesn't need permissions
 	erc20types.ModuleName:             {authtypes.Minter, authtypes.Burner}, // Allows erc20 module to mint/burn for token pairs
+	precisebanktypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
 }
 
 func appModules(

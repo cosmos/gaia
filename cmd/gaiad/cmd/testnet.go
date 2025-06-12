@@ -2,8 +2,14 @@ package cmd
 
 import (
 	"bufio"
+	"cosmossdk.io/log"
 	"encoding/json"
 	"fmt"
+	dbm "github.com/cosmos/cosmos-db"
+	bam "github.com/cosmos/cosmos-sdk/baseapp"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	gaia "github.com/cosmos/gaia/v25/app"
 	"math/rand"
 	"net"
 	"os"
@@ -17,7 +23,7 @@ import (
 	tmtime "github.com/cometbft/cometbft/types/time"
 
 	"cosmossdk.io/math"
-	"cosmossdk.io/simapp"
+	pruningtypes "cosmossdk.io/store/pruning/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -29,6 +35,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	srvconfig "github.com/cosmos/cosmos-sdk/server/config"
 	"github.com/cosmos/cosmos-sdk/testutil"
+	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
+
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -230,13 +238,13 @@ func initTestnetFiles(
 	nodeIDs := make([]string, args.numValidators)
 	valPubKeys := make([]cryptotypes.PubKey, args.numValidators)
 
-	simappConfig := srvconfig.DefaultConfig()
-	simappConfig.MinGasPrices = args.minGasPrices
-	simappConfig.API.Enable = true
-	simappConfig.Telemetry.Enabled = true
-	simappConfig.Telemetry.PrometheusRetentionTime = 60
-	simappConfig.Telemetry.EnableHostnameLabel = false
-	simappConfig.Telemetry.GlobalLabels = [][]string{{"chain_id", args.chainID}}
+	gaiadConfig := srvconfig.DefaultConfig()
+	gaiadConfig.MinGasPrices = args.minGasPrices
+	gaiadConfig.API.Enable = true
+	gaiadConfig.Telemetry.Enabled = true
+	gaiadConfig.Telemetry.PrometheusRetentionTime = 60
+	gaiadConfig.Telemetry.EnableHostnameLabel = false
+	gaiadConfig.Telemetry.GlobalLabels = [][]string{{"chain_id", args.chainID}}
 
 	var (
 		genAccounts []authtypes.GenesisAccount
@@ -354,7 +362,7 @@ func initTestnetFiles(
 			return err
 		}
 
-		srvconfig.WriteConfigFile(filepath.Join(nodeDir, "config", "app.toml"), simappConfig)
+		srvconfig.WriteConfigFile(filepath.Join(nodeDir, "config", "app.toml"), gaiadConfig)
 	}
 
 	if err := initGenFiles(clientCtx, mbm, args.chainID, genAccounts, genBalances, genFiles, args.numValidators); err != nil {
@@ -508,7 +516,7 @@ func writeFile(name string, dir string, contents []byte) error {
 
 // startTestnet starts an in-process testnet
 func startTestnet(cmd *cobra.Command, args startArgs) error {
-	networkConfig := network.DefaultConfig(simapp.NewTestNetworkFixture)
+	networkConfig := network.DefaultConfig(NewTestNetworkFixture)
 
 	// Default networkConfig.ChainID is random, and we should only override it if chainID provided
 	// is non-empty
@@ -547,4 +555,51 @@ func startTestnet(cmd *cobra.Command, args startArgs) error {
 	testnet.Cleanup()
 
 	return nil
+}
+
+// NewTestNetworkFixture returns a new gaiad AppConstructor for network simulation tests
+func NewTestNetworkFixture() network.TestFixture {
+	dir, err := os.MkdirTemp("", "gaia")
+	if err != nil {
+		panic(fmt.Sprintf("failed creating temporary directory: %v", err))
+	}
+	defer os.RemoveAll(dir)
+
+	app := gaia.NewGaiaApp(
+		log.NewNopLogger(),
+		dbm.NewMemDB(),
+		nil,
+		true,
+		nil,
+		dir,
+		simtestutil.NewAppOptionsWithFlagHome(dir),
+		nil,
+	)
+
+	appCtr := func(val network.ValidatorI) servertypes.Application {
+		return gaia.NewGaiaApp(
+			log.NewNopLogger(),
+			dbm.NewMemDB(),
+			nil,
+			true,
+			nil,
+			val.GetCtx().Config.RootDir,
+			simtestutil.NewAppOptionsWithFlagHome(val.GetCtx().Config.RootDir),
+			nil,
+			bam.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
+			bam.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
+			bam.SetChainID(val.GetCtx().Viper.GetString(flags.FlagChainID)),
+		)
+	}
+
+	return network.TestFixture{
+		AppConstructor: appCtr,
+		GenesisState:   app.DefaultGenesis(),
+		EncodingConfig: moduletestutil.TestEncodingConfig{
+			InterfaceRegistry: app.InterfaceRegistry(),
+			Codec:             app.AppCodec(),
+			TxConfig:          app.GetTxConfig(),
+			Amino:             app.LegacyAmino(),
+		},
+	}
 }

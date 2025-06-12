@@ -5,7 +5,7 @@ import (
 
 	"cosmossdk.io/math"
 
-	"github.com/cosmos/gaia/v24/x/liquid/types"
+	"github.com/cosmos/gaia/v25/x/liquid/types"
 )
 
 // SetParams sets the x/liquid module parameters.

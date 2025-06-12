@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/x/distribution/types"
 
-	"github.com/cosmos/gaia/v24/tests/e2e/common"
+	"github.com/cosmos/gaia/v25/tests/e2e/common"
 )
 
 func (h *TestingSuite) ExecDistributionFundCommunityPool(c *common.Chain, valIdx int, from, amt, fees string) {

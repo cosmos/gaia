@@ -6,8 +6,8 @@ import (
 	"path"
 	"testing"
 
-	"github.com/cosmos/gaia/v24/tests/interchain/chainsuite"
-	"github.com/cosmos/gaia/v24/tests/interchain/delegator"
+	"github.com/cosmos/gaia/v25/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v25/tests/interchain/delegator"
 	"github.com/stretchr/testify/suite"
 )
 

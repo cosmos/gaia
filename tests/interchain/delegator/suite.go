@@ -2,7 +2,7 @@ package delegator
 
 import (
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/gaia/v24/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v25/tests/interchain/chainsuite"
 	"github.com/strangelove-ventures/interchaintest/v8"
 	"github.com/strangelove-ventures/interchaintest/v8/ibc"
 )

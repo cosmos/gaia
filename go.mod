@@ -11,7 +11,6 @@ require (
 	cosmossdk.io/errors v1.0.3-0.20250604174653-810d15dd6d16
 	cosmossdk.io/log v1.6.1-0.20250604174653-810d15dd6d16
 	cosmossdk.io/math v1.5.4-0.20250604174653-810d15dd6d16
-	cosmossdk.io/simapp v0.0.0-20250602195229-601ab15623c5
 	cosmossdk.io/store v1.10.0-rc.1.0.20250610194259-ef7b561f7019
 	cosmossdk.io/tools/confix v0.2.0-rc.4
 	cosmossdk.io/x/tx v1.2.0-alpha.1
@@ -52,7 +51,6 @@ require (
 	cosmossdk.io/schema v1.1.0 // indirect
 	github.com/CosmWasm/wasmvm/v3 v3.0.0-ibc2.1 // indirect
 	github.com/OffchainLabs/prysm/v6 v6.0.4 // indirect
-	github.com/cometbft/cometbft v1.0.1 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.5 // indirect
 	github.com/lmittmann/tint v1.0.7 // indirect
 	github.com/mdp/qrterminal/v3 v3.2.1 // indirect
@@ -135,8 +133,6 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/getsentry/sentry-go v0.33.0 // indirect
-	github.com/go-kit/log v0.2.1 // indirect
-	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect

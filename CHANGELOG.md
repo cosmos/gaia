@@ -7,6 +7,9 @@
 
 ### STATE BREAKING
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
+- 
+### BUG-FIXES
+- Fix the `testnet` command to use the proper gaia binary ([\#3783](https://github.com/cosmos/gaia/pull/3783))
 
 ## v24.0.0
 

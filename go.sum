@@ -924,6 +924,8 @@ github.com/cometbft/cometbft/api v1.0.0 h1:gGBwvsJi/gnHJEtwYfjPIGs2AKg/Vfa1ZuKCP
 github.com/cometbft/cometbft/api v1.0.0/go.mod h1:EkQiqVSu/p2ebrZEnB2z6Re7r8XNe//M7ylR0qEwWm0=
 github.com/cometbft/cometbft/api v1.1.0-alpha.1 h1:QTHyLVEoFc2kh3uRwHb3HLfGXJ8kxrIaPPGtt7synGY=
 github.com/cometbft/cometbft/api v1.1.0-alpha.1/go.mod h1:Ivh6nSCTJPQOyfQo8dgnyu/T88it092sEqSrZSmTQN8=
+github.com/cometbft/cometbft/api v1.1.0-alpha.1.0.20250611063609-4e308d824f1f/go.mod h1:Ivh6nSCTJPQOyfQo8dgnyu/T88it092sEqSrZSmTQN8=
+github.com/cometbft/cometbft/v2 v2.0.0-20250611063609-4e308d824f1f/go.mod h1:/ze08eO171CqUqTqAE7FW7ydUJIVkgp6e2svpYvIR3c=
 github.com/cometbft/cometbft/v2 v2.0.0-alpha.1 h1:9dcfa578PqWGoUxFKB/yfZW5ovVcl4nj/wtqf4h1bwo=
 github.com/cometbft/cometbft/v2 v2.0.0-alpha.1/go.mod h1:/ze08eO171CqUqTqAE7FW7ydUJIVkgp6e2svpYvIR3c=
 github.com/consensys/bavard v0.1.8-0.20210406032232-f3452dc9b572/go.mod h1:Bpd0/3mZuaj6Sj+PqrmIquiOKy397AKGThQPaGzNXAQ=
@@ -954,6 +956,7 @@ github.com/cosmos/cosmos-sdk v0.53.0 h1:ZsB2tnBVudumV059oPuElcr0K1lLOutaI6WJ+osN
 github.com/cosmos/cosmos-sdk v0.53.0/go.mod h1:UPcRyFwOUy2PfSFBWxBceO/HTjZOuBVqY583WyazIGs=
 github.com/cosmos/cosmos-sdk v0.54.0-alpha.0.0.20250609200650-1521447c77da h1:/hqborTbkib0LrzPqcwQNUp8oF7JtO3g4of2ZP+wOoE=
 github.com/cosmos/cosmos-sdk v0.54.0-alpha.0.0.20250609200650-1521447c77da/go.mod h1:yGsBFBqThQ+1bpCLPY1uZNsJj0sVJ+nYVTNctovvkcM=
+github.com/cosmos/cosmos-sdk v0.54.0-alpha.0.0.20250611155041-9fa93c9afe32/go.mod h1:QGSr3Iv13uN7qBW10C8PVXkpaH5ZKusHMDO4GelGPEc=
 github.com/cosmos/go-bip39 v1.0.0 h1:pcomnQdrdH22njcAatO0yWojsUnCO3y2tNoV1cb6hHY=
 github.com/cosmos/go-bip39 v1.0.0/go.mod h1:RNJv0H/pOIVgxw6KS7QeX2a0Uo0aKUlfhZ4xuwvCdJw=
 github.com/cosmos/gogogateway v1.2.0 h1:Ae/OivNhp8DqBi/sh2A8a1D0y638GpL3tkmLQAiKxTE=

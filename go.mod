@@ -298,3 +298,4 @@ replace github.com/CosmWasm/wasmd => github.com/technicallyty/wasmd v0.0.0-20250
 
 replace github.com/cosmos/interchain-security/v7 => github.com/cosmos/interchain-security/v7 v7.0.0-20250612015043-8e7f1deb823c
 
+replace github.com/cosmos/ibc-go/v10 => github.com/cosmos/ibc-go/v10 v10.0.0-beta.0.0.20250611233349-11dfe65dd5c8

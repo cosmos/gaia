@@ -294,7 +294,7 @@ replace github.com/cometbft/cometbft/v2 => github.com/cometbft/cometbft/v2 v2.0.
 
 replace github.com/cometbft/cometbft/api => github.com/cometbft/cometbft/api v1.1.0-alpha.1.0.20250611063609-4e308d824f1f
 
-replace github.com/CosmWasm/wasmd => github.com/technicallyty/wasmd v0.0.0-20250611212508-fcf78bf6cdf1
+replace github.com/CosmWasm/wasmd => github.com/technicallyty/wasmd v0.0.0-20250612172639-0b4bb7b6f6a2
 
 replace github.com/cosmos/interchain-security/v7 => github.com/cosmos/interchain-security/v7 v7.0.0-20250612015043-8e7f1deb823c
 

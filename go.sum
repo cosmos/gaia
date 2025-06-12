@@ -1835,8 +1835,8 @@ github.com/supranational/blst v0.3.14 h1:xNMoHRJOTwMn63ip6qoWJ2Ymgvj7E2b9jY2FAwY
 github.com/supranational/blst v0.3.14/go.mod h1:jZJtfjgudtNl4en1tzwPIV3KjUnQUvG3/j+w+fVonLw=
 github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7 h1:epCh84lMvA70Z7CTTCmYQn2CKbY8j86K7/FAIr141uY=
 github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7/go.mod h1:q4W45IWZaF22tdD+VEXcAWRA037jwmWEB5VWYORlTpc=
-github.com/technicallyty/wasmd v0.0.0-20250611212508-fcf78bf6cdf1 h1:dTvjNK3mP74y/600jqt9jCjC2q9grg5yAveBMlRU2bE=
-github.com/technicallyty/wasmd v0.0.0-20250611212508-fcf78bf6cdf1/go.mod h1:alnJVqFbHrp70F+PBOuuoYVJgKGJ72v27lYIglRUTpE=
+github.com/technicallyty/wasmd v0.0.0-20250612172639-0b4bb7b6f6a2 h1:HZk18VJNzF2Zx+Pi/tr29QgRbBKYdP/UhsP4SAT3SeU=
+github.com/technicallyty/wasmd v0.0.0-20250612172639-0b4bb7b6f6a2/go.mod h1:OKWXOi4QQptXQqSus50XQnMV2dWJNMeNjvo3AuMlRAw=
 github.com/tendermint/go-amino v0.16.0 h1:GyhmgQKvqF82e2oZeuMSp9JTN0N09emoSZlb2lyGa2E=
 github.com/tendermint/go-amino v0.16.0/go.mod h1:TQU0M1i/ImAo+tYpZi73AU3V/dKeCoMC9Sphe2ZwGME=
 github.com/thomaso-mirodin/intmath v0.0.0-20160323211736-5dc6d854e46e h1:cR8/SYRgyQCt5cNCMniB/ZScMkhI9nk8U5C7SbISXjo=

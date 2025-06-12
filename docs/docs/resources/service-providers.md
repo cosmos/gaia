@@ -87,7 +87,7 @@ Available Commands:
   start               Run the full node
   status              Query remote node for status
   tendermint          Tendermint subcommands
-  testnet             Initialize files for a simapp testnet
+  testnet             Initialize files for a gaia testnet
   tx                  Transactions subcommands
   unsafe-reset-all    Resets the blockchain database, removes address book files, and resets data/priv_validator_state.json to the genesis state
   validate-genesis    validates the genesis file at the default location or at the location passed as an arg

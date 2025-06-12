@@ -129,7 +129,10 @@ func (v *validator) createConsensusKey() error {
 		return err
 	}
 
-	filePV := privval.LoadOrGenFilePV(pvKeyFile, pvStateFile)
+	filePV, err := privval.LoadOrGenFilePV(pvKeyFile, pvStateFile, nil)
+	if err != nil {
+		return err
+	}
 	v.consensusKey = filePV.Key
 
 	return nil

@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v24/tests/e2e/common"
+	"github.com/cosmos/gaia/v25/tests/e2e/common"
 )
 
 func StakingParams(endpoint string) (types.QueryParamsResponse, error) {

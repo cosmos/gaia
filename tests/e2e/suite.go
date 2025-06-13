@@ -1,7 +1,7 @@
 package e2e
 
 import (
-	"github.com/cosmos/gaia/v24/tests/e2e/tx"
+	"github.com/cosmos/gaia/v25/tests/e2e/tx"
 )
 
 type IntegrationTestSuite struct {

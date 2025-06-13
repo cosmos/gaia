@@ -109,4 +109,4 @@ enable = true/g' $NODE_HOME/config/app.toml
 pwd
 ls $NODE_HOME
 
-$COSMOVISOR run start --home $NODE_HOME --x-crisis-skip-assert-invariants >log.out 2>&1 &
+$COSMOVISOR run start --home $NODE_HOME >log.out 2>&1 &

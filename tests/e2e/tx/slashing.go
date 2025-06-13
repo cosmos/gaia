@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/slashing/types"
 
-	"github.com/cosmos/gaia/v24/tests/e2e/common"
+	"github.com/cosmos/gaia/v25/tests/e2e/common"
 )
 
 func (h *TestingSuite) ExecUnjail(

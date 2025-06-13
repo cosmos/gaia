@@ -1,6 +1,7 @@
 package gaia
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,11 +11,9 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
-	"github.com/spf13/cast"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
-	tmos "github.com/cometbft/cometbft/libs/os"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	dbm "github.com/cosmos/cosmos-db"
@@ -62,7 +61,6 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
@@ -70,17 +68,17 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaante "github.com/cosmos/gaia/v24/ante"
-	"github.com/cosmos/gaia/v24/app/keepers"
-	"github.com/cosmos/gaia/v24/app/upgrades"
-	v24 "github.com/cosmos/gaia/v24/app/upgrades/v24"
+	gaiaante "github.com/cosmos/gaia/v25/ante"
+	"github.com/cosmos/gaia/v25/app/keepers"
+	"github.com/cosmos/gaia/v25/app/upgrades"
+	v25 "github.com/cosmos/gaia/v25/app/upgrades/v25"
 )
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v24.Upgrade}
+	Upgrades = []upgrades.Upgrade{v25.Upgrade}
 )
 
 var (
@@ -100,8 +98,6 @@ type GaiaApp struct { //nolint: revive
 	appCodec          codec.Codec
 	txConfig          client.TxConfig
 	interfaceRegistry types.InterfaceRegistry
-
-	invCheckPeriod uint
 
 	// the module manager
 	mm           *module.Manager
@@ -154,10 +150,6 @@ func NewGaiaApp(
 	std.RegisterLegacyAminoCodec(legacyAmino)
 	std.RegisterInterfaces(interfaceRegistry)
 
-	// App Opts
-	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
-	invCheckPeriod := cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod))
-
 	bApp := baseapp.NewBaseApp(
 		appName,
 		logger,
@@ -176,7 +168,6 @@ func NewGaiaApp(
 		txConfig:          txConfig,
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
-		invCheckPeriod:    invCheckPeriod,
 	}
 
 	moduleAccountAddresses := app.ModuleAccountAddrs()
@@ -191,7 +182,6 @@ func NewGaiaApp(
 		app.BlockedModuleAccountAddrs(moduleAccountAddresses),
 		skipUpgradeHeights,
 		homePath,
-		invCheckPeriod,
 		logger,
 		appOpts,
 		wasmOpts,
@@ -208,7 +198,7 @@ func NewGaiaApp(
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
-	app.mm = module.NewManager(appModules(app, appCodec, txConfig, skipGenesisInvariants, tmLightClientModule)...)
+	app.mm = module.NewManager(appModules(app, appCodec, txConfig, tmLightClientModule)...)
 	app.ModuleBasics = newBasicManagerFromManager(app)
 
 	enabledSignModes := append([]sigtypes.SignMode(nil), authtx.DefaultSignModes...)
@@ -230,6 +220,7 @@ func NewGaiaApp(
 	// NOTE: upgrade module is required to be prioritized
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
+		authtypes.ModuleName,
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
@@ -248,7 +239,6 @@ func NewGaiaApp(
 	// Uncomment if you want to set a custom migration order here.
 	// app.mm.SetOrderMigrations(custom order)
 
-	app.mm.RegisterInvariants(app.CrisisKeeper)
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	err = app.mm.RegisterServices(app.configurator)
 	if err != nil {
@@ -270,7 +260,7 @@ func NewGaiaApp(
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
-	app.sm = module.NewSimulationManager(simulationModules(app, appCodec, skipGenesisInvariants)...)
+	app.sm = module.NewSimulationManager(simulationModules(app, appCodec)...)
 
 	app.sm.RegisterStoreDecoders()
 
@@ -286,7 +276,7 @@ func NewGaiaApp(
 
 	anteHandler, err := gaiaante.NewAnteHandler(
 		gaiaante.HandlerOptions{
-			AccountKeeper:   app.AccountKeeper,
+			AccountKeeper:   &app.AccountKeeper,
 			BankKeeper:      app.BankKeeper,
 			FeegrantKeeper:  app.FeeGrantKeeper,
 			SignModeHandler: txConfig.SignModeHandler(),
@@ -354,13 +344,13 @@ func NewGaiaApp(
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
-			tmos.Exit(fmt.Sprintf("failed to load latest version: %s", err))
+			panic(fmt.Sprintf("failed to load latest version: %s", err))
 		}
 
 		ctx := app.NewUncachedContext(true, tmproto.Header{})
 
 		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
-			tmos.Exit(fmt.Sprintf("WasmKeeper failed initialize pinned codes %s", err))
+			panic(fmt.Sprintf("WasmKeeper failed initialize pinned codes %s", err))
 		}
 
 		if err := app.WasmClientKeeper.InitializePinnedCodes(ctx); err != nil {
@@ -449,6 +439,11 @@ func (app *GaiaApp) LegacyAmino() *codec.LegacyAmino {
 // for modules to register their own custom testing types.
 func (app *GaiaApp) AppCodec() codec.Codec {
 	return app.appCodec
+}
+
+// DefaultGenesis returns a default genesis from the registered AppModuleBasic's.
+func (app *GaiaApp) DefaultGenesis() map[string]json.RawMessage {
+	return app.ModuleBasics.DefaultGenesis(app.appCodec)
 }
 
 // InterfaceRegistry returns Gaia's InterfaceRegistry

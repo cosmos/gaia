@@ -5,8 +5,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/cosmos/gaia/v24/tests/e2e/common"
-	liquidtypes "github.com/cosmos/gaia/v24/x/liquid/types"
+	"github.com/cosmos/gaia/v25/tests/e2e/common"
+	liquidtypes "github.com/cosmos/gaia/v25/x/liquid/types"
 )
 
 func LiquidValidator(endpoint string, valAddr string) (liquidtypes.QueryLiquidValidatorResponse, error) {

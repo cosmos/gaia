@@ -3,6 +3,19 @@
 ## UNRELEASED
 
 ### DEPENDENCIES
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
+
+### STATE BREAKING
+- Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
+- 
+### BUG-FIXES
+- Fix the `testnet` command to use the proper gaia binary ([\#3783](https://github.com/cosmos/gaia/pull/3783))
+
+## v24.0.0
+
+*May 30, 2025*
+
+### DEPENDENCIES
 - Bump [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) from 2.0.6 to 2.0.9 ([#3710](https://github.com/cosmos/gaia/pull/3710))
 - Bump [golang.org/x/crypto](https://github.com/golang/crypto) from 0.32.0 to 0.35.0 ([#3709](https://github.com/cosmos/gaia/pull/3709))
 - Bump [golang.org/x/crypto](https://github.com/golang/crypto) from 0.32.0 to 0.35.0 ([#3708](https://github.com/cosmos/gaia/pull/3708))
@@ -27,6 +40,9 @@
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
 - Remove expedited gov prop type restrictions ([\#3723](https://github.com/cosmos/gaia/pull/3723))
 - Add liquid validator query to x/liquid ([\#3735](https://github.com/cosmos/gaia/pull/3735))
+
+### BUG-FIXES
+- Set x/liquid params during InitGenesis ([\#3759](https://github.com/cosmos/gaia/pull/3759))
 
 ### STATE BREAKING
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))

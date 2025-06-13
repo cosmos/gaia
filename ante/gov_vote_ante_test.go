@@ -17,8 +17,8 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v24/ante"
-	"github.com/cosmos/gaia/v24/app/helpers"
+	"github.com/cosmos/gaia/v25/ante"
+	"github.com/cosmos/gaia/v25/app/helpers"
 )
 
 // Test that the GovVoteDecorator rejects votes too deeply wrapped by MsgExec

@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -23,9 +24,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
-	"github.com/cosmos/gaia/v24/ante"
-	gaia "github.com/cosmos/gaia/v24/app"
-	"github.com/cosmos/gaia/v24/app/sim"
+	"github.com/cosmos/gaia/v25/ante"
+	gaia "github.com/cosmos/gaia/v25/app"
+	"github.com/cosmos/gaia/v25/app/sim"
 )
 
 // AppChainID hardcoded chainID for simulation
@@ -54,8 +55,9 @@ func TestAppStateDeterminism(t *testing.T) {
 	config := sim.NewConfigFromFlags()
 	config.InitialBlockHeight = 1
 	config.ExportParamsPath = ""
-	config.OnOperation = false
-	config.AllInvariants = false
+	config.OnOperation = false   //nolint:staticcheck
+	config.AllInvariants = false //nolint:staticcheck
+	config.GenesisTime = time.Now().UTC().Unix()
 	config.ChainID = AppChainID
 
 	numSeeds := 3

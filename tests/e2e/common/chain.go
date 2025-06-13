@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 	"strconv"
 
-	tmrand "github.com/cometbft/cometbft/libs/rand"
-
 	dbm "github.com/cosmos/cosmos-db"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
@@ -32,15 +30,16 @@ import (
 	paramsproptypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaia "github.com/cosmos/gaia/v24/app"
-	gaiaparams "github.com/cosmos/gaia/v24/app/params"
-	liquidtypes "github.com/cosmos/gaia/v24/x/liquid/types"
-	metaprotocoltypes "github.com/cosmos/gaia/v24/x/metaprotocols/types"
+	gaia "github.com/cosmos/gaia/v25/app"
+	gaiaparams "github.com/cosmos/gaia/v25/app/params"
+	liquidtypes "github.com/cosmos/gaia/v25/x/liquid/types"
+	metaprotocoltypes "github.com/cosmos/gaia/v25/x/metaprotocols/types"
 )
 
 const (
 	keyringPassphrase = "testpassphrase"
 	KeyringAppName    = "testnet"
+	strChars          = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 )
 
 var (
@@ -91,9 +90,13 @@ func NewChain() (*Chain, error) {
 	if err != nil {
 		return nil, err
 	}
+	chainID := []byte("chain-")
+	for i := 0; i < 6; i++ {
+		chainID = append(chainID, strChars[rand.Int()%len(strChars)])
+	}
 
 	return &Chain{
-		ID:      "chain-" + tmrand.Str(6),
+		ID:      string(chainID),
 		DataDir: tmpDir,
 	}, nil
 }

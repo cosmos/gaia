@@ -8,8 +8,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v24/tests/e2e/common"
-	"github.com/cosmos/gaia/v24/tests/e2e/query"
+	"github.com/cosmos/gaia/v25/tests/e2e/common"
+	"github.com/cosmos/gaia/v25/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) testDistribution() {

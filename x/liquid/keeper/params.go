@@ -5,7 +5,7 @@ import (
 
 	"cosmossdk.io/math"
 
-	"github.com/cosmos/gaia/v24/x/liquid/types"
+	"github.com/cosmos/gaia/v25/x/liquid/types"
 )
 
 // SetParams sets the x/liquid module parameters.
@@ -28,7 +28,7 @@ func (k Keeper) GetParams(ctx context.Context) (params types.Params, err error) 
 	}
 
 	if bz == nil {
-		return params, nil
+		return types.DefaultParams(), nil
 	}
 
 	err = k.cdc.Unmarshal(bz, &params)

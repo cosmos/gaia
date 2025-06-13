@@ -89,8 +89,8 @@ require (
 	github.com/cockroachdb/redact v1.1.6 // indirect
 	github.com/cockroachdb/tokenbucket v0.0.0-20250429170803-42689b6311bb // indirect
 	github.com/cometbft/cometbft-db v1.0.4 // indirect
-	github.com/cometbft/cometbft/api v1.1.0-alpha.1
-	github.com/cometbft/cometbft/v2 v2.0.0-main
+	github.com/cometbft/cometbft/api v1.1.0-rc1
+	github.com/cometbft/cometbft/v2 v2.0.0-rc1
 	github.com/consensys/bavard v0.1.13 // indirect
 	github.com/consensys/gnark-crypto v0.12.1 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
@@ -280,8 +280,8 @@ require (
 
 replace github.com/strangelove-ventures/interchaintest/v8 => github.com/cosmos/interchaintest/v8 v8.8.2-0.20250305184330-0bb5f20ad3bd
 
-replace github.com/cometbft/cometbft/v2 => github.com/cometbft/cometbft/v2 v2.0.0-alpha.1
+replace github.com/cometbft/cometbft/v2 => github.com/cometbft/cometbft/v2 v2.0.0-rc1
 
-replace github.com/cometbft/cometbft/api => github.com/cometbft/cometbft/api v1.1.0-alpha.1
+replace github.com/cometbft/cometbft/api => github.com/cometbft/cometbft/api v1.1.0-rc1
 
 replace github.com/cosmos/ibc-go/v10 => github.com/cosmos/ibc-go/v10 v10.0.0-beta.0.0.20250611233349-11dfe65dd5c8

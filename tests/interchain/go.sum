@@ -826,7 +826,9 @@ github.com/cometbft/cometbft-db v0.14.1 h1:SxoamPghqICBAIcGpleHbmoPqy+crij/++eZz
 github.com/cometbft/cometbft-db v0.14.1/go.mod h1:KHP1YghilyGV/xjD5DP3+2hyigWx0WTp9X+0Gnx0RxQ=
 github.com/cometbft/cometbft-db v1.0.4/go.mod h1:M+BtHAGU2XLrpUxo3Nn1nOCcnVCiLM9yx5OuT0u5SCA=
 github.com/cometbft/cometbft/api v1.1.0-alpha.1/go.mod h1:Ivh6nSCTJPQOyfQo8dgnyu/T88it092sEqSrZSmTQN8=
+github.com/cometbft/cometbft/api v1.1.0-rc1/go.mod h1:Ivh6nSCTJPQOyfQo8dgnyu/T88it092sEqSrZSmTQN8=
 github.com/cometbft/cometbft/v2 v2.0.0-alpha.1/go.mod h1:/ze08eO171CqUqTqAE7FW7ydUJIVkgp6e2svpYvIR3c=
+github.com/cometbft/cometbft/v2 v2.0.0-rc1/go.mod h1:/ze08eO171CqUqTqAE7FW7ydUJIVkgp6e2svpYvIR3c=
 github.com/consensys/bavard v0.1.13 h1:oLhMLOFGTLdlda/kma4VOJazblc7IM5y5QPd2A/YjhQ=
 github.com/consensys/bavard v0.1.13/go.mod h1:9ItSMtA/dXMAiL7BG6bqW2m3NdSEObYWoH223nGHukI=
 github.com/consensys/gnark-crypto v0.12.1 h1:lHH39WuuFgVHONRl3J0LRBtuYdQTumFSDtJF7HpyG8M=

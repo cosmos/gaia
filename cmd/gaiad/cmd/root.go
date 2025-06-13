@@ -159,10 +159,8 @@ func NewRootCmd() *cobra.Command {
 		panic(err)
 	}
 
-	if initClientCtx.ChainID != "" {
-		if err := gaia.EVMAppOptions(gaiatypes.DefaultEVMChainID); err != nil {
-			panic(err)
-		}
+	if err := gaia.EVMAppOptions(gaiatypes.DefaultEVMChainID); err != nil {
+		panic(err)
 	}
 
 	return rootCmd

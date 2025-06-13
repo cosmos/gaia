@@ -4,10 +4,14 @@
 
 ### DEPENDENCIES
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to [v2.2.4](https://github.com/CosmWasm/wasmvm/releases/tag/v2.2.4) (#3787)
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) to [v0.60.1](https://github.com/CosmWasm/wasmd/releases/tag/v0.60.1) (#3787)
 
 ### STATE BREAKING
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
-- 
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to [v2.2.4](https://github.com/CosmWasm/wasmvm/releases/tag/v2.2.4) (#3787)
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) to [v0.60.1](https://github.com/CosmWasm/wasmd/releases/tag/v0.60.1) (#3787)
+
 ### BUG-FIXES
 - Fix the `testnet` command to use the proper gaia binary ([\#3783](https://github.com/cosmos/gaia/pull/3783))
 

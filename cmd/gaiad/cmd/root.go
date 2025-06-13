@@ -24,6 +24,7 @@ import (
 	snapshottypes "cosmossdk.io/store/snapshots/types"
 	storetypes "cosmossdk.io/store/types"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
@@ -196,8 +197,8 @@ func initAppConfig() (string, interface{}) {
 
 func initRootCmd(rootCmd *cobra.Command,
 	basicManager module.BasicManager,
-	cdc codec.Codec,
-	interfaceRegistry codectypes.InterfaceRegistry,
+	_ codec.Codec,
+	_ codectypes.InterfaceRegistry,
 	txConfig client.TxConfig,
 ) {
 	cfg := sdk.GetConfig()

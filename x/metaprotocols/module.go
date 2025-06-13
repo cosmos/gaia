@@ -45,7 +45,7 @@ func (a AppModule) ExportGenesis(_ sdk.Context, cdc codec.JSONCodec) json.RawMes
 	return a.DefaultGenesis(cdc)
 }
 
-func (a AppModule) InitGenesis(ctx sdk.Context, marshaler codec.JSONCodec, message json.RawMessage) []abci.ValidatorUpdate {
+func (a AppModule) InitGenesis(_ sdk.Context, _ codec.JSONCodec, _ json.RawMessage) []abci.ValidatorUpdate {
 	return nil
 }
 
@@ -58,7 +58,7 @@ func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {
 }
 
-func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
+func (a AppModuleBasic) RegisterGRPCGatewayRoutes(_ client.Context, mux *runtime.ServeMux) {
 }
 
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {
@@ -78,9 +78,6 @@ type AppModule struct {
 
 func NewAppModule() *AppModule {
 	return &AppModule{}
-}
-
-func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
 }
 
 func (a AppModule) RegisterServices(_ module.Configurator) {

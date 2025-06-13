@@ -1,0 +1,610 @@
+syntax = "proto3";
+
+package interchain_security.ccv.provider.v1;
+
+import "amino/amino.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/evidence/v1beta1/evidence.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+import "ibc/core/client/v1/client.proto";
+import "ibc/lightclients/tendermint/v1/tendermint.proto";
+import "interchain_security/ccv/v1/wire.proto";
+import "cometbft/crypto/v1/keys.proto";
+
+option go_package = "github.com/cosmos/interchain-security/v7/x/ccv/provider/types";
+
+//
+// Note any type defined in this file is ONLY used internally to the provider
+// CCV module. These schemas can change with proper consideration of
+// compatibility or migration.
+//
+
+// WARNING: This message is deprecated in favor of `MsgCreateConsumer`.
+// ConsumerAdditionProposal is a governance proposal on the provider chain to
+// spawn a new consumer chain. If it passes, then all validators on the provider
+// chain are expected to validate the consumer chain at spawn time or get
+// slashed. It is recommended that spawn time occurs after the proposal end
+// time.
+// Use MsgConsumerAddition to submit this proposal type.
+message ConsumerAdditionProposal {
+  option (gogoproto.goproto_getters) = false;
+  option (gogoproto.goproto_stringer) = false;
+  option (cosmos_proto.implements_interface) = "cosmos.gov.v1beta1.Content";
+  option deprecated = true;
+
+  // the title of the proposal
+  string title = 1;
+  // the description of the proposal
+  string description = 2;
+  // the proposed chain-id of the new consumer chain, must be different from all
+  // other consumer chain ids of the executing provider chain.
+  string chain_id = 3;
+  // the proposed initial height of new consumer chain.
+  // For a completely new chain, this will be {0,1}. However, it may be
+  // different if this is a chain that is converting to a consumer chain.
+  ibc.core.client.v1.Height initial_height = 4 [ (gogoproto.nullable) = false ];
+  // The hash of the consumer chain genesis state without the consumer CCV
+  // module genesis params. It is used for off-chain confirmation of
+  // genesis.json validity by validators and other parties.
+  bytes genesis_hash = 5;
+  // The hash of the consumer chain binary that should be run by validators on
+  // chain initialization. It is used for off-chain confirmation of binary
+  // validity by validators and other parties.
+  bytes binary_hash = 6;
+  // spawn time is the time on the provider chain at which the consumer chain
+  // genesis is finalized and all validators will be responsible for starting
+  // their consumer chain validator node.
+  google.protobuf.Timestamp spawn_time = 7
+      [ (gogoproto.stdtime) = true, (gogoproto.nullable) = false ];
+
+  // Unbonding period for the consumer,
+  // which should be smaller than that of the provider in general.
+  google.protobuf.Duration unbonding_period = 8
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  // Sent CCV related IBC packets will timeout after this duration
+  google.protobuf.Duration ccv_timeout_period = 9
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  // Sent transfer related IBC packets will timeout after this duration
+  google.protobuf.Duration transfer_timeout_period = 10
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  // The fraction of tokens allocated to the consumer redistribution address
+  // during distribution events. The fraction is a string representing a
+  // decimal number. For example "0.75" would represent 75%.
+  string consumer_redistribution_fraction = 11;
+  // BlocksPerDistributionTransmission is the number of blocks between
+  // ibc-token-transfers from the consumer chain to the provider chain. On
+  // sending transmission event, `consumer_redistribution_fraction` of the
+  // accumulated tokens are sent to the consumer redistribution address.
+  int64 blocks_per_distribution_transmission = 12;
+  // The number of historical info entries to persist in store.
+  // This param is a part of the cosmos sdk staking module. In the case of
+  // a ccv enabled consumer chain, the ccv module acts as the staking module.
+  int64 historical_entries = 13;
+  // The ID of a token transfer channel used for the Reward Distribution
+  // sub-protocol. If DistributionTransmissionChannel == "", a new transfer
+  // channel is created on top of the same connection as the CCV channel.
+  // Note that transfer_channel_id is the ID of the channel end on the consumer
+  // chain. It is most relevant for chains performing a standalone to consumer
+  // changeover in order to maintain the existing ibc transfer channel
+  string distribution_transmission_channel = 14;
+  // Corresponds to the percentage of validators that have to validate the chain
+  // under the Top N case. For example, 53 corresponds to a Top 53% chain,
+  // meaning that the top 53% provider validators by voting power have to
+  // validate the proposed consumer chain. top_N can either be 0 or any value in
+  // [50, 100]. A chain can join with top_N == 0 as an Opt In chain, or with
+  // top_N ∈ [50, 100] as a Top N chain.
+  uint32 top_N = 15;
+  // Corresponds to the maximum power (percentage-wise) a validator can have on
+  // the consumer chain. For instance, if `validators_power_cap` is set to 32,
+  // it means that no validator can have more than 32% of the voting power on
+  // the consumer chain. Note that this might not be feasible. For example,
+  // think of a consumer chain with only 5 validators and with
+  // `validators_power_cap` set to 10%. In such a scenario, at least one
+  // validator would need to have more than 20% of the total voting power.
+  // Therefore, `validators_power_cap` operates on a best-effort basis.
+  uint32 validators_power_cap = 16;
+  // Corresponds to the maximum number of validators that can validate a
+  // consumer chain. Only applicable to Opt In chains. Setting
+  // `validator_set_cap` on a Top N chain is a no-op.
+  uint32 validator_set_cap = 17;
+  // Corresponds to a list of provider consensus addresses of validators that
+  // are the ONLY ones that can validate the consumer chain.
+  repeated string allowlist = 18;
+  // Corresponds to a list of provider consensus addresses of validators that
+  // CANNOT validate the consumer chain.
+  repeated string denylist = 19;
+  // Corresponds to the minimal amount of (provider chain) stake required to
+  // validate on the consumer chain.
+  uint64 min_stake = 20;
+  // Corresponds to whether inactive validators are allowed to validate the
+  // consumer chain.
+  bool allow_inactive_vals = 21;
+}
+
+// WARNING: This message is deprecated in favor of `MsgRemoveConsumer`.
+// ConsumerRemovalProposal is a governance proposal on the provider chain to
+// remove (and stop) a consumer chain. If it passes, all the consumer chain's
+// state is removed from the provider chain. The outstanding unbonding operation
+// funds are released.
+// Use MsgConsumerRemoval to submit this proposal type.
+message ConsumerRemovalProposal {
+  option (cosmos_proto.implements_interface) = "cosmos.gov.v1beta1.Content";
+  option deprecated = true;
+
+  // the title of the proposal
+  string title = 1;
+  // the description of the proposal
+  string description = 2;
+  // the chain-id of the consumer chain to be stopped
+  string chain_id = 3;
+  // the time on the provider chain at which all validators are responsible to
+  // stop their consumer chain validator node
+  google.protobuf.Timestamp stop_time = 4
+      [ (gogoproto.stdtime) = true, (gogoproto.nullable) = false ];
+}
+
+// WARNING: This message is deprecated in favor of `MsgUpdateConsumer`.
+// ConsumerModificationProposal is a governance proposal on the provider chain
+// to modify parameters of a running consumer chain. If it passes, the consumer
+// chain's state is updated to take into account the newest params.
+message ConsumerModificationProposal {
+  option deprecated = true;
+
+  // the title of the proposal
+  string title = 1;
+  // the description of the proposal
+  string description = 2;
+  // the chain-id of the consumer chain to be modified
+  string chain_id = 3;
+  // Corresponds to the percentage of validators that have to validate the chain
+  // under the Top N case. For example, 53 corresponds to a Top 53% chain,
+  // meaning that the top 53% provider validators by voting power have to
+  // validate the proposed consumer chain. top_N can either be 0 or any value in
+  // [50, 100]. A chain can join with top_N == 0 as an Opt In chain, or with
+  // top_N ∈ [50, 100] as a Top N chain.
+  uint32 top_N = 4;
+  // Corresponds to the maximum power (percentage-wise) a validator can have on
+  // the consumer chain. For instance, if `validators_power_cap` is set to 32,
+  // it means that no validator can have more than 32% of the voting power on
+  // the consumer chain. Note that this might not be feasible. For example,
+  // think of a consumer chain with only 5 validators and with
+  // `validators_power_cap` set to 10%. In such a scenario, at least one
+  // validator would need to have more than 20% of the total voting power.
+  // Therefore, `validators_power_cap` operates on a best-effort basis.
+  uint32 validators_power_cap = 5;
+  // Corresponds to the maximum number of validators that can validate a
+  // consumer chain. Only applicable to Opt In chains. Setting
+  // `validator_set_cap` on a Top N chain is a no-op.
+  uint32 validator_set_cap = 6;
+  // Corresponds to a list of provider consensus addresses of validators that
+  // are the ONLY ones that can validate the consumer chain.
+  repeated string allowlist = 7;
+  // Corresponds to a list of provider consensus addresses of validators that
+  // CANNOT validate the consumer chain.
+  repeated string denylist = 8;
+  // Corresponds to the minimal amount of (provider chain) stake required to
+  // validate on the consumer chain.
+  uint64 min_stake = 9;
+  // Corresponds to whether inactive validators are allowed to validate the
+  // consumer chain.
+  bool allow_inactive_vals = 10;
+}
+
+// EquivocationProposal is a governance proposal on the provider chain to
+// punish a validator for equivocation on a consumer chain.
+//
+// This type is only used internally to the consumer CCV module.
+// WARNING: This message is deprecated now that equivocations can be submitted
+// and verified automatically on the provider. (see SubmitConsumerDoubleVoting
+// in proto/interchain-security/ccv/provider/v1/tx.proto).
+message EquivocationProposal {
+  option deprecated = true;
+  // the title of the proposal
+  string title = 1;
+  // the description of the proposal
+  string description = 2;
+  // the list of equivocations that will be processed
+  repeated cosmos.evidence.v1beta1.Equivocation equivocations = 3;
+}
+
+// ChangeRewardDenomsProposal is a governance proposal on the provider chain to
+// mutate the set of denoms accepted by the provider as rewards.
+// Use MsgChangeRewardDenoms to submit this proposal type.
+message ChangeRewardDenomsProposal {
+  option (cosmos_proto.implements_interface) = "cosmos.gov.v1beta1.Content";
+
+  // the title of the proposal
+  string title = 1;
+  // the description of the proposal
+  string description = 2;
+  // the list of consumer reward denoms to add
+  repeated string denoms_to_add = 3;
+  // the list of consumer reward denoms to remove
+  repeated string denoms_to_remove = 4;
+}
+
+// A persisted queue entry indicating that a slash packet data instance needs to
+// be handled. This type belongs in the "global" queue, to coordinate slash
+// packet handling times between consumers.
+message GlobalSlashEntry {
+  // Block time that slash packet was received by provider chain.
+  // This field is used for store key iteration ordering.
+  google.protobuf.Timestamp recv_time = 1
+      [ (gogoproto.stdtime) = true, (gogoproto.nullable) = false ];
+  // The consumer that sent a slash packet.
+  string consumer_chain_id = 2 [ (gogoproto.customname) = "ConsumerChainID" ];
+  // The IBC sequence number of the recv packet.
+  // This field is used in the store key to ensure uniqueness.
+  uint64 ibc_seq_num = 3;
+  // The provider's consensus address of the validator being slashed.
+  // This field is used to obtain validator power in HandleThrottleQueues.
+  //
+  // This field is not used in the store key, but is persisted in value bytes,
+  // see QueueGlobalSlashEntry.
+  bytes provider_val_cons_addr = 4;
+}
+
+// Params defines the parameters for CCV Provider module
+message Params {
+  // Reserve 4th slot for removed init_timeout_period param
+  reserved 4;
+
+  // Reserve 5th slot for removed vsc_timeout_period param
+  reserved 5;
+
+  // Reserve 8th slot for removed max throttled packet param
+  reserved 8;
+
+  ibc.lightclients.tendermint.v1.ClientState template_client = 1;
+  // TrustingPeriodFraction is used to compute the consumer and provider IBC
+  // client's TrustingPeriod from the chain defined UnbondingPeriod
+  string trusting_period_fraction = 2;
+  // Sent IBC packets will timeout after this duration
+  google.protobuf.Duration ccv_timeout_period = 3
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+
+  // The period for which the slash meter is replenished
+  google.protobuf.Duration slash_meter_replenish_period = 6
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+
+  // The fraction of total voting power that is replenished to the slash meter
+  // every replenish period. This param also serves as a maximum fraction of
+  // total voting power that the slash meter can hold.
+  string slash_meter_replenish_fraction = 7;
+
+  // The fee required to be paid to add a reward denom
+  cosmos.base.v1beta1.Coin consumer_reward_denom_registration_fee = 9
+      [ (gogoproto.nullable) = false ];
+
+  // The number of blocks that comprise an epoch.
+  int64 blocks_per_epoch = 10;
+
+  // The number of epochs a validator has to validate a consumer chain in order
+  // to start receiving rewards from that chain.
+  int64 number_of_epochs_to_start_receiving_rewards = 11;
+
+  // The maximal number of validators that will be passed
+  // to the consensus engine on the provider.
+  int64 max_provider_consensus_validators = 12;
+}
+
+// SlashAcks contains cons addresses of consumer chain validators
+// successfully slashed on the provider chain.
+message SlashAcks { repeated string addresses = 1; }
+
+// ConsumerAdditionProposals holds pending governance proposals on the provider
+// chain to spawn a new chain.
+message ConsumerAdditionProposals {
+  // proposals waiting for spawn_time to pass
+  repeated ConsumerAdditionProposal pending = 1;
+}
+
+// ConsumerRemovalProposals holds pending governance proposals on the provider
+// chain to remove (and stop) a consumer chain.
+message ConsumerRemovalProposals {
+  // proposals waiting for stop_time to pass
+  repeated ConsumerRemovalProposal pending = 1;
+}
+
+// AddressList contains a list of consensus addresses
+message AddressList { repeated bytes addresses = 1; }
+
+// WARNING: This message is deprecated and is not used.
+// ChannelToChain is used to map a CCV channel ID to the consumer chainID
+message ChannelToChain {
+  option deprecated = true;
+
+  string channel_id = 1;
+  string chain_id = 2;
+}
+
+// ValidatorSetChangePackets is a pb list of ccv.ValidatorSetChangePacketData.
+message ValidatorSetChangePackets {
+  repeated interchain_security.ccv.v1.ValidatorSetChangePacketData list = 1
+      [ (gogoproto.nullable) = false ];
+}
+
+//
+// Key assignment section
+//
+
+message KeyAssignmentReplacement {
+  bytes provider_addr = 1;
+  cometbft.crypto.v1.PublicKey prev_c_key = 2;
+  int64 power = 3;
+}
+
+// Used to serialize the ValidatorConsumerPubKey index from key assignment
+// ValidatorConsumerPubKey: (chainID, providerAddr consAddr) -> consumerKey
+// tmprotocrypto.PublicKey
+message ValidatorConsumerPubKey {
+  string chain_id = 1;
+  bytes provider_addr = 2;
+  cometbft.crypto.v1.PublicKey consumer_key = 3;
+}
+
+// Used to serialize the ValidatorConsumerAddr index from key assignment
+// ValidatorByConsumerAddr: (chainID, consumerAddr consAddr) -> providerAddr
+// consAddr
+message ValidatorByConsumerAddr {
+  string chain_id = 1;
+  bytes consumer_addr = 2;
+  bytes provider_addr = 3;
+}
+
+// Used to serialize the ConsumerAddrsToPruneV2 index from key assignment
+// ConsumerAddrsToPruneV2: (chainID, pruneTs time.Time) -> consumerAddrs
+// AddressList
+message ConsumerAddrsToPruneV2 {
+  string chain_id = 1;
+  google.protobuf.Timestamp prune_ts = 2
+      [ (gogoproto.stdtime) = true, (gogoproto.nullable) = false ];
+  AddressList consumer_addrs = 3;
+}
+
+// ConsensusValidator is used to express a validator that
+// should be validating on a chain.
+// It contains relevant info for
+// a validator that is expected to validate on
+// either the provider or a consumer chain.
+message ConsensusValidator {
+  // validator's consensus address on the provider chain
+  bytes provider_cons_addr = 1;
+  // voting power the validator has during this epoch
+  int64 power = 2;
+  // public key the validator uses on the consumer chain during this epoch
+  cometbft.crypto.v1.PublicKey public_key = 3;
+  // height the validator had when it FIRST became a consumer validator
+  // If a validator becomes a consumer validator at height `H` and is
+  // continuously a consumer validator for all the upcoming epochs, then the
+  // height of the validator SHOULD remain `H`. This height only resets to a
+  // different height if a validator stops being a consumer validator during an
+  // epoch and later becomes again a consumer validator.
+  int64 join_height = 4;
+}
+
+// ConsumerRewardsAllocation stores the rewards allocated by a consumer chain
+// to the consumer rewards pool. It is used to allocate the tokens to the
+// consumer opted-in validators and the community pool during BeginBlock.
+message ConsumerRewardsAllocation {
+  repeated cosmos.base.v1beta1.DecCoin rewards = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"
+  ];
+}
+
+// ConsumerMetadata contains general information about the registered chain
+message ConsumerMetadata {
+  // the name of the chain
+  string name = 1;
+  // the description of the chain
+  string description = 2;
+  // the metadata (e.g., GitHub repository URL) of the chain
+  string metadata = 3;
+}
+
+// ConsumerInitializationParameters are the parameters needed to launch a chain
+message ConsumerInitializationParameters {
+  // ---------- ---------- ----------
+  // Following fields are used when the consumer chain launches and are not
+  // needed by the provider afterwards.
+  // ---------- ---------- ----------
+
+  // the proposed initial height of new consumer chain.
+  // For a completely new chain, this will be {0,1}. However, it may be
+  // different if this is a chain that is converting to a consumer chain.
+  ibc.core.client.v1.Height initial_height = 1 [ (gogoproto.nullable) = false ];
+  // The hash of the consumer chain genesis state without the consumer CCV
+  // module genesis params. It is used for off-chain confirmation of
+  // genesis.json validity by validators and other parties.
+  bytes genesis_hash = 2;
+  // The hash of the consumer chain binary that should be run by validators on
+  // chain initialization. It is used for off-chain confirmation of binary
+  // validity by validators and other parties.
+  bytes binary_hash = 3;
+  // spawn time is the time on the provider chain at which the consumer chain
+  // genesis is finalized and all validators will be responsible for starting
+  // their consumer chain validator node.
+  google.protobuf.Timestamp spawn_time = 4
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+  // Unbonding period for the consumer,
+  // which should be smaller than that of the provider in general.
+  google.protobuf.Duration unbonding_period = 5
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+
+  // ---------- ---------- ----------
+  // Following fields are used to construct the consumer genesis of the
+  // to-be-launched consumer chain and are set up as params on the consumer
+  // chain. Those params can then be directly modified by the consumer chain.
+  // ---------- ---------- ----------
+
+  // Sent CCV related IBC packets will timeout after this duration
+  google.protobuf.Duration ccv_timeout_period = 6
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  // Sent transfer related IBC packets will timeout after this duration
+  google.protobuf.Duration transfer_timeout_period = 7
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  // The fraction of tokens allocated to the consumer redistribution address
+  // during distribution events. The fraction is a string representing a
+  // decimal number. For example "0.75" would represent 75%.
+  string consumer_redistribution_fraction = 8;
+  // BlocksPerDistributionTransmission is the number of blocks between
+  // ibc-token-transfers from the consumer chain to the provider chain. On
+  // sending transmission event, `consumer_redistribution_fraction` of the
+  // accumulated tokens are sent to the consumer redistribution address.
+  int64 blocks_per_distribution_transmission = 9;
+  // The number of historical info entries to persist in store.
+  // This param is a part of the cosmos sdk staking module. In the case of
+  // a ccv enabled consumer chain, the ccv module acts as the staking module.
+  int64 historical_entries = 10;
+  // The ID of a token transfer channel used for the Reward Distribution
+  // sub-protocol. If DistributionTransmissionChannel == "", a new transfer
+  // channel is created on top of the same connection as the CCV channel.
+  // Note that transfer_channel_id is the ID of the channel end on the consumer
+  // chain. It is most relevant for chains performing a standalone to consumer
+  // changeover in order to maintain the existing ibc transfer channel
+  string distribution_transmission_channel = 11;
+  // The ID of the connection end on the provider chain on top of which the CCV
+  // channel will be established. If connection_id == "", a new client of the
+  // consumer chain and a new connection on top of this client are created.
+  // Note that a standalone chain can transition to a consumer chain while
+  // maintaining existing IBC channels to other chains by providing a valid
+  // connection_id.
+  string connection_id = 12;
+}
+
+// PowerShapingParameters contains parameters that shape the validator set that
+// we send to the consumer chain
+message PowerShapingParameters {
+  // Corresponds to the percentage of validators that have to validate the chain
+  // under the Top N case. For example, 53 corresponds to a Top 53% chain,
+  // meaning that the top 53% provider validators by voting power have to
+  // validate the proposed consumer chain. top_N can either be 0 or any value in
+  // [50, 100]. A chain can join with top_N == 0 as an Opt In chain, or with
+  // top_N ∈ [50, 100] as a Top N chain.
+  uint32 top_N = 1;
+  // `validators_power_cap` corresponds to the maximum power (percentage-wise) a
+  // validator can have on the consumer chain. For instance, if
+  // `validators_power_cap` is set to 32, no validator can have more than 32% of
+  // the total voting power of the consumer chain. The power cap is intended as
+  // a safeguard against a validator having too much power on the consumer chain
+  // and hence "taking over" the consumer chain.
+  //
+  // To respect this power cap, the voting powers of the validators that run the
+  // consumer chain are decremented or incremented accordingly. It is important
+  // to note that the voting powers of validators on the provider do **not**
+  // change. For example, assume that the provider chain has among others,
+  // validators `A`, `B`, `C`, and `D` with voting powers 100, 1, 1, 1
+  // respectively. Assume that only those 4 validators opt in on a consumer
+  // chain. Without a power cap set, validator `A` would have 100 / (100 + 1 + 1
+  // + 1) = ~97% of the total voting power on the consumer chain, while
+  // validators `B`, `C`, and `D` would have 1 /(100 + 1 + 1 + 1) = ~1% of the
+  // total voting power on the consumer chain. If `validators_power_cap` is set
+  // to 30%, then the voting power of `A` would be reduced from 100 to 30 on the
+  // consumer chain, the voting power of `B` would be increased from 1 to 25,
+  // and the power of `C` and `D` would be increased from 1 to 24. After those
+  // modifications, `A` would have 30 / (30 + 25 + 24 + 24) = ~29% of the total
+  // voting power of the consumer chain, `B` would have 25 / (30 + 25 + 24 + 24)
+  // = ~25%, and `C` and `D` would both have 24 / (30 + 25 + 24 + 24) = ~23%.
+  // Naturally, there are many ways to change the voting powers of validators to
+  // respect the power cap, and ICS chooses one of them (see the
+  // `NoMoreThanPercentOfTheSum` function).
+  //
+  // Note that respecting `validators_power_cap` might NOT always be possible.
+  // For example, if we have a consumer chain with only 5 validators and
+  // `validators_power_cap` is set to 10%, then it is not possible to respect
+  // the `validators_power_cap`. If the voting power of each validator is capped
+  // to a maximum of 10% of the total consumer chain's voting power, then the
+  // total voting power of the consumer chain would add up to 50% which
+  // obviously does not make sense (percentages should add up to 100%). In cases
+  // where it is not feasible to respect the power cap, all validators on the
+  // consumer chain will have equal voting power in order to minimize the power
+  // of a single validator. Thus, in the example of 5 validators and a
+  // `validators_power_cap` set to 10%, all validators would end up having 20%
+  // of the total voting power on the consumer chain. Therefore,
+  // `validators_power_cap` operates on a best-effort basis. For more
+  // information on the power cap and other power-shaping parameters, please
+  // refer to the ICS docs and specifically
+  // `interchain-security/docs/docs/features/power-shaping.md`.
+  uint32 validators_power_cap = 2;
+  // Corresponds to the maximum number of validators that can validate a
+  // consumer chain. Only applicable to Opt In chains. Setting
+  // `validator_set_cap` on a Top N chain is a no-op.
+  uint32 validator_set_cap = 3;
+  // corresponds to a list of provider consensus addresses of validators that
+  // are the ONLY ones that can validate the consumer chain
+  repeated string allowlist = 4;
+  // corresponds to a list of provider consensus addresses of validators that
+  // CANNOT validate the consumer chain
+  repeated string denylist = 5;
+  // Corresponds to the minimal amount of (provider chain) stake required to
+  // validate on the consumer chain.
+  uint64 min_stake = 6;
+  // Corresponds to whether inactive validators are allowed to validate the
+  // consumer chain.
+  bool allow_inactive_vals = 7;
+  // Corresponds to a list of provider consensus addresses of validators that
+  // should have PRIORITY to validate on the consumer chain, meaning as long as
+  // they are eligible/opted in to validate on the consumer chain, the validator
+  // set will be filled with these validators first, and other validators will
+  // be added to the validator set only if there are not enough eligible
+  // priority validators.
+  repeated string prioritylist = 8;
+}
+
+// ConsumerIds contains consumer ids of chains
+// Used so we can easily (de)serialize slices of strings
+message ConsumerIds { repeated string ids = 1; }
+
+// ConsumerPhase indicates the phases of a consumer chain according to ADR 019
+enum ConsumerPhase {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // UNSPECIFIED defines an empty phase.
+  CONSUMER_PHASE_UNSPECIFIED = 0;
+  // REGISTERED defines the phase in which a consumer chain has been assigned a
+  // unique consumer id. A chain in this phase cannot yet launch.
+  CONSUMER_PHASE_REGISTERED = 1;
+  // INITIALIZED defines the phase in which a consumer chain has set all the
+  // needed parameters to launch but has not yet launched (e.g., because the
+  // `spawnTime` of the consumer chain has not yet been reached).
+  CONSUMER_PHASE_INITIALIZED = 2;
+  // LAUNCHED defines the phase in which a consumer chain is running and
+  // consuming a subset of the validator set of the provider.
+  CONSUMER_PHASE_LAUNCHED = 3;
+  // STOPPED defines the phase in which a previously-launched chain has stopped.
+  CONSUMER_PHASE_STOPPED = 4;
+  // DELETED defines the phase in which the state of a stopped chain has been
+  // deleted.
+  CONSUMER_PHASE_DELETED = 5;
+}
+
+// AllowlistedRewardDenoms corresponds to the denoms allowlisted by a specific
+// consumer id
+message AllowlistedRewardDenoms { repeated string denoms = 1; }
+
+//
+message InfractionParameters {
+  SlashJailParameters double_sign = 1;
+  SlashJailParameters downtime = 2;
+}
+
+//
+message SlashJailParameters {
+  bytes slash_fraction = 1 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  // for permanent jailing use 9223372036854775807 which is the largest value a
+  // time.Duration can hold (approximately 292 years)
+  google.protobuf.Duration jail_duration = 2
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  // Indicates whether the validator should be tombstoned when slashed
+  bool tombstone = 3;
+}

@@ -8,9 +8,9 @@ import (
 	"path"
 	"path/filepath"
 
-	tmcfg "github.com/cometbft/cometbft/config"
-	"github.com/cometbft/cometbft/p2p"
-	"github.com/cometbft/cometbft/privval"
+	tmcfg "github.com/cometbft/cometbft/v2/config"
+	"github.com/cometbft/cometbft/v2/p2p"
+	"github.com/cometbft/cometbft/v2/privval"
 
 	"cosmossdk.io/math"
 
@@ -129,7 +129,10 @@ func (v *validator) createConsensusKey() error {
 		return err
 	}
 
-	filePV := privval.LoadOrGenFilePV(pvKeyFile, pvStateFile)
+	filePV, err := privval.LoadOrGenFilePV(pvKeyFile, pvStateFile, nil)
+	if err != nil {
+		return err
+	}
 	v.consensusKey = filePV.Key
 
 	return nil

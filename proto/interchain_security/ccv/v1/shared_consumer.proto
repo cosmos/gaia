@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package interchain_security.ccv.v1;
+
+option go_package = "github.com/cosmos/interchain-security/v7/x/ccv/types";
+
+import "cometbft/abci/v2/types.proto";
+import "ibc/lightclients/tendermint/v1/tendermint.proto";
+import "google/protobuf/duration.proto";
+import "gogoproto/gogo.proto";
+
+//
+// Note any type defined in this file is referenced/persisted in both the
+// consumer and provider CCV modules, but not sent over the wire. These schemas
+// could change, only with careful consideration of effects!
+//
+
+// ConsumerParams defines the parameters for CCV consumer module.
+//
+// Note this type is referenced in both the consumer and provider CCV modules,
+// and persisted on the provider, see MakeConsumerGenesis and
+// SetConsumerGenesis.
+//
+message ConsumerParams {
+  // TODO: Remove enabled flag and find a better way to setup integration tests
+  // See: https://github.com/cosmos/interchain-security/issues/339
+  bool enabled = 1;
+
+  ///////////////////////
+  // Distribution Params
+  // Number of blocks between ibc-token-transfers from the consumer chain to
+  // the provider chain. Note that at this transmission event a fraction of
+  // the accumulated tokens are divided and sent consumer redistribution
+  // address.
+  int64 blocks_per_distribution_transmission = 2;
+
+  // Channel, and provider-chain receiving address to send distribution token
+  // transfers over. These parameters is auto-set during the consumer <->
+  // provider handshake procedure.
+  string distribution_transmission_channel = 3;
+  string provider_fee_pool_addr_str = 4;
+  // Sent CCV related IBC packets will timeout after this duration
+  google.protobuf.Duration ccv_timeout_period = 5
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+
+  // Sent transfer related IBC packets will timeout after this duration
+  google.protobuf.Duration transfer_timeout_period = 6
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+
+  // The fraction of tokens allocated to the consumer redistribution address
+  // during distribution events. The fraction is a string representing a
+  // decimal number. For example "0.75" would represent 75%.
+  string consumer_redistribution_fraction = 7;
+
+  // The number of historical info entries to persist in store.
+  // This param is a part of the cosmos sdk staking module. In the case of
+  // a ccv enabled consumer chain, the ccv module acts as the staking module.
+  int64 historical_entries = 8;
+
+  // Unbonding period for the consumer,
+  // which should be smaller than that of the provider in general.
+  google.protobuf.Duration unbonding_period = 9
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+
+  // !!! DEPRECATED !!! soft_opt_out_threshold is deprecated. see
+  // docs/docs/adrs/adr-015-partial-set-security.md
+  string soft_opt_out_threshold = 10 [ deprecated = true ];
+
+  // Reward denoms. These are the denominations which are allowed to be sent to
+  // the provider as rewards.
+  repeated string reward_denoms = 11;
+
+  // Provider-originated reward denoms. These are denoms coming from the
+  // provider which are allowed to be used as rewards. e.g. "uatom"
+  repeated string provider_reward_denoms = 12;
+
+  // The period after which a consumer can retry sending a throttled packet.
+  google.protobuf.Duration retry_delay_period = 13
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+
+  // The consumer ID of this consumer chain. Used by the consumer module to send
+  // ICS rewards.
+  string consumer_id = 14;
+}
+
+// ConsumerGenesisState defines shared genesis information between provider and
+// consumer
+message ConsumerGenesisState {
+  ConsumerParams params = 1 [ (gogoproto.nullable) = false ];
+  ProviderInfo provider = 2 [ (gogoproto.nullable) = false ];
+  // True for new chain, false for chain restart.
+  // This is needed and always set to true; otherwise, new_chain in the consumer
+  // genesis state will default to false
+  bool new_chain = 3;
+  // Flag indicating whether the consumer CCV module starts in pre-CCV state
+  bool preCCV = 4;
+  // The ID of the connection end on the consumer chain on top of which the
+  // CCV channel will be established. If connection_id == "", a new client of
+  // the provider chain and a new connection on top of this client are created.
+  // The new client is initialized using client_state and consensus_state.
+  string connection_id = 5;
+}
+
+// ProviderInfo defines all information a consumer needs from a provider
+// Shared data type between provider and consumer
+message ProviderInfo {
+  // The client state for the provider client filled in on new chain, nil on
+  // restart. If connection_id != "", then client_state is ignored.
+  ibc.lightclients.tendermint.v1.ClientState client_state = 1;
+  // The consensus state for the provider client filled in on new chain, nil on
+  // restart. If connection_id != "", then consensus_state is ignored.
+  ibc.lightclients.tendermint.v1.ConsensusState consensus_state = 2;
+  // InitialValset filled in on new chain and on restart.
+  repeated .cometbft.abci.v2.ValidatorUpdate initial_val_set = 3
+      [ (gogoproto.nullable) = false ];
+}

@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package interchain_security.ccv.v1;
+
+option go_package = "github.com/cosmos/interchain-security/v7/x/ccv/types";
+
+import "cosmos/staking/v1beta1/staking.proto";
+
+import "gogoproto/gogo.proto";
+import "cometbft/abci/v2/types.proto";
+
+//
+// Note any type defined in this file is used by both the consumer and provider
+// AND SENT OVER THE WIRE via a ccv channel. Ideally these schemas should never
+// change, or at least be backwards compatible if ever changed.
+//
+
+// This packet is sent from provider chain to consumer chain if the validator
+// set for consumer chain changes (due to new bonding/unbonding messages or
+// slashing events) A VSCMatured packet from consumer chain will be sent
+// asynchronously once unbonding period is over, and this will function as
+// `UnbondingOver` message for this packet.
+message ValidatorSetChangePacketData {
+  repeated .cometbft.abci.v2.ValidatorUpdate validator_updates = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"validator_updates\""
+  ];
+  uint64 valset_update_id = 2;
+  // consensus address of consumer chain validators
+  // successfully slashed on the provider chain
+  repeated string slash_acks = 3;
+}
+
+// This packet is sent from the consumer chain to the provider chain
+// to notify that a VSC packet reached maturity on the consumer chain.
+message VSCMaturedPacketData {
+  // the id of the VSC packet that reached maturity
+  uint64 valset_update_id = 1;
+}
+
+// This packet is sent from the consumer chain to the provider chain
+// to request the slashing of a validator as a result of an infraction
+// committed on the consumer chain.
+message SlashPacketData {
+  cometbft.abci.v2.Validator validator = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"validator\""
+  ];
+  // map to the infraction block height on the provider
+  uint64 valset_update_id = 2;
+  // tell if the slashing is for a downtime or a double-signing infraction
+  cosmos.staking.v1beta1.Infraction infraction = 3;
+}
+
+// ConsumerPacketData contains a consumer packet data and a type tag
+message ConsumerPacketData {
+  ConsumerPacketDataType type = 1;
+
+  oneof data {
+    SlashPacketData slashPacketData = 2;
+    VSCMaturedPacketData vscMaturedPacketData = 3;
+  }
+}
+
+// ConsumerPacketType indicates interchain security specific packet types.
+enum ConsumerPacketDataType {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // UNSPECIFIED packet type
+  CONSUMER_PACKET_TYPE_UNSPECIFIED = 0
+      [ (gogoproto.enumvalue_customname) = "UnspecifiedPacket" ];
+  // Slash packet
+  CONSUMER_PACKET_TYPE_SLASH = 1
+      [ (gogoproto.enumvalue_customname) = "SlashPacket" ];
+  // VSCMatured packet
+  CONSUMER_PACKET_TYPE_VSCM = 2
+      [ (gogoproto.enumvalue_customname) = "VscMaturedPacket" ];
+}
+
+// Note this type is used during IBC handshake methods for both the consumer and
+// provider
+message HandshakeMetadata {
+  string provider_fee_pool_addr = 1;
+  string version = 2;
+}
+
+// ConsumerPacketData contains a consumer packet data and a type tag
+// that is compatible with ICS v1 and v2 over the wire. It is not used for
+// internal storage.
+message ConsumerPacketDataV1 {
+  ConsumerPacketDataType type = 1;
+
+  oneof data {
+    SlashPacketDataV1 slashPacketData = 2;
+    VSCMaturedPacketData vscMaturedPacketData = 3;
+  }
+}
+
+// This packet is sent from the consumer chain to the provider chain
+// It is backward compatible with the ICS v1 and v2 version of the packet.
+message SlashPacketDataV1 {
+  cometbft.abci.v2.Validator validator = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"validator\""
+  ];
+  // map to the infraction block height on the provider
+  uint64 valset_update_id = 2;
+  // tell if the slashing is for a downtime or a double-signing infraction
+  InfractionType infraction = 3;
+}
+
+// InfractionType indicates the infraction type a validator committed.
+// Note ccv.InfractionType to maintain compatibility between ICS versions
+// using different versions of the cosmos-sdk and ibc-go modules.
+enum InfractionType {
+  option (gogoproto.goproto_enum_prefix) = false;
+
+  // UNSPECIFIED defines an empty infraction type.
+  INFRACTION_TYPE_UNSPECIFIED = 0
+      [ (gogoproto.enumvalue_customname) = "InfractionEmpty" ];
+  // DOUBLE_SIGN defines a validator that double-signs a block.
+  INFRACTION_TYPE_DOUBLE_SIGN = 1
+      [ (gogoproto.enumvalue_customname) = "DoubleSign" ];
+  // DOWNTIME defines a validator that missed signing too many blocks.
+  INFRACTION_TYPE_DOWNTIME = 2
+      [ (gogoproto.enumvalue_customname) = "Downtime" ];
+}

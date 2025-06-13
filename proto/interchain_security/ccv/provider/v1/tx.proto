@@ -1,0 +1,434 @@
+syntax = "proto3";
+package interchain_security.ccv.provider.v1;
+
+option go_package = "github.com/cosmos/interchain-security/v7/x/ccv/provider/types";
+
+import "amino/amino.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/any.proto";
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "cosmos/msg/v1/msg.proto";
+import "ibc/core/client/v1/client.proto";
+import "interchain_security/ccv/provider/v1/provider.proto";
+import "ibc/lightclients/tendermint/v1/tendermint.proto";
+import "cometbft/types/v2/evidence.proto";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  rpc AssignConsumerKey(MsgAssignConsumerKey)
+      returns (MsgAssignConsumerKeyResponse);
+  rpc SubmitConsumerMisbehaviour(MsgSubmitConsumerMisbehaviour)
+      returns (MsgSubmitConsumerMisbehaviourResponse);
+  rpc SubmitConsumerDoubleVoting(MsgSubmitConsumerDoubleVoting)
+      returns (MsgSubmitConsumerDoubleVotingResponse);
+  rpc CreateConsumer(MsgCreateConsumer) returns (MsgCreateConsumerResponse);
+  rpc UpdateConsumer(MsgUpdateConsumer) returns (MsgUpdateConsumerResponse);
+  rpc RemoveConsumer(MsgRemoveConsumer) returns (MsgRemoveConsumerResponse);
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+  rpc OptIn(MsgOptIn) returns (MsgOptInResponse);
+  rpc OptOut(MsgOptOut) returns (MsgOptOutResponse);
+  rpc SetConsumerCommissionRate(MsgSetConsumerCommissionRate)
+      returns (MsgSetConsumerCommissionRateResponse);
+  rpc ChangeRewardDenoms(MsgChangeRewardDenoms)
+      returns (MsgChangeRewardDenomsResponse);
+}
+
+message MsgAssignConsumerKey {
+  option (cosmos.msg.v1.signer) = "signer";
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  // [DEPRECATED] use `consumer_id` instead
+  string chain_id = 1 [ deprecated = true ];
+  // The validator address on the provider
+  string provider_addr = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  // The consensus public key to use on the consumer.
+  // in json string format corresponding to proto-any, ex:
+  // `{"@type":"/cosmos.crypto.ed25519.PubKey","key":"Ui5Gf1+mtWUdH8u3xlmzdKID+F3PK0sfXZ73GZ6q6is="}`
+  string consumer_key = 3;
+
+  string signer = 4 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+
+  // the consumer id of the consumer chain to assign a consensus public key to
+  string consumer_id = 5;
+}
+
+message MsgAssignConsumerKeyResponse {}
+
+// MsgSubmitConsumerMisbehaviour defines a message that reports a light client
+// attack, also known as a misbehaviour, observed on a consumer chain
+message MsgSubmitConsumerMisbehaviour {
+  option (cosmos.msg.v1.signer) = "submitter";
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string submitter = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // The Misbehaviour of the consumer chain wrapping
+  // two conflicting IBC headers
+  ibc.lightclients.tendermint.v1.Misbehaviour misbehaviour = 2;
+  // the consumer id of the consumer chain where the misbehaviour occurred
+  string consumer_id = 3;
+}
+
+message MsgSubmitConsumerMisbehaviourResponse {}
+
+// MsgSubmitConsumerDoubleVoting defines a message that reports
+// a double signing infraction observed on a consumer chain
+message MsgSubmitConsumerDoubleVoting {
+  option (cosmos.msg.v1.signer) = "submitter";
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string submitter = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // The equivocation of the consumer chain wrapping
+  // an evidence of a validator that signed two conflicting votes
+  cometbft.types.v2.DuplicateVoteEvidence duplicate_vote_evidence = 2;
+  // The light client header of the infraction block
+  ibc.lightclients.tendermint.v1.Header infraction_block_header = 3;
+  // the consumer id of the consumer chain where the double-voting took place
+  string consumer_id = 4;
+}
+
+message MsgSubmitConsumerDoubleVotingResponse {}
+
+// MsgUpdateParams is the Msg/UpdateParams request type
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // authority is the address of the governance account.
+  string authority = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+
+  // params defines the x/provider parameters to update.
+  Params params = 2 [ (gogoproto.nullable) = false ];
+}
+
+message MsgUpdateParamsResponse {}
+
+// [DEPRECATED] Use `MsgCreateConsumer` instead
+message MsgConsumerAddition {
+  option deprecated = true;
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // the proposed chain-id of the new consumer chain, must be different from all
+  // other consumer chain ids of the executing provider chain.
+  string chain_id = 1;
+  // the proposed initial height of new consumer chain.
+  // For a completely new chain, this will be {0,1}. However, it may be
+  // different if this is a chain that is converting to a consumer chain.
+  ibc.core.client.v1.Height initial_height = 2 [ (gogoproto.nullable) = false ];
+  // The hash of the consumer chain genesis state without the consumer CCV
+  // module genesis params. It is used for off-chain confirmation of
+  // genesis.json validity by validators and other parties.
+  bytes genesis_hash = 3;
+  // The hash of the consumer chain binary that should be run by validators on
+  // chain initialization. It is used for off-chain confirmation of binary
+  // validity by validators and other parties.
+  bytes binary_hash = 4;
+  // spawn time is the time on the provider chain at which the consumer chain
+  // genesis is finalized and all validators will be responsible for starting
+  // their consumer chain validator node.
+  google.protobuf.Timestamp spawn_time = 5
+      [ (gogoproto.stdtime) = true, (gogoproto.nullable) = false ];
+
+  // Unbonding period for the consumer,
+  // which should be smaller than that of the provider in general.
+  google.protobuf.Duration unbonding_period = 6
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  // Sent CCV related IBC packets will timeout after this duration
+  google.protobuf.Duration ccv_timeout_period = 7
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  // Sent transfer related IBC packets will timeout after this duration
+  google.protobuf.Duration transfer_timeout_period = 8
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  // The fraction of tokens allocated to the consumer redistribution address
+  // during distribution events. The fraction is a string representing a
+  // decimal number. For example "0.75" would represent 75%.
+  string consumer_redistribution_fraction = 9;
+  // BlocksPerDistributionTransmission is the number of blocks between
+  // ibc-token-transfers from the consumer chain to the provider chain. On
+  // sending transmission event, `consumer_redistribution_fraction` of the
+  // accumulated tokens are sent to the consumer redistribution address.
+  int64 blocks_per_distribution_transmission = 10;
+  // The number of historical info entries to persist in store.
+  // This param is a part of the cosmos sdk staking module. In the case of
+  // a ccv enabled consumer chain, the ccv module acts as the staking module.
+  int64 historical_entries = 11;
+  // The ID of a token transfer channel used for the Reward Distribution
+  // sub-protocol. If DistributionTransmissionChannel == "", a new transfer
+  // channel is created on top of the same connection as the CCV channel.
+  // Note that transfer_channel_id is the ID of the channel end on the consumer
+  // chain. it is most relevant for chains performing a sovereign to consumer
+  // changeover in order to maintain the existing ibc transfer channel
+  string distribution_transmission_channel = 12;
+  // Corresponds to the percentage of validators that have to validate the chain
+  // under the Top N case. For example, 53 corresponds to a Top 53% chain,
+  // meaning that the top 53% provider validators by voting power have to
+  // validate the proposed consumer chain. top_N can either be 0 or any value in
+  // [50, 100]. A chain can join with top_N == 0 as an Opt In chain, or with
+  // top_N ∈ [50, 100] as a Top N chain.
+  uint32 top_N = 13;
+  // Corresponds to the maximum power (percentage-wise) a validator can have on
+  // the consumer chain. For instance, if `validators_power_cap` is set to 32,
+  // it means that no validator can have more than 32% of the voting power on
+  // the consumer chain. Note that this might not be feasible. For example,
+  // think of a consumer chain with only 5 validators and with
+  // `validators_power_cap` set to 10%. In such a scenario, at least one
+  // validator would need to have more than 20% of the total voting power.
+  // Therefore, `validators_power_cap` operates on a best-effort basis.
+  uint32 validators_power_cap = 14;
+  // Corresponds to the maximum number of validators that can validate a
+  // consumer chain. Only applicable to Opt In chains. Setting
+  // `validator_set_cap` on a Top N chain is a no-op.
+  uint32 validator_set_cap = 15;
+  // Corresponds to a list of provider consensus addresses of validators that
+  // are the ONLY ones that can validate the consumer chain.
+  repeated string allowlist = 16;
+  // Corresponds to a list of provider consensus addresses of validators that
+  // CANNOT validate the consumer chain.
+  repeated string denylist = 17;
+  // signer address
+  string authority = 18 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // Corresponds to the minimal amount of (provider chain) stake required to
+  // validate on the consumer chain.
+  uint64 min_stake = 19;
+  // Corresponds to whether inactive validators are allowed to validate the
+  // consumer chain.
+  bool allow_inactive_vals = 20;
+}
+
+// [DEPRECATED] Use `MsgRemoveConsumer` instead
+message MsgConsumerRemoval {
+  option deprecated = true;
+  option (cosmos.msg.v1.signer) = "authority";
+  // the chain-id of the consumer chain to be stopped
+  string chain_id = 1;
+  // the time on the provider chain at which all validators are responsible to
+  // stop their consumer chain validator node
+  google.protobuf.Timestamp stop_time = 2
+      [ (gogoproto.stdtime) = true, (gogoproto.nullable) = false ];
+  // signer address
+  string authority = 3 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+// MsgRemoveConsumer defines the message used to remove (and stop) a consumer
+// chain. If it passes, all the consumer chain's state is eventually removed
+// from the provider chain.
+message MsgRemoveConsumer {
+  option (cosmos.msg.v1.signer) = "owner";
+
+  // the consumer id of the consumer chain to be stopped
+  string consumer_id = 1;
+  // the address of the owner of the consumer chain to be stopped
+  string owner = 2 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+// MsgRemoveConsumerResponse defines response type for MsgRemoveConsumer
+// messages
+message MsgRemoveConsumerResponse {}
+
+// ChangeRewardDenomsProposal is a governance proposal on the provider chain to
+// mutate the set of denoms accepted by the provider as rewards.
+//
+// Note: this replaces ChangeRewardDenomsProposal which is deprecated and will
+// be removed soon
+message MsgChangeRewardDenoms {
+  option (cosmos.msg.v1.signer) = "authority";
+
+  // the list of consumer reward denoms to add
+  repeated string denoms_to_add = 1;
+  // the list of consumer reward denoms to remove
+  repeated string denoms_to_remove = 2;
+  // authority is the address of the governance account
+  string authority = 3 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+}
+
+// MsgChangeRewardDenomsResponse defines response type for MsgChangeRewardDenoms
+// messages
+message MsgChangeRewardDenomsResponse {}
+
+message MsgOptIn {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+  option (cosmos.msg.v1.signer) = "signer";
+  // [DEPRECATED] use `consumer_id` instead
+  string chain_id = 1 [ deprecated = true ];
+  // the validator address on the provider
+  string provider_addr = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  // (optional) The consensus public key to use on the consumer in json string
+  // format corresponding to proto-any, for example
+  // `{"@type":"/cosmos.crypto.ed25519.PubKey","key":"Ui5Gf1+mtWUdH8u3xlmzdKID+F3PK0sfXZ73GZ6q6is="}`.
+  // This field is optional and can remain empty (i.e., `consumer_key = ""`). A
+  // validator can always change the consumer public key at a later stage by
+  // issuing a `MsgAssignConsumerKey` message.
+  string consumer_key = 3;
+  // submitter address
+  string signer = 4 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // the consumer id of the consumer chain to opt in to
+  string consumer_id = 5;
+}
+
+message MsgOptInResponse {}
+
+message MsgOptOut {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+  option (cosmos.msg.v1.signer) = "signer";
+  // [DEPRECATED] use `consumer_id` instead
+  string chain_id = 1 [ deprecated = true ];
+  // the validator address on the provider
+  string provider_addr = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  // submitter address
+  string signer = 3 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // the consumer id of the consumer chain to opt out from
+  string consumer_id = 4;
+}
+
+message MsgOptOutResponse {}
+
+// MsgSetConsumerCommissionRate allows validators to set
+// a per-consumer chain commission rate
+message MsgSetConsumerCommissionRate {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+  option (cosmos.msg.v1.signer) = "signer";
+
+  // The validator address on the provider
+  string provider_addr = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  // [DEPRECATED] use `consumer_id` instead
+  string chain_id = 2 [ deprecated = true ];
+  // The rate to charge delegators on the consumer chain, as a fraction
+  // TODO: migrate rate from sdk.Dec to math.LegacyDec
+  string rate = 3 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+  // submitter address
+  string signer = 4 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // the consumer id of the consumer chain to set the commission rate
+  string consumer_id = 5;
+}
+
+message MsgSetConsumerCommissionRateResponse {}
+
+// [DEPRECATED] Use `MsgUpdateConsumer` instead
+message MsgConsumerModification {
+  option (cosmos.msg.v1.signer) = "authority";
+  option deprecated = true;
+
+  // the title of the proposal
+  string title = 1;
+  // the description of the proposal
+  string description = 2;
+  // the chain-id of the consumer chain to be modified
+  string chain_id = 3;
+  // Corresponds to the percentage of validators that have to validate the chain
+  // under the Top N case. For example, 53 corresponds to a Top 53% chain,
+  // meaning that the top 53% provider validators by voting power have to
+  // validate the proposed consumer chain. top_N can either be 0 or any value in
+  // [50, 100]. A chain can join with top_N == 0 as an Opt In chain, or with
+  // top_N ∈ [50, 100] as a Top N chain.
+  uint32 top_N = 4;
+  // Corresponds to the maximum power (percentage-wise) a validator can have on
+  // the consumer chain. For instance, if `validators_power_cap` is set to 32,
+  // it means that no validator can have more than 32% of the voting power on
+  // the consumer chain. Note that this might not be feasible. For example,
+  // think of a consumer chain with only 5 validators and with
+  // `validators_power_cap` set to 10%. In such a scenario, at least one
+  // validator would need to have more than 20% of the total voting power.
+  // Therefore, `validators_power_cap` operates on a best-effort basis.
+  uint32 validators_power_cap = 5;
+  // Corresponds to the maximum number of validators that can validate a
+  // consumer chain. Only applicable to Opt In chains. Setting
+  // `validator_set_cap` on a Top N chain is a no-op.
+  uint32 validator_set_cap = 6;
+  // Corresponds to a list of provider consensus addresses of validators that
+  // are the ONLY ones that can validate the consumer chain.
+  repeated string allowlist = 7;
+  // Corresponds to a list of provider consensus addresses of validators that
+  // CANNOT validate the consumer chain.
+  repeated string denylist = 8;
+  // signer address
+  string authority = 9 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+  // Corresponds to the minimal amount of (provider chain) stake required to
+  // validate on the consumer chain.
+  uint64 min_stake = 10;
+  // Corresponds to whether inactive validators are allowed to validate the
+  // consumer chain.
+  bool allow_inactive_vals = 11;
+}
+
+message MsgConsumerModificationResponse {}
+
+// MsgCreateConsumer defines the message that creates a consumer chain
+message MsgCreateConsumer {
+  option (cosmos.msg.v1.signer) = "submitter";
+
+  // Submitter address. If the message is successfully handled, the ownership of
+  // the consumer chain will given to this address.
+  string submitter = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+
+  // the chain id of the new consumer chain
+  string chain_id = 2;
+
+  ConsumerMetadata metadata = 3 [ (gogoproto.nullable) = false ];
+
+  ConsumerInitializationParameters initialization_parameters = 4;
+
+  PowerShapingParameters power_shaping_parameters = 5;
+
+  // allowlisted reward denoms of the consumer
+  AllowlistedRewardDenoms allowlisted_reward_denoms = 6;
+
+  // infraction parameters for slashing and jailing
+  InfractionParameters infraction_parameters = 7;
+}
+
+// MsgCreateConsumerResponse defines response type for MsgCreateConsumer
+message MsgCreateConsumerResponse { string consumer_id = 1; }
+
+// MsgUpdateConsumer defines the message used to modify a consumer chain.
+message MsgUpdateConsumer {
+  option (cosmos.msg.v1.signer) = "owner";
+
+  // the address of the owner of the consumer chain to be updated
+  string owner = 1 [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+
+  // the consumer id of the consumer chain to be updated
+  string consumer_id = 2;
+
+  // the new owner of the consumer when updated
+  string new_owner_address = 3
+      [ (cosmos_proto.scalar) = "cosmos.AddressString" ];
+
+  // the metadata of the consumer when updated
+  ConsumerMetadata metadata = 4;
+
+  // initialization parameters can only be updated before a chain has launched
+  ConsumerInitializationParameters initialization_parameters = 5;
+
+  // the power-shaping parameters of the consumer when updated
+  PowerShapingParameters power_shaping_parameters = 6;
+
+  // allowlisted reward denoms of the consumer (if provided they overwrite
+  // previously set reward denoms)
+  AllowlistedRewardDenoms allowlisted_reward_denoms = 7;
+
+  // (optional) If the consumer chain has NOT yet launched, the chain id can be
+  // updated. After a chain has launched the chain id CANNOT be updated. This
+  // field is optional and can remain empty (i.e., `new_chain_id = ""`) or
+  // correspond to the chain id the chain already has.
+  string new_chain_id = 8;
+
+  // infraction parameters for slashing and jailing
+  InfractionParameters infraction_parameters = 9;
+}
+
+// MsgUpdateConsumerResponse defines response type for MsgUpdateConsumer
+// messages
+message MsgUpdateConsumerResponse {}

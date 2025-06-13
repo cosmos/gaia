@@ -333,7 +333,7 @@ lint:
 lint-fix:
 	@echo "--> Running linter"
 	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(golangci_version)
-	@$(golangci_lint_cmd) run --fix --out-format=tab --issues-exit-code=0
+	@$(golangci_lint_cmd) run --fix --issues-exit-code=0
 
 format:
 	@go install mvdan.cc/gofumpt@latest

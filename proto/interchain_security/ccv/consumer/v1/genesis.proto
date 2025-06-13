@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package interchain_security.ccv.consumer.v1;
+
+option go_package = "github.com/cosmos/interchain-security/v7/x/ccv/consumer/types";
+
+import "interchain_security/ccv/v1/shared_consumer.proto";
+import "ibc/lightclients/tendermint/v1/tendermint.proto";
+
+import "gogoproto/gogo.proto";
+import "interchain_security/ccv/v1/wire.proto";
+import "google/protobuf/timestamp.proto";
+import "cometbft/abci/v2/types.proto";
+
+// GenesisState defines the CCV consumer genesis state
+//
+// Note: this type is only used on consumer side and references shared types
+// with provider
+message GenesisState {
+  // Reserve 5th slot for removed provider_client_state field
+  reserved 5;
+
+  // Reserve 6th slot for removed provider_consensus_state field
+  reserved 6;
+
+  // Reserve 7th slot for removed maturing_packets field
+  reserved 7;
+
+  // Reserve 8th slot for removed initial_val_set field
+  reserved 8;
+
+  // ConsumerParams is a shared type with provider module
+  interchain_security.ccv.v1.ConsumerParams params = 1
+      [ (gogoproto.nullable) = false ];
+  // Client ID of the provider. Empty for a new chain, filled in on restart.
+  string provider_client_id = 2;
+  // Channel ID of the provider. Empty for a new chain, filled in on restart.
+  string provider_channel_id = 3;
+  // true for new chain, false for chain restart.
+  bool new_chain = 4;
+  // HeightToValsetUpdateId nil on new chain, filled in on restart.
+  repeated HeightToValsetUpdateID height_to_valset_update_id = 9
+      [ (gogoproto.nullable) = false ];
+  // OutstandingDowntimes nil on new chain, filled  in on restart.
+  repeated OutstandingDowntime outstanding_downtime_slashing = 10
+      [ (gogoproto.nullable) = false ];
+  // PendingConsumerPackets nil on new chain, filled in on restart.
+  ConsumerPacketDataList pending_consumer_packets = 11
+      [ (gogoproto.nullable) = false ];
+  // LastTransmissionBlockHeight nil on new chain, filled in on restart.
+  LastTransmissionBlockHeight last_transmission_block_height = 12
+      [ (gogoproto.nullable) = false ];
+  // Flag indicating whether the consumer CCV module starts in pre-CCV state
+  bool preCCV = 13;
+  interchain_security.ccv.v1.ProviderInfo provider = 14
+      [ (gogoproto.nullable) = false ];
+  // The ID of the connection end on the consumer chain on top of which the
+  // CCV channel will be established. If connection_id == "", a new client of
+  // the provider chain and a new connection on top of this client are created.
+  // The new client is initialized using provider.client_state and
+  // provider.consensus_state.
+  string connection_id = 15;
+}
+
+// HeightValsetUpdateID represents a mapping internal to the consumer CCV module
+// which links a block height to each recv valset update id.
+message HeightToValsetUpdateID {
+  uint64 height = 1;
+  uint64 valset_update_id = 2;
+}
+
+// OutstandingDowntime defines the type used internally to the consumer CCV
+// module and is used in order to not send multiple slashing requests for
+// the same downtime infraction.
+message OutstandingDowntime { string validator_consensus_address = 1; }
+
+// LastTransmissionBlockHeight is the last time validator holding
+// pools were transmitted to the provider chain. This type is used internally
+// to the consumer CCV module.
+message LastTransmissionBlockHeight { int64 height = 1; }
+
+// ConsumerPacketDataList is a list of consumer packet data packets.
+//
+// Note this type is used internally to the consumer CCV module
+// for exporting / importing state in InitGenesis and ExportGenesis.
+message ConsumerPacketDataList {
+  repeated interchain_security.ccv.v1.ConsumerPacketData list = 1
+      [ (gogoproto.nullable) = false ];
+}

@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"cosmossdk.io/x/feegrant"
-
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 
 	"github.com/cosmos/gaia/v25/tests/e2e/common"
 )

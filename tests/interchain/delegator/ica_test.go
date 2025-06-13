@@ -131,6 +131,7 @@ func (s *ICAControllerSuite) TestICADelegate() {
 		assert.Contains(c, string(delegations), validator.ValoperAddress)
 	}, 10*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
 }
+
 func TestDelegatorICA(t *testing.T) {
 	s := &ICAControllerSuite{Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
 		UpgradeOnSetup: true,

@@ -1,4 +1,4 @@
-package v25_0_0
+package v25_0_0 //nolint:revive
 
 import (
 	storetypes "cosmossdk.io/store/types"

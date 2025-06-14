@@ -24,14 +24,14 @@ pull_request_rules:
           {{ title }} (#{{ number }})
           {{ body }}
 
-  - name: Backport patches to the release/v23.x branch
+  - name: Backport patches to the release/v25.x branch
     conditions:
       - base=main
-      - label=A:backport/v23.x
+      - label=A:backport/v25.x
     actions:
       backport:
         branches:
-          - release/v23.x
+          - release/v25.x
 
   - name: Backport patches to the release/v24.x branch
     conditions:

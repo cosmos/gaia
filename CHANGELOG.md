@@ -15,6 +15,10 @@
 ### BUG-FIXES
 - Fix the `testnet` command to use the proper gaia binary ([\#3783](https://github.com/cosmos/gaia/pull/3783))
 
+### Dependencies
+
+- Bump [docker/build-push-action](https://github.com/docker/build-push-action) from 6.16.0 to 6.18.0 ([#3796](https://github.com/cosmos/gaia/pull/3796))
+
 ## v24.0.0
 
 *May 30, 2025*

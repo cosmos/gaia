@@ -15,6 +15,10 @@
 ### BUG-FIXES
 - Fix the `testnet` command to use the proper gaia binary ([\#3783](https://github.com/cosmos/gaia/pull/3783))
 
+### Dependencies
+
+- Bump [github.com/spf13/cast](https://github.com/spf13/cast) from 1.8.0 to 1.9.2 ([#3793](https://github.com/cosmos/gaia/pull/3793))
+
 ## v24.0.0
 
 *May 30, 2025*

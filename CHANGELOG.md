@@ -15,6 +15,10 @@
 ### BUG-FIXES
 - Fix the `testnet` command to use the proper gaia binary ([\#3783](https://github.com/cosmos/gaia/pull/3783))
 
+### Dependencies
+
+- Bump [github.com/cosmos/cosmos-db](https://github.com/cosmos/cosmos-db) from 1.1.1 to 1.1.3 ([#3790](https://github.com/cosmos/gaia/pull/3790))
+
 ## v24.0.0
 
 *May 30, 2025*

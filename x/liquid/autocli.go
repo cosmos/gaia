@@ -17,6 +17,17 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			Service: types.Query_serviceDesc.ServiceName,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
+					RpcMethod: "LiquidValidator",
+					Use:       "liquid-validator [validator-address]",
+					Short:     "Query individual liquid validator by validator address",
+					Example: fmt.Sprintf(
+						"$ %s query liquid liquid-validator %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj",
+						version.AppName, sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{
+						{ProtoField: "validator_addr"},
+					},
+				},
+				{
 					RpcMethod: "TokenizeShareRecordById",
 					Use:       "tokenize-share-record-by-id [id]",
 					Short:     "Query individual tokenize share record information by share by id",

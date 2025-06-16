@@ -20,7 +20,7 @@ func (s *IntegrationTestSuite) TestV2RecvPacket() {
 
 	endpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[chain.ID][0].GetHostPort("1317/tcp"))
 
-	timeoutTimestamp := uint64(time.Now().Add(time.Minute * 5).Unix())
+	timeoutTimestamp := uint64(time.Now().Add(time.Minute * 5).Unix()) //nolint:gosec
 
 	rawTx, err := s.CreateIBCV2RecvPacketTx(timeoutTimestamp, "1", submitterAddress.String(), RecipientAddress, "")
 	s.Require().NoError(err)
@@ -71,7 +71,7 @@ func (s *IntegrationTestSuite) TestV2Callback() {
 
 	endpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[chain.ID][0].GetHostPort("1317/tcp"))
 
-	timeoutTimestamp := uint64(time.Now().Add(time.Minute * 5).Unix())
+	timeoutTimestamp := uint64(time.Now().Add(time.Minute * 5).Unix()) //nolint:gosec
 
 	s.Require().NotEmpty(common.EntrypointAddress)
 	s.Require().NotEmpty(common.AdapterAddress)

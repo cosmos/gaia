@@ -1,20 +1,15 @@
+version: "2"
 run:
   tests: true
-  # timeout for analysis, e.g. 30s, 5m, default is 1m
   timeout: 5m
-
 linters:
-  disable-all: true
+  default: none
   enable:
     - dogsled
     - errcheck
-    - exportloopref
-    - gci
     - goconst
     - gocritic
-    - gofumpt
     - gosec
-    - gosimple
     - govet
     - ineffassign
     - misspell
@@ -22,89 +17,99 @@ linters:
     - nolintlint
     - revive
     - staticcheck
-    - stylecheck
-    - typecheck
     - thelper
     - unconvert
     - unparam
     - unused
-
+  settings:
+    dogsled:
+      max-blank-identifiers: 3
+    nolintlint:
+      require-explanation: false
+      require-specific: false
+      allow-unused: false
+    revive:
+      severity: warning
+      rules:
+        - name: unused-parameter
+          disabled: true
+        - name: blank-imports
+        - name: context-as-argument
+        - name: context-keys-type
+        - name: dot-imports
+        - name: error-return
+        - name: error-strings
+        - name: error-naming
+        - name: exported
+        - name: if-return
+        - name: increment-decrement
+        - name: var-naming
+        - name: var-declaration
+        - name: range
+        - name: receiver-naming
+        - name: time-naming
+        - name: unexported-return
+        - name: indent-error-flow
+        - name: errorf
+        - name: empty-block
+        - name: superfluous-else
+        - name: unreachable-code
+        - name: redefines-builtin-id
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - gosec
+        text: Use of weak random number generator
+      - linters:
+          - golint
+        text: comment on exported var
+      - linters:
+          - golint
+        text: don't use an underscore in package name
+      - linters:
+          - staticcheck
+        text: 'ST1003:'
+      - linters:
+          - staticcheck
+        text: 'ST1016:'
+      - linters:
+          - staticcheck
+        path: migrations
+        text: 'SA1019:'
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 issues:
-  exclude-rules:
-    - text: 'Use of weak random number generator'
-      linters:
-        - gosec
-    - text: 'comment on exported var'
-      linters:
-        - golint
-    - text: "don't use an underscore in package name"
-      linters:
-        - golint
-    - text: 'ST1003:'
-      linters:
-        - stylecheck
-    # FIXME: Disabled until golangci-lint updates stylecheck with this fix:
-    # https://github.com/dominikh/go-tools/issues/389
-    - text: 'ST1016:'
-      linters:
-        - stylecheck
-    - path: 'migrations'
-      text: 'SA1019:'
-      linters:
-        - staticcheck
-
   max-issues-per-linter: 10000
   max-same-issues: 10000
-
-linters-settings:
-  gci:
-    custom-order: true
-    sections:
-      - standard # Standard section: captures all standard packages.
-      - default # Default section: contains all imports that could not be matched to another section type.
-      - blank # blank imports
-      - dot # dot imports
-      - prefix(github.com/cometbft/cometbft) # comet
-      - prefix(github.com/cosmos) # cosmos org
-      - prefix(cosmossdk.io) # new modules
-      - prefix(github.com/cosmos/cosmos-sdk) # cosmos sdk
-      - prefix(github.com/CosmWasm/wasmd) # cosmwasm
-      - prefix(github.com/cosmos/gaia) # Gaia
-  dogsled:
-    max-blank-identifiers: 3
-  maligned:
-    # print struct with more effective memory layout or not, false by default
-    suggest-new: true
-  nolintlint:
-    allow-unused: false
-    allow-leading-space: true
-    require-explanation: false
-    require-specific: false
-  revive:
-    ignore-generated-header: true
-    severity: warning
-    rules:
-      - name: unused-parameter
-        disabled: true
-      - name: blank-imports
-      - name: context-as-argument
-      - name: context-keys-type
-      - name: dot-imports
-      - name: error-return
-      - name: error-strings
-      - name: error-naming
-      - name: exported
-      - name: if-return
-      - name: increment-decrement
-      - name: var-naming
-      - name: var-declaration
-      - name: range
-      - name: receiver-naming
-      - name: time-naming
-      - name: unexported-return
-      - name: indent-error-flow
-      - name: errorf
-      - name: empty-block
-      - name: superfluous-else
-      - name: unreachable-code
-      - name: redefines-builtin-id
+formatters:
+  enable:
+    - gci
+    - gofumpt
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - blank
+        - dot
+        - prefix(github.com/cometbft/cometbft)
+        - prefix(github.com/cosmos)
+        - prefix(cosmossdk.io)
+        - prefix(github.com/cosmos/cosmos-sdk)
+        - prefix(github.com/CosmWasm/wasmd)
+        - prefix(github.com/cosmos/gaia)
+      custom-order: true
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

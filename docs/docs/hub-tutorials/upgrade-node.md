@@ -123,7 +123,7 @@ At this point, you might want to run a script to update the exported genesis int
 ## Reset Data
 
 :::warning
-If the version <new_version> you are upgrading to is not breaking from the previous one, you should not reset the data. If it is not breaking, you can skip to [Restart](#restart)
+If the version {'<'}new_version{'>'} you are upgrading to is not breaking from the previous one, you should not reset the data. If it is not breaking, you can skip to [Restart](#restart)
 :::
 
 :::warning

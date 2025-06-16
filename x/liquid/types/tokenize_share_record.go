@@ -18,5 +18,5 @@ func (r TokenizeShareRecord) GetModuleAddress() sdk.AccAddress {
 }
 
 func (r TokenizeShareRecord) GetShareTokenDenom() string {
-	return fmt.Sprintf("%s/%s", strings.ToLower(r.Validator), strconv.Itoa(int(r.Id)))
+	return fmt.Sprintf("%s/%s", strings.ToLower(r.Validator), strconv.FormatUint(r.Id, 10))
 }

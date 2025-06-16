@@ -122,6 +122,17 @@ func (s *IntegrationTestSuite) testLiquid() {
 		5*time.Second,
 	)
 
+	// Validate liquid shares increased
+	s.Require().Eventually(
+		func() bool {
+			res, err := query.LiquidValidator(chainEndpoint, validatorAddressA)
+			s.Require().NoError(err)
+			return res.LiquidValidator.LiquidShares.TruncateInt().Equal(tokenizeAmount)
+		},
+		20*time.Second,
+		5*time.Second,
+	)
+
 	// Bank send Liquid token
 	sendAmount := sdk.NewCoin(shareDenom, tokenizeAmount)
 	s.ExecBankSend(s.Resources.ChainA, 0, delegatorAddress.String(), validatorAAddr.String(), sendAmount.String(), common.StandardFees.String(), false)
@@ -197,6 +208,17 @@ func (s *IntegrationTestSuite) testLiquid() {
 				return false
 			}
 			return true
+		},
+		20*time.Second,
+		5*time.Second,
+	)
+
+	// Validate liquid shares decreased
+	s.Require().Eventually(
+		func() bool {
+			res, err := query.LiquidValidator(chainEndpoint, validatorAddressA)
+			s.Require().NoError(err)
+			return res.LiquidValidator.LiquidShares.TruncateInt().Equal(tokenizeAmount.Sub(redeemAmount.Amount))
 		},
 		20*time.Second,
 		5*time.Second,
@@ -292,7 +314,7 @@ func (s *IntegrationTestSuite) testLiquidGlobalLimit() {
 	s.Require().NoError(err)
 
 	// Validate balance increased
-	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressB), strconv.Itoa(int(recordID)))
+	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressB), strconv.Itoa(int(recordID))) //nolint:gosec
 	s.Require().Eventually(
 		func() bool {
 			res, err := query.SpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)
@@ -414,7 +436,7 @@ func (s *IntegrationTestSuite) testLiquidValidatorLimit() {
 	s.Require().NoError(err)
 
 	// Validate balance increased
-	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressB), strconv.Itoa(int(recordID)))
+	shareDenom := fmt.Sprintf("%s/%s", strings.ToLower(validatorAddressB), strconv.Itoa(int(recordID))) //nolint:gosec
 	s.Require().Eventually(
 		func() bool {
 			res, err := query.SpecificBalance(chainEndpoint, delegatorAddress.String(), shareDenom)

@@ -2,7 +2,7 @@
 ARG IMG_TAG=latest
 
 # Compile the gaiad binary
-FROM golang:1.23-alpine AS gaiad-builder
+FROM golang:1.24-alpine AS gaiad-builder
 WORKDIR /src/app/
 ENV PACKAGES="curl build-base git bash file linux-headers eudev-dev"
 RUN apk add --no-cache $PACKAGES

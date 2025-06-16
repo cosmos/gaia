@@ -38,6 +38,23 @@ func (k Querier) Params(ctx context.Context, _ *types.QueryParamsRequest) (*type
 	return &types.QueryParamsResponse{Params: params}, nil
 }
 
+// LiquidValidator queries for a LiquidValidator record by validator address
+func (k Querier) LiquidValidator(c context.Context, req *types.QueryLiquidValidatorRequest) (*types.QueryLiquidValidatorResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+	ctx := sdk.UnwrapSDKContext(c)
+	valAddr, err := k.stakingKeeper.ValidatorAddressCodec().StringToBytes(req.ValidatorAddr)
+	if err != nil {
+		return nil, err
+	}
+	lv, err := k.GetLiquidValidator(ctx, valAddr)
+	if err != nil {
+		return nil, err
+	}
+	return &types.QueryLiquidValidatorResponse{LiquidValidator: lv}, nil
+}
+
 // TokenizeShareRecordById queries for individual tokenize share record information by share by id
 func (k Querier) TokenizeShareRecordById(c context.Context, req *types.QueryTokenizeShareRecordByIdRequest) (*types.QueryTokenizeShareRecordByIdResponse, error) { //nolint:revive // fixing this would require changing the .proto files, so we might as well leave it alone
 	if req == nil {

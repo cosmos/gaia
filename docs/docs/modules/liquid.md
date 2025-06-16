@@ -1,10 +1,10 @@
 ---
-title: LSM Staking
-order: 1
+title: x/liquid
+order: 2
 ---
 
-The `x/staking` module used by the Hub includes extensions that enable liquid staking
-You can read more about it in our [LSM documentation](https://github.com/cosmos/cosmos-sdk/tree/v0.50.9-lsm/x/staking#totalliquidstakedtokens).
+The `x/liquid` module used by the Hub includes types and APIs that enable liquid staking.
+You can read more about it in our [module documentation](https://github.com/cosmos/gaia/tree/main/x/liquid/README.md).
 
 ## What are LSM shares
 

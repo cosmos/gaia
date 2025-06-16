@@ -15,6 +15,10 @@
 ### BUG-FIXES
 - Fix the `testnet` command to use the proper gaia binary ([\#3783](https://github.com/cosmos/gaia/pull/3783))
 
+### Dependencies
+
+- Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.72.2 to 1.73.0 ([#3791](https://github.com/cosmos/gaia/pull/3791))
+
 ## v24.0.0
 
 *May 30, 2025*

@@ -15,6 +15,10 @@
 ### BUG-FIXES
 - Fix the `testnet` command to use the proper gaia binary ([\#3783](https://github.com/cosmos/gaia/pull/3783))
 
+### Dependencies
+
+- Bump [github.com/cosmos/interchain-security/v7](https://github.com/cosmos/interchain-security) from 7.0.0-20250408210344-06e0dc6bf6d6 to 7.0.1 ([#3792](https://github.com/cosmos/gaia/pull/3792))
+
 ## v24.0.0
 
 *May 30, 2025*

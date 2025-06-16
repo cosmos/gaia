@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v24/x/liquid/types"
+	"github.com/cosmos/gaia/v25/x/liquid/types"
 )
 
 // Querier is used as Keeper will have duplicate methods if used directly, and gRPC names take precedence over keeper
@@ -53,6 +53,35 @@ func (k Querier) LiquidValidator(c context.Context, req *types.QueryLiquidValida
 		return nil, err
 	}
 	return &types.QueryLiquidValidatorResponse{LiquidValidator: lv}, nil
+}
+
+// LiquidValidators queries for all LiquidValidator records
+func (k Querier) LiquidValidators(c context.Context, req *types.QueryLiquidValidatorsRequest) (*types.QueryLiquidValidatorsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(c))
+	valStore := prefix.NewStore(store, types.LiquidValidatorPrefix)
+
+	var liquidValidators []types.LiquidValidator
+
+	pageRes, err := query.Paginate(valStore, req.Pagination, func(key, value []byte) error {
+		var val types.LiquidValidator
+		if err := k.cdc.Unmarshal(value, &val); err != nil {
+			return err
+		}
+		liquidValidators = append(liquidValidators, val)
+		return nil
+	})
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryLiquidValidatorsResponse{
+		LiquidValidators: liquidValidators,
+		Pagination:       pageRes,
+	}, nil
 }
 
 // TokenizeShareRecordById queries for individual tokenize share record information by share by id

@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 
-	"github.com/cosmos/gaia/v24/x/liquid/types"
+	"github.com/cosmos/gaia/v25/x/liquid/types"
 )
 
 func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
@@ -16,6 +16,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 		Query: &autocliv1.ServiceCommandDescriptor{
 			Service: types.Query_serviceDesc.ServiceName,
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
+				{
+					RpcMethod: "LiquidValidators",
+					Use:       "liquid-validators",
+					Short:     "Query for all liquid validators",
+					Example:   fmt.Sprintf("$ %s query liquid liquid-validators", version.AppName),
+				},
 				{
 					RpcMethod: "LiquidValidator",
 					Use:       "liquid-validator [validator-address]",

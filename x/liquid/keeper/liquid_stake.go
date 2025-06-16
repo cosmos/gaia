@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 
-	"github.com/cosmos/gaia/v24/x/liquid/types"
+	"github.com/cosmos/gaia/v25/x/liquid/types"
 )
 
 // SetTotalLiquidStakedTokens stores the total outstanding tokens owned by a liquid staking provider
@@ -166,12 +166,10 @@ func (k Keeper) DecreaseTotalLiquidStakedTokens(ctx context.Context, amount math
 }
 
 // SafelyIncreaseValidatorLiquidShares increments the liquid shares on a validator, if:
-// the validator bond factor and validator liquid staking cap will not be exceeded by this delegation
+// the validator liquid staking cap will not be exceeded by this delegation
 //
-// The percentage of validator liquid shares must be less than the ValidatorLiquidStakingCap,
-// and the total liquid staked shares cannot exceed the validator bond cap
-//  1. (TotalLiquidStakedTokens / TotalStakedTokens) <= ValidatorLiquidStakingCap
-//  2. LiquidShares <= (ValidatorBondShares * ValidatorBondFactor)
+// The percentage of validator liquid shares must be less than the ValidatorLiquidStakingCap:
+// (TotalLiquidStakedTokens / TotalStakedTokens) <= ValidatorLiquidStakingCap
 func (k Keeper) SafelyIncreaseValidatorLiquidShares(
 	ctx context.Context,
 	valAddress sdk.ValAddress,

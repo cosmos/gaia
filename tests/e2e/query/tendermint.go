@@ -5,7 +5,7 @@ import (
 
 	tendermintv1beta1 "cosmossdk.io/api/cosmos/base/tendermint/v1beta1"
 
-	"github.com/cosmos/gaia/v24/tests/e2e/common"
+	"github.com/cosmos/gaia/v25/tests/e2e/common"
 )
 
 func GetLatestBlockHeight(endpoint string) (int, error) {

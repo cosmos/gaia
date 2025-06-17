@@ -6,6 +6,7 @@
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to [v2.2.4](https://github.com/CosmWasm/wasmvm/releases/tag/v2.2.4) (#3787)
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) to [v0.60.1](https://github.com/CosmWasm/wasmd/releases/tag/v0.60.1) (#3787)
+- Bump [ledger-go](https://github.com/zondax/ledger-go) to [v1.0.0](https://github.com/zondax/ledger-go/releases/tag/v1.0.0) (#3799)
 
 ### STATE BREAKING
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
@@ -18,6 +19,7 @@
 ### Dependencies
 
 - Bump [github.com/spf13/cast](https://github.com/spf13/cast) from 1.8.0 to 1.9.2 ([#3793](https://github.com/cosmos/gaia/pull/3793))
+- Bump [docker/build-push-action](https://github.com/docker/build-push-action) from 6.16.0 to 6.18.0 ([#3796](https://github.com/cosmos/gaia/pull/3796))
 
 ## v24.0.0
 

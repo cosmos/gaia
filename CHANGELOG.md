@@ -19,6 +19,7 @@
 ### Dependencies
 
 - Bump [github.com/vektra/mockery/v2](https://github.com/vektra/mockery) from 2.53.3 to 2.53.4 ([#3794](https://github.com/cosmos/gaia/pull/3794))
+- Bump [github.com/spf13/cast](https://github.com/spf13/cast) from 1.8.0 to 1.9.2 ([#3793](https://github.com/cosmos/gaia/pull/3793))
 - Bump [docker/build-push-action](https://github.com/docker/build-push-action) from 6.16.0 to 6.18.0 ([#3796](https://github.com/cosmos/gaia/pull/3796))
 
 ## v24.0.0

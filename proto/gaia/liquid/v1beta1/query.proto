@@ -108,7 +108,7 @@ message QueryLiquidValidatorRequest { string validator_addr = 1; }
 // Query/LiquidValidator RPC method.
 message QueryLiquidValidatorResponse {
   LiquidValidator liquid_validator = 1
-     [ (gogoproto.nullable) = false, (amino.dont_omitempty) = true ];
+      [ (gogoproto.nullable) = false, (amino.dont_omitempty) = true ];
 }
 
 // QueryLiquidValidatorsRequest is request type for the

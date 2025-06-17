@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package interchain_security.ccv.consumer.v1;
+import "interchain_security/ccv/v1/shared_consumer.proto";
+option go_package = "github.com/cosmos/interchain-security/v7/x/ccv/consumer/types";
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "interchain_security/ccv/consumer/v1/consumer.proto";
+import "interchain_security/ccv/v1/wire.proto";
+
+service Query {
+  // ConsumerGenesis queries the genesis state needed to start a consumer chain
+  // whose proposal has been accepted
+  rpc QueryNextFeeDistribution(QueryNextFeeDistributionEstimateRequest)
+      returns (QueryNextFeeDistributionEstimateResponse) {
+    option (google.api.http).get =
+        "/interchain_security/ccv/consumer/next-fee-distribution";
+  }
+  // QueryParams queries the ccv/consumer module parameters.
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/interchain_security/ccv/consumer/params";
+  }
+
+  rpc QueryProviderInfo(QueryProviderInfoRequest)
+      returns (QueryProviderInfoResponse) {
+    option (google.api.http).get =
+        "/interchain_security/ccv/consumer/provider-info";
+  }
+
+  // QueryThrottleState returns on-chain state relevant to throttled consumer
+  // packets
+  rpc QueryThrottleState(QueryThrottleStateRequest)
+      returns (QueryThrottleStateResponse) {
+    option (google.api.http).get =
+        "/interchain_security/ccv/consumer/throttle_state";
+  }
+}
+
+// NextFeeDistributionEstimate holds information about next fee distribution
+message NextFeeDistributionEstimate {
+  // current block height at the time of querying
+  int64 currentHeight = 1;
+  // block height at which last distribution took place
+  int64 lastHeight = 2;
+  // block height at which next distribution will take place
+  int64 nextHeight = 3;
+  // ratio between consumer and provider fee distribution
+  string distribution_fraction = 4;
+  // total accruead fees at the time of querying
+  string total = 5;
+  // amount distributed to provider chain
+  string toProvider = 6;
+  // amount distributed (kept) by consumer chain
+  string toConsumer = 7;
+}
+
+message QueryNextFeeDistributionEstimateRequest {}
+
+message QueryNextFeeDistributionEstimateResponse {
+  NextFeeDistributionEstimate data = 1;
+}
+
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  interchain_security.ccv.v1.ConsumerParams params = 1
+      [ (gogoproto.nullable) = false ];
+}
+
+message QueryProviderInfoRequest {}
+
+message QueryProviderInfoResponse {
+  ChainInfo consumer = 1 [ (gogoproto.nullable) = false ];
+  ChainInfo provider = 2 [ (gogoproto.nullable) = false ];
+}
+
+message QueryThrottleStateRequest {}
+
+message QueryThrottleStateResponse {
+  SlashRecord slash_record = 1 [ (gogoproto.nullable) = true ];
+  repeated interchain_security.ccv.v1.ConsumerPacketData packet_data_queue = 2
+      [ (gogoproto.nullable) = false ];
+}
+
+message ChainInfo {
+  string chainID = 1;
+  string clientID = 2;
+  string connectionID = 3;
+  string channelID = 4;
+}

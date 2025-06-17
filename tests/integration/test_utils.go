@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	abci "github.com/cometbft/cometbft/abci/types"
+	abci "github.com/cometbft/cometbft/v2/abci/types"
 
 	dbm "github.com/cosmos/cosmos-db"
 	ibctesting "github.com/cosmos/ibc-go/v10/testing"
@@ -123,7 +123,7 @@ func SendMsgsOverride(chain *ibctesting.TestChain, feeAmount sdk.Coin, gasLimit 
 func SignAndDeliver(
 	tb testing.TB, txCfg client.TxConfig, app *bam.BaseApp, msgs []sdk.Msg,
 	chainID string, accNums, accSeqs []uint64, expPass bool, blockTime time.Time, nextValHash []byte, feeAmount sdk.Coin, gasLimit uint64, priv ...cryptotypes.PrivKey,
-) (*abci.ResponseFinalizeBlock, error) {
+) (*abci.FinalizeBlockResponse, error) {
 	tb.Helper()
 	tx, err := simtestutil.GenSignedMockTx(
 		rand.New(rand.NewSource(time.Now().UnixNano())),
@@ -141,7 +141,7 @@ func SignAndDeliver(
 	txBytes, err := txCfg.TxEncoder()(tx)
 	require.NoError(tb, err)
 
-	return app.FinalizeBlock(&abci.RequestFinalizeBlock{
+	return app.FinalizeBlock(&abci.FinalizeBlockRequest{
 		Height:             app.LastBlockHeight() + 1,
 		Time:               blockTime,
 		NextValidatorsHash: nextValHash,

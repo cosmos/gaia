@@ -208,6 +208,25 @@ build-static-linux-amd64: go.sum $(BUILDDIR)/
 	$(DOCKER) cp gaiabinary:/usr/local/bin/ $(BUILDDIR)/gaiad-linux-amd64
 	$(DOCKER) rm -f gaiabinary
 
+# Build static binaries for linux/arm64 using docker buildx
+# Pulled from neutron-org/neutron: https://github.com/neutron-org/neutron/blob/v4.2.2/Makefile#L107
+build-static-linux-arm64: go.sum $(BUILDDIR)/
+	$(DOCKER) buildx create --name gaiabuilder || true
+	$(DOCKER) buildx use gaiabuilder
+	$(DOCKER) buildx build \
+		--build-arg GO_VERSION=$(GO_VERSION) \
+		--build-arg GIT_VERSION=$(VERSION) \
+		--build-arg GIT_COMMIT=$(COMMIT) \
+		--build-arg BUILD_TAGS=$(build_tags_comma_sep),muslc \
+		--platform linux/arm64 \
+		-t gaiad-static-arm64 \
+		-f Dockerfile . \
+		--load
+	$(DOCKER) rm -f gaiabinary || true
+	$(DOCKER) create -ti --name gaiabinary gaiad-static-arm64
+	$(DOCKER) cp gaiabinary:/usr/local/bin/ $(BUILDDIR)/gaiad-linux-arm64
+	$(DOCKER) rm -f gaiabinary
+
 
 # uses goreleaser to create static binaries for darwin on local machine
 goreleaser-build-local:

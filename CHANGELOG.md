@@ -4,10 +4,15 @@
 
 ### DEPENDENCIES
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to [v2.2.4](https://github.com/CosmWasm/wasmvm/releases/tag/v2.2.4) (#3787)
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) to [v0.60.1](https://github.com/CosmWasm/wasmd/releases/tag/v0.60.1) (#3787)
+- Bump [ledger-go](https://github.com/zondax/ledger-go) to [v1.0.0](https://github.com/zondax/ledger-go/releases/tag/v1.0.0) (#3799)
 
 ### STATE BREAKING
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
-- 
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to [v2.2.4](https://github.com/CosmWasm/wasmvm/releases/tag/v2.2.4) (#3787)
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) to [v0.60.1](https://github.com/CosmWasm/wasmd/releases/tag/v0.60.1) (#3787)
+
 ### BUG-FIXES
 - Fix the `testnet` command to use the proper gaia binary ([\#3783](https://github.com/cosmos/gaia/pull/3783))
 
@@ -40,6 +45,7 @@
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
 - Remove expedited gov prop type restrictions ([\#3723](https://github.com/cosmos/gaia/pull/3723))
 - Add liquid validator query to x/liquid ([\#3735](https://github.com/cosmos/gaia/pull/3735))
+- Add liquid validators query to x/liquid ([\#3760](https://github.com/cosmos/gaia/pull/3760))
 
 ### BUG-FIXES
 - Set x/liquid params during InitGenesis ([\#3759](https://github.com/cosmos/gaia/pull/3759))

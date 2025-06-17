@@ -13,6 +13,15 @@ option go_package = "github.com/cosmos/gaia/x/liquid/types";
 
 // Query defines the gRPC querier service.
 service Query {
+  // LiquidValidators queries all liquid validators.
+  //
+  // When called from another module, this query might consume a high amount of
+  // gas if the pagination field is incorrectly set.
+  rpc LiquidValidators(QueryLiquidValidatorsRequest)
+      returns (QueryLiquidValidatorsResponse) {
+    option (cosmos.query.v1.module_query_safe) = true;
+    option (google.api.http).get = "/gaia/liquid/v1beta1/liquid_validators";
+  }
 
   // Query for an individual liquid validator by validator address
   rpc LiquidValidator(QueryLiquidValidatorRequest)
@@ -99,7 +108,23 @@ message QueryLiquidValidatorRequest { string validator_addr = 1; }
 // Query/LiquidValidator RPC method.
 message QueryLiquidValidatorResponse {
   LiquidValidator liquid_validator = 1
+     [ (gogoproto.nullable) = false, (amino.dont_omitempty) = true ];
+}
+
+// QueryLiquidValidatorsRequest is request type for the
+// Query/QueryLiquidValidators RPC method.
+message QueryLiquidValidatorsRequest {
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryLiquidValidatorsResponse is response type for the
+// Query/QueryLiquidValidators RPC method.
+message QueryLiquidValidatorsResponse {
+  repeated LiquidValidator liquid_validators = 1
       [ (gogoproto.nullable) = false, (amino.dont_omitempty) = true ];
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.

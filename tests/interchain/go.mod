@@ -5,7 +5,7 @@ go 1.23.8
 toolchain go1.24.3
 
 replace (
-	cosmossdk.io/core => cosmossdk.io/core v0.11.0
+	cosmossdk.io/core => cosmossdk.io/core v0.11.3
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
 	github.com/ChainSafe/go-schnorrkel/1 => github.com/ChainSafe/go-schnorrkel v1.0.0
 	github.com/btcsuite/btcd/btcec/v2 => github.com/btcsuite/btcd/btcec/v2 v2.3.2 // 2.3.4 breaks api
@@ -19,7 +19,7 @@ replace (
 require (
 	cosmossdk.io/math v1.5.3
 	github.com/cometbft/cometbft v0.38.17
-	github.com/cosmos/cosmos-sdk v0.53.0
+	github.com/cosmos/cosmos-sdk v0.53.2
 	github.com/cosmos/ibc-go/v10 v10.3.0
 	github.com/cosmos/interchain-security/v7 v7.0.1
 	github.com/docker/docker v28.0.0+incompatible

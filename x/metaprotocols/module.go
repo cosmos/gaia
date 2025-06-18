@@ -80,9 +80,6 @@ func NewAppModule() *AppModule {
 	return &AppModule{}
 }
 
-func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
-}
-
 func (a AppModule) RegisterServices(_ module.Configurator) {
 }
 

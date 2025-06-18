@@ -375,7 +375,7 @@ start-localnet-ci: build
 	./build/gaiad genesis gentx val 1000000000stake --home ~/.gaiad-liveness --chain-id liveness --keyring-backend test
 	./build/gaiad genesis collect-gentxs --home ~/.gaiad-liveness
 	sed -i.bak'' 's/minimum-gas-prices = ""/minimum-gas-prices = "0uatom"/' ~/.gaiad-liveness/config/app.toml
-	./build/gaiad start --home ~/.gaiad-liveness
+	./build/gaiad start --home ~/.gaiad-liveness 
 
 .PHONY: start-localnet-ci
 

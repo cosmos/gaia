@@ -175,23 +175,19 @@ func initCometConfig() *tmcfg.Config {
 
 func initAppConfig() (string, interface{}) {
 	// Embed additional configurations
-	type CustomAppConfig struct {
-		serverconfig.Config
-
-		Wasm wasmtypes.NodeConfig `mapstructure:"wasm"`
-	}
 
 	// Can optionally overwrite the SDK's default server config.
 	srvCfg := serverconfig.DefaultConfig()
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
 
-	customAppConfig := CustomAppConfig{
-		Config: *srvCfg,
-		Wasm:   wasmtypes.DefaultNodeConfig(),
+	customAppConfig := gaia.GaiaAppConfig{
+		Config:        *srvCfg,
+		Wasm:          wasmtypes.DefaultNodeConfig(),
+		OpenTelemetry: gaia.DefaultOtelConfig,
 	}
 
-	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate()
+	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate() + gaia.OpenTelemetryTemplate()
 
 	return defaultAppTemplate, customAppConfig
 }

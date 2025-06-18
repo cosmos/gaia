@@ -8,13 +8,20 @@ import (
 	"os"
 	"path/filepath"
 
+	abci "github.com/cometbft/cometbft/abci/types"
+	tmcfg "github.com/cometbft/cometbft/config"
+	tmjson "github.com/cometbft/cometbft/libs/json"
+	"github.com/cometbft/cometbft/privval"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/telemetry"
+	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	types2 "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
-
-	abci "github.com/cometbft/cometbft/abci/types"
-	tmjson "github.com/cometbft/cometbft/libs/json"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	"github.com/spf13/cast"
+	"github.com/spf13/viper"
 
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/gogoproto/proto"
@@ -106,6 +113,9 @@ type GaiaApp struct { //nolint: revive
 	// simulation manager
 	sm           *module.SimulationManager
 	configurator module.Configurator
+
+	ValInfo    ValidatorInfo
+	otelClient *OtelClient
 }
 
 func init() {
@@ -169,6 +179,8 @@ func NewGaiaApp(
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
 	}
+
+	app.configureValidatorInfo(homePath, appOpts)
 
 	moduleAccountAddresses := app.ModuleAccountAddrs()
 
@@ -358,6 +370,20 @@ func NewGaiaApp(
 		}
 	}
 
+	telemetry.EnableTelemetry()
+	otelConfig := OtelConfig{
+		OtlpCollectorEndpoint:       cast.ToString(appOpts.Get("opentelemetry.otlp-collector-endpoint")),
+		OtlpCollectorMetricsURLPath: cast.ToString(appOpts.Get("opentelemetry.otlp-collector-metrics-url-path")),
+		OtlpUser:                    cast.ToString(appOpts.Get("opentelemetry.otlp-user")),
+		OtlpToken:                   cast.ToString(appOpts.Get("opentelemetry.otlp-token")),
+		OtlpServiceName:             cast.ToString(appOpts.Get("opentelemetry.otlp-service-name")),
+		OtlpPushInterval:            cast.ToDuration(appOpts.Get("opentelemetry.otlp-push-interval")),
+	}
+	if otelConfig.OtlpCollectorEndpoint != "" {
+		app.otelClient = NewOtelClient(app.StakingKeeper, app.ValInfo)
+		app.otelClient.StartExporter(otelConfig)
+	}
+
 	return app
 }
 
@@ -366,6 +392,12 @@ func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
 
 // PreBlocker application updates every pre block
 func (app *GaiaApp) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+	addr := app.otelClient.GetValAddr()
+	val, err := app.StakingKeeper.GetValidatorByConsAddr(ctx, sdk.ConsAddress(addr))
+	if err == nil {
+		isVal := val.GetStatus() == types2.Bonded
+		app.otelClient.SetValidatorStatus(isVal)
+	}
 	return app.mm.PreBlock(ctx)
 }
 
@@ -567,6 +599,43 @@ func (app *GaiaApp) AutoCliOpts() autocli.AppOptions {
 	}
 }
 
+func (app *GaiaApp) configureValidatorInfo(homePath string, appOpts servertypes.AppOptions) {
+	// Load CometBFT config and get validator info
+	cfg := tmcfg.DefaultConfig()
+	cfg.SetRoot(homePath)
+
+	// Load the config file (created/validated by interceptConfigs)
+	configPath := filepath.Join(homePath, "config", "config.toml")
+	if _, err := os.Stat(configPath); err == nil {
+		viper := viper.New()
+		viper.SetConfigType("toml")
+		viper.SetConfigFile(configPath)
+		if err := viper.ReadInConfig(); err == nil {
+			if err := viper.Unmarshal(cfg); err == nil {
+				cfg.SetRoot(homePath)
+			}
+		}
+	}
+
+	// Get chain ID
+	chainID := cast.ToString(appOpts.Get(flags.FlagChainID))
+	if chainID == "" {
+		// Fallback to genesis chain-id
+		genDocFile := filepath.Join(homePath, "config", "genesis.json")
+		appGenesis, err := genutiltypes.AppGenesisFromFile(genDocFile)
+		if err == nil {
+			chainID = appGenesis.ChainID
+		}
+	}
+
+	// Get validator info
+	vi, err := getValidatorConfig(cfg, chainID)
+	// Set validator info on the app
+	if err == nil {
+		app.ValInfo = vi
+	}
+}
+
 // TestingApp functions
 
 // GetBaseApp implements the TestingApp interface.
@@ -632,4 +701,43 @@ func minTxFeesChecker(ctx sdk.Context, tx sdk.Tx, feemarketKp feemarketkeeper.Ke
 	}
 
 	return feeTx.GetFee(), 0, nil
+}
+
+var ErrNotValidator = fmt.Errorf("not validator")
+
+func getValidatorConfig(cfg *tmcfg.Config, chainID string) (ValidatorInfo, error) {
+	vi := ValidatorInfo{}
+	if cfg.PrivValidatorListenAddr != "" {
+		listenAddr := cfg.PrivValidatorListenAddr
+		pve, err := privval.NewSignerListener(listenAddr, nil)
+		if err != nil {
+			return vi, fmt.Errorf("failed to start private validator: %w", err)
+		}
+
+		pvsc, err := privval.NewSignerClient(pve, chainID)
+		if err != nil {
+			return vi, fmt.Errorf("failed to start private validator: %w", err)
+		}
+
+		// try to get a pubkey from private validate first time
+		pk, err := pvsc.GetPubKey()
+		if err != nil {
+			return vi, fmt.Errorf("can't get pubkey: %w", err)
+		}
+		vi.IsValidator = true
+		vi.Moniker = cfg.Moniker
+		vi.Address = pk.Address()
+		return vi, nil
+	} else if cfg.PrivValidatorKey != "" {
+		vi.IsValidator = true
+		vi.Moniker = cfg.Moniker
+		_, err := os.Stat(cfg.PrivValidatorKeyFile())
+		if err != nil {
+			return vi, ErrNotValidator
+		}
+		pv := privval.LoadFilePV(cfg.PrivValidatorKeyFile(), cfg.PrivValidatorStateFile())
+		vi.Address = pv.GetAddress()
+		return vi, nil
+	}
+	return vi, ErrNotValidator
 }

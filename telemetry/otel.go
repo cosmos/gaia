@@ -1,4 +1,4 @@
-package gaia
+package telemetry
 
 import (
 	"context"

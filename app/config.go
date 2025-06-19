@@ -3,6 +3,7 @@ package gaia
 import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
+	"github.com/cosmos/gaia/v25/telemetry"
 )
 
 type GaiaAppConfig struct {
@@ -10,7 +11,7 @@ type GaiaAppConfig struct {
 
 	Wasm wasmtypes.NodeConfig `mapstructure:"wasm"`
 
-	OpenTelemetry OtelConfig `mapstructure:"opentelemetry"`
+	OpenTelemetry telemetry.OtelConfig `mapstructure:"opentelemetry"`
 }
 
 func OpenTelemetryTemplate() string {

@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/cosmos/gaia/v25/telemetry"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
@@ -184,7 +185,7 @@ func initAppConfig() (string, interface{}) {
 	customAppConfig := gaia.GaiaAppConfig{
 		Config:        *srvCfg,
 		Wasm:          wasmtypes.DefaultNodeConfig(),
-		OpenTelemetry: gaia.DefaultOtelConfig,
+		OpenTelemetry: telemetry.DefaultOtelConfig,
 	}
 
 	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate() + gaia.OpenTelemetryTemplate()

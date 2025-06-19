@@ -1,6 +1,8 @@
 package gaia
 
 import (
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	"github.com/cosmos/gaia/v25/x/amiavalidator"
 	"github.com/skip-mev/feemarket/x/feemarket"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
@@ -120,6 +122,7 @@ func appModules(
 		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
 		tendermint.NewAppModule(tmLightClientModule),
 		liquid.NewAppModule(appCodec, app.LiquidKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		amiavalidator.NewAppModule(&stakingkeeper.Querier{Keeper: app.StakingKeeper}, app.otelClient),
 	}
 }
 

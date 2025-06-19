@@ -16,7 +16,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	types2 "github.com/cosmos/cosmos-sdk/x/staking/types"
+	telemetry2 "github.com/cosmos/gaia/v25/telemetry"
+	"github.com/cosmos/gaia/v25/x/amiavalidator"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
@@ -114,8 +115,8 @@ type GaiaApp struct { //nolint: revive
 	sm           *module.SimulationManager
 	configurator module.Configurator
 
-	ValInfo    ValidatorInfo
-	otelClient *OtelClient
+	ValInfo    telemetry2.ValidatorInfo
+	otelClient *telemetry2.OtelClient
 }
 
 func init() {
@@ -181,7 +182,8 @@ func NewGaiaApp(
 	}
 
 	app.configureValidatorInfo(homePath, appOpts)
-
+	app.otelClient = telemetry2.NewOtelClient(app.ValInfo)
+	
 	moduleAccountAddresses := app.ModuleAccountAddrs()
 
 	// Setup keepers
@@ -233,6 +235,7 @@ func NewGaiaApp(
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
 		authtypes.ModuleName,
+		amiavalidator.ModuleName,
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
@@ -371,7 +374,7 @@ func NewGaiaApp(
 	}
 
 	telemetry.EnableTelemetry()
-	otelConfig := OtelConfig{
+	otelConfig := telemetry2.OtelConfig{
 		OtlpCollectorEndpoint:       cast.ToString(appOpts.Get("opentelemetry.otlp-collector-endpoint")),
 		OtlpCollectorMetricsURLPath: cast.ToString(appOpts.Get("opentelemetry.otlp-collector-metrics-url-path")),
 		OtlpUser:                    cast.ToString(appOpts.Get("opentelemetry.otlp-user")),
@@ -380,7 +383,6 @@ func NewGaiaApp(
 		OtlpPushInterval:            cast.ToDuration(appOpts.Get("opentelemetry.otlp-push-interval")),
 	}
 	if otelConfig.OtlpCollectorEndpoint != "" {
-		app.otelClient = NewOtelClient(app.ValInfo)
 		app.otelClient.StartExporter(otelConfig)
 	}
 
@@ -392,13 +394,6 @@ func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
 
 // PreBlocker application updates every pre block
 func (app *GaiaApp) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-	// TODO: this could be a module that exposes a preblocker?
-	addr := app.otelClient.GetValAddr()
-	val, err := app.StakingKeeper.GetValidatorByConsAddr(ctx, sdk.ConsAddress(addr))
-	if err == nil {
-		isVal := val.GetStatus() == types2.Bonded
-		app.otelClient.SetValidatorStatus(isVal)
-	}
 	return app.mm.PreBlock(ctx)
 }
 
@@ -706,8 +701,8 @@ func minTxFeesChecker(ctx sdk.Context, tx sdk.Tx, feemarketKp feemarketkeeper.Ke
 
 var ErrNotValidator = fmt.Errorf("not validator")
 
-func getValidatorConfig(cfg *tmcfg.Config, chainID string) (ValidatorInfo, error) {
-	vi := ValidatorInfo{}
+func getValidatorConfig(cfg *tmcfg.Config, chainID string) (telemetry2.ValidatorInfo, error) {
+	vi := telemetry2.ValidatorInfo{}
 	if cfg.PrivValidatorListenAddr != "" {
 		listenAddr := cfg.PrivValidatorListenAddr
 		pve, err := privval.NewSignerListener(listenAddr, nil)

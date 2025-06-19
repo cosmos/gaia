@@ -130,22 +130,25 @@ func (o *OtelClient) scrapePrometheusMetrics(ctx context.Context, meter otmetric
 		return err
 	}
 
-	kv := attribute.KeyValue{Key: "moniker", Value: attribute.StringValue(o.vi.Moniker)}
+	monikerAttr := []attribute.KeyValue{
+		{Key: "moniker", Value: attribute.StringValue(o.vi.Moniker)},
+	}
+
 	for _, mf := range metricFamilies {
 		name := mf.GetName()
 		for _, m := range mf.Metric {
 			switch mf.GetType() {
 			case dto.MetricType_GAUGE:
-				recordGauge(ctx, meter, gauges, name, mf.GetHelp(), m.Gauge.GetValue(), []attribute.KeyValue{kv})
+				recordGauge(ctx, meter, gauges, name, mf.GetHelp(), m.Gauge.GetValue(), monikerAttr)
 
 			case dto.MetricType_COUNTER:
-				recordGauge(ctx, meter, gauges, name, mf.GetHelp(), m.Counter.GetValue(), []attribute.KeyValue{kv})
+				recordGauge(ctx, meter, gauges, name, mf.GetHelp(), m.Counter.GetValue(), monikerAttr)
 
 			case dto.MetricType_HISTOGRAM:
-				recordHistogram(ctx, meter, histograms, name, mf.GetHelp(), m.Histogram)
+				recordHistogram(ctx, meter, histograms, name, mf.GetHelp(), m.Histogram, monikerAttr)
 
 			case dto.MetricType_SUMMARY:
-				recordSummary(ctx, meter, gauges, name, mf.GetHelp(), m.Summary)
+				recordSummary(ctx, meter, gauges, name, mf.GetHelp(), m.Summary, monikerAttr)
 
 			default:
 				continue
@@ -170,7 +173,7 @@ func recordGauge(ctx context.Context, meter otmetric.Meter, gauges map[string]ot
 	g.Record(ctx, val, otmetric.WithAttributes(attrs...))
 }
 
-func recordHistogram(ctx context.Context, meter otmetric.Meter, histograms map[string]otmetric.Float64Histogram, name, help string, h *dto.Histogram) {
+func recordHistogram(ctx context.Context, meter otmetric.Meter, histograms map[string]otmetric.Float64Histogram, name, help string, h *dto.Histogram, monikerAttrs []attribute.KeyValue) {
 	boundaries := make([]float64, 0, len(h.Bucket)-1) // excluding +Inf
 	bucketCounts := make([]uint64, 0, len(h.Bucket))
 
@@ -210,21 +213,23 @@ func recordHistogram(ctx context.Context, meter otmetric.Meter, histograms map[s
 			value = (boundaries[i-1] + boundaries[i]) / 2.0
 		}
 
-		// Record `countInBucket` number of observations explicitly (approximation):
+		// Record `countInBucket` number of observations with moniker attributes
 		for j := uint64(0); j < countInBucket; j++ {
-			hist.Record(ctx, value)
+			hist.Record(ctx, value, otmetric.WithAttributes(monikerAttrs...))
 		}
 	}
 }
 
-func recordSummary(ctx context.Context, meter otmetric.Meter, gauges map[string]otmetric.Float64Gauge, name, help string, s *dto.Summary) {
-	recordGauge(ctx, meter, gauges, name+"_sum", help+" (summary sum)", s.GetSampleSum(), nil)
-	recordGauge(ctx, meter, gauges, name+"_count", help+" (summary count)", float64(s.GetSampleCount()), nil)
+func recordSummary(ctx context.Context, meter otmetric.Meter, gauges map[string]otmetric.Float64Gauge, name, help string, s *dto.Summary, monikerAttrs []attribute.KeyValue) {
+	recordGauge(ctx, meter, gauges, name+"_sum", help+" (summary sum)", s.GetSampleSum(), monikerAttrs)
+	recordGauge(ctx, meter, gauges, name+"_count", help+" (summary count)", float64(s.GetSampleCount()), monikerAttrs)
 
 	for _, q := range s.Quantile {
-		attrs := []attribute.KeyValue{
-			attribute.String("quantile", fmt.Sprintf("%v", q.GetQuantile())),
-		}
+		// Combine moniker attrs with quantile attr
+		attrs := make([]attribute.KeyValue, len(monikerAttrs)+1)
+		copy(attrs, monikerAttrs)
+		attrs[len(monikerAttrs)] = attribute.String("quantile", fmt.Sprintf("%v", q.GetQuantile()))
+
 		recordGauge(ctx, meter, gauges, name, help+" (summary quantile)", q.GetValue(), attrs)
 	}
 }

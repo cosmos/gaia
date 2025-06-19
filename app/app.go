@@ -16,7 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	telemetry2 "github.com/cosmos/gaia/v25/telemetry"
+	gaiatelemetry "github.com/cosmos/gaia/v25/telemetry"
 	"github.com/cosmos/gaia/v25/x/amiavalidator"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
@@ -115,8 +115,7 @@ type GaiaApp struct { //nolint: revive
 	sm           *module.SimulationManager
 	configurator module.Configurator
 
-	ValInfo    telemetry2.ValidatorInfo
-	otelClient *telemetry2.OtelClient
+	otelClient *gaiatelemetry.OtelClient
 }
 
 func init() {
@@ -181,9 +180,9 @@ func NewGaiaApp(
 		interfaceRegistry: interfaceRegistry,
 	}
 
-	app.configureValidatorInfo(homePath, appOpts)
-	app.otelClient = telemetry2.NewOtelClient(app.ValInfo)
-	
+	vi := app.configureValidatorInfo(homePath, appOpts)
+	app.otelClient = gaiatelemetry.NewOtelClient(vi)
+
 	moduleAccountAddresses := app.ModuleAccountAddrs()
 
 	// Setup keepers
@@ -374,7 +373,7 @@ func NewGaiaApp(
 	}
 
 	telemetry.EnableTelemetry()
-	otelConfig := telemetry2.OtelConfig{
+	otelConfig := gaiatelemetry.OtelConfig{
 		OtlpCollectorEndpoint:       cast.ToString(appOpts.Get("opentelemetry.otlp-collector-endpoint")),
 		OtlpCollectorMetricsURLPath: cast.ToString(appOpts.Get("opentelemetry.otlp-collector-metrics-url-path")),
 		OtlpUser:                    cast.ToString(appOpts.Get("opentelemetry.otlp-user")),
@@ -595,7 +594,7 @@ func (app *GaiaApp) AutoCliOpts() autocli.AppOptions {
 	}
 }
 
-func (app *GaiaApp) configureValidatorInfo(homePath string, appOpts servertypes.AppOptions) {
+func (app *GaiaApp) configureValidatorInfo(homePath string, appOpts servertypes.AppOptions) gaiatelemetry.ValidatorInfo {
 	// Load CometBFT config and get validator info
 	cfg := tmcfg.DefaultConfig()
 	cfg.SetRoot(homePath)
@@ -624,12 +623,8 @@ func (app *GaiaApp) configureValidatorInfo(homePath string, appOpts servertypes.
 		}
 	}
 
-	// Get validator info
-	vi, err := getValidatorConfig(cfg, chainID)
-	// Set validator info on the app
-	if err == nil {
-		app.ValInfo = vi
-	}
+	vi, _ := getValidatorInfo(cfg, chainID)
+	return vi
 }
 
 // TestingApp functions
@@ -701,8 +696,8 @@ func minTxFeesChecker(ctx sdk.Context, tx sdk.Tx, feemarketKp feemarketkeeper.Ke
 
 var ErrNotValidator = fmt.Errorf("not validator")
 
-func getValidatorConfig(cfg *tmcfg.Config, chainID string) (telemetry2.ValidatorInfo, error) {
-	vi := telemetry2.ValidatorInfo{}
+func getValidatorInfo(cfg *tmcfg.Config, chainID string) (gaiatelemetry.ValidatorInfo, error) {
+	vi := gaiatelemetry.ValidatorInfo{}
 	if cfg.PrivValidatorListenAddr != "" {
 		listenAddr := cfg.PrivValidatorListenAddr
 		pve, err := privval.NewSignerListener(listenAddr, nil)
@@ -715,7 +710,6 @@ func getValidatorConfig(cfg *tmcfg.Config, chainID string) (telemetry2.Validator
 			return vi, fmt.Errorf("failed to start private validator: %w", err)
 		}
 
-		// try to get a pubkey from private validate first time
 		pk, err := pvsc.GetPubKey()
 		if err != nil {
 			return vi, fmt.Errorf("can't get pubkey: %w", err)

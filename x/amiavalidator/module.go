@@ -24,6 +24,13 @@ type Module struct {
 	sk *stakingkeeper.Querier
 }
 
+func NewAppModule(sk *stakingkeeper.Querier, oc *telemetry.OtelClient) *Module {
+	return &Module{
+		oc: oc,
+		sk: sk,
+	}
+}
+
 func (m Module) Name() string {
 	return ModuleName
 }
@@ -33,13 +40,6 @@ func (m Module) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {}
 func (m Module) RegisterInterfaces(registry types.InterfaceRegistry) {}
 
 func (m Module) RegisterGRPCGatewayRoutes(c client.Context, mux *runtime.ServeMux) {}
-
-func NewAppModule(sk *stakingkeeper.Querier, oc *telemetry.OtelClient) *Module {
-	return &Module{
-		oc: oc,
-		sk: sk,
-	}
-}
 
 func (m Module) IsOnePerModuleType() {}
 

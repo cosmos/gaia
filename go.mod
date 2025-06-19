@@ -36,6 +36,7 @@ require (
 	github.com/google/gofuzz v1.2.0
 	github.com/gorilla/mux v1.8.1
 	github.com/ory/dockertest/v3 v3.12.0
+	github.com/pborman/uuid v1.2.1
 	github.com/prometheus/client_golang v1.22.0
 	github.com/rakyll/statik v0.1.7
 	github.com/skip-mev/feemarket v1.1.2-0.20250423211022-1831f9c724d1

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	crypto "github.com/cosmos/cosmos-sdk/crypto/types"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	"github.com/pborman/uuid"
 	"github.com/prometheus/client_golang/prometheus"
 	dto "github.com/prometheus/client_model/go"
 	"go.opentelemetry.io/otel"
@@ -41,7 +41,6 @@ type (
 
 	OtelClient struct {
 		vi ValidatorInfo
-		sk *stakingkeeper.Keeper
 	}
 )
 
@@ -54,9 +53,11 @@ var DefaultOtelConfig = OtelConfig{
 	OtlpPushInterval:            10 * time.Second,
 }
 
-func NewOtelClient(sk *stakingkeeper.Keeper, vi ValidatorInfo) *OtelClient {
+func NewOtelClient(vi ValidatorInfo) *OtelClient {
+	if vi.Moniker == "" {
+		vi.Moniker = "UNKNOWN-" + uuid.NewUUID().String()
+	}
 	return &OtelClient{
-		sk: sk,
 		vi: vi,
 	}
 }
@@ -129,15 +130,16 @@ func (o *OtelClient) scrapePrometheusMetrics(ctx context.Context, meter otmetric
 		return err
 	}
 
+	kv := attribute.KeyValue{Key: "moniker", Value: attribute.StringValue(o.vi.Moniker)}
 	for _, mf := range metricFamilies {
 		name := mf.GetName()
 		for _, m := range mf.Metric {
 			switch mf.GetType() {
 			case dto.MetricType_GAUGE:
-				recordGauge(ctx, meter, gauges, name, mf.GetHelp(), m.Gauge.GetValue(), nil)
+				recordGauge(ctx, meter, gauges, name, mf.GetHelp(), m.Gauge.GetValue(), []attribute.KeyValue{kv})
 
 			case dto.MetricType_COUNTER:
-				recordGauge(ctx, meter, gauges, name, mf.GetHelp(), m.Counter.GetValue(), nil)
+				recordGauge(ctx, meter, gauges, name, mf.GetHelp(), m.Counter.GetValue(), []attribute.KeyValue{kv})
 
 			case dto.MetricType_HISTOGRAM:
 				recordHistogram(ctx, meter, histograms, name, mf.GetHelp(), m.Histogram)

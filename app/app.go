@@ -380,7 +380,7 @@ func NewGaiaApp(
 		OtlpPushInterval:            cast.ToDuration(appOpts.Get("opentelemetry.otlp-push-interval")),
 	}
 	if otelConfig.OtlpCollectorEndpoint != "" {
-		app.otelClient = NewOtelClient(app.StakingKeeper, app.ValInfo)
+		app.otelClient = NewOtelClient(app.ValInfo)
 		app.otelClient.StartExporter(otelConfig)
 	}
 
@@ -392,6 +392,7 @@ func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
 
 // PreBlocker application updates every pre block
 func (app *GaiaApp) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+	// TODO: this could be a module that exposes a preblocker?
 	addr := app.otelClient.GetValAddr()
 	val, err := app.StakingKeeper.GetValidatorByConsAddr(ctx, sdk.ConsAddress(addr))
 	if err == nil {

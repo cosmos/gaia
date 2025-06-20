@@ -616,7 +616,7 @@ func getValidatorInfo(homePath string, appOpts servertypes.AppOptions) (gaiatele
 		TxIndex:         &tmcfg.TxIndexConfig{},
 		Instrumentation: &tmcfg.InstrumentationConfig{},
 	}
-	cfg.SetRoot(homePath) // DO NOT REMOVE THIS LINE!! IDK WHY BUT THIS MAKES THE CONFIG UNMARSHAL CORRECTLY
+	cfg.SetRoot(homePath)
 
 	configPath := filepath.Join(homePath, "config", "config.toml")
 	if _, err := os.Stat(configPath); err == nil {

@@ -24,7 +24,7 @@ import (
 )
 
 const (
-	meterName   = "cosmos-sdk-otlp-exporter"
+	meterName   = "gaia"
 	serviceName = "cosmoshub"
 )
 

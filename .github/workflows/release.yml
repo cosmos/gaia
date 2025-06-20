@@ -11,6 +11,9 @@ on:
 
 jobs:
   release:
+    permissions:
+      packages: write
+      contents: write
     runs-on: Gaia-Runner-medium
     steps:
       - name: Checkout

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	crypto "github.com/cosmos/cosmos-sdk/crypto/types"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/pborman/uuid"
 	"github.com/prometheus/client_golang/prometheus"
 	dto "github.com/prometheus/client_model/go"
@@ -21,18 +22,12 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 )
 
-const meterName = "cosmos-sdk-otlp-exporter"
+const (
+	meterName   = "cosmos-sdk-otlp-exporter"
+	serviceName = "cosmos-hub"
+)
 
 type (
-	OtelConfig struct {
-		OtlpCollectorEndpoint       string        `mapstructure:"otlp-collector-endpoint"`
-		OtlpCollectorMetricsURLPath string        `mapstructure:"otlp-collector-metrics-url-path"`
-		OtlpUser                    string        `mapstructure:"otlp-user"`
-		OtlpToken                   string        `mapstructure:"otlp-token"`
-		OtlpServiceName             string        `mapstructure:"otlp-service-name"`
-		OtlpPushInterval            time.Duration `mapstructure:"otlp-push-interval"`
-	}
-
 	ValidatorInfo struct {
 		IsValidator bool
 		Moniker     string
@@ -43,15 +38,6 @@ type (
 		vi ValidatorInfo
 	}
 )
-
-var DefaultOtelConfig = OtelConfig{
-	OtlpCollectorEndpoint:       "localhost:4318",
-	OtlpCollectorMetricsURLPath: "/v1/metrics",
-	OtlpUser:                    "", // empty for local testing
-	OtlpToken:                   "", // empty for local testing
-	OtlpServiceName:             "gaia-test",
-	OtlpPushInterval:            10 * time.Second,
-}
 
 func NewOtelClient(vi ValidatorInfo) *OtelClient {
 	if vi.Moniker == "" {
@@ -66,12 +52,12 @@ func (o *OtelClient) StartExporter(cfg OtelConfig) error {
 	ctx := context.Background()
 
 	opts := []otlpmetrichttp.Option{
-		otlpmetrichttp.WithEndpoint(cfg.OtlpCollectorEndpoint),
-		otlpmetrichttp.WithURLPath(cfg.OtlpCollectorMetricsURLPath),
+		otlpmetrichttp.WithEndpoint(cfg.CollectorEndpoint),
+		otlpmetrichttp.WithURLPath(cfg.CollectorMetricsURLPath),
 	}
-	if cfg.OtlpUser != "" && cfg.OtlpToken != "" {
+	if cfg.User != "" && cfg.Token != "" {
 		opts = append(opts, otlpmetrichttp.WithHeaders(map[string]string{
-			"Authorization": "Basic " + formatBasicAuth(cfg.OtlpUser, cfg.OtlpToken),
+			"Authorization": "Basic " + formatBasicAuth(cfg.User, cfg.Token),
 		}))
 	} else {
 		opts = append(opts, otlpmetrichttp.WithInsecure())
@@ -85,12 +71,12 @@ func (o *OtelClient) StartExporter(cfg OtelConfig) error {
 	}
 
 	res, _ := resource.New(ctx, resource.WithAttributes(
-		semconv.ServiceName(cfg.OtlpServiceName),
+		semconv.ServiceName(fmt.Sprintf("%s-%s", serviceName, version.Version)),
 	))
 
 	meterProvider := metric.NewMeterProvider(
 		metric.WithReader(metric.NewPeriodicReader(exporter,
-			metric.WithInterval(cfg.OtlpPushInterval))),
+			metric.WithInterval(cfg.PushInterval))),
 		metric.WithResource(res),
 	)
 	otel.SetMeterProvider(meterProvider)
@@ -99,7 +85,7 @@ func (o *OtelClient) StartExporter(cfg OtelConfig) error {
 	go func() {
 		gauges := make(map[string]otmetric.Float64Gauge)
 		histograms := make(map[string]otmetric.Float64Histogram)
-		ticker := time.NewTicker(cfg.OtlpPushInterval)
+		ticker := time.NewTicker(cfg.PushInterval)
 		for {
 			select {
 			case <-ticker.C:

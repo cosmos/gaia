@@ -372,16 +372,16 @@ func NewGaiaApp(
 		}
 	}
 
-	telemetry.EnableTelemetry()
 	otelConfig := gaiatelemetry.OtelConfig{
-		OtlpCollectorEndpoint:       cast.ToString(appOpts.Get("opentelemetry.otlp-collector-endpoint")),
-		OtlpCollectorMetricsURLPath: cast.ToString(appOpts.Get("opentelemetry.otlp-collector-metrics-url-path")),
-		OtlpUser:                    cast.ToString(appOpts.Get("opentelemetry.otlp-user")),
-		OtlpToken:                   cast.ToString(appOpts.Get("opentelemetry.otlp-token")),
-		OtlpServiceName:             cast.ToString(appOpts.Get("opentelemetry.otlp-service-name")),
-		OtlpPushInterval:            cast.ToDuration(appOpts.Get("opentelemetry.otlp-push-interval")),
+		Disable:                 cast.ToBool(appOpts.Get("opentelemetry.disable")),
+		CollectorEndpoint:       cast.ToString(appOpts.Get("opentelemetry.collector-endpoint")),
+		CollectorMetricsURLPath: cast.ToString(appOpts.Get("opentelemetry.collector-metrics-url-path")),
+		User:                    cast.ToString(appOpts.Get("opentelemetry.user")),
+		Token:                   cast.ToString(appOpts.Get("opentelemetry.token")),
+		PushInterval:            cast.ToDuration(appOpts.Get("opentelemetry.push-interval")),
 	}
-	if otelConfig.OtlpCollectorEndpoint != "" {
+	if otelConfig.CollectorEndpoint != "" && !otelConfig.Disable {
+		telemetry.EnableTelemetry()
 		app.otelClient.StartExporter(otelConfig)
 	}
 

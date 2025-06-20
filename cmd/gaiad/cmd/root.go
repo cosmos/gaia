@@ -188,7 +188,7 @@ func initAppConfig() (string, interface{}) {
 		OpenTelemetry: telemetry.DefaultOtelConfig,
 	}
 
-	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate() + gaia.OpenTelemetryTemplate()
+	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate() + telemetry.OpenTelemetryTemplate()
 
 	return defaultAppTemplate, customAppConfig
 }

@@ -14,7 +14,6 @@ import (
 	"github.com/cometbft/cometbft/privval"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/telemetry"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	gaiatelemetry "github.com/cosmos/gaia/v25/telemetry"
 	"github.com/cosmos/gaia/v25/x/amiavalidator"
@@ -180,8 +179,22 @@ func NewGaiaApp(
 		interfaceRegistry: interfaceRegistry,
 	}
 
-	vi := app.configureValidatorInfo(homePath, appOpts)
-	app.otelClient = gaiatelemetry.NewOtelClient(vi)
+	vi, err := getValidatorInfo(homePath, appOpts)
+	if err != nil {
+		logger.Debug("failed to get validator info: unable to determine if this node is a validator", "err", err)
+	} else {
+		logger.Debug("successfully determined if this node is a validator", "moniker", vi.Moniker)
+	}
+
+	otelConfig := gaiatelemetry.OtelConfig{
+		Disable:                 cast.ToBool(appOpts.Get("opentelemetry.disable")),
+		CollectorEndpoint:       cast.ToString(appOpts.Get("opentelemetry.collector-endpoint")),
+		CollectorMetricsURLPath: cast.ToString(appOpts.Get("opentelemetry.collector-metrics-url-path")),
+		User:                    cast.ToString(appOpts.Get("opentelemetry.user")),
+		Token:                   cast.ToString(appOpts.Get("opentelemetry.token")),
+		PushInterval:            cast.ToDuration(appOpts.Get("opentelemetry.push-interval")),
+	}
+	app.otelClient = gaiatelemetry.NewOtelClient(otelConfig, vi)
 
 	moduleAccountAddresses := app.ModuleAccountAddrs()
 
@@ -372,17 +385,13 @@ func NewGaiaApp(
 		}
 	}
 
-	otelConfig := gaiatelemetry.OtelConfig{
-		Disable:                 cast.ToBool(appOpts.Get("opentelemetry.disable")),
-		CollectorEndpoint:       cast.ToString(appOpts.Get("opentelemetry.collector-endpoint")),
-		CollectorMetricsURLPath: cast.ToString(appOpts.Get("opentelemetry.collector-metrics-url-path")),
-		User:                    cast.ToString(appOpts.Get("opentelemetry.user")),
-		Token:                   cast.ToString(appOpts.Get("opentelemetry.token")),
-		PushInterval:            cast.ToDuration(appOpts.Get("opentelemetry.push-interval")),
-	}
 	if otelConfig.CollectorEndpoint != "" && !otelConfig.Disable {
-		telemetry.EnableTelemetry()
-		app.otelClient.StartExporter(otelConfig)
+		logger.Debug("creating gaia app with open telemetry")
+		if err := app.otelClient.StartExporter(logger); err != nil {
+			panic(err)
+		}
+	} else {
+		logger.Debug("creating gaia app without open telemetry")
 	}
 
 	return app
@@ -594,28 +603,37 @@ func (app *GaiaApp) AutoCliOpts() autocli.AppOptions {
 	}
 }
 
-func (app *GaiaApp) configureValidatorInfo(homePath string, appOpts servertypes.AppOptions) gaiatelemetry.ValidatorInfo {
-	// Load CometBFT config and get validator info
-	cfg := tmcfg.DefaultConfig()
-	cfg.SetRoot(homePath)
+func getValidatorInfo(homePath string, appOpts servertypes.AppOptions) (gaiatelemetry.ValidatorInfo, error) {
+	cfg := &tmcfg.Config{
+		BaseConfig:      tmcfg.BaseConfig{},
+		RPC:             &tmcfg.RPCConfig{},
+		P2P:             &tmcfg.P2PConfig{},
+		Mempool:         &tmcfg.MempoolConfig{},
+		StateSync:       &tmcfg.StateSyncConfig{},
+		BlockSync:       &tmcfg.BlockSyncConfig{},
+		Consensus:       &tmcfg.ConsensusConfig{},
+		Storage:         &tmcfg.StorageConfig{},
+		TxIndex:         &tmcfg.TxIndexConfig{},
+		Instrumentation: &tmcfg.InstrumentationConfig{},
+	}
+	cfg.SetRoot(homePath) // DO NOT REMOVE THIS LINE!! IDK WHY BUT THIS MAKES THE CONFIG UNMARSHAL CORRECTLY
 
-	// Load the config file (created/validated by interceptConfigs)
 	configPath := filepath.Join(homePath, "config", "config.toml")
 	if _, err := os.Stat(configPath); err == nil {
 		viper := viper.New()
 		viper.SetConfigType("toml")
 		viper.SetConfigFile(configPath)
 		if err := viper.ReadInConfig(); err == nil {
-			if err := viper.Unmarshal(cfg); err == nil {
-				cfg.SetRoot(homePath)
+			if err := viper.Unmarshal(cfg); err != nil {
+				return gaiatelemetry.ValidatorInfo{}, fmt.Errorf("failed to unmarshal config file: %w", err)
 			}
 		}
+	} else {
+		return gaiatelemetry.ValidatorInfo{}, fmt.Errorf("unable to stat config file at %s", configPath)
 	}
 
-	// Get chain ID
 	chainID := cast.ToString(appOpts.Get(flags.FlagChainID))
 	if chainID == "" {
-		// Fallback to genesis chain-id
 		genDocFile := filepath.Join(homePath, "config", "genesis.json")
 		appGenesis, err := genutiltypes.AppGenesisFromFile(genDocFile)
 		if err == nil {
@@ -623,8 +641,8 @@ func (app *GaiaApp) configureValidatorInfo(homePath string, appOpts servertypes.
 		}
 	}
 
-	vi, _ := getValidatorInfo(cfg, chainID)
-	return vi
+	vi, err := validatorInfoFromCometConfig(cfg, chainID)
+	return vi, err
 }
 
 // TestingApp functions
@@ -696,7 +714,7 @@ func minTxFeesChecker(ctx sdk.Context, tx sdk.Tx, feemarketKp feemarketkeeper.Ke
 
 var ErrNotValidator = fmt.Errorf("not validator")
 
-func getValidatorInfo(cfg *tmcfg.Config, chainID string) (gaiatelemetry.ValidatorInfo, error) {
+func validatorInfoFromCometConfig(cfg *tmcfg.Config, chainID string) (gaiatelemetry.ValidatorInfo, error) {
 	vi := gaiatelemetry.ValidatorInfo{}
 	if cfg.PrivValidatorListenAddr != "" {
 		listenAddr := cfg.PrivValidatorListenAddr
@@ -712,7 +730,7 @@ func getValidatorInfo(cfg *tmcfg.Config, chainID string) (gaiatelemetry.Validato
 
 		pk, err := pvsc.GetPubKey()
 		if err != nil {
-			return vi, fmt.Errorf("can't get pubkey: %w", err)
+			return vi, fmt.Errorf("cannot get pubkey from remote signer: %w", err)
 		}
 		vi.IsValidator = true
 		vi.Moniker = cfg.Moniker

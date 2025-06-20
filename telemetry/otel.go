@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"log"
 	"math"
 	"time"
 
@@ -20,6 +19,8 @@ import (
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+
+	"cosmossdk.io/log"
 )
 
 const (
@@ -35,20 +36,28 @@ type (
 	}
 
 	OtelClient struct {
-		vi ValidatorInfo
+		cfg OtelConfig
+		vi  ValidatorInfo
 	}
 )
 
-func NewOtelClient(vi ValidatorInfo) *OtelClient {
+func NewOtelClient(otelConfig OtelConfig, vi ValidatorInfo) *OtelClient {
 	if vi.Moniker == "" {
 		vi.Moniker = "UNKNOWN-" + uuid.NewUUID().String()
 	}
 	return &OtelClient{
-		vi: vi,
+		cfg: otelConfig,
+		vi:  vi,
 	}
 }
 
-func (o *OtelClient) StartExporter(cfg OtelConfig) error {
+func (o *OtelClient) StartExporter(logger log.Logger) error {
+	cfg := o.cfg
+	if cfg.Disable {
+		logger.Debug("otlp exporter is disabled")
+		return nil
+	}
+	logger.Debug("starting otlp exporter")
 	ctx := context.Background()
 
 	opts := []otlpmetrichttp.Option{
@@ -67,7 +76,7 @@ func (o *OtelClient) StartExporter(cfg OtelConfig) error {
 		opts...,
 	)
 	if err != nil {
-		log.Fatalf("OTLP exporter setup failed: %v", err)
+		return fmt.Errorf("OTLP exporter setup failed: %w", err)
 	}
 
 	res, _ := resource.New(ctx, resource.WithAttributes(
@@ -89,8 +98,8 @@ func (o *OtelClient) StartExporter(cfg OtelConfig) error {
 		for {
 			select {
 			case <-ticker.C:
-				if err := o.scrapePrometheusMetrics(ctx, meter, gauges, histograms); err != nil {
-					log.Printf("error scraping metrics: %v", err)
+				if err := o.scrapePrometheusMetrics(ctx, logger, meter, gauges, histograms); err != nil {
+					logger.Debug("error scraping metrics", "error", err)
 				}
 			}
 		}
@@ -106,13 +115,17 @@ func (o *OtelClient) GetValAddr() crypto.Address {
 	return o.vi.Address
 }
 
-func (o *OtelClient) scrapePrometheusMetrics(ctx context.Context, meter otmetric.Meter, gauges map[string]otmetric.Float64Gauge, histograms map[string]otmetric.Float64Histogram) error {
+func (o *OtelClient) Enabled() bool {
+	return !o.cfg.Disable
+}
+
+func (o *OtelClient) scrapePrometheusMetrics(ctx context.Context, logger log.Logger, meter otmetric.Meter, gauges map[string]otmetric.Float64Gauge, histograms map[string]otmetric.Float64Histogram) error {
 	if !o.vi.IsValidator {
 		return nil
 	}
 	metricFamilies, err := prometheus.DefaultGatherer.Gather()
 	if err != nil {
-		log.Printf("failed to gather prometheus metrics: %v", err)
+		logger.Debug("failed to gather prometheus metrics", "error", err)
 		return err
 	}
 
@@ -125,16 +138,16 @@ func (o *OtelClient) scrapePrometheusMetrics(ctx context.Context, meter otmetric
 		for _, m := range mf.Metric {
 			switch mf.GetType() {
 			case dto.MetricType_GAUGE:
-				recordGauge(ctx, meter, gauges, name, mf.GetHelp(), m.Gauge.GetValue(), monikerAttr)
+				recordGauge(ctx, logger, meter, gauges, name, mf.GetHelp(), m.Gauge.GetValue(), monikerAttr)
 
 			case dto.MetricType_COUNTER:
-				recordGauge(ctx, meter, gauges, name, mf.GetHelp(), m.Counter.GetValue(), monikerAttr)
+				recordGauge(ctx, logger, meter, gauges, name, mf.GetHelp(), m.Counter.GetValue(), monikerAttr)
 
 			case dto.MetricType_HISTOGRAM:
-				recordHistogram(ctx, meter, histograms, name, mf.GetHelp(), m.Histogram, monikerAttr)
+				recordHistogram(ctx, logger, meter, histograms, name, mf.GetHelp(), m.Histogram, monikerAttr)
 
 			case dto.MetricType_SUMMARY:
-				recordSummary(ctx, meter, gauges, name, mf.GetHelp(), m.Summary, monikerAttr)
+				recordSummary(ctx, logger, meter, gauges, name, mf.GetHelp(), m.Summary, monikerAttr)
 
 			default:
 				continue
@@ -145,13 +158,13 @@ func (o *OtelClient) scrapePrometheusMetrics(ctx context.Context, meter otmetric
 	return nil
 }
 
-func recordGauge(ctx context.Context, meter otmetric.Meter, gauges map[string]otmetric.Float64Gauge, name, help string, val float64, attrs []attribute.KeyValue) {
+func recordGauge(ctx context.Context, logger log.Logger, meter otmetric.Meter, gauges map[string]otmetric.Float64Gauge, name, help string, val float64, attrs []attribute.KeyValue) {
 	g, ok := gauges[name]
 	if !ok {
 		var err error
 		g, err = meter.Float64Gauge(name, otmetric.WithDescription(help))
 		if err != nil {
-			log.Printf("failed to create gauge %q: %v", name, err)
+			logger.Debug("failed to create gauge", "name", name, "error", err)
 			return
 		}
 		gauges[name] = g
@@ -159,7 +172,7 @@ func recordGauge(ctx context.Context, meter otmetric.Meter, gauges map[string]ot
 	g.Record(ctx, val, otmetric.WithAttributes(attrs...))
 }
 
-func recordHistogram(ctx context.Context, meter otmetric.Meter, histograms map[string]otmetric.Float64Histogram, name, help string, h *dto.Histogram, monikerAttrs []attribute.KeyValue) {
+func recordHistogram(ctx context.Context, logger log.Logger, meter otmetric.Meter, histograms map[string]otmetric.Float64Histogram, name, help string, h *dto.Histogram, monikerAttrs []attribute.KeyValue) {
 	boundaries := make([]float64, 0, len(h.Bucket)-1) // excluding +Inf
 	bucketCounts := make([]uint64, 0, len(h.Bucket))
 
@@ -180,7 +193,7 @@ func recordHistogram(ctx context.Context, meter otmetric.Meter, histograms map[s
 			otmetric.WithExplicitBucketBoundaries(boundaries...),
 		)
 		if err != nil {
-			log.Printf("failed to create histogram %s: %v", name, err)
+			logger.Debug("failed to create histogram", "name", name, "error", err)
 			return
 		}
 		histograms[name] = hist
@@ -206,9 +219,9 @@ func recordHistogram(ctx context.Context, meter otmetric.Meter, histograms map[s
 	}
 }
 
-func recordSummary(ctx context.Context, meter otmetric.Meter, gauges map[string]otmetric.Float64Gauge, name, help string, s *dto.Summary, monikerAttrs []attribute.KeyValue) {
-	recordGauge(ctx, meter, gauges, name+"_sum", help+" (summary sum)", s.GetSampleSum(), monikerAttrs)
-	recordGauge(ctx, meter, gauges, name+"_count", help+" (summary count)", float64(s.GetSampleCount()), monikerAttrs)
+func recordSummary(ctx context.Context, logger log.Logger, meter otmetric.Meter, gauges map[string]otmetric.Float64Gauge, name, help string, s *dto.Summary, monikerAttrs []attribute.KeyValue) {
+	recordGauge(ctx, logger, meter, gauges, name+"_sum", help+" (summary sum)", s.GetSampleSum(), monikerAttrs)
+	recordGauge(ctx, logger, meter, gauges, name+"_count", help+" (summary count)", float64(s.GetSampleCount()), monikerAttrs)
 
 	for _, q := range s.Quantile {
 		// Combine moniker attrs with quantile attr
@@ -216,7 +229,7 @@ func recordSummary(ctx context.Context, meter otmetric.Meter, gauges map[string]
 		copy(attrs, monikerAttrs)
 		attrs[len(monikerAttrs)] = attribute.String("quantile", fmt.Sprintf("%v", q.GetQuantile()))
 
-		recordGauge(ctx, meter, gauges, name, help+" (summary quantile)", q.GetValue(), attrs)
+		recordGauge(ctx, logger, meter, gauges, name, help+" (summary quantile)", q.GetValue(), attrs)
 	}
 }
 

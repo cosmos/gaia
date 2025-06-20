@@ -181,6 +181,10 @@ func initAppConfig() (string, interface{}) {
 	srvCfg := serverconfig.DefaultConfig()
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
+	srvCfg.Telemetry.Enabled = true
+	if srvCfg.Telemetry.PrometheusRetentionTime <= 0 {
+		srvCfg.Telemetry.PrometheusRetentionTime = 60
+	}
 
 	customAppConfig := gaia.GaiaAppConfig{
 		Config:        *srvCfg,

@@ -138,7 +138,18 @@ func NewRootCmd() *cobra.Command {
 			customAppTemplate, customAppConfig := initAppConfig()
 			customCometConfig := initCometConfig()
 
-			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customCometConfig)
+			err = server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customCometConfig)
+			if err != nil {
+				return err
+			}
+
+			// we force telemetry to be enabled here, otherwise open telemetry won't emit SDK metrics.
+			serverCtx := server.GetServerContextFromCmd(cmd)
+			serverCtx.Viper.Set("telemetry.enabled", true)
+			serverCtx.Viper.Set("telemetry.prometheus-retention-time", 60)
+			server.SetCmdServerContext(cmd, serverCtx)
+
+			return nil
 		},
 	}
 

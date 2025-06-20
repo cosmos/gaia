@@ -715,7 +715,9 @@ func minTxFeesChecker(ctx sdk.Context, tx sdk.Tx, feemarketKp feemarketkeeper.Ke
 var ErrNotValidator = fmt.Errorf("not validator")
 
 func validatorInfoFromCometConfig(cfg *tmcfg.Config, chainID string) (gaiatelemetry.ValidatorInfo, error) {
-	vi := gaiatelemetry.ValidatorInfo{}
+	vi := gaiatelemetry.ValidatorInfo{
+		ChainID: chainID,
+	}
 	if cfg.PrivValidatorListenAddr != "" {
 		listenAddr := cfg.PrivValidatorListenAddr
 		pve, err := privval.NewSignerListener(listenAddr, nil)
@@ -732,12 +734,10 @@ func validatorInfoFromCometConfig(cfg *tmcfg.Config, chainID string) (gaiateleme
 		if err != nil {
 			return vi, fmt.Errorf("cannot get pubkey from remote signer: %w", err)
 		}
-		vi.IsValidator = true
 		vi.Moniker = cfg.Moniker
 		vi.Address = pk.Address()
 		return vi, nil
 	} else if cfg.PrivValidatorKey != "" {
-		vi.IsValidator = true
 		vi.Moniker = cfg.Moniker
 		_, err := os.Stat(cfg.PrivValidatorKeyFile())
 		if err != nil {

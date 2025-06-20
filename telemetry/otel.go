@@ -25,11 +25,12 @@ import (
 
 const (
 	meterName   = "cosmos-sdk-otlp-exporter"
-	serviceName = "cosmos-hub"
+	serviceName = "cosmoshub"
 )
 
 type (
 	ValidatorInfo struct {
+		ChainID     string
 		IsValidator bool
 		Moniker     string
 		Address     crypto.Address
@@ -72,20 +73,18 @@ func (o *OtelClient) StartExporter(logger log.Logger) error {
 		opts = append(opts, otlpmetrichttp.WithInsecure())
 	}
 
-	exporter, err := otlpmetrichttp.New(ctx,
-		opts...,
-	)
+	exporter, err := otlpmetrichttp.New(ctx, opts...)
 	if err != nil {
 		return fmt.Errorf("OTLP exporter setup failed: %w", err)
 	}
 
 	res, _ := resource.New(ctx, resource.WithAttributes(
-		semconv.ServiceName(fmt.Sprintf("%s-%s", serviceName, version.Version)),
+		semconv.ServiceName(fmt.Sprintf("%s.%s", serviceName, o.vi.ChainID)),
+		semconv.ServiceVersion(version.Version),
 	))
 
 	meterProvider := metric.NewMeterProvider(
-		metric.WithReader(metric.NewPeriodicReader(exporter,
-			metric.WithInterval(cfg.PushInterval))),
+		metric.WithReader(metric.NewPeriodicReader(exporter, metric.WithInterval(cfg.PushInterval))),
 		metric.WithResource(res),
 	)
 	otel.SetMeterProvider(meterProvider)

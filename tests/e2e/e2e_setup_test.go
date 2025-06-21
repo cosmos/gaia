@@ -49,6 +49,7 @@ func TestIntegrationTestSuite(t *testing.T) {
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
+	s.T().Log("=== STARTING E2E INTEGRATION TEST SUITE ===")
 	s.T().Log("setting up e2e integration test suite...")
 
 	var err error
@@ -100,14 +101,19 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	time.Sleep(10 * time.Second)
 	s.runIBCRelayer()
+
+	s.T().Log("=== E2E INTEGRATION TEST SUITE SETUP COMPLETED ===")
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
+	s.T().Log("=== STARTING E2E INTEGRATION TEST SUITE TEARDOWN ===")
+
 	if str := os.Getenv("GAIA_E2E_SKIP_CLEANUP"); len(str) > 0 {
 		skipCleanup, err := strconv.ParseBool(str)
 		s.Require().NoError(err)
 
 		if skipCleanup {
+			s.T().Log("=== SKIPPING E2E CLEANUP (GAIA_E2E_SKIP_CLEANUP=true) ===")
 			return
 		}
 	}
@@ -130,6 +136,8 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	for _, td := range s.Resources.TmpDirs {
 		os.RemoveAll(td)
 	}
+
+	s.T().Log("=== E2E INTEGRATION TEST SUITE TEARDOWN COMPLETED ===")
 }
 
 func (s *IntegrationTestSuite) initNodes(c *common.Chain) {

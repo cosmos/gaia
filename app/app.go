@@ -8,20 +8,17 @@ import (
 	"os"
 	"path/filepath"
 
-	abci "github.com/cometbft/cometbft/abci/types"
-	tmcfg "github.com/cometbft/cometbft/config"
-	tmjson "github.com/cometbft/cometbft/libs/json"
-	"github.com/cometbft/cometbft/privval"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	gaiatelemetry "github.com/cosmos/gaia/v25/telemetry"
-	"github.com/cosmos/gaia/v25/x/amiavalidator"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
+
+	abci "github.com/cometbft/cometbft/abci/types"
+	tmcfg "github.com/cometbft/cometbft/config"
+	tmjson "github.com/cometbft/cometbft/libs/json"
+	"github.com/cometbft/cometbft/privval"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/gogoproto/proto"
@@ -44,6 +41,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -68,6 +66,7 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
@@ -79,6 +78,8 @@ import (
 	"github.com/cosmos/gaia/v25/app/keepers"
 	"github.com/cosmos/gaia/v25/app/upgrades"
 	v25 "github.com/cosmos/gaia/v25/app/upgrades/v25_0_0"
+	gaiatelemetry "github.com/cosmos/gaia/v25/telemetry"
+	"github.com/cosmos/gaia/v25/x/amiavalidator"
 )
 
 var (

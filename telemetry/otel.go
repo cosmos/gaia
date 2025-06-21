@@ -7,8 +7,6 @@ import (
 	"math"
 	"time"
 
-	crypto "github.com/cosmos/cosmos-sdk/crypto/types"
-	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/pborman/uuid"
 	"github.com/prometheus/client_golang/prometheus"
 	dto "github.com/prometheus/client_model/go"
@@ -21,6 +19,9 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 
 	"cosmossdk.io/log"
+
+	crypto "github.com/cosmos/cosmos-sdk/crypto/types"
+	"github.com/cosmos/cosmos-sdk/version"
 )
 
 const (
@@ -94,12 +95,9 @@ func (o *OtelClient) StartExporter(logger log.Logger) error {
 		gauges := make(map[string]otmetric.Float64Gauge)
 		histograms := make(map[string]otmetric.Float64Histogram)
 		ticker := time.NewTicker(cfg.PushInterval)
-		for {
-			select {
-			case <-ticker.C:
-				if err := o.scrapePrometheusMetrics(ctx, logger, meter, gauges, histograms); err != nil {
-					logger.Debug("error scraping metrics", "error", err)
-				}
+		for range ticker.C {
+			if err := o.scrapePrometheusMetrics(ctx, logger, meter, gauges, histograms); err != nil {
+				logger.Debug("error scraping metrics", "error", err)
 			}
 		}
 	}()

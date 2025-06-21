@@ -1,8 +1,6 @@
 package gaia
 
 import (
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	"github.com/cosmos/gaia/v25/x/amiavalidator"
 	"github.com/skip-mev/feemarket/x/feemarket"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
@@ -56,11 +54,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	"github.com/cosmos/gaia/v25/x/amiavalidator"
 	"github.com/cosmos/gaia/v25/x/liquid"
 	liquidtypes "github.com/cosmos/gaia/v25/x/liquid/types"
 	"github.com/cosmos/gaia/v25/x/metaprotocols"

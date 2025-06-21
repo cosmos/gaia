@@ -3,16 +3,18 @@ package amiavalidator
 import (
 	"context"
 
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+
+	"cosmossdk.io/core/appmodule"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/cosmos/gaia/v25/telemetry"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 
-	"cosmossdk.io/core/appmodule"
+	"github.com/cosmos/gaia/v25/telemetry"
 )
 
 const ModuleName = "amiavalidator"
@@ -58,7 +60,6 @@ func (m Module) PreBlock(ctx context.Context) (appmodule.ResponsePreBlock, error
 				m.oc.SetValidatorStatus(isVal)
 			}
 		}
-
 	}
 	return sdk.ResponsePreBlock{}, nil
 }

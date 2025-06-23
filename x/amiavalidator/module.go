@@ -51,7 +51,6 @@ func (m Module) IsAppModule() {}
 
 func (m Module) PreBlock(ctx context.Context) (appmodule.ResponsePreBlock, error) {
 	if m.oc.Enabled() {
-		// TODO(technicallyty): maybe we can just update it every 20 blocks, so we don't have to query the val every block?
 		if sdk.UnwrapSDKContext(ctx).BlockHeight()%20 == 0 {
 			addr := m.oc.GetValAddr()
 			val, err := m.sk.GetValidatorByConsAddr(ctx, sdk.ConsAddress(addr))

@@ -39,19 +39,20 @@ func (s *InactiveValidatorsSuite) SetupSuite() {
 			"max_entries": 7,
 			"historical_entries": 10000,
 			"bond_denom": "%s",
-			"min_commission_rate": "0.050000000000000000",
-			"validator_bond_factor": "250.000000000000000000",
-			"global_liquid_staking_cap": "0.250000000000000000",
-			"validator_liquid_staking_cap": "0.500000000000000000"
+			"min_commission_rate": "0.050000000000000000"
 		}	
 	}`, authority, s.Chain.Config().Denom)
 
 	prop, err := s.Chain.BuildProposal(nil, "update staking params", "update staking params", "", chainsuite.GovDepositAmount, "", false)
 	s.Require().NoError(err)
 	prop.Messages = []json.RawMessage{json.RawMessage(stakingProposal)}
-	result, err := s.Chain.SubmitProposal(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, prop)
+	txhash, err := s.Chain.GetNode().SubmitProposal(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, prop)
 	s.Require().NoError(err)
-	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), result.ProposalID))
+	propID, err := s.Chain.GetProposalID(s.GetContext(), txhash)
+	s.Require().NoError(err)
+
+	s.Require().NoError(err)
+	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), propID))
 
 	s.UpgradeChain()
 
@@ -66,7 +67,6 @@ func (s *InactiveValidatorsSuite) SetupSuite() {
 		s.Require().Equal(uint64(200), gjson.GetBytes(stakingParams, "params.max_validators").Uint(), string(stakingParams))
 		s.Require().Equal(uint64(180), gjson.GetBytes(providerParams, "max_provider_consensus_validators").Uint(), string(providerParams))
 	}
-
 	providerParams, err = sjson.SetBytes(providerParams, "max_provider_consensus_validators", maxProviderConsensusValidators)
 	s.Require().NoError(err)
 	providerProposal, err := sjson.SetRaw(fmt.Sprintf(`{
@@ -80,16 +80,20 @@ func (s *InactiveValidatorsSuite) SetupSuite() {
 	prop, err = s.Chain.BuildProposal(nil, "update staking params", "update staking params", "", chainsuite.GovDepositAmount, "", false)
 	s.Require().NoError(err)
 	prop.Messages = append(prop.Messages, json.RawMessage(stakingProposal))
-	result, err = s.Chain.SubmitProposal(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, prop)
+	txhash, err = s.Chain.GetNode().SubmitProposal(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, prop)
 	s.Require().NoError(err)
-	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), result.ProposalID))
+	propID, err = s.Chain.GetProposalID(s.GetContext(), txhash)
+	s.Require().NoError(err)
+	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), propID))
 
 	prop, err = s.Chain.BuildProposal(nil, "update provider params", "update provider params", "", chainsuite.GovDepositAmount, "", false)
 	s.Require().NoError(err)
 	prop.Messages = []json.RawMessage{json.RawMessage(providerProposal)}
-	result, err = s.Chain.SubmitProposal(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, prop)
+	txhash, err = s.Chain.GetNode().SubmitProposal(s.GetContext(), s.Chain.ValidatorWallets[0].Moniker, prop)
 	s.Require().NoError(err)
-	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), result.ProposalID))
+	propID, err = s.Chain.GetProposalID(s.GetContext(), txhash)
+	s.Require().NoError(err)
+	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), propID))
 
 	cfg := chainsuite.ConsumerConfig{
 		ChainName:             "ics-consumer",

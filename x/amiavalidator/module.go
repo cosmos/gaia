@@ -17,7 +17,12 @@ import (
 	"github.com/cosmos/gaia/v25/telemetry"
 )
 
-const ModuleName = "amiavalidator"
+const (
+	ModuleName = "amiavalidator"
+
+	// valUpdateBlockRate determines how many blocks we wait before updating the validator status.
+	valUpdateBlockRate = 20
+)
 
 var _ appmodule.HasPreBlocker = &Module{}
 
@@ -39,11 +44,11 @@ func (m Module) Name() string {
 	return ModuleName
 }
 
-func (m Module) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {}
+func (m Module) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
 
-func (m Module) RegisterInterfaces(registry types.InterfaceRegistry) {}
+func (m Module) RegisterInterfaces(_ types.InterfaceRegistry) {}
 
-func (m Module) RegisterGRPCGatewayRoutes(c client.Context, mux *runtime.ServeMux) {}
+func (m Module) RegisterGRPCGatewayRoutes(_ client.Context, _ *runtime.ServeMux) {}
 
 func (m Module) IsOnePerModuleType() {}
 
@@ -51,7 +56,7 @@ func (m Module) IsAppModule() {}
 
 func (m Module) PreBlock(ctx context.Context) (appmodule.ResponsePreBlock, error) {
 	if m.oc.Enabled() {
-		if sdk.UnwrapSDKContext(ctx).BlockHeight()%20 == 0 {
+		if sdk.UnwrapSDKContext(ctx).BlockHeight()%valUpdateBlockRate == 0 {
 			addr := m.oc.GetValAddr()
 			val, err := m.sk.GetValidatorByConsAddr(ctx, sdk.ConsAddress(addr))
 			if err == nil {

@@ -30,7 +30,7 @@ func (s *FeemarketSuite) TestGasGoesUp() {
 
 	s.setMaxBlockUtilization(maxBlockUtilization)
 
-	s.setCommitTimeout(150 * time.Second)
+	s.setCommitTimeout(210 * time.Second)
 
 	s.packBlocks(txsPerBlock, blocksToPack)
 }

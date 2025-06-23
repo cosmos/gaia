@@ -143,12 +143,14 @@ func NewRootCmd() *cobra.Command {
 				return err
 			}
 
-			// we force telemetry to be enabled here, otherwise open telemetry won't emit SDK metrics.
+			// if open telemetry is not disabled, we force the SDK telemetry to be enabled.
 			serverCtx := server.GetServerContextFromCmd(cmd)
-			serverCtx.Viper.Set("telemetry.enabled", true)
-			serverCtx.Viper.Set("telemetry.prometheus-retention-time", 60)
-			if err := server.SetCmdServerContext(cmd, serverCtx); err != nil {
-				return fmt.Errorf("could not set cmd server context: %w", err)
+			if !serverCtx.Viper.GetBool("opentelemetry.disable") {
+				serverCtx.Viper.Set("telemetry.enabled", true)
+				serverCtx.Viper.Set("telemetry.prometheus-retention-time", 60)
+				if err := server.SetCmdServerContext(cmd, serverCtx); err != nil {
+					return fmt.Errorf("could not set cmd server context: %w", err)
+				}
 			}
 
 			return nil

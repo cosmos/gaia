@@ -108,6 +108,10 @@ func (o *OtelClient) SetValidatorStatus(isVal bool) {
 	o.vi.IsValidator = isVal
 }
 
+func (o *OtelClient) IsValidator() bool {
+	return o.vi.IsValidator
+}
+
 func (o *OtelClient) GetValAddr() crypto.Address {
 	return o.vi.Address
 }

@@ -58,10 +58,12 @@ func (m Module) PreBlock(ctx context.Context) (appmodule.ResponsePreBlock, error
 	if m.oc.Enabled() {
 		if sdk.UnwrapSDKContext(ctx).BlockHeight()%valUpdateBlockRate == 0 {
 			addr := m.oc.GetValAddr()
-			val, err := m.sk.GetValidatorByConsAddr(ctx, sdk.ConsAddress(addr))
-			if err == nil {
-				isVal := val.GetStatus() == stakingtypes.Bonded
-				m.oc.SetValidatorStatus(isVal)
+			if addr != nil {
+				val, err := m.sk.GetValidatorByConsAddr(ctx, sdk.ConsAddress(addr))
+				if err == nil {
+					isVal := val.GetStatus() == stakingtypes.Bonded
+					m.oc.SetValidatorStatus(isVal)
+				}
 			}
 		}
 	}

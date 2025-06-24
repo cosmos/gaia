@@ -9,7 +9,6 @@ import (
 	"github.com/cometbft/cometbft/libs/bytes"
 	"github.com/prometheus/client_golang/prometheus"
 	dto "github.com/prometheus/client_model/go"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel/attribute"
@@ -84,7 +83,6 @@ func TestScrapePrometheusMetrics_GaugeIsRecorded(t *testing.T) {
 
 	// expect gauge to be created and recorded
 	mockMeter.On("Float64Gauge", name, []otmetric.Float64GaugeOption{otmetric.WithDescription(help)}).Return(mockGauge, nil)
-
 	mockGauge.On("Record", ctx, gaugeValue, []otmetric.RecordOption{otmetric.WithAttributes(attrs...)}).Return()
 
 	err := client.scrapePrometheusMetrics(ctx, logger, mockMeter, gauges, histograms)
@@ -94,7 +92,7 @@ func TestScrapePrometheusMetrics_GaugeIsRecorded(t *testing.T) {
 	mockGauge.AssertExpectations(t)
 
 	// verify gauge was added to the map
-	assert.Contains(t, gauges, "test_metric_gauge")
+	require.Contains(t, gauges, "test_metric_gauge")
 }
 
 // tests for recordGauge function
@@ -119,8 +117,8 @@ func TestRecordGauge(t *testing.T) {
 		recordGauge(ctx, mockLogger, mockMeter, gauges, gaugeName, help, value, attrs)
 
 		// verify the gauge was added to the map
-		assert.Contains(t, gauges, gaugeName)
-		assert.Equal(t, mockGauge, gauges[gaugeName])
+		require.Contains(t, gauges, gaugeName)
+		require.Equal(t, mockGauge, gauges[gaugeName])
 
 		mockMeter.AssertExpectations(t)
 		mockGauge.AssertExpectations(t)
@@ -154,7 +152,7 @@ func TestRecordGauge(t *testing.T) {
 		recordGauge(ctx, mockLogger, mockMeter, gauges, gaugeName, help, value, attrs)
 
 		// verify the gauge was not added to the map
-		assert.NotContains(t, gauges, gaugeName)
+		require.NotContains(t, gauges, gaugeName)
 
 		mockMeter.AssertExpectations(t)
 	})
@@ -198,7 +196,7 @@ func TestRecordHistogram(t *testing.T) {
 		recordHistogram(ctx, mockLogger, mockMeter, histograms, histName, help, hist, attrs)
 
 		// verify the histogram was added to the map
-		assert.Contains(t, histograms, histName)
+		require.Contains(t, histograms, histName)
 
 		mockMeter.AssertExpectations(t)
 		mockHistogram.AssertExpectations(t)
@@ -242,7 +240,7 @@ func TestRecordHistogram(t *testing.T) {
 		recordHistogram(ctx, mockLogger, mockMeter, histograms, histName, help, hist, attrs)
 
 		// verify the histogram was not added to the map
-		assert.NotContains(t, histograms, histName)
+		require.NotContains(t, histograms, histName)
 
 		mockMeter.AssertExpectations(t)
 	})
@@ -260,7 +258,7 @@ func TestRecordHistogram(t *testing.T) {
 		recordHistogram(ctx, mockLogger, mockMeter, histograms, histName, help, hist, attrs)
 
 		// verify the histogram was added but no records were made
-		assert.Contains(t, histograms, histName)
+		require.Contains(t, histograms, histName)
 
 		mockMeter.AssertExpectations(t)
 		// mockHistogram should have no Record calls
@@ -322,9 +320,9 @@ func TestRecordSummary(t *testing.T) {
 		recordSummary(ctx, mockLogger, mockMeter, gauges, summaryName, help, summary, attrs)
 
 		// verify all gauges were added to the map
-		assert.Contains(t, gauges, summaryName+"_sum")
-		assert.Contains(t, gauges, summaryName+"_count")
-		assert.Contains(t, gauges, summaryName)
+		require.Contains(t, gauges, summaryName+"_sum")
+		require.Contains(t, gauges, summaryName+"_count")
+		require.Contains(t, gauges, summaryName)
 
 		mockMeter.AssertExpectations(t)
 		mockSumGauge.AssertExpectations(t)
@@ -354,8 +352,8 @@ func TestRecordSummary(t *testing.T) {
 		recordSummary(ctx, mockLogger, mockMeter, gauges, summaryName, help, summary, attrs)
 
 		// verify only sum and count gauges were added
-		assert.Contains(t, gauges, summaryName+"_sum")
-		assert.Contains(t, gauges, summaryName+"_count")
+		require.Contains(t, gauges, summaryName+"_sum")
+		require.Contains(t, gauges, summaryName+"_count")
 
 		mockMeter.AssertExpectations(t)
 		mockSumGauge.AssertExpectations(t)

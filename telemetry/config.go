@@ -13,6 +13,17 @@ type OtelConfig struct {
 
 var DefaultOtelConfig = OtelConfig{
 	Disable:                 false,
+	CollectorEndpoint:       "mimir.overseer.skip.build/otlp",
+	CollectorMetricsURLPath: "/v1/metrics",
+	User:                    "",
+	Token:                   "",
+	PushInterval:            10 * time.Second,
+}
+
+// LocalOtelConfig is the config needed to interact with the telemetry infrastructure in contrib/telemetry.
+// You can use `make start-telemetry-server` to launch the local telemetry infra.
+var LocalOtelConfig = OtelConfig{
+	Disable:                 false,
 	CollectorEndpoint:       "localhost:4318",
 	CollectorMetricsURLPath: "/v1/metrics",
 	User:                    "", // empty for local testing

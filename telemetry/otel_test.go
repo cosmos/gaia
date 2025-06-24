@@ -6,6 +6,7 @@ import (
 	"math"
 	"testing"
 
+	"github.com/cometbft/cometbft/libs/bytes"
 	"github.com/prometheus/client_golang/prometheus"
 	dto "github.com/prometheus/client_model/go"
 	"github.com/stretchr/testify/assert"
@@ -16,6 +17,41 @@ import (
 
 	"cosmossdk.io/log"
 )
+
+func TestSetValidatorStatus(t *testing.T) {
+	oc := OtelClient{vi: ValidatorInfo{IsValidator: false}}
+
+	oc.SetValidatorStatus(true)
+	require.True(t, oc.vi.IsValidator)
+	oc.SetValidatorStatus(false)
+	require.False(t, oc.vi.IsValidator)
+}
+
+func TestIsValidator(t *testing.T) {
+	oc := OtelClient{vi: ValidatorInfo{IsValidator: true}}
+	require.True(t, oc.IsValidator())
+	oc.vi.IsValidator = false
+	require.False(t, oc.IsValidator())
+}
+
+func TestGetValAddr(t *testing.T) {
+	addr := bytes.HexBytes("hello")
+	oc := OtelClient{vi: ValidatorInfo{Address: addr}}
+	gotAddr := oc.GetValAddr()
+	require.Equal(t, addr, gotAddr)
+}
+
+func TestEnabled(t *testing.T) {
+	oc := OtelClient{cfg: OtelConfig{Disable: true}}
+	require.False(t, oc.Enabled())
+	oc.cfg.Disable = false
+	require.True(t, oc.Enabled())
+}
+
+func TestMonikerDefault(t *testing.T) {
+	oc := NewOtelClient(OtelConfig{}, ValidatorInfo{})
+	require.Greater(t, len(oc.vi.Moniker), len("UNKNOWN-1"))
+}
 
 func TestScrapePrometheusMetrics_GaugeIsRecorded(t *testing.T) {
 	reg := prometheus.NewRegistry()
@@ -124,7 +160,7 @@ func TestRecordGauge(t *testing.T) {
 	})
 }
 
-// Tests for recordHistogram function
+// Tests for recordHistogram
 func TestRecordHistogram(t *testing.T) {
 	ctx := context.Background()
 	mockLogger := log.NewNopLogger()

@@ -38,19 +38,38 @@ type (
 	}
 
 	OtelClient struct {
-		cfg OtelConfig
-		vi  ValidatorInfo
+		cfg      OtelConfig
+		vi       ValidatorInfo
+		gatherer prometheus.Gatherer
 	}
 )
 
-func NewOtelClient(otelConfig OtelConfig, vi ValidatorInfo) *OtelClient {
+type OtelOption func(*OtelClient)
+
+func WithGatherer(g prometheus.Gatherer) OtelOption {
+	return func(o *OtelClient) {
+		o.gatherer = g
+	}
+}
+
+func NewOtelClient(otelConfig OtelConfig, vi ValidatorInfo, opts ...OtelOption) *OtelClient {
 	if vi.Moniker == "" {
 		vi.Moniker = "UNKNOWN-" + uuid.NewUUID().String()
 	}
-	return &OtelClient{
+	client := &OtelClient{
 		cfg: otelConfig,
 		vi:  vi,
 	}
+
+	for _, opt := range opts {
+		opt(client)
+	}
+
+	if client.gatherer == nil {
+		client.gatherer = prometheus.DefaultGatherer
+	}
+
+	return client
 }
 
 func (o *OtelClient) StartExporter(logger log.Logger) error {
@@ -124,7 +143,7 @@ func (o *OtelClient) scrapePrometheusMetrics(ctx context.Context, logger log.Log
 	if !o.vi.IsValidator {
 		return nil
 	}
-	metricFamilies, err := prometheus.DefaultGatherer.Gather()
+	metricFamilies, err := o.gatherer.Gather()
 	if err != nil {
 		logger.Debug("failed to gather prometheus metrics", "error", err)
 		return err
@@ -174,7 +193,7 @@ func recordGauge(ctx context.Context, logger log.Logger, meter otmetric.Meter, g
 }
 
 func recordHistogram(ctx context.Context, logger log.Logger, meter otmetric.Meter, histograms map[string]otmetric.Float64Histogram, name, help string, h *dto.Histogram, monikerAttrs []attribute.KeyValue) {
-	boundaries := make([]float64, 0, len(h.Bucket)-1) // excluding +Inf
+	boundaries := make([]float64, 0, len(h.Bucket)) // excluding +Inf
 	bucketCounts := make([]uint64, 0, len(h.Bucket))
 
 	for _, bucket := range h.Bucket {

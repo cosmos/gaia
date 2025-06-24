@@ -6,13 +6,14 @@ import (
 	"math"
 	"testing"
 
-	"github.com/cometbft/cometbft/libs/bytes"
 	"github.com/prometheus/client_golang/prometheus"
 	dto "github.com/prometheus/client_model/go"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"go.opentelemetry.io/otel/attribute"
 	otmetric "go.opentelemetry.io/otel/metric"
+
+	"github.com/cometbft/cometbft/libs/bytes"
 
 	"cosmossdk.io/log"
 )

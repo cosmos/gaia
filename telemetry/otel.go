@@ -153,18 +153,23 @@ func (o *OtelClient) scrapePrometheusMetrics(ctx context.Context, logger log.Log
 	for _, mf := range metricFamilies {
 		name := mf.GetName()
 		for _, m := range mf.Metric {
+			attrs := make([]attribute.KeyValue, 0, len(m.Label)+len(monikerAttr))
+			attrs = append(attrs, monikerAttr...)
+			for _, label := range m.Label {
+				attrs = append(attrs, attribute.String(label.GetName(), label.GetValue()))
+			}
 			switch mf.GetType() {
 			case dto.MetricType_GAUGE:
-				recordGauge(ctx, logger, meter, gauges, name, mf.GetHelp(), m.Gauge.GetValue(), monikerAttr)
+				recordGauge(ctx, logger, meter, gauges, name, mf.GetHelp(), m.Gauge.GetValue(), attrs)
 
 			case dto.MetricType_COUNTER:
-				recordGauge(ctx, logger, meter, gauges, name, mf.GetHelp(), m.Counter.GetValue(), monikerAttr)
+				recordGauge(ctx, logger, meter, gauges, name, mf.GetHelp(), m.Counter.GetValue(), attrs)
 
 			case dto.MetricType_HISTOGRAM:
-				recordHistogram(ctx, logger, meter, histograms, name, mf.GetHelp(), m.Histogram, monikerAttr)
+				recordHistogram(ctx, logger, meter, histograms, name, mf.GetHelp(), m.Histogram, attrs)
 
 			case dto.MetricType_SUMMARY:
-				recordSummary(ctx, logger, meter, gauges, name, mf.GetHelp(), m.Summary, monikerAttr)
+				recordSummary(ctx, logger, meter, gauges, name, mf.GetHelp(), m.Summary, attrs)
 
 			default:
 				continue

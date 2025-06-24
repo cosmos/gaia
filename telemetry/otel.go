@@ -57,16 +57,13 @@ func NewOtelClient(otelConfig OtelConfig, vi ValidatorInfo, opts ...OtelOption) 
 		vi.Moniker = "UNKNOWN-" + uuid.NewUUID().String()
 	}
 	client := &OtelClient{
-		cfg: otelConfig,
-		vi:  vi,
+		cfg:      otelConfig,
+		vi:       vi,
+		gatherer: prometheus.DefaultGatherer,
 	}
 
 	for _, opt := range opts {
 		opt(client)
-	}
-
-	if client.gatherer == nil {
-		client.gatherer = prometheus.DefaultGatherer
 	}
 
 	return client

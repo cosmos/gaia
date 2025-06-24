@@ -249,7 +249,7 @@ The amount per deposit is equal to `min_deposit * min_deposit_ratio`. Only `uato
 ### Submitting your proposal to the testnet
 Submitting to the testnet is identical to mainnet submissions aside from a few changes:
 1. The chain-id is `theta-testnet-001`.
-2. The list of usable endpoints can be found [here](https://github.com/cosmos/testnets/tree/master/public#readme).
+2. The list of usable endpoints can be found [here](https://github.com/cosmos/testnets/blob/master/README.md).
 3. You will need testnet tokens, not ATOM. There is a faucet available in the Developer [Discord](https://discord.com/invite/cosmosnetwork).
 
 You may want to submit your proposal to the testnet chain before the mainnet for a number of reasons:

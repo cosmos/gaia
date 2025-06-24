@@ -1,4 +1,4 @@
-package v25
+package v25_0_0 //nolint:revive
 
 import (
 	storetypes "cosmossdk.io/store/types"
@@ -10,7 +10,7 @@ import (
 
 const (
 	// UpgradeName defines the on-chain upgrade name.
-	UpgradeName = "v25"
+	UpgradeName = "v25.0.0"
 )
 
 var Upgrade = upgrades.Upgrade{

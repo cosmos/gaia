@@ -4,9 +4,25 @@
 
 ### DEPENDENCIES
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to [v2.2.4](https://github.com/CosmWasm/wasmvm/releases/tag/v2.2.4) (#3787)
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) to [v0.60.1](https://github.com/CosmWasm/wasmd/releases/tag/v0.60.1) (#3787)
+- Bump [ledger-go](https://github.com/zondax/ledger-go) to [v1.0.0](https://github.com/zondax/ledger-go/releases/tag/v1.0.0) (#3799)
 
 ### STATE BREAKING
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to [v2.2.4](https://github.com/CosmWasm/wasmvm/releases/tag/v2.2.4) (#3787)
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) to [v0.60.1](https://github.com/CosmWasm/wasmd/releases/tag/v0.60.1) (#3787)
+
+### BUG-FIXES
+- Fix the `testnet` command to use the proper gaia binary ([\#3783](https://github.com/cosmos/gaia/pull/3783))
+
+### Dependencies
+
+- Bump [github.com/vektra/mockery/v2](https://github.com/vektra/mockery) from 2.53.3 to 2.53.4 ([#3794](https://github.com/cosmos/gaia/pull/3794))
+- Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.0 to 0.53.2 ([#3789](https://github.com/cosmos/gaia/pull/3789))
+- Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.72.2 to 1.73.0 ([#3791](https://github.com/cosmos/gaia/pull/3791))
+- Bump [github.com/spf13/cast](https://github.com/spf13/cast) from 1.8.0 to 1.9.2 ([#3793](https://github.com/cosmos/gaia/pull/3793))
+- Bump [docker/build-push-action](https://github.com/docker/build-push-action) from 6.16.0 to 6.18.0 ([#3796](https://github.com/cosmos/gaia/pull/3796))
 
 ## v24.0.0
 
@@ -37,6 +53,7 @@
 - Add x/liquid module ([\#3712](https://github.com/cosmos/gaia/pull/3712))
 - Remove expedited gov prop type restrictions ([\#3723](https://github.com/cosmos/gaia/pull/3723))
 - Add liquid validator query to x/liquid ([\#3735](https://github.com/cosmos/gaia/pull/3735))
+- Add liquid validators query to x/liquid ([\#3760](https://github.com/cosmos/gaia/pull/3760))
 
 ### BUG-FIXES
 - Set x/liquid params during InitGenesis ([\#3759](https://github.com/cosmos/gaia/pull/3759))

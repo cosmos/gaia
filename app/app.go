@@ -1,6 +1,7 @@
 package gaia
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -70,7 +71,7 @@ import (
 	gaiaante "github.com/cosmos/gaia/v25/ante"
 	"github.com/cosmos/gaia/v25/app/keepers"
 	"github.com/cosmos/gaia/v25/app/upgrades"
-	v25 "github.com/cosmos/gaia/v25/app/upgrades/v25"
+	v25 "github.com/cosmos/gaia/v25/app/upgrades/v25_0_0"
 )
 
 var (
@@ -438,6 +439,11 @@ func (app *GaiaApp) LegacyAmino() *codec.LegacyAmino {
 // for modules to register their own custom testing types.
 func (app *GaiaApp) AppCodec() codec.Codec {
 	return app.appCodec
+}
+
+// DefaultGenesis returns a default genesis from the registered AppModuleBasic's.
+func (app *GaiaApp) DefaultGenesis() map[string]json.RawMessage {
+	return app.ModuleBasics.DefaultGenesis(app.appCodec)
 }
 
 // InterfaceRegistry returns Gaia's InterfaceRegistry

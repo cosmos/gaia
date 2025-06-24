@@ -35,7 +35,7 @@ func SimulationOperations(app *gaia.GaiaApp, cdc codec.JSONCodec, config simtype
 		}
 	}
 
-	simState.LegacyProposalContents = app.SimulationManager().GetProposalContents(simState) //nolint:staticcheck
+	simState.LegacyProposalContents = app.SimulationManager().GetProposalContents(simState)
 	simState.ProposalMsgs = app.SimulationManager().GetProposalMsgs(simState)
 	return app.SimulationManager().WeightedOperations(simState)
 }

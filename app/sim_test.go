@@ -55,8 +55,8 @@ func TestAppStateDeterminism(t *testing.T) {
 	config := sim.NewConfigFromFlags()
 	config.InitialBlockHeight = 1
 	config.ExportParamsPath = ""
-	config.OnOperation = false   //nolint:staticcheck
-	config.AllInvariants = false //nolint:staticcheck
+	config.OnOperation = false
+	config.AllInvariants = false
 	config.GenesisTime = time.Now().UTC().Unix()
 	config.ChainID = AppChainID
 

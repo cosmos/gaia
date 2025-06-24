@@ -56,7 +56,7 @@ func TestMonikerDefault(t *testing.T) {
 func TestScrapePrometheusMetrics_GaugeIsRecorded(t *testing.T) {
 	reg := prometheus.NewRegistry()
 	attrs := createTestAttributes()
-	// Create and register a test gauge metric
+	// create and register a test gauge metric
 	name := "test_metric_gauge"
 	help := "A test gauge metric"
 	testGauge := prometheus.NewGauge(prometheus.GaugeOpts{
@@ -67,7 +67,7 @@ func TestScrapePrometheusMetrics_GaugeIsRecorded(t *testing.T) {
 	testGauge.Set(gaugeValue)
 	require.NoError(t, reg.Register(testGauge))
 
-	// Setup OtelClient with registry and IsValidator=true
+	// setup OtelClient with registry and IsValidator=true
 	client := &OtelClient{
 		cfg:      OtelConfig{Disable: false},
 		vi:       ValidatorInfo{IsValidator: true, Moniker: "test-validator"},
@@ -82,7 +82,7 @@ func TestScrapePrometheusMetrics_GaugeIsRecorded(t *testing.T) {
 	gauges := make(map[string]otmetric.Float64Gauge)
 	histograms := make(map[string]otmetric.Float64Histogram)
 
-	// Expect gauge to be created and recorded
+	// expect gauge to be created and recorded
 	mockMeter.On("Float64Gauge", name, []otmetric.Float64GaugeOption{otmetric.WithDescription(help)}).Return(mockGauge, nil)
 
 	mockGauge.On("Record", ctx, gaugeValue, []otmetric.RecordOption{otmetric.WithAttributes(attrs...)}).Return()
@@ -93,11 +93,11 @@ func TestScrapePrometheusMetrics_GaugeIsRecorded(t *testing.T) {
 	mockMeter.AssertExpectations(t)
 	mockGauge.AssertExpectations(t)
 
-	// Verify gauge was added to the map
+	// verify gauge was added to the map
 	assert.Contains(t, gauges, "test_metric_gauge")
 }
 
-// Tests for recordGauge function
+// tests for recordGauge function
 func TestRecordGauge(t *testing.T) {
 	ctx := context.Background()
 	mockLogger := log.NewNopLogger()
@@ -118,7 +118,7 @@ func TestRecordGauge(t *testing.T) {
 
 		recordGauge(ctx, mockLogger, mockMeter, gauges, gaugeName, help, value, attrs)
 
-		// Verify the gauge was added to the map
+		// verify the gauge was added to the map
 		assert.Contains(t, gauges, gaugeName)
 		assert.Equal(t, mockGauge, gauges[gaugeName])
 
@@ -131,7 +131,7 @@ func TestRecordGauge(t *testing.T) {
 		help := "Existing gauge description"
 		value := 123.45
 
-		// Pre-populate the gauge in the map
+		// pre-populate the gauge in the map
 		existingGauge := &MockFloat64Gauge{}
 		gauges[gaugeName] = existingGauge
 
@@ -139,7 +139,7 @@ func TestRecordGauge(t *testing.T) {
 
 		recordGauge(ctx, mockLogger, mockMeter, gauges, gaugeName, help, value, attrs)
 
-		// Verify no new gauge was created (meter should not be called)
+		// verify no new gauge was created (meter should not be called)
 		existingGauge.AssertExpectations(t)
 	})
 
@@ -153,14 +153,14 @@ func TestRecordGauge(t *testing.T) {
 
 		recordGauge(ctx, mockLogger, mockMeter, gauges, gaugeName, help, value, attrs)
 
-		// Verify the gauge was not added to the map
+		// verify the gauge was not added to the map
 		assert.NotContains(t, gauges, gaugeName)
 
 		mockMeter.AssertExpectations(t)
 	})
 }
 
-// Tests for recordHistogram
+// tests for recordHistogram
 func TestRecordHistogram(t *testing.T) {
 	ctx := context.Background()
 	mockLogger := log.NewNopLogger()
@@ -174,7 +174,7 @@ func TestRecordHistogram(t *testing.T) {
 		histName := "test_histogram"
 		help := "Test histogram description"
 
-		// Create test histogram data with multiple buckets
+		// create test histogram data with multiple buckets
 		upperBounds := []float64{1.0, 5.0, 10.0}
 		hist := &dto.Histogram{
 			Bucket: []*dto.Bucket{
@@ -187,17 +187,17 @@ func TestRecordHistogram(t *testing.T) {
 
 		mockMeter.On("Float64Histogram", histName, []otmetric.Float64HistogramOption{otmetric.WithDescription(help), otmetric.WithExplicitBucketBoundaries(upperBounds...)}).Return(mockHistogram, nil)
 
-		// Expect multiple Record calls based on bucket counts
-		// Bucket 1: 5 records at value 0.5 (mid-point of 0 to 1.0)
+		// expect multiple Record calls based on bucket counts
+		// bucket 1: 5 records at value 0.5 (mid-point of 0 to 1.0)
 		mockHistogram.On("Record", ctx, 0.5, []otmetric.RecordOption{otmetric.WithAttributes(attrs...)}).Return().Times(5)
-		// Bucket 2: 5 records at value 3.0 (mid-point of 1.0 to 5.0)
+		// bucket 2: 5 records at value 3.0 (mid-point of 1.0 to 5.0)
 		mockHistogram.On("Record", ctx, 3.0, []otmetric.RecordOption{otmetric.WithAttributes(attrs...)}).Return().Times(5)
-		// Bucket 3: 5 records at value 7.5 (mid-point of 5.0 to 10.0)
+		// bucket 3: 5 records at value 7.5 (mid-point of 5.0 to 10.0)
 		mockHistogram.On("Record", ctx, 7.5, []otmetric.RecordOption{otmetric.WithAttributes(attrs...)}).Return().Times(5)
 
 		recordHistogram(ctx, mockLogger, mockMeter, histograms, histName, help, hist, attrs)
 
-		// Verify the histogram was added to the map
+		// verify the histogram was added to the map
 		assert.Contains(t, histograms, histName)
 
 		mockMeter.AssertExpectations(t)
@@ -208,7 +208,7 @@ func TestRecordHistogram(t *testing.T) {
 		histName := "existing_histogram"
 		help := "Existing histogram description"
 
-		// Pre-populate the histogram in the map
+		// pre-populate the histogram in the map
 		existingHist := &MockFloat64Histogram{}
 		histograms[histName] = existingHist
 
@@ -241,7 +241,7 @@ func TestRecordHistogram(t *testing.T) {
 
 		recordHistogram(ctx, mockLogger, mockMeter, histograms, histName, help, hist, attrs)
 
-		// Verify the histogram was not added to the map
+		// verify the histogram was not added to the map
 		assert.NotContains(t, histograms, histName)
 
 		mockMeter.AssertExpectations(t)
@@ -259,7 +259,7 @@ func TestRecordHistogram(t *testing.T) {
 
 		recordHistogram(ctx, mockLogger, mockMeter, histograms, histName, help, hist, attrs)
 
-		// Verify the histogram was added but no records were made
+		// verify the histogram was added but no records were made
 		assert.Contains(t, histograms, histName)
 
 		mockMeter.AssertExpectations(t)
@@ -274,7 +274,7 @@ func copyWith[T any](a []T, t T) []T {
 	return b
 }
 
-// Tests for recordSummary function
+// tests for recordSummary function
 func TestRecordSummary(t *testing.T) {
 	ctx := context.Background()
 	mockLogger := log.NewNopLogger()
@@ -297,20 +297,20 @@ func TestRecordSummary(t *testing.T) {
 			},
 		}
 
-		// Mock gauges for sum, count, and quantiles
+		// mock gauges for sum, count, and quantiles
 		mockSumGauge := &MockFloat64Gauge{}
 		mockCountGauge := &MockFloat64Gauge{}
 		mockQuantileGauge := &MockFloat64Gauge{}
 
-		// Expect gauge creation for sum
+		// expect gauge creation for sum
 		mockMeter.On("Float64Gauge", summaryName+"_sum", []otmetric.Float64GaugeOption{otmetric.WithDescription(help + " (summary sum)")}).Return(mockSumGauge, nil)
 		mockSumGauge.On("Record", ctx, 500.5, []otmetric.RecordOption{otmetric.WithAttributes(copyWith(attrs, attribute.String("quantile", "0.5"))...)}).Return()
 
-		// Expect gauge creation for count
+		// expect gauge creation for count
 		mockMeter.On("Float64Gauge", summaryName+"_count", []otmetric.Float64GaugeOption{otmetric.WithDescription(help + " (summary count)")}).Return(mockCountGauge, nil)
 		mockCountGauge.On("Record", ctx, 100.0, []otmetric.RecordOption{otmetric.WithAttributes(copyWith(attrs, attribute.String("quantile", "0.5"))...)}).Return()
 
-		// Expect gauge creation for quantiles (reused for all quantiles)
+		// expect gauge creation for quantiles (reused for all quantiles)
 		attrs = append(attrs,
 			attribute.String("quantile", "0.5"),
 		)
@@ -321,7 +321,7 @@ func TestRecordSummary(t *testing.T) {
 
 		recordSummary(ctx, mockLogger, mockMeter, gauges, summaryName, help, summary, attrs)
 
-		// Verify all gauges were added to the map
+		// verify all gauges were added to the map
 		assert.Contains(t, gauges, summaryName+"_sum")
 		assert.Contains(t, gauges, summaryName+"_count")
 		assert.Contains(t, gauges, summaryName)
@@ -339,7 +339,7 @@ func TestRecordSummary(t *testing.T) {
 		summary := &dto.Summary{
 			SampleCount: uintPtr(50),
 			SampleSum:   floatPtr(250.0),
-			Quantile:    []*dto.Quantile{}, // No quantiles
+			Quantile:    []*dto.Quantile{}, // no quantiles
 		}
 
 		mockSumGauge := &MockFloat64Gauge{}
@@ -353,7 +353,7 @@ func TestRecordSummary(t *testing.T) {
 
 		recordSummary(ctx, mockLogger, mockMeter, gauges, summaryName, help, summary, attrs)
 
-		// Verify only sum and count gauges were added
+		// verify only sum and count gauges were added
 		assert.Contains(t, gauges, summaryName+"_sum")
 		assert.Contains(t, gauges, summaryName+"_count")
 
@@ -396,14 +396,14 @@ func TestRecordSummary(t *testing.T) {
 	})
 }
 
-// Helper function to create test attributes
+// helper function to create test attributes
 func createTestAttributes() []attribute.KeyValue {
 	return []attribute.KeyValue{
 		{Key: "moniker", Value: attribute.StringValue("test-validator")},
 	}
 }
 
-// Helper functions for creating pointers
+// helper functions for creating pointers
 func floatPtr(f float64) *float64 {
 	return &f
 }

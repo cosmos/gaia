@@ -224,7 +224,7 @@ func recordHistogram(ctx context.Context, logger log.Logger, meter otmetric.Mete
 		countInBucket := count - prevCount
 		prevCount = count
 
-		// Explicitly record the mid-point of the bucket as approximation:
+		// explicitly record the mid-point of the bucket as approximation:
 		var value float64
 		if i == 0 {
 			value = boundaries[0] / 2.0
@@ -232,7 +232,7 @@ func recordHistogram(ctx context.Context, logger log.Logger, meter otmetric.Mete
 			value = (boundaries[i-1] + boundaries[i]) / 2.0
 		}
 
-		// Record `countInBucket` number of observations with moniker attributes
+		// record `countInBucket` number of observations with moniker attributes
 		for j := uint64(0); j < countInBucket; j++ {
 			hist.Record(ctx, value, otmetric.WithAttributes(monikerAttrs...))
 		}
@@ -244,7 +244,7 @@ func recordSummary(ctx context.Context, logger log.Logger, meter otmetric.Meter,
 	recordGauge(ctx, logger, meter, gauges, name+"_count", help+" (summary count)", float64(s.GetSampleCount()), monikerAttrs)
 
 	for _, q := range s.Quantile {
-		// Combine moniker attrs with quantile attr
+		// combine moniker attrs with quantile attr
 		attrs := make([]attribute.KeyValue, len(monikerAttrs)+1)
 		copy(attrs, monikerAttrs)
 		attrs[len(monikerAttrs)] = attribute.String("quantile", fmt.Sprintf("%v", q.GetQuantile()))

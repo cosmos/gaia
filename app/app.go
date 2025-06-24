@@ -79,7 +79,7 @@ import (
 	"github.com/cosmos/gaia/v25/app/upgrades"
 	v25 "github.com/cosmos/gaia/v25/app/upgrades/v25_0_0"
 	gaiatelemetry "github.com/cosmos/gaia/v25/telemetry"
-	"github.com/cosmos/gaia/v25/x/amiavalidator"
+	"github.com/cosmos/gaia/v25/x/telemetry"
 )
 
 var (
@@ -248,7 +248,7 @@ func NewGaiaApp(
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
 		authtypes.ModuleName,
-		amiavalidator.ModuleName,
+		telemetry.ModuleName,
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the

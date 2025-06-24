@@ -1,4 +1,4 @@
-package amiavalidator
+package telemetry
 
 import (
 	"testing"

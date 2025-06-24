@@ -1,4 +1,4 @@
-package amiavalidator
+package telemetry
 
 import (
 	"context"
@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	ModuleName = "amiavalidator"
+	ModuleName = "telemetry"
 
 	// valUpdateBlockRate determines how many blocks we wait before updating the validator status.
 	valUpdateBlockRate = 20
@@ -26,7 +26,7 @@ const (
 
 var _ appmodule.HasPreBlocker = &Module{}
 
-// Module is the module for the amiavalidator module.
+// Module is the module for the telemetry module.
 // Its only responsibility is to report to the otel client if this node is a validator via PreBlocker.
 type Module struct {
 	oc *telemetry.OtelClient

@@ -2,8 +2,6 @@ package chainsuite
 
 import (
 	"context"
-	"reflect"
-	"runtime"
 	"strings"
 
 	"github.com/stretchr/testify/suite"
@@ -83,35 +81,22 @@ func (s *Suite) AfterTest(suiteName, testName string) {
 }
 
 func (s *Suite) getSuiteName() string {
-	// Get the suite type name through reflection
-	suiteType := reflect.TypeOf(s.Suite).Elem()
-	if suiteType.Kind() == reflect.Struct {
-		return suiteType.Name()
-	}
-
-	// Fallback: try to extract from the test name
+	// Extract suite name from the test name (format: TestSuiteName/TestMethodName or just TestSuiteName)
 	if s.T() != nil && s.T().Name() != "" {
-		// Extract suite name from test name (format: TestSuiteName/TestMethodName)
-		parts := strings.Split(s.T().Name(), "/")
-		if len(parts) > 0 {
-			return strings.TrimPrefix(parts[0], "Test")
-		}
-	}
+		testName := s.T().Name()
 
-	// Final fallback: get from runtime caller
-	pc, _, _, ok := runtime.Caller(2)
-	if ok {
-		fn := runtime.FuncForPC(pc)
-		if fn != nil {
-			name := fn.Name()
-			parts := strings.Split(name, ".")
-			if len(parts) > 0 {
-				return parts[len(parts)-1]
+		// Handle case where test name includes slash (TestSuiteName/TestMethodName)
+		parts := strings.Split(testName, "/")
+		if len(parts) > 0 {
+			suiteName := strings.TrimPrefix(parts[0], "Test")
+			if suiteName != "" {
+				return suiteName
 			}
 		}
 	}
 
-	return "Unknown"
+	// Fallback to a generic name
+	return "InterchainTestSuite"
 }
 
 func (s *Suite) GetContext() context.Context {

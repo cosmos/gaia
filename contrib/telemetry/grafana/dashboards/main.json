@@ -645,7 +645,7 @@
           "useBackend": false
         }
       ],
-      "title": "New panel",
+      "title": "Consensus Step Duration",
       "type": "timeseries"
     },
     {
@@ -1228,7 +1228,7 @@
           "useBackend": false
         }
       ],
-      "title": "New panel",
+      "title": "Byzantine Validator Count",
       "type": "timeseries"
     },
     {
@@ -1422,7 +1422,7 @@
           "useBackend": false
         }
       ],
-      "title": "New panel",
+      "title": "Number of Transactions",
       "type": "timeseries"
     },
     {

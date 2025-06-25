@@ -2,15 +2,21 @@ package gaia
 
 import (
 	"fmt"
+	"github.com/cometbft/cometbft/privval"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 
+	tmcfg "github.com/cometbft/cometbft/config"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	"github.com/cosmos/gaia/v25/x/telemetry"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
+	"github.com/spf13/viper"
 
 	// Tracer import
 	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
@@ -74,6 +80,8 @@ import (
 	"github.com/cosmos/gaia/v25/app/keepers"
 	"github.com/cosmos/gaia/v25/app/upgrades"
 	v25 "github.com/cosmos/gaia/v25/app/upgrades/v25"
+
+	gaiatelemetry "github.com/cosmos/gaia/v25/telemetry"
 )
 
 var (
@@ -108,6 +116,8 @@ type GaiaApp struct { //nolint: revive
 	// simulation manager
 	sm           *module.SimulationManager
 	configurator module.Configurator
+
+	otelClient *gaiatelemetry.OtelClient
 }
 
 func init() {
@@ -166,6 +176,23 @@ func NewGaiaApp(
 		interfaceRegistry: interfaceRegistry,
 	}
 
+	vi, err := getValidatorInfo(homePath, appOpts)
+	if err != nil {
+		logger.Debug("failed to get validator info: unable to determine if this node is a validator", "err", err)
+	} else {
+		logger.Debug("successfully determined if this node is a validator", "moniker", vi.Moniker)
+	}
+
+	otelConfig := gaiatelemetry.OtelConfig{
+		Disable:                 cast.ToBool(appOpts.Get("opentelemetry.disable")),
+		CollectorEndpoint:       cast.ToString(appOpts.Get("opentelemetry.collector-endpoint")),
+		CollectorMetricsURLPath: cast.ToString(appOpts.Get("opentelemetry.collector-metrics-url-path")),
+		User:                    cast.ToString(appOpts.Get("opentelemetry.user")),
+		Token:                   cast.ToString(appOpts.Get("opentelemetry.token")),
+		PushInterval:            cast.ToDuration(appOpts.Get("opentelemetry.push-interval")),
+	}
+	app.otelClient = gaiatelemetry.NewOtelClient(otelConfig, vi)
+
 	// Setup keepers
 	app.AppKeepers = keepers.NewAppKeeper(
 		appCodec,
@@ -199,6 +226,7 @@ func NewGaiaApp(
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
 		authtypes.ModuleName,
+		telemetry.ModuleName,
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
@@ -218,7 +246,7 @@ func NewGaiaApp(
 	// app.mm.SetOrderMigrations(custom order)
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
-	err := app.mm.RegisterServices(app.configurator)
+	err = app.mm.RegisterServices(app.configurator)
 	if err != nil {
 		panic(err)
 	}
@@ -323,6 +351,15 @@ func NewGaiaApp(
 		if err := app.WasmClientKeeper.InitializePinnedCodes(ctx); err != nil {
 			panic(fmt.Sprintf("wasmlckeeper failed initialize pinned codes %s", err))
 		}
+	}
+
+	if otelConfig.CollectorEndpoint != "" && !otelConfig.Disable {
+		logger.Debug("creating gaia app with open telemetry")
+		if err := app.otelClient.StartExporter(logger); err != nil {
+			panic(err)
+		}
+	} else {
+		logger.Debug("creating gaia app without open telemetry")
 	}
 
 	return app
@@ -547,6 +584,48 @@ func (app *GaiaApp) AutoCliOpts() autocli.AppOptions {
 	}
 }
 
+func getValidatorInfo(homePath string, appOpts servertypes.AppOptions) (gaiatelemetry.ValidatorInfo, error) {
+	cfg := &tmcfg.Config{
+		BaseConfig:      tmcfg.BaseConfig{},
+		RPC:             &tmcfg.RPCConfig{},
+		P2P:             &tmcfg.P2PConfig{},
+		Mempool:         &tmcfg.MempoolConfig{},
+		StateSync:       &tmcfg.StateSyncConfig{},
+		BlockSync:       &tmcfg.BlockSyncConfig{},
+		Consensus:       &tmcfg.ConsensusConfig{},
+		Storage:         &tmcfg.StorageConfig{},
+		TxIndex:         &tmcfg.TxIndexConfig{},
+		Instrumentation: &tmcfg.InstrumentationConfig{},
+	}
+	cfg.SetRoot(homePath)
+
+	configPath := filepath.Join(homePath, "config", "config.toml")
+	if _, err := os.Stat(configPath); err == nil {
+		viper := viper.New()
+		viper.SetConfigType("toml")
+		viper.SetConfigFile(configPath)
+		if err := viper.ReadInConfig(); err == nil {
+			if err := viper.Unmarshal(cfg); err != nil {
+				return gaiatelemetry.ValidatorInfo{}, fmt.Errorf("failed to unmarshal config file: %w", err)
+			}
+		}
+	} else {
+		return gaiatelemetry.ValidatorInfo{}, fmt.Errorf("unable to stat config file at %s", configPath)
+	}
+
+	chainID := cast.ToString(appOpts.Get(flags.FlagChainID))
+	if chainID == "" {
+		genDocFile := filepath.Join(homePath, "config", "genesis.json")
+		appGenesis, err := genutiltypes.AppGenesisFromFile(genDocFile)
+		if err == nil {
+			chainID = appGenesis.ChainID
+		}
+	}
+
+	vi, err := validatorInfoFromCometConfig(cfg, chainID)
+	return vi, err
+}
+
 // TestingApp functions
 
 // GetBaseApp implements the TestingApp interface.
@@ -573,4 +652,42 @@ var EmptyWasmOptions []wasmkeeper.Option
 // Get implements AppOptions
 func (ao EmptyAppOptions) Get(_ string) interface{} {
 	return nil
+}
+
+var ErrNotValidator = fmt.Errorf("not validator")
+
+func validatorInfoFromCometConfig(cfg *tmcfg.Config, chainID string) (gaiatelemetry.ValidatorInfo, error) {
+	vi := gaiatelemetry.ValidatorInfo{
+		ChainID: chainID,
+	}
+	if cfg.PrivValidatorListenAddr != "" {
+		listenAddr := cfg.PrivValidatorListenAddr
+		pve, err := privval.NewSignerListener(listenAddr, nil)
+		if err != nil {
+			return vi, fmt.Errorf("failed to start private validator: %w", err)
+		}
+
+		pvsc, err := privval.NewSignerClient(pve, chainID)
+		if err != nil {
+			return vi, fmt.Errorf("failed to start private validator: %w", err)
+		}
+
+		pk, err := pvsc.GetPubKey()
+		if err != nil {
+			return vi, fmt.Errorf("cannot get pubkey from remote signer: %w", err)
+		}
+		vi.Moniker = cfg.Moniker
+		vi.Address = pk.Address()
+		return vi, nil
+	} else if cfg.PrivValidatorKey != "" {
+		vi.Moniker = cfg.Moniker
+		_, err := os.Stat(cfg.PrivValidatorKeyFile())
+		if err != nil {
+			return vi, ErrNotValidator
+		}
+		pv := privval.LoadFilePV(cfg.PrivValidatorKeyFile(), cfg.PrivValidatorStateFile())
+		vi.Address = pv.GetAddress()
+		return vi, nil
+	}
+	return vi, ErrNotValidator
 }

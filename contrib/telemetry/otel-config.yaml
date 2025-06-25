@@ -1,0 +1,34 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+  resource:
+    attributes:
+      - key: service.name
+        value: "gaia"
+        action: upsert
+
+exporters:
+  # Debug exporter (what you currently have)
+  debug:
+    verbosity: detailed
+
+  # Prometheus exporter - adds metrics to Prometheus format
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    namespace: "gaia"
+    resource_to_telemetry_conversion:
+      enabled: true
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug, prometheus] # Export to both debug and Prometheus

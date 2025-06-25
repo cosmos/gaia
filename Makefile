@@ -333,7 +333,7 @@ lint:
 lint-fix:
 	@echo "--> Running linter"
 	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(golangci_version)
-	@$(golangci_lint_cmd) run --fix --out-format=tab --issues-exit-code=0
+	@$(golangci_lint_cmd) run --fix --issues-exit-code=0
 
 format:
 	@go install mvdan.cc/gofumpt@latest
@@ -409,3 +409,15 @@ proto-update-deps:
 	$(DOCKER) run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
 
 .PHONY: proto-all proto-gen proto-swagger-gen proto-format proto-lint proto-check-breaking proto-update-deps
+
+###############################################################################
+###                             Open Telemetry                              ###
+###############################################################################
+
+start-telemetry-server:
+	cd contrib/telemetry && docker compose up -d
+
+stop-telemetry-server:
+	cd contrib/telemetry && docker compose down --remove-orphans
+
+.PHONY: start-telemetry-server stop-telemetry-server

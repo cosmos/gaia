@@ -9,8 +9,10 @@ import (
 	"github.com/spf13/cast"
 
 	srvflags "github.com/cosmos/evm/server/flags"
+	"github.com/cosmos/evm/x/erc20"
 	erc20keeper "github.com/cosmos/evm/x/erc20/keeper"
 	erc20types "github.com/cosmos/evm/x/erc20/types"
+	erc20v2 "github.com/cosmos/evm/x/erc20/v2"
 	feemarketkeeper "github.com/cosmos/evm/x/feemarket/keeper"
 	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
 	ibccallbackskeeper "github.com/cosmos/evm/x/ibc/callbacks/keeper"
@@ -573,17 +575,19 @@ func NewAppKeeper(
 	// - pfm
 	// - provider
 	// - callbacks
+	// - erc-20
 	// - transfer
 	//
 	// This is how transfer stack will work in the end:
-	// * RecvPacket -> IBC core -> RateLimit -> PFM -> Provider -> Callbacks -> Transfer (AddRoute)
+	// * RecvPacket -> IBC core -> RateLimit -> PFM -> Provider -> ERC-20 -> Callbacks -> Transfer (AddRoute)
 	// * SendPacket -> Transfer -> Callbacks -> PFM -> RateLimit -> IBC core (ICS4Wrapper)
 
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
 	cbStack := ibccallbacks.NewIBCMiddleware(transferStack, appKeepers.PFMRouterKeeper, appKeepers.CallbackKeeper,
 		gaiaparams.MaxIBCCallbackGas)
-	transferStack = icsprovider.NewIBCMiddleware(cbStack, appKeepers.ProviderKeeper)
+	transferStack = erc20.NewIBCMiddleware(appKeepers.Erc20Keeper, cbStack)
+	transferStack = icsprovider.NewIBCMiddleware(transferStack, appKeepers.ProviderKeeper)
 	transferStack = pfmrouter.NewIBCMiddleware(
 		transferStack,
 		appKeepers.PFMRouterKeeper,
@@ -609,6 +613,7 @@ func NewAppKeeper(
 	transferStackV2 = transferv2.NewIBCModule(appKeepers.TransferKeeper)
 	transferStackV2 = ibccallbacksv2.NewIBCMiddleware(transferStackV2, appKeepers.IBCKeeper.ChannelKeeperV2,
 		appKeepers.CallbackKeeper, appKeepers.IBCKeeper.ChannelKeeperV2, gaiaparams.MaxIBCCallbackGas)
+	transferStackV2 = erc20v2.NewIBCMiddleware(transferStackV2, appKeepers.Erc20Keeper)
 	transferStackV2 = ratelimitv2.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStackV2)
 
 	// Create IBC Router & seal

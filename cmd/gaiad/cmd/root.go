@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/cosmos/gaia/v25/telemetry"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
@@ -62,6 +61,7 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	gaia "github.com/cosmos/gaia/v25/app"
+	"github.com/cosmos/gaia/v25/telemetry"
 	gaiatypes "github.com/cosmos/gaia/v25/types"
 )
 

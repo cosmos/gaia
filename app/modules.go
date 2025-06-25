@@ -1,7 +1,6 @@
 package gaia
 
 import (
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"github.com/cosmos/evm/x/erc20"
 	erc20types "github.com/cosmos/evm/x/erc20/types"
 	"github.com/cosmos/evm/x/feemarket"
@@ -10,7 +9,6 @@ import (
 	precisebanktypes "github.com/cosmos/evm/x/precisebank/types"
 	evm "github.com/cosmos/evm/x/vm"
 	evmtypes "github.com/cosmos/evm/x/vm/types"
-	"github.com/cosmos/gaia/v25/x/telemetry"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/types"
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10"
@@ -61,6 +59,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
@@ -70,6 +69,7 @@ import (
 	liquidtypes "github.com/cosmos/gaia/v25/x/liquid/types"
 	"github.com/cosmos/gaia/v25/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v25/x/metaprotocols/types"
+	"github.com/cosmos/gaia/v25/x/telemetry"
 )
 
 var maccPerms = map[string][]string{

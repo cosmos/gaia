@@ -1,8 +1,9 @@
 package gaia
 
 import (
-	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	evmserverconfig "github.com/cosmos/evm/server/config"
+
+	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 

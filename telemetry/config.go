@@ -13,8 +13,8 @@ type OtelConfig struct {
 
 var DefaultOtelConfig = OtelConfig{
 	Disable:                 false,
-	CollectorEndpoint:       "mimir.overseer.skip.build/otlp",
-	CollectorMetricsURLPath: "/v1/metrics",
+	CollectorEndpoint:       "mimir.overseer.skip.build",
+	CollectorMetricsURLPath: "/otlp/v1/metrics",
 	User:                    "",
 	Token:                   "",
 	PushInterval:            10 * time.Second,

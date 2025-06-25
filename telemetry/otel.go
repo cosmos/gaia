@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"math"
+	"strings"
 	"time"
 
 	"github.com/pborman/uuid"
@@ -87,7 +88,9 @@ func (o *OtelClient) StartExporter(logger log.Logger) error {
 			"Authorization": "Basic " + formatBasicAuth(cfg.User, cfg.Token),
 		}))
 	} else {
-		opts = append(opts, otlpmetrichttp.WithInsecure())
+		if strings.HasPrefix(cfg.CollectorEndpoint, "localhost") {
+			opts = append(opts, otlpmetrichttp.WithInsecure())
+		}
 	}
 
 	exporter, err := otlpmetrichttp.New(ctx, opts...)

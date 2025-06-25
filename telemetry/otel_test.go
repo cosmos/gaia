@@ -398,6 +398,7 @@ func TestRecordSummary(t *testing.T) {
 // helper function to create test attributes
 func createTestAttributes() []attribute.KeyValue {
 	return []attribute.KeyValue{
+		attribute.String("chain_id", ""),
 		{Key: "moniker", Value: attribute.StringValue("test-validator")},
 	}
 }

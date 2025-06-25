@@ -87,10 +87,8 @@ func (o *OtelClient) StartExporter(logger log.Logger) error {
 		opts = append(opts, otlpmetrichttp.WithHeaders(map[string]string{
 			"Authorization": "Basic " + formatBasicAuth(cfg.User, cfg.Token),
 		}))
-	} else {
-		if strings.HasPrefix(cfg.CollectorEndpoint, "localhost") {
-			opts = append(opts, otlpmetrichttp.WithInsecure())
-		}
+	} else if strings.HasPrefix(cfg.CollectorEndpoint, "localhost") {
+		opts = append(opts, otlpmetrichttp.WithInsecure())
 	}
 
 	exporter, err := otlpmetrichttp.New(ctx, opts...)

@@ -153,8 +153,10 @@ func (o *OtelClient) scrapePrometheusMetrics(ctx context.Context, logger log.Log
 	for _, mf := range metricFamilies {
 		name := mf.GetName()
 		for _, m := range mf.Metric {
-			attrs := make([]attribute.KeyValue, 0, len(m.Label)+len(monikerAttr))
+			attrs := make([]attribute.KeyValue, 0, len(m.Label)+len(monikerAttr)+1)
 			attrs = append(attrs, monikerAttr...)
+			attrs = append(attrs, attribute.String("chain_id", o.vi.ChainID))
+
 			for _, label := range m.Label {
 				attrs = append(attrs, attribute.String(label.GetName(), label.GetValue()))
 			}

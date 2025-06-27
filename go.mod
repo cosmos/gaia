@@ -23,10 +23,10 @@ require (
 	github.com/CosmWasm/wasmvm/v2 v2.2.4
 	github.com/cometbft/cometbft v0.38.17
 	github.com/cometbft/cometbft-db v1.0.4
-	github.com/cosmos/cosmos-db v1.1.1
+	github.com/cosmos/cosmos-db v1.1.3
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
-	github.com/cosmos/cosmos-sdk v0.53.0
-	github.com/cosmos/evm v1.0.0-rc2
+	github.com/cosmos/cosmos-sdk v0.53.2
+	github.com/cosmos/evm v1.0.0-rc2.0.20250627182010-029ed3b60088
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.1.0
@@ -42,7 +42,7 @@ require (
 	github.com/pborman/uuid v1.2.1
 	github.com/prometheus/client_golang v1.22.0
 	github.com/rakyll/statik v0.1.7
-	github.com/spf13/cast v1.8.0
+	github.com/spf13/cast v1.9.2
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/pflag v1.0.6
 	github.com/spf13/viper v1.20.1
@@ -65,7 +65,7 @@ require (
 	cloud.google.com/go/monitoring v1.21.2 // indirect
 	cloud.google.com/go/storage v1.49.0 // indirect
 	cosmossdk.io/collections v1.2.1 // indirect
-	cosmossdk.io/depinject v1.2.0 // indirect
+	cosmossdk.io/depinject v1.2.1 // indirect
 	cosmossdk.io/schema v1.1.0 // indirect
 	cosmossdk.io/x/circuit v0.2.0 // indirect
 	cosmossdk.io/x/nft v0.2.0-rc.2 // indirect
@@ -119,8 +119,8 @@ require (
 	github.com/cosmos/rosetta-sdk-go v0.10.0 // indirect
 	github.com/crate-crypto/go-eth-kzg v1.3.0 // indirect
 	github.com/crate-crypto/go-ipa v0.0.0-20240724233137-53bbb0ceb27a // indirect
-	github.com/creachadair/atomicfile v0.3.1 // indirect
-	github.com/creachadair/tomledit v0.0.24 // indirect
+	github.com/creachadair/atomicfile v0.3.7 // indirect
+	github.com/creachadair/tomledit v0.0.28 // indirect
 	github.com/danieljoos/wincred v1.2.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/deckarep/golang-set/v2 v2.6.0 // indirect
@@ -326,8 +326,6 @@ require (
 replace (
 	// Use cosmos keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-
-	github.com/cosmos/evm/evmd => github.com/cosmos/evm/evmd v0.0.0-20250613235838-578b3468a80b
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

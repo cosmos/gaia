@@ -468,6 +468,44 @@ func NewAppKeeper(
 		govAuthority,
 	)
 
+	appKeepers.FeeMarketKeeper = feemarketkeeper.NewKeeper(
+		appCodec,
+		authtypes.NewModuleAddress(govtypes.ModuleName),
+		appKeepers.keys[feemarkettypes.StoreKey],
+		appKeepers.tkeys[feemarkettypes.TransientKey],
+	)
+
+	appKeepers.PreciseBankKeeper = precisebankkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[precisebanktypes.StoreKey],
+		appKeepers.BankKeeper,
+		appKeepers.AccountKeeper,
+	)
+
+	appKeepers.EVMKeeper = evmkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[evmtypes.StoreKey],
+		appKeepers.tkeys[evmtypes.TransientKey],
+		authtypes.NewModuleAddress(govtypes.ModuleName),
+		appKeepers.AccountKeeper,
+		appKeepers.PreciseBankKeeper,
+		appKeepers.StakingKeeper,
+		appKeepers.FeeMarketKeeper,
+		&appKeepers.Erc20Keeper,
+		cast.ToString(appOpts.Get(srvflags.EVMTracer)),
+	)
+
+	appKeepers.Erc20Keeper = erc20keeper.NewKeeper(
+		appKeepers.keys[erc20types.StoreKey],
+		appCodec,
+		authtypes.NewModuleAddress(govtypes.ModuleName),
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.EVMKeeper,
+		appKeepers.StakingKeeper,
+		&appKeepers.TransferKeeper,
+	)
+
 	appKeepers.TransferKeeper = evmtransferkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[ibctransfertypes.StoreKey]),
@@ -508,44 +546,6 @@ func NewAppKeeper(
 		wasmkeeper.BuiltInCapabilities(),
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		wasmOpts...,
-	)
-
-	appKeepers.FeeMarketKeeper = feemarketkeeper.NewKeeper(
-		appCodec,
-		authtypes.NewModuleAddress(govtypes.ModuleName),
-		appKeepers.keys[feemarkettypes.StoreKey],
-		appKeepers.tkeys[feemarkettypes.TransientKey],
-	)
-
-	appKeepers.PreciseBankKeeper = precisebankkeeper.NewKeeper(
-		appCodec,
-		appKeepers.keys[precisebanktypes.StoreKey],
-		appKeepers.BankKeeper,
-		appKeepers.AccountKeeper,
-	)
-
-	appKeepers.EVMKeeper = evmkeeper.NewKeeper(
-		appCodec,
-		appKeepers.keys[evmtypes.StoreKey],
-		appKeepers.tkeys[evmtypes.TransientKey],
-		authtypes.NewModuleAddress(govtypes.ModuleName),
-		appKeepers.AccountKeeper,
-		appKeepers.PreciseBankKeeper,
-		appKeepers.StakingKeeper,
-		appKeepers.FeeMarketKeeper,
-		&appKeepers.Erc20Keeper,
-		cast.ToString(appOpts.Get(srvflags.EVMTracer)),
-	)
-
-	appKeepers.Erc20Keeper = erc20keeper.NewKeeper(
-		appKeepers.keys[erc20types.StoreKey],
-		appCodec,
-		authtypes.NewModuleAddress(govtypes.ModuleName),
-		appKeepers.AccountKeeper,
-		appKeepers.BankKeeper,
-		appKeepers.EVMKeeper,
-		appKeepers.StakingKeeper,
-		&appKeepers.TransferKeeper,
 	)
 
 	// Configure EVM precompiles

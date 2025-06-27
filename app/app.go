@@ -1,20 +1,16 @@
 package gaia
 
 import (
-	"cosmossdk.io/math"
 	"fmt"
-	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
-	"time"
-
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
 
 	// Tracer import
 	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
@@ -49,6 +45,9 @@ import (
 	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -73,10 +72,6 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-
-	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	gaiaante "github.com/cosmos/gaia/v25/ante"
 	"github.com/cosmos/gaia/v25/app/keepers"
@@ -372,36 +367,6 @@ func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
 
 // PreBlocker application updates every pre block
 func (app *GaiaApp) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-	if ctx.BlockHeight() == 588500 {
-		maxDep := time.Second * 5
-		votingPeriod := time.Second * 300
-		expVotingPeriod := time.Second * 120
-		err := app.GovKeeper.Params.Set(ctx, v1.Params{
-			MinDeposit: []sdk.Coin{
-				sdk.NewCoin("uatom", math.NewInt(1)),
-			},
-			MaxDepositPeriod:       &maxDep,
-			VotingPeriod:           &votingPeriod,
-			Quorum:                 "0.334",
-			Threshold:              "0.5",
-			VetoThreshold:          "0.334",
-			MinInitialDepositRatio: "0",
-			ProposalCancelRatio:    "0.5",
-			ProposalCancelDest:     "",
-			ExpeditedVotingPeriod:  &expVotingPeriod,
-			ExpeditedThreshold:     "0.667",
-			ExpeditedMinDeposit: []sdk.Coin{
-				sdk.NewCoin("uatom", math.NewInt(2)),
-			},
-			BurnVoteQuorum:             false,
-			BurnProposalDepositPrevote: false,
-			BurnVoteVeto:               true,
-			MinDepositRatio:            "0.01",
-		})
-		if err != nil {
-			panic(err)
-		}
-	}
 	return app.mm.PreBlock(ctx)
 }
 

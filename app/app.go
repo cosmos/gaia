@@ -372,7 +372,7 @@ func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
 
 // PreBlocker application updates every pre block
 func (app *GaiaApp) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-	if ctx.BlockHeight() == 587500 {
+	if ctx.BlockHeight() == 588500 {
 		maxDep := time.Second * 5
 		votingPeriod := time.Second * 300
 		expVotingPeriod := time.Second * 120

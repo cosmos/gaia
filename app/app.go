@@ -1,11 +1,14 @@
 package gaia
 
 import (
+	"cosmossdk.io/math"
 	"fmt"
+	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/gorilla/mux"
@@ -369,6 +372,36 @@ func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
 
 // PreBlocker application updates every pre block
 func (app *GaiaApp) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+	if ctx.BlockHeight() == 587500 {
+		maxDep := time.Second * 5
+		votingPeriod := time.Second * 300
+		expVotingPeriod := time.Second * 120
+		err := app.GovKeeper.Params.Set(ctx, v1.Params{
+			MinDeposit: []sdk.Coin{
+				sdk.NewCoin("uatom", math.NewInt(1)),
+			},
+			MaxDepositPeriod:       &maxDep,
+			VotingPeriod:           &votingPeriod,
+			Quorum:                 "0.334",
+			Threshold:              "0.5",
+			VetoThreshold:          "0.334",
+			MinInitialDepositRatio: "0",
+			ProposalCancelRatio:    "0.5",
+			ProposalCancelDest:     "",
+			ExpeditedVotingPeriod:  &expVotingPeriod,
+			ExpeditedThreshold:     "0.667",
+			ExpeditedMinDeposit: []sdk.Coin{
+				sdk.NewCoin("uatom", math.NewInt(2)),
+			},
+			BurnVoteQuorum:             false,
+			BurnProposalDepositPrevote: false,
+			BurnVoteVeto:               true,
+			MinDepositRatio:            "0.01",
+		})
+		if err != nil {
+			panic(err)
+		}
+	}
 	return app.mm.PreBlock(ctx)
 }
 

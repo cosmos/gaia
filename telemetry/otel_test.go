@@ -146,7 +146,7 @@ func TestRecordGauge(t *testing.T) {
 		gaugeName := "error_gauge"
 		help := "Error gauge description"
 		value := 99.9
-		gaugeError := fmt.Errorf("failed to create gauge")
+		gaugeError := fmt.Errorf("failed to create gauge for error_gauge metric")
 
 		mockMeter.On("Float64Gauge", gaugeName, []otmetric.Float64GaugeOption{otmetric.WithDescription(help)}).Return((*MockFloat64Gauge)(nil), gaugeError)
 
@@ -228,7 +228,7 @@ func TestRecordHistogram(t *testing.T) {
 	t.Run("handles histogram creation error", func(t *testing.T) {
 		histName := "error_histogram"
 		help := "Error histogram description"
-		histError := fmt.Errorf("failed to create histogram")
+		histError := fmt.Errorf("failed to create histogram for error_histogram metric")
 
 		hist := &dto.Histogram{
 			Bucket: []*dto.Bucket{

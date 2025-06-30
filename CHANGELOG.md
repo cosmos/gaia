@@ -2,6 +2,9 @@
 
 ## UNRELEASED
 
+### FEATURES
+- Add OpenTelemetry metrics ([\#3805](https://github.com/cosmos/gaia/pull/3805))
+
 ### DEPENDENCIES
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to [v2.2.4](https://github.com/CosmWasm/wasmvm/releases/tag/v2.2.4) (#3787)

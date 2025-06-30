@@ -35,6 +35,7 @@ func SimulationOperations(app *gaia.GaiaApp, cdc codec.JSONCodec, config simtype
 		}
 	}
 
+	// TODO: update deprecated code.
 	simState.LegacyProposalContents = app.SimulationManager().GetProposalContents(simState) //nolint:staticcheck
 	simState.ProposalMsgs = app.SimulationManager().GetProposalMsgs(simState)
 	return app.SimulationManager().WeightedOperations(simState)

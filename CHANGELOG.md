@@ -26,6 +26,7 @@
 - Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.72.2 to 1.73.0 ([#3791](https://github.com/cosmos/gaia/pull/3791))
 - Bump [github.com/spf13/cast](https://github.com/spf13/cast) from 1.8.0 to 1.9.2 ([#3793](https://github.com/cosmos/gaia/pull/3793))
 - Bump [docker/build-push-action](https://github.com/docker/build-push-action) from 6.16.0 to 6.18.0 ([#3796](https://github.com/cosmos/gaia/pull/3796))
+- Bump [go.opentelemetry.io/otel](https://github.com/open-telemetry/opentelemetry-go) from 1.36.0 to 1.37.0 ([#3818](https://github.com/cosmos/gaia/pull/3818))
 
 ## v24.0.0
 

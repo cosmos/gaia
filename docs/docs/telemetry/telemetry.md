@@ -1,6 +1,6 @@
 # Gaia Telemetry
 
-Starting with v26.0.0, Gaia validator nodes within the bonded validator set will automatically emit telemetry data to help Interchain Labs monitor network health and debug potential network issues. 
+Starting with v26.0.0, Gaia validator nodes within the bonded validator set will automatically emit telemetry data to help Interchain Labs support the open source software that we publish. 
 Telemetry is **opt-out** and can be disabled by editing your `app.toml`:
 
 ```markdown app.toml

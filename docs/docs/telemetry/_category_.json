@@ -1,0 +1,5 @@
+{
+  "label": "Telemetry",
+  "position": 7,
+  "link": { "type": "doc", "id": "telemetry/telemetry" }
+}

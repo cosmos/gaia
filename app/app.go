@@ -2,15 +2,16 @@ package gaia
 
 import (
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
-	"io"
-	"net/http"
-	"os"
-	"path/filepath"
 
 	// Tracer import
 	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
@@ -180,14 +181,7 @@ func NewGaiaApp(
 		logger.Debug("successfully determined if this node is a validator", "moniker", vi.Moniker)
 	}
 
-	otelConfig := gaiatelemetry.OtelConfig{
-		Disable:                 cast.ToBool(appOpts.Get("opentelemetry.disable")),
-		CollectorEndpoint:       cast.ToString(appOpts.Get("opentelemetry.collector-endpoint")),
-		CollectorMetricsURLPath: cast.ToString(appOpts.Get("opentelemetry.collector-metrics-url-path")),
-		User:                    cast.ToString(appOpts.Get("opentelemetry.user")),
-		Token:                   cast.ToString(appOpts.Get("opentelemetry.token")),
-		PushInterval:            cast.ToDuration(appOpts.Get("opentelemetry.push-interval")),
-	}
+	otelConfig := getOtelConfig(appOpts)
 	app.otelClient = gaiatelemetry.NewOtelClient(otelConfig, vi)
 
 	// Setup keepers
@@ -442,6 +436,25 @@ func (app *GaiaApp) BlockedAccountAddrs() map[string]bool {
 	}
 
 	return blockedAddrs
+}
+
+func getOtelConfig(appOpts servertypes.AppOptions) gaiatelemetry.OtelConfig {
+	// if appOpts.Get yields nil, this value was not set.
+	// since the user isn't making any intent to disable here, we will use the DefaultOtelConfig.
+	disableRaw := appOpts.Get("opentelemetry.disable")
+	if disableRaw == nil {
+		return gaiatelemetry.DefaultOtelConfig
+	}
+	// if disableRaw wasn't nil, the user is making the intent to use their config. so we will use their values.
+	otelConfig := gaiatelemetry.OtelConfig{
+		Disable:                 cast.ToBool(appOpts.Get("opentelemetry.disable")),
+		CollectorEndpoint:       cast.ToString(appOpts.Get("opentelemetry.collector-endpoint")),
+		CollectorMetricsURLPath: cast.ToString(appOpts.Get("opentelemetry.collector-metrics-url-path")),
+		User:                    cast.ToString(appOpts.Get("opentelemetry.user")),
+		Token:                   cast.ToString(appOpts.Get("opentelemetry.token")),
+		PushInterval:            cast.ToDuration(appOpts.Get("opentelemetry.push-interval")),
+	}
+	return otelConfig
 }
 
 // LegacyAmino returns GaiaApp's amino codec.

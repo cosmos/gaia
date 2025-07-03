@@ -9,8 +9,6 @@ import (
 	"os"
 	"path/filepath"
 
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/cosmos/gaia/v25/telemetry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
@@ -47,7 +45,10 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
 	gaia "github.com/cosmos/gaia/v25/app"
+	"github.com/cosmos/gaia/v25/telemetry"
 )
 
 var (

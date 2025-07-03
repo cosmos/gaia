@@ -258,6 +258,7 @@ func initTestnetFiles(
 	serverCfg.Telemetry.GlobalLabels = [][]string{{"chain_id", args.chainID}}
 	telConfig := telemetry.LocalOtelConfig
 	if args.useDocker {
+		// if useDocker, we need to use the docker networking. localhost is troublesome in the setup.
 		telConfig.CollectorEndpoint = "host.docker.internal:4318"
 	}
 	gaiaCfg := gaia.AppConfig{

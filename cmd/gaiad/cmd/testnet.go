@@ -9,6 +9,8 @@ import (
 	"os"
 	"path/filepath"
 
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	"github.com/cosmos/gaia/v25/telemetry"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
@@ -173,7 +175,7 @@ Example:
 
 	addTestnetFlagsToCmd(cmd)
 	cmd.Flags().String(flagNodeDirPrefix, "node", "Prefix the directory name for each node with (node results in node0, node1, ...)")
-	cmd.Flags().String(flagNodeDaemonHome, "simd", "Home directory of the node's daemon configuration")
+	cmd.Flags().String(flagNodeDaemonHome, "gaiad", "Home directory of the node's daemon configuration")
 	cmd.Flags().String(flagStartingIPAddress, "192.168.0.1", "Starting IP address (192.168.0.1 results in persistent peers list ID0@192.168.0.1:46656, ID1@192.168.0.2:46656, ...)")
 	cmd.Flags().String(flags.FlagKeyringBackend, flags.DefaultKeyringBackend, "Select keyring's backend (os|file|test)")
 
@@ -239,13 +241,18 @@ func initTestnetFiles(
 	nodeIDs := make([]string, args.numValidators)
 	valPubKeys := make([]cryptotypes.PubKey, args.numValidators)
 
-	gaiadConfig := srvconfig.DefaultConfig()
-	gaiadConfig.MinGasPrices = args.minGasPrices
-	gaiadConfig.API.Enable = true
-	gaiadConfig.Telemetry.Enabled = true
-	gaiadConfig.Telemetry.PrometheusRetentionTime = 60
-	gaiadConfig.Telemetry.EnableHostnameLabel = false
-	gaiadConfig.Telemetry.GlobalLabels = [][]string{{"chain_id", args.chainID}}
+	serverCfg := srvconfig.DefaultConfig()
+	serverCfg.MinGasPrices = args.minGasPrices
+	serverCfg.API.Enable = true
+	serverCfg.Telemetry.Enabled = true
+	serverCfg.Telemetry.PrometheusRetentionTime = 60
+	serverCfg.Telemetry.EnableHostnameLabel = false
+	serverCfg.Telemetry.GlobalLabels = [][]string{{"chain_id", args.chainID}}
+	gaiaCfg := gaia.AppConfig{
+		Config:        *serverCfg,
+		Wasm:          wasmtypes.NodeConfig{},
+		OpenTelemetry: telemetry.OtelConfig{Disable: true},
+	}
 
 	var (
 		genAccounts []authtypes.GenesisAccount
@@ -363,7 +370,7 @@ func initTestnetFiles(
 			return err
 		}
 
-		srvconfig.WriteConfigFile(filepath.Join(nodeDir, "config", "app.toml"), gaiadConfig)
+		srvconfig.WriteConfigFile(filepath.Join(nodeDir, "config", "app.toml"), gaiaCfg)
 	}
 
 	if err := initGenFiles(clientCtx, mbm, args.chainID, genAccounts, genBalances, genFiles, args.numValidators); err != nil {

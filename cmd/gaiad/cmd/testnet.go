@@ -45,7 +45,10 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
 	gaia "github.com/cosmos/gaia/v25/app"
+	"github.com/cosmos/gaia/v25/telemetry"
 )
 
 var (
@@ -54,6 +57,7 @@ var (
 	flagOutputDir          = "output-dir"
 	flagNodeDaemonHome     = "node-daemon-home"
 	flagStartingIPAddress  = "starting-ip-address"
+	flagsUseDocker         = "use-docker"
 	flagEnableLogging      = "enable-logging"
 	flagGRPCAddress        = "grpc.address"
 	flagRPCAddress         = "rpc.address"
@@ -75,6 +79,7 @@ type initArgs struct {
 	numValidators     int
 	outputDir         string
 	startingIPAddress string
+	useDocker         bool
 }
 
 type startArgs struct {
@@ -145,7 +150,7 @@ or a similar setup where each node has a manually configurable IP address.
 Note, strict routability for addresses is turned off in the config file.
 
 Example:
-	simd testnet init-files --v 4 --output-dir ./.testnets --starting-ip-address 192.168.10.2
+	gaiad testnet init-files --v 4 --output-dir ./.testnets --starting-ip-address 192.168.10.2
 	`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -160,6 +165,10 @@ Example:
 			args.outputDir, _ = cmd.Flags().GetString(flagOutputDir)
 			args.keyringBackend, _ = cmd.Flags().GetString(flags.FlagKeyringBackend)
 			args.chainID, _ = cmd.Flags().GetString(flags.FlagChainID)
+			args.useDocker, _ = cmd.Flags().GetBool(flagsUseDocker)
+			if args.chainID == "" {
+				args.chainID = "localchain"
+			}
 			args.minGasPrices, _ = cmd.Flags().GetString(server.FlagMinGasPrices)
 			args.nodeDirPrefix, _ = cmd.Flags().GetString(flagNodeDirPrefix)
 			args.nodeDaemonHome, _ = cmd.Flags().GetString(flagNodeDaemonHome)
@@ -173,9 +182,10 @@ Example:
 
 	addTestnetFlagsToCmd(cmd)
 	cmd.Flags().String(flagNodeDirPrefix, "node", "Prefix the directory name for each node with (node results in node0, node1, ...)")
-	cmd.Flags().String(flagNodeDaemonHome, "simd", "Home directory of the node's daemon configuration")
+	cmd.Flags().String(flagNodeDaemonHome, "gaiad", "Home directory of the node's daemon configuration")
 	cmd.Flags().String(flagStartingIPAddress, "192.168.0.1", "Starting IP address (192.168.0.1 results in persistent peers list ID0@192.168.0.1:46656, ID1@192.168.0.2:46656, ...)")
 	cmd.Flags().String(flags.FlagKeyringBackend, flags.DefaultKeyringBackend, "Select keyring's backend (os|file|test)")
+	cmd.Flags().Bool(flagsUseDocker, false, "test network via docker")
 
 	return cmd
 }
@@ -190,7 +200,7 @@ and generate "v" directories, populated with necessary validator configuration f
 (private validator, genesis, config, etc.).
 
 Example:
-	simd testnet --v 4 --output-dir ./.testnets
+	gaiad testnet --v 4 --output-dir ./.testnets
 	`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			args := startArgs{}
@@ -229,23 +239,33 @@ func initTestnetFiles(
 	genBalIterator banktypes.GenesisBalancesIterator,
 	args initArgs,
 ) error {
-	chainID := []byte("chain-")
-	for i := 0; i < 6; i++ {
-		chainID = append(chainID, strChars[rand.Int()%len(strChars)])
-	}
 	if args.chainID == "" {
+		chainID := []byte("chain-")
+		for i := 0; i < 6; i++ {
+			chainID = append(chainID, strChars[rand.Int()%len(strChars)])
+		}
 		args.chainID = string(chainID)
 	}
 	nodeIDs := make([]string, args.numValidators)
 	valPubKeys := make([]cryptotypes.PubKey, args.numValidators)
 
-	gaiadConfig := srvconfig.DefaultConfig()
-	gaiadConfig.MinGasPrices = args.minGasPrices
-	gaiadConfig.API.Enable = true
-	gaiadConfig.Telemetry.Enabled = true
-	gaiadConfig.Telemetry.PrometheusRetentionTime = 60
-	gaiadConfig.Telemetry.EnableHostnameLabel = false
-	gaiadConfig.Telemetry.GlobalLabels = [][]string{{"chain_id", args.chainID}}
+	serverCfg := srvconfig.DefaultConfig()
+	serverCfg.MinGasPrices = args.minGasPrices
+	serverCfg.API.Enable = true
+	serverCfg.Telemetry.Enabled = true
+	serverCfg.Telemetry.PrometheusRetentionTime = 60
+	serverCfg.Telemetry.EnableHostnameLabel = false
+	serverCfg.Telemetry.GlobalLabels = [][]string{{"chain_id", args.chainID}}
+	telConfig := telemetry.LocalOtelConfig
+	if args.useDocker {
+		// if useDocker, we need to use the docker networking. localhost is troublesome in the setup.
+		telConfig.CollectorEndpoint = "host.docker.internal:4318"
+	}
+	gaiaCfg := gaia.AppConfig{
+		Config:        *serverCfg,
+		Wasm:          wasmtypes.NodeConfig{},
+		OpenTelemetry: telConfig,
+	}
 
 	var (
 		genAccounts []authtypes.GenesisAccount
@@ -363,7 +383,7 @@ func initTestnetFiles(
 			return err
 		}
 
-		srvconfig.WriteConfigFile(filepath.Join(nodeDir, "config", "app.toml"), gaiadConfig)
+		srvconfig.WriteConfigFile(filepath.Join(nodeDir, "config", "app.toml"), gaiaCfg)
 	}
 
 	if err := initGenFiles(clientCtx, mbm, args.chainID, genAccounts, genBalances, genFiles, args.numValidators); err != nil {

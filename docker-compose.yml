@@ -1,0 +1,98 @@
+version: "3"
+
+services:
+  gaiadnode0:
+    container_name: gaiadnode0
+    image: "cosmos/gaiad"
+    environment:
+      - DEBUG=0
+      - ID=0
+      - LOG=${LOG:-gaiad.log}
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - "26656-26657:26656-26657"
+      - "1317:1317"
+      - "9090:9090"
+      - "2345:2345"
+    volumes:
+      - ./.testnets:/data:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.2
+
+  gaiadnode1:
+    container_name: gaiadnode1
+    image: "cosmos/gaiad"
+    environment:
+      - DEBUG=0
+      - ID=1
+      - LOG=${LOG:-gaiad.log}
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - "26666-26667:26656-26657"
+      - "1318:1317"
+      - "9091:9090"
+      - "2346:2345"
+    volumes:
+      - ./.testnets:/data:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.3
+
+  gaiadnode2:
+    container_name: gaiadnode2
+    image: "cosmos/gaiad"
+    environment:
+      - DEBUG=0
+      - ID=2
+      - LOG=${LOG:-gaiad.log}
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - "26676-26677:26656-26657"
+      - "1319:1317"
+      - "9092:9090"
+      - "2347:2345"
+    volumes:
+      - ./.testnets:/data:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.4
+
+  gaiadnode3:
+    container_name: gaiadnode3
+    image: "cosmos/gaiad"
+    environment:
+      - DEBUG=0
+      - ID=3
+      - LOG=${LOG:-gaiad.log}
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - "26686-26687:26656-26657"
+      - "1320:1317"
+      - "9093:9090"
+      - "2348:2345"
+    volumes:
+      - ./.testnets:/data:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.10.5
+
+networks:
+  localnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.10.0/25

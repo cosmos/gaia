@@ -5,7 +5,7 @@ services:
     container_name: gaiadnode0
     image: "cosmos/gaiad"
     environment:
-      - DEBUG=1
+      - DEBUG=0
       - ID=0
       - LOG=${LOG:-gaiad.log}
     cap_add:

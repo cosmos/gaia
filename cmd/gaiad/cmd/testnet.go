@@ -147,7 +147,7 @@ or a similar setup where each node has a manually configurable IP address.
 Note, strict routability for addresses is turned off in the config file.
 
 Example:
-	simd testnet init-files --v 4 --output-dir ./.testnets --starting-ip-address 192.168.10.2
+	gaiad testnet init-files --v 4 --output-dir ./.testnets --starting-ip-address 192.168.10.2
 	`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -162,6 +162,9 @@ Example:
 			args.outputDir, _ = cmd.Flags().GetString(flagOutputDir)
 			args.keyringBackend, _ = cmd.Flags().GetString(flags.FlagKeyringBackend)
 			args.chainID, _ = cmd.Flags().GetString(flags.FlagChainID)
+			if args.chainID == "" {
+				args.chainID = "localchain"
+			}
 			args.minGasPrices, _ = cmd.Flags().GetString(server.FlagMinGasPrices)
 			args.nodeDirPrefix, _ = cmd.Flags().GetString(flagNodeDirPrefix)
 			args.nodeDaemonHome, _ = cmd.Flags().GetString(flagNodeDaemonHome)
@@ -192,7 +195,7 @@ and generate "v" directories, populated with necessary validator configuration f
 (private validator, genesis, config, etc.).
 
 Example:
-	simd testnet --v 4 --output-dir ./.testnets
+	gaiad testnet --v 4 --output-dir ./.testnets
 	`,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			args := startArgs{}
@@ -231,11 +234,12 @@ func initTestnetFiles(
 	genBalIterator banktypes.GenesisBalancesIterator,
 	args initArgs,
 ) error {
-	chainID := []byte("chain-")
-	for i := 0; i < 6; i++ {
-		chainID = append(chainID, strChars[rand.Int()%len(strChars)])
-	}
+
 	if args.chainID == "" {
+		chainID := []byte("chain-")
+		for i := 0; i < 6; i++ {
+			chainID = append(chainID, strChars[rand.Int()%len(strChars)])
+		}
 		args.chainID = string(chainID)
 	}
 	nodeIDs := make([]string, args.numValidators)
@@ -251,7 +255,7 @@ func initTestnetFiles(
 	gaiaCfg := gaia.AppConfig{
 		Config:        *serverCfg,
 		Wasm:          wasmtypes.NodeConfig{},
-		OpenTelemetry: telemetry.OtelConfig{Disable: true},
+		OpenTelemetry: telemetry.OtelConfig{},
 	}
 
 	var (

@@ -24,7 +24,6 @@ import (
 	snapshottypes "cosmossdk.io/store/snapshots/types"
 	storetypes "cosmossdk.io/store/types"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
-	rosettaCmd "cosmossdk.io/tools/rosetta/cmd"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -35,9 +34,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
-	"github.com/cosmos/cosmos-sdk/codec"
 	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -82,7 +79,7 @@ func NewRootCmd() *cobra.Command {
 			panic(err)
 		}
 		if tempDir != gaia.DefaultNodeHome {
-			os.RemoveAll(tempDir)
+			_ = os.RemoveAll(tempDir)
 		}
 	}()
 
@@ -158,7 +155,7 @@ func NewRootCmd() *cobra.Command {
 		},
 	}
 
-	initRootCmd(rootCmd, tempApplication.ModuleBasics, tempApplication.AppCodec(), tempApplication.InterfaceRegistry(), tempApplication.GetTxConfig())
+	initRootCmd(rootCmd, tempApplication.ModuleBasics, tempApplication.GetTxConfig())
 
 	autoCliOpts := enrichAutoCliOpts(tempApplication.AutoCliOpts(), initClientCtx)
 	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
@@ -213,10 +210,9 @@ func initAppConfig() (string, interface{}) {
 	return defaultAppTemplate, customAppConfig
 }
 
-func initRootCmd(rootCmd *cobra.Command,
+func initRootCmd(
+	rootCmd *cobra.Command,
 	basicManager module.BasicManager,
-	cdc codec.Codec,
-	interfaceRegistry codectypes.InterfaceRegistry,
 	txConfig client.TxConfig,
 ) {
 	cfg := sdk.GetConfig()
@@ -244,9 +240,6 @@ func initRootCmd(rootCmd *cobra.Command,
 		txCommand(basicManager),
 		keys.Commands(),
 	)
-
-	// add rosetta
-	rootCmd.AddCommand(rosettaCmd.RosettaCommand(interfaceRegistry, cdc))
 }
 
 func addModuleInitFlags(startCmd *cobra.Command) {

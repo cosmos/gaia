@@ -255,7 +255,7 @@ func initTestnetFiles(
 	gaiaCfg := gaia.AppConfig{
 		Config:        *serverCfg,
 		Wasm:          wasmtypes.NodeConfig{},
-		OpenTelemetry: telemetry.OtelConfig{},
+		OpenTelemetry: telemetry.LocalOtelConfig,
 	}
 
 	var (

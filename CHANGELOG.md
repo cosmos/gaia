@@ -2,6 +2,9 @@
 
 ## UNRELEASED
 
+### FEATURES
+- Add OpenTelemetry metrics ([\#3805](https://github.com/cosmos/gaia/pull/3805))
+
 ### DEPENDENCIES
 - Bump [cosmos-sdk](https://github.com/cosmos/cosmos-sdk) to [v0.53.0](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.0) (#3773)
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) to [v2.2.4](https://github.com/CosmWasm/wasmvm/releases/tag/v2.2.4) (#3787)
@@ -23,6 +26,8 @@
 - Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.72.2 to 1.73.0 ([#3791](https://github.com/cosmos/gaia/pull/3791))
 - Bump [github.com/spf13/cast](https://github.com/spf13/cast) from 1.8.0 to 1.9.2 ([#3793](https://github.com/cosmos/gaia/pull/3793))
 - Bump [docker/build-push-action](https://github.com/docker/build-push-action) from 6.16.0 to 6.18.0 ([#3796](https://github.com/cosmos/gaia/pull/3796))
+- Bump [go.opentelemetry.io/otel/sdk/metric](https://github.com/open-telemetry/opentelemetry-go) from 1.36.0 to 1.37.0 ([#3820](https://github.com/cosmos/gaia/pull/3820))
+- Bump [github.com/go-viper/mapstructure/v2](https://github.com/go-viper/mapstructure) from 2.2.1 to 2.3.0 ([#3813](https://github.com/cosmos/gaia/pull/3813))
 
 ## v24.0.0
 

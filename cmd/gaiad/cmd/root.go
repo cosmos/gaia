@@ -54,6 +54,7 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	gaia "github.com/cosmos/gaia/v25/app"
+	"github.com/cosmos/gaia/v25/telemetry"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -134,7 +135,23 @@ func NewRootCmd() *cobra.Command {
 			customAppTemplate, customAppConfig := initAppConfig()
 			customCometConfig := initCometConfig()
 
-			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customCometConfig)
+			err = server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customCometConfig)
+			if err != nil {
+				return err
+			}
+
+			// if open telemetry is not disabled, we force the SDK telemetry to be enabled.
+			serverCtx := server.GetServerContextFromCmd(cmd)
+			if !serverCtx.Viper.GetBool("opentelemetry.disable") {
+				serverCtx.Config.Instrumentation.Prometheus = true
+				serverCtx.Viper.Set("telemetry.enabled", true)
+				serverCtx.Viper.Set("telemetry.prometheus-retention-time", 60)
+				if err := server.SetCmdServerContext(cmd, serverCtx); err != nil {
+					return fmt.Errorf("could not set cmd server context: %w", err)
+				}
+			}
+
+			return nil
 		},
 	}
 
@@ -172,23 +189,23 @@ func initCometConfig() *tmcfg.Config {
 
 func initAppConfig() (string, interface{}) {
 	// Embed additional configurations
-	type CustomAppConfig struct {
-		serverconfig.Config
-
-		Wasm wasmtypes.NodeConfig `mapstructure:"wasm"`
-	}
 
 	// Can optionally overwrite the SDK's default server config.
 	srvCfg := serverconfig.DefaultConfig()
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
-
-	customAppConfig := CustomAppConfig{
-		Config: *srvCfg,
-		Wasm:   wasmtypes.DefaultNodeConfig(),
+	srvCfg.Telemetry.Enabled = true
+	if srvCfg.Telemetry.PrometheusRetentionTime <= 0 {
+		srvCfg.Telemetry.PrometheusRetentionTime = 60
 	}
 
-	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate()
+	customAppConfig := gaia.AppConfig{
+		Config:        *srvCfg,
+		Wasm:          wasmtypes.DefaultNodeConfig(),
+		OpenTelemetry: telemetry.DefaultOtelConfig,
+	}
+
+	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate() + telemetry.OpenTelemetryTemplate()
 
 	return defaultAppTemplate, customAppConfig
 }

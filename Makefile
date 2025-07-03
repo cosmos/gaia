@@ -453,7 +453,7 @@ localnet-build-dlv:
 
 localnet-build-nodes:
 	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data cosmos/gaiad \
-			  testnet init-files --v 4 -o /data --starting-ip-address 192.168.10.2 --keyring-backend=test --chain-id=localchain
+			  testnet init-files --v 4 -o /data --starting-ip-address 192.168.10.2 --keyring-backend=test --chain-id=localchain --use-docker=true
 	docker compose up -d
 
 localnet-stop:

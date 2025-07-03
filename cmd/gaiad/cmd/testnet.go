@@ -56,6 +56,7 @@ var (
 	flagOutputDir          = "output-dir"
 	flagNodeDaemonHome     = "node-daemon-home"
 	flagStartingIPAddress  = "starting-ip-address"
+	flagsUseDocker         = "use-docker"
 	flagEnableLogging      = "enable-logging"
 	flagGRPCAddress        = "grpc.address"
 	flagRPCAddress         = "rpc.address"
@@ -77,6 +78,7 @@ type initArgs struct {
 	numValidators     int
 	outputDir         string
 	startingIPAddress string
+	useDocker         bool
 }
 
 type startArgs struct {
@@ -162,6 +164,7 @@ Example:
 			args.outputDir, _ = cmd.Flags().GetString(flagOutputDir)
 			args.keyringBackend, _ = cmd.Flags().GetString(flags.FlagKeyringBackend)
 			args.chainID, _ = cmd.Flags().GetString(flags.FlagChainID)
+			args.useDocker, _ = cmd.Flags().GetBool(flagsUseDocker)
 			if args.chainID == "" {
 				args.chainID = "localchain"
 			}
@@ -181,6 +184,7 @@ Example:
 	cmd.Flags().String(flagNodeDaemonHome, "gaiad", "Home directory of the node's daemon configuration")
 	cmd.Flags().String(flagStartingIPAddress, "192.168.0.1", "Starting IP address (192.168.0.1 results in persistent peers list ID0@192.168.0.1:46656, ID1@192.168.0.2:46656, ...)")
 	cmd.Flags().String(flags.FlagKeyringBackend, flags.DefaultKeyringBackend, "Select keyring's backend (os|file|test)")
+	cmd.Flags().Bool(flagsUseDocker, false, "test network via docker")
 
 	return cmd
 }
@@ -234,7 +238,6 @@ func initTestnetFiles(
 	genBalIterator banktypes.GenesisBalancesIterator,
 	args initArgs,
 ) error {
-
 	if args.chainID == "" {
 		chainID := []byte("chain-")
 		for i := 0; i < 6; i++ {
@@ -252,10 +255,14 @@ func initTestnetFiles(
 	serverCfg.Telemetry.PrometheusRetentionTime = 60
 	serverCfg.Telemetry.EnableHostnameLabel = false
 	serverCfg.Telemetry.GlobalLabels = [][]string{{"chain_id", args.chainID}}
+	telConfig := telemetry.LocalOtelConfig
+	if args.useDocker {
+		telConfig.CollectorEndpoint = "host.docker.internal:4318"
+	}
 	gaiaCfg := gaia.AppConfig{
 		Config:        *serverCfg,
 		Wasm:          wasmtypes.NodeConfig{},
-		OpenTelemetry: telemetry.LocalOtelConfig,
+		OpenTelemetry: telConfig,
 	}
 
 	var (

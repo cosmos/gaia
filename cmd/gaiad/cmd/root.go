@@ -205,7 +205,7 @@ func initAppConfig() (string, interface{}) {
 	customAppConfig := gaia.AppConfig{
 		Config:        *srvCfg,
 		Wasm:          wasmtypes.DefaultNodeConfig(),
-		OpenTelemetry: telemetry.LocalOtelConfig,
+		OpenTelemetry: telemetry.DefaultOtelConfig,
 	}
 
 	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate() + telemetry.OpenTelemetryTemplate()

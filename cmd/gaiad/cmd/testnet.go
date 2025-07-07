@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"net"
 	"os"
 	"path/filepath"
@@ -64,7 +63,6 @@ var (
 	flagAPIAddress         = "api.address"
 	flagPrintMnemonic      = "print-mnemonic"
 	unsafeStartValidatorFn UnsafeStartValidatorCmdCreator
-	strChars               = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" // 62 characters
 )
 
 type UnsafeStartValidatorCmdCreator func(ac appCreator) *cobra.Command
@@ -166,9 +164,6 @@ Example:
 			args.keyringBackend, _ = cmd.Flags().GetString(flags.FlagKeyringBackend)
 			args.chainID, _ = cmd.Flags().GetString(flags.FlagChainID)
 			args.useDocker, _ = cmd.Flags().GetBool(flagsUseDocker)
-			if args.chainID == "" {
-				args.chainID = "localchain"
-			}
 			args.minGasPrices, _ = cmd.Flags().GetString(server.FlagMinGasPrices)
 			args.nodeDirPrefix, _ = cmd.Flags().GetString(flagNodeDirPrefix)
 			args.nodeDaemonHome, _ = cmd.Flags().GetString(flagNodeDaemonHome)
@@ -240,11 +235,7 @@ func initTestnetFiles(
 	args initArgs,
 ) error {
 	if args.chainID == "" {
-		chainID := []byte("chain-")
-		for i := 0; i < 6; i++ {
-			chainID = append(chainID, strChars[rand.Int()%len(strChars)])
-		}
-		args.chainID = string(chainID)
+		args.chainID = "localchain"
 	}
 	nodeIDs := make([]string, args.numValidators)
 	valPubKeys := make([]cryptotypes.PubKey, args.numValidators)
@@ -256,15 +247,15 @@ func initTestnetFiles(
 	serverCfg.Telemetry.PrometheusRetentionTime = 60
 	serverCfg.Telemetry.EnableHostnameLabel = false
 	serverCfg.Telemetry.GlobalLabels = [][]string{{"chain_id", args.chainID}}
-	telConfig := telemetry.LocalOtelConfig
+	otelConfig := telemetry.LocalOtelConfig
 	if args.useDocker {
 		// if useDocker, we need to use the docker networking. localhost is troublesome in the setup.
-		telConfig.CollectorEndpoint = "host.docker.internal:4318"
+		otelConfig.CollectorEndpoint = "host.docker.internal:4318"
 	}
 	gaiaCfg := gaia.AppConfig{
 		Config:        *serverCfg,
 		Wasm:          wasmtypes.NodeConfig{},
-		OpenTelemetry: telConfig,
+		OpenTelemetry: otelConfig,
 	}
 
 	var (

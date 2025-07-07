@@ -6,7 +6,7 @@ order: 3
 Visit the [testnets repo](https://github.com/cosmos/testnets) for the most up-to-date information on the currently available public testnets:
 
 * Interchain Security (ICS) Testnet: [`provider`](https://github.com/cosmos/testnets/blob/master/interchain-security/provider/README.md)
-* Release Testnet: [`theta-testnet-001`](https://github.com/cosmos/testnets/blob/master/release/README.md)
+* Release Testnet: [`theta-testnet-001`](https://github.com/cosmos/testnets/blob/master/legacy/theta-testnet-001/README.md)
 
 ## How to Join
 
@@ -14,7 +14,7 @@ You can set up a testnet node with a single command using one of the options bel
 
 * Run a shell script from the testnets repo
   * [ICS Testnet](https://github.com/cosmos/testnets/tree/master/interchain-security/provider#bash-script)
-  * [Release testnet](https://github.com/cosmos/testnets/blob/master/release/README.md#bash-script)
+  * [Release testnet](https://github.com/cosmos/testnets/blob/master/legacy/theta-testnet-001/README.md#bash-script)
 * Run an Ansible playbook from the [cosmos-ansible](https://github.com/hyphacoop/cosmos-ansible) repo
   * [ICS Testnet](https://github.com/hyphacoop/cosmos-ansible/blob/main/examples/README.md#provider-chain)
   * [Release Testnet](https://github.com/hyphacoop/cosmos-ansible/blob/main/examples/README.md#join-the-cosmos-hub-release-testnet)

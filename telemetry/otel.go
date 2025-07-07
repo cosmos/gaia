@@ -87,7 +87,8 @@ func (o *OtelClient) StartExporter(logger log.Logger) error {
 		opts = append(opts, otlpmetrichttp.WithHeaders(map[string]string{
 			"Authorization": "Basic " + formatBasicAuth(cfg.User, cfg.Token),
 		}))
-	} else if strings.HasPrefix(cfg.CollectorEndpoint, "localhost") {
+	} else if strings.HasPrefix(cfg.CollectorEndpoint, "localhost") || strings.HasPrefix(cfg.CollectorEndpoint, "host.docker.internal") {
+		// host.docker.internal is the endpoint for docker containers to communicate with the host computer.
 		opts = append(opts, otlpmetrichttp.WithInsecure())
 	}
 

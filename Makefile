@@ -440,3 +440,25 @@ stop-telemetry-server:
 	cd contrib/telemetry && docker compose down --remove-orphans
 
 .PHONY: start-telemetry-server stop-telemetry-server
+
+###############################################################################
+###                                Localnet                                 ###
+###############################################################################
+
+localnet-build-env:
+	$(MAKE) -C contrib/images gaiad-env
+
+localnet-build-nodes:
+	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data cosmos/gaiad \
+			  testnet init-files --v 4 -o /data --starting-ip-address 192.168.10.2 --keyring-backend=test --chain-id=localchain --use-docker=true
+	docker compose up -d
+
+localnet-stop:
+	docker compose down
+
+# localnet-start will run a 4-node testnet locally. The nodes are
+# based off the docker images in: ./contrib/images/simd-env
+localnet-start: localnet-stop localnet-build-env localnet-build-nodes
+
+
+.PHONY: localnet-start localnet-stop localnet-build-env localnet-build-nodes

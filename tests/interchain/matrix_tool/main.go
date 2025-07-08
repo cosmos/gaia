@@ -23,7 +23,7 @@ import (
 
 const branchBuildSuffix = "-ref"
 
-func GetUpgradeName(testVersion string) string {
+func getUpgradeName(testVersion string) string {
 	if idx := strings.Index(testVersion, "-"); idx != -1 {
 		return testVersion[:idx]
 	}
@@ -41,7 +41,7 @@ func GetPreviousMajorMinor(ctx context.Context, testVersion string) (previousVer
 		err = fmt.Errorf("ListReleases failed: %w", err)
 		return
 	}
-	upgradeName = GetUpgradeName(testVersion)
+	upgradeName = getUpgradeName(testVersion)
 	testMajor, err := strconv.Atoi(semver.Major(testVersion)[1:])
 	if err != nil {
 		err = fmt.Errorf("failed to parse major version: %w", err)
@@ -170,7 +170,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Using manually specified UPGRADE_NAME=%s\n", manualUpgradeName)
 			upgradeName = manualUpgradeName
 		} else {
-			upgradeName = GetUpgradeName(testVersion)
+			upgradeName = getUpgradeName(testVersion)
 		}
 	} else {
 		// Use the automatic version determination

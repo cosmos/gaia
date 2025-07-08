@@ -7,7 +7,7 @@ import (
 
 	"cosmossdk.io/math"
 	transfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
-	"github.com/strangelove-ventures/interchaintest/v8/ibc"
+	"github.com/cosmos/interchaintest/v10/ibc"
 )
 
 func SendSimpleIBCTx(ctx context.Context, chainA *Chain, chainB *Chain, relayer *Relayer) error {

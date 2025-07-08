@@ -24,7 +24,11 @@ require (
 	github.com/cometbft/cometbft-db v1.0.4
 	github.com/cosmos/cosmos-db v1.1.1
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
+<<<<<<< HEAD
 	github.com/cosmos/cosmos-sdk v0.53.0
+=======
+	github.com/cosmos/cosmos-sdk v0.53.3
+>>>>>>> e2f5b13 (v25_1_0 upgrade (#3827))
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.1.0

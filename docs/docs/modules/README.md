@@ -28,7 +28,7 @@ links for each one.
 
 ## ibc-go
 
-- [transfer](https://ibc.cosmos.network/main/apps/transfer/overview)
+- [transfer](https://ibc.cosmos.network/v8/apps/transfer/overview)
 - [interchain accounts - host](https://ibc.cosmos.network/v8/apps/interchain-accounts/client#host)
 - [interchain accounts - controller](https://ibc.cosmos.network/v8/apps/interchain-accounts/client#controller)
 - [interchain-security/provider](https://github.com/cosmos/interchain-security/tree/main/x/ccv/provider)

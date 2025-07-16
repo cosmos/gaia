@@ -86,7 +86,7 @@ There are future releases of Interchain Accounts which are expected to be backwa
 
 ## Support
 
-[Documentation](https://ibc.cosmos.network/main/apps/interchain-accounts/overview.html)
+[Documentation](https://ibc.cosmos.network/v8/apps/interchain-accounts/overview)
 
 ## Additional Research & References
 

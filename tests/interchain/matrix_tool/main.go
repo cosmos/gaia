@@ -23,7 +23,16 @@ import (
 
 const branchBuildSuffix = "-ref"
 
-func getUpgradeName(testVersion string) string {
+func getUpgradeName(testVersion, latestFromVersion string) string {
+	if strings.HasSuffix(testVersion, branchBuildSuffix) {
+		// If the test version is a branch build, we either need to use the latest from version (i.e. the branch is off that release),
+		// or we need to upgrade to a new major version (i.e. the branch is creating a new major version).
+		if semver.Major(latestFromVersion) == semver.Major(testVersion) {
+			return latestFromVersion
+		} else {
+			return fmt.Sprintf("%s.0.0", semver.Major(testVersion))
+		}
+	}
 	if idx := strings.Index(testVersion, "-"); idx != -1 {
 		return testVersion[:idx]
 	}
@@ -41,7 +50,11 @@ func GetPreviousMajorMinor(ctx context.Context, testVersion string) (previousVer
 		err = fmt.Errorf("ListReleases failed: %w", err)
 		return
 	}
-	upgradeName = getUpgradeName(testVersion)
+	// Figure out the upgradeName once we have a fallback version.
+	defer func() {
+		semver.Sort(previousVersions)
+		upgradeName = getUpgradeName(testVersion, previousVersions[len(previousVersions)-1])
+	}()
 	testMajor, err := strconv.Atoi(semver.Major(testVersion)[1:])
 	if err != nil {
 		err = fmt.Errorf("failed to parse major version: %w", err)
@@ -170,7 +183,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "Using manually specified UPGRADE_NAME=%s\n", manualUpgradeName)
 			upgradeName = manualUpgradeName
 		} else {
-			upgradeName = getUpgradeName(testVersion)
+			upgradeName = getUpgradeName(testVersion, manualFromVersion)
 		}
 	} else {
 		// Use the automatic version determination

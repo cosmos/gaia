@@ -12,6 +12,8 @@
 ### Dependencies
 
 - Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.2 to 0.53.3 ([#3829](https://github.com/cosmos/gaia/pull/3829))
+- Bump on-headers from 1.0.2 to 1.1.0 ([#3833](https://github.com/cosmos/gaia/pull/3833))
+- Bump compression from 1.8.0 to 1.8.1 ([#3833](https://github.com/cosmos/gaia/pull/3833))
 
 ## v25.1.0
 

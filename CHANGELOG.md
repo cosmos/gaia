@@ -14,6 +14,7 @@
 - Bump [slackapi/slack-github-action](https://github.com/slackapi/slack-github-action) from 1.27.0 to 2.1.1 ([#3830](https://github.com/cosmos/gaia/pull/3830))
 - Bump on-headers from 1.0.2 to 1.1.0 ([#3833](https://github.com/cosmos/gaia/pull/3833))
 - Bump compression from 1.8.0 to 1.8.1 ([#3833](https://github.com/cosmos/gaia/pull/3833))
+- Bump [github.com/docker/docker](https://github.com/docker/docker) from 28.2.2+incompatible to 28.3.3+incompatible ([#3834](https://github.com/cosmos/gaia/pull/3834))
 
 ## v25.1.0
 

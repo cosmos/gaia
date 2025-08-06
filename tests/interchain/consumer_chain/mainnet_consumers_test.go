@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/gaia/v25/tests/interchain/chainsuite"
-	"github.com/strangelove-ventures/interchaintest/v8"
+	"github.com/cosmos/interchaintest/v10"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/mod/semver"
 )

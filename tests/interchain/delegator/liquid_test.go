@@ -9,9 +9,9 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/gaia/v25/tests/interchain/chainsuite"
-	"github.com/strangelove-ventures/interchaintest/v8"
-	"github.com/strangelove-ventures/interchaintest/v8/ibc"
-	"github.com/strangelove-ventures/interchaintest/v8/testutil"
+	"github.com/cosmos/interchaintest/v10"
+	"github.com/cosmos/interchaintest/v10/ibc"
+	"github.com/cosmos/interchaintest/v10/testutil"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"

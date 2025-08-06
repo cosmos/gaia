@@ -352,7 +352,7 @@ lint:
 lint-fix:
 	@echo "--> Running linter"
 	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(golangci_version)
-	@$(golangci_lint_cmd) run --fix --out-format=tab --issues-exit-code=0
+	@$(golangci_lint_cmd) run --fix --issues-exit-code=0
 
 format:
 	@go install mvdan.cc/gofumpt@latest
@@ -428,3 +428,37 @@ proto-update-deps:
 	$(DOCKER) run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
 
 .PHONY: proto-all proto-gen proto-swagger-gen proto-format proto-lint proto-check-breaking proto-update-deps
+
+###############################################################################
+###                                Open Telemetry                           ###
+###############################################################################
+
+start-telemetry-server:
+	cd contrib/telemetry && docker compose up -d
+
+stop-telemetry-server:
+	cd contrib/telemetry && docker compose down --remove-orphans
+
+.PHONY: start-telemetry-server stop-telemetry-server
+
+###############################################################################
+###                                Localnet                                 ###
+###############################################################################
+
+localnet-build-env:
+	$(MAKE) -C contrib/images gaiad-env
+
+localnet-build-nodes:
+	$(DOCKER) run --rm -v $(CURDIR)/.testnets:/data cosmos/gaiad \
+			  testnet init-files --v 4 -o /data --starting-ip-address 192.168.10.2 --keyring-backend=test --chain-id=localchain --use-docker=true
+	docker compose up -d
+
+localnet-stop:
+	docker compose down
+
+# localnet-start will run a 4-node testnet locally. The nodes are
+# based off the docker images in: ./contrib/images/simd-env
+localnet-start: localnet-stop localnet-build-env localnet-build-nodes
+
+
+.PHONY: localnet-start localnet-stop localnet-build-env localnet-build-nodes

@@ -16,6 +16,7 @@
 - Bump compression from 1.8.0 to 1.8.1 ([#3833](https://github.com/cosmos/gaia/pull/3833))
 - Bump [github.com/spf13/pflag](https://github.com/spf13/pflag) from 1.0.6 to 1.0.7 ([#3839](https://github.com/cosmos/gaia/pull/3839))
 - Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.73.0 to 1.74.2 ([#3840](https://github.com/cosmos/gaia/pull/3840))
+- Bump google.golang.org/protobuf from 1.36.6 to 1.36.7 ([#3841](https://github.com/cosmos/gaia/pull/3841))
 
 ## v25.1.0
 

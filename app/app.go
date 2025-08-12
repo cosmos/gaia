@@ -27,6 +27,7 @@ import (
 	dbm "github.com/cosmos/cosmos-db"
 	evmante "github.com/cosmos/evm/ante/evm"
 	evmencoding "github.com/cosmos/evm/encoding"
+	cosmosevmserverconfig "github.com/cosmos/evm/server/config"
 	srvflags "github.com/cosmos/evm/server/flags"
 	cosmosevmtypes "github.com/cosmos/evm/types"
 	"github.com/cosmos/evm/utils"
@@ -46,9 +47,6 @@ import (
 	"cosmossdk.io/log"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -73,6 +71,10 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	gaiaante "github.com/cosmos/gaia/v25/ante"
 	"github.com/cosmos/gaia/v25/app/keepers"
@@ -141,9 +143,9 @@ func NewGaiaApp(
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *GaiaApp {
 	// App Opts
-	evmChainID := cast.ToUint64(appOpts.Get(srvflags.EVMChainID))
+	evmChainID := cosmosevmserverconfig.DefaultEVMChainID
 
-	encodingConfig := evmencoding.MakeConfig(evmChainID)
+	encodingConfig := evmencoding.MakeConfig(uint64(evmChainID))
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 	appCodec := encodingConfig.Codec
 	legacyAmino := encodingConfig.Amino
@@ -161,7 +163,7 @@ func NewGaiaApp(
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 	bApp.SetTxEncoder(txConfig.TxEncoder())
 
-	if err := evmAppOptions(evmChainID); err != nil {
+	if err := evmAppOptions(uint64(evmChainID)); err != nil {
 		// Initialize the EVM application configuration
 		panic(fmt.Errorf("failed to initialize EVM app configuration: %w", err))
 	}

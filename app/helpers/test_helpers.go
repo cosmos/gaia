@@ -3,6 +3,7 @@ package helpers
 import (
 	"encoding/json"
 	"os"
+	"strconv"
 	"testing"
 	"time"
 
@@ -13,7 +14,7 @@ import (
 	tmtypes "github.com/cometbft/cometbft/types"
 
 	dbm "github.com/cosmos/cosmos-db"
-	evmserver "github.com/cosmos/evm/server/flags"
+	cosmosevmserverconfig "github.com/cosmos/evm/server/config"
 
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
@@ -134,10 +135,10 @@ func setup() (*gaiaapp.GaiaApp, gaiaapp.GenesisState) {
 	}
 
 	appOptions := make(simtestutil.AppOptionsMap, 0)
-	emptyWasmOpts := []wasmkeeper.Option{}
+	var emptyWasmOpts []wasmkeeper.Option
 	appOptions[server.FlagInvCheckPeriod] = 5
 	appOptions[server.FlagMinGasPrices] = "0uatom"
-	appOptions[evmserver.EVMChainID] = types.DefaultEVMChainID
+	appOptions[strconv.Itoa(cosmosevmserverconfig.DefaultEVMChainID)] = types.DefaultEVMChainID
 
 	gaiaApp := gaiaapp.NewGaiaApp(
 		log.NewNopLogger(),

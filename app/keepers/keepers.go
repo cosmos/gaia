@@ -9,13 +9,11 @@ import (
 	"github.com/spf13/cast"
 
 	srvflags "github.com/cosmos/evm/server/flags"
-	"github.com/cosmos/evm/x/erc20"
 	erc20keeper "github.com/cosmos/evm/x/erc20/keeper"
 	erc20types "github.com/cosmos/evm/x/erc20/types"
 	erc20v2 "github.com/cosmos/evm/x/erc20/v2"
 	feemarketkeeper "github.com/cosmos/evm/x/feemarket/keeper"
 	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
-	ibccallbackskeeper "github.com/cosmos/evm/x/ibc/callbacks/keeper"
 	"github.com/cosmos/evm/x/ibc/transfer"
 	evmtransferkeeper "github.com/cosmos/evm/x/ibc/transfer/keeper"
 	transferv2 "github.com/cosmos/evm/x/ibc/transfer/v2"
@@ -40,8 +38,6 @@ import (
 	icahost "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host/types"
-	ibccallbacks "github.com/cosmos/ibc-go/v10/modules/apps/callbacks"
-	ibccallbacksv2 "github.com/cosmos/ibc-go/v10/modules/apps/callbacks/v2"
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	ibcclienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
 	ibcconnectiontypes "github.com/cosmos/ibc-go/v10/modules/core/03-connection/types"
@@ -97,7 +93,6 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaparams "github.com/cosmos/gaia/v25/app/params"
 	liquidkeeper "github.com/cosmos/gaia/v25/x/liquid/keeper"
 	liquidtypes "github.com/cosmos/gaia/v25/x/liquid/types"
 )
@@ -150,7 +145,6 @@ type AppKeepers struct {
 	EVMKeeper         *evmkeeper.Keeper
 	Erc20Keeper       erc20keeper.Keeper
 	PreciseBankKeeper precisebankkeeper.Keeper
-	CallbackKeeper    ibccallbackskeeper.ContractKeeper
 }
 
 func NewAppKeeper(
@@ -486,11 +480,13 @@ func NewAppKeeper(
 		appCodec,
 		appKeepers.keys[evmtypes.StoreKey],
 		appKeepers.tkeys[evmtypes.TransientKey],
+		appKeepers.keys,
 		authtypes.NewModuleAddress(govtypes.ModuleName),
 		appKeepers.AccountKeeper,
 		appKeepers.PreciseBankKeeper,
 		appKeepers.StakingKeeper,
 		appKeepers.FeeMarketKeeper,
+		appKeepers.ConsensusParamsKeeper,
 		&appKeepers.Erc20Keeper,
 		cast.ToString(appOpts.Get(srvflags.EVMTracer)),
 	)
@@ -563,12 +559,6 @@ func NewAppKeeper(
 		),
 	)
 
-	appKeepers.CallbackKeeper = ibccallbackskeeper.NewKeeper(
-		appKeepers.AccountKeeper,
-		appKeepers.EVMKeeper,
-		appKeepers.Erc20Keeper,
-	)
-
 	// Create Transfer Stack (from bottom to top of stack)
 	// - core IBC
 	// - ratelimit
@@ -584,9 +574,6 @@ func NewAppKeeper(
 
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
-	cbStack := ibccallbacks.NewIBCMiddleware(transferStack, appKeepers.PFMRouterKeeper, appKeepers.CallbackKeeper,
-		gaiaparams.MaxIBCCallbackGas)
-	transferStack = erc20.NewIBCMiddleware(appKeepers.Erc20Keeper, cbStack)
 	transferStack = icsprovider.NewIBCMiddleware(transferStack, appKeepers.ProviderKeeper)
 	transferStack = pfmrouter.NewIBCMiddleware(
 		transferStack,
@@ -595,15 +582,12 @@ func NewAppKeeper(
 		pfmrouterkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
 	)
 	transferStack = ratelimit.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStack)
-	appKeepers.TransferKeeper.WithICS4Wrapper(cbStack)
 
 	// Create ICAHost Stack
 	var icaHostStack porttypes.IBCModule = icahost.NewIBCModule(appKeepers.ICAHostKeeper)
 
 	// Create Interchain Accounts Controller Stack
 	var icaControllerStack porttypes.IBCModule = icacontroller.NewIBCMiddleware(appKeepers.ICAControllerKeeper)
-	icaControllerStack = ibccallbacks.NewIBCMiddleware(icaControllerStack, appKeepers.IBCKeeper.ChannelKeeper,
-		appKeepers.CallbackKeeper, gaiaparams.MaxIBCCallbackGas)
 	icaICS4Wrapper := icaControllerStack.(porttypes.ICS4Wrapper)
 	appKeepers.ICAControllerKeeper.WithICS4Wrapper(icaICS4Wrapper)
 	wasmStack := wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper)
@@ -611,8 +595,6 @@ func NewAppKeeper(
 	// Create IBCv2 Transfer Stack
 	var transferStackV2 ibcapi.IBCModule
 	transferStackV2 = transferv2.NewIBCModule(appKeepers.TransferKeeper)
-	transferStackV2 = ibccallbacksv2.NewIBCMiddleware(transferStackV2, appKeepers.IBCKeeper.ChannelKeeperV2,
-		appKeepers.CallbackKeeper, appKeepers.IBCKeeper.ChannelKeeperV2, gaiaparams.MaxIBCCallbackGas)
 	transferStackV2 = erc20v2.NewIBCMiddleware(transferStackV2, appKeepers.Erc20Keeper)
 	transferStackV2 = ratelimitv2.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStackV2)
 

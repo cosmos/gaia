@@ -35,9 +35,8 @@ func (s *IntegrationTestSuite) logTestExecution(testName string, runTest bool, t
 		if r := recover(); r != nil {
 			s.T().Logf("=== FAILED TEST: %s - %v ===", testName, r)
 			panic(r)
-		} else {
-			s.T().Logf("=== PASSED TEST: %s ===", testName)
 		}
+		s.T().Logf("=== PASSED TEST: %s ===", testName)
 	}()
 
 	testFunc()

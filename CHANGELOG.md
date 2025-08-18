@@ -14,6 +14,7 @@
 - Bump [slackapi/slack-github-action](https://github.com/slackapi/slack-github-action) from 1.27.0 to 2.1.1 ([#3830](https://github.com/cosmos/gaia/pull/3830))
 - Bump on-headers from 1.0.2 to 1.1.0 ([#3833](https://github.com/cosmos/gaia/pull/3833))
 - Bump compression from 1.8.0 to 1.8.1 ([#3833](https://github.com/cosmos/gaia/pull/3833))
+- Bump [github.com/prometheus/client_golang](https://github.com/prometheus/client_golang) from 1.22.0 to 1.23.0 ([#3838](https://github.com/cosmos/gaia/pull/3838))
 - Bump [docker/metadata-action](https://github.com/docker/metadata-action) from 5.7.0 to 5.8.0 ([#3836](https://github.com/cosmos/gaia/pull/3836))
 - Bump [github.com/spf13/pflag](https://github.com/spf13/pflag) from 1.0.6 to 1.0.7 ([#3839](https://github.com/cosmos/gaia/pull/3839))
 - Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.73.0 to 1.74.2 ([#3840](https://github.com/cosmos/gaia/pull/3840))

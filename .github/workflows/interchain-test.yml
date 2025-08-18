@@ -35,7 +35,7 @@ jobs:
                   echo "tag_name=${TO_VERSION:-${{ github.ref_name }}}" | sed 's~/~-~g' | tee -a $GITHUB_OUTPUT
                 fi
             - name: Check out repository code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
               with:
                 ref: ${{ steps.get-metadata.outputs.ref_name }}
             - name: Setup go
@@ -65,7 +65,7 @@ jobs:
             max-parallel: 10
         steps:
             - name: Check out repository code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
               with:
                 ref: ${{ needs.prepare-matrix.outputs.ref_name }}
             - name: Setup go

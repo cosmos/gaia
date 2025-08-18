@@ -19,7 +19,7 @@ jobs:
   build:
     runs-on: Gaia-Runner-medium
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-go@v5
         with:
           go-version: 1.24.x
@@ -37,7 +37,7 @@ jobs:
     needs: build
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-go@v5
         with:
           go-version: 1.24.x
@@ -61,7 +61,7 @@ jobs:
     runs-on: Gaia-Runner-medium
     needs: build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-go@v5
         with:
           go-version: 1.24.x
@@ -89,7 +89,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: 1.24.x
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/cache@v4
         with:
           path: ~/go/bin

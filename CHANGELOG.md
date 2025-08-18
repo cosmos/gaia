@@ -17,6 +17,7 @@
 - Bump [github.com/spf13/pflag](https://github.com/spf13/pflag) from 1.0.6 to 1.0.7 ([#3839](https://github.com/cosmos/gaia/pull/3839))
 - Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.73.0 to 1.74.2 ([#3840](https://github.com/cosmos/gaia/pull/3840))
 - Bump [cosmossdk.io/log](https://github.com/cosmos/cosmos-sdk) from 1.6.0 to 1.6.1 ([#3848](https://github.com/cosmos/gaia/pull/3848))
+- Bump [actions/download-artifact](https://github.com/actions/download-artifact) from 4 to 5 ([#3843](https://github.com/cosmos/gaia/pull/3843))
 
 ## v25.1.0
 

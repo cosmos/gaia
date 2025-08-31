@@ -79,7 +79,7 @@ To ensure a smooth workflow for all contributors, a general procedure for contri
    1. If you want to propose something new that requires specification or an additional design, or you would like to change a process, start with a [new discussion](https://github.com/cosmos/gaia/discussions/new/choose). With discussions, we can better handle the design process using discussion threads. A discussion usually leads to one or more issues.
    2. If the issue you want addressed is a specific proposal or a bug, then open a [new issue](https://github.com/cosmos/gaia/issues/new/choose).
    3. Review existing [issues](https://github.com/cosmos/gaia/issues) to find an issue you'd like to help with.
-3. Participate in thoughtful discussion on that issue.
+3. Participate in a thoughtful discussion on that issue.
 4. If you would like to contribute:
    1. Ensure that the proposal has been accepted.
    2. Ensure that nobody else has already begun working on this issue. If they have,
@@ -91,7 +91,7 @@ To ensure a smooth workflow for all contributors, a general procedure for contri
    See [development procedure guidelines](#development-procedure) below.
 
 **Note:** For very small or trivial issues such as typos, you are not required to open an issue before submitting a PR. 
-For complex problems or features, please make sure to open an issue and provide context and problem description. 
+For complex problems or features, please make sure to open an issue and provide context and a problem description. 
 PRs opened before adequate design discussion has taken place in a GitHub issue have a high likelihood of being rejected without review.
 
 ## Project Board
@@ -220,7 +220,7 @@ items. In addition, use the following review explanations:
 
 * `LGTM` without an explicit approval means that the changes look good, but you haven't thoroughly reviewed the reviewer checklist items.
 * `Approval` means that you have completed some or all of the reviewer checklist items. If you only reviewed selected items, you must add your handle next to the items that you have reviewed. In addition, follow these guidelines:
-    * You must also think through anything which ought to be included but is not
+    * You must also think through anything that ought to be included but is not
     * You must think through whether any added code could be partially combined (DRYed) with existing code
     * You must think through any potential security issues or incentive-compatibility flaws introduced by the changes
     * Naming must be consistent with conventions and the rest of the codebase
@@ -285,7 +285,7 @@ To generate the protobuf stubs, you can run `make proto-gen`.
 
 User-facing repos should adhere to the trunk based development branching model: https://trunkbaseddevelopment.com. User branches should start with a user name, example: `{moniker}/{issue#}-branch-name`.
 
-Gaia follows [semantic versioning](https://semver.org), but with the some deviations to account for state-machine and API breaking changes. See [RELEASE_PROCESS.md](./RELEASE_PROCESS.md) for details. 
+Gaia follows [semantic versioning](https://semver.org), but with some deviations to account for state-machine and API breaking changes. See [RELEASE_PROCESS.md](./RELEASE_PROCESS.md) for details. 
 
 ### PR Targeting
 

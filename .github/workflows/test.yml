@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: "1.24"
           check-latest: true
@@ -57,7 +57,7 @@ jobs:
     runs-on: Gaia-Runner-medium
     timeout-minutes: 45
     steps:
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: 1.24.x
       - uses: actions/checkout@v5
@@ -106,7 +106,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: 1.24.x
       - uses: technote-space/get-diff-action@v6.1.2
@@ -151,7 +151,7 @@ jobs:
             **/go.sum
             **/Makefile
             Makefile
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: 1.24.x
       # the old gaiad binary version is hardcoded, need to be updated each major release.

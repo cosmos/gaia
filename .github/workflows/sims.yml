@@ -20,7 +20,7 @@ jobs:
     runs-on: Gaia-Runner-medium
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: 1.24.x
       - name: Install runsim
@@ -38,7 +38,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: 1.24.x
       - uses: technote-space/get-diff-action@v6.0.1
@@ -62,7 +62,7 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: 1.24.x
       - uses: technote-space/get-diff-action@v6
@@ -86,7 +86,7 @@ jobs:
     needs: build
     timeout-minutes: 120
     steps:
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: 1.24.x
       - uses: actions/checkout@v5

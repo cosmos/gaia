@@ -21,4 +21,7 @@ var (
 	ErrNotEnoughBalance                        = errors.Register(ModuleName, 101, "not enough balance")
 	ErrTinyRedemptionAmount                    = errors.Register(ModuleName, 119, "too few tokens to redeem (truncates to zero tokens)")
 	ErrNoValidatorFound                        = errors.Register(ModuleName, 3, "validator does not exist")
+	ErrPreHookIsNotNil                         = errors.Register(ModuleName, 130, "liquid shares hooks, prehook is not nil")
+	ErrPreHookIsNil                            = errors.Register(ModuleName, 131, "liquid shares hooks, prehook is nil")
+	ErrInvalidHookInvocation                   = errors.Register(ModuleName, 132, "liquid shares hooks, shares before and after are same")
 )

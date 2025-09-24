@@ -129,14 +129,6 @@ func (k msgServer) TokenizeShares(goCtx context.Context, msg *types.MsgTokenizeS
 		return nil, types.ErrRedelegationInProgress
 	}
 
-	if err := k.SafelyIncreaseTotalLiquidStakedTokens(ctx, msg.Amount.Amount, true); err != nil {
-		return nil, err
-	}
-	_, err = k.SafelyIncreaseValidatorLiquidShares(ctx, valAddr, shares, true)
-	if err != nil {
-		return nil, err
-	}
-
 	recordID := k.GetLastTokenizeShareRecordID(ctx) + 1
 	k.SetLastTokenizeShareRecordID(ctx, recordID)
 
@@ -281,14 +273,6 @@ func (k msgServer) RedeemTokensForShares(goCtx context.Context, msg *types.MsgRe
 	// prevent redemption that returns a 0 amount
 	if tokens.IsZero() {
 		return nil, types.ErrTinyRedemptionAmount
-	}
-
-	if err := k.DecreaseTotalLiquidStakedTokens(ctx, tokens); err != nil {
-		return nil, err
-	}
-	_, err = k.DecreaseValidatorLiquidShares(ctx, valAddr, shares)
-	if err != nil {
-		return nil, err
 	}
 
 	returnAmount, err := k.stakingKeeper.Unbond(ctx, record.GetModuleAddress(), valAddr, shares)

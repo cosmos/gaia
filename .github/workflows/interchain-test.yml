@@ -17,103 +17,169 @@ on:
         required: false
         type: string
 
+# Least-privilege by default; grant per-job if needed.
+permissions:
+  contents: read
+
 jobs:
-    prepare-matrix:
-        runs-on: ubuntu-latest
-        steps:
-            # We need to figure out a) a ref to clone based on a docker image, and b) which tag to test
-            # If the event is a registry_package, this comes from the pushed image; for a workflow_dispatch, it's the branch/tag that the user supplied
-            - name: Get metadata
-              id: get-metadata
-              run: |
-                if [[ "${{ github.event_name }}" == 'repository_dispatch' ]]; then
-                  echo "ref_name=${{ github.event.client_payload.ref_name }}" | tee -a $GITHUB_OUTPUT
-                  echo "tag_name=${{ github.event.client_payload.tag_name }}" | tee -a $GITHUB_OUTPUT
-                else
-                  echo "ref_name=${{ github.ref_name }}" | tee -a $GITHUB_OUTPUT
-                  TO_VERSION="${{ inputs.to_version }}"
-                  echo "tag_name=${TO_VERSION:-${{ github.ref_name }}}" | sed 's~/~-~g' | tee -a $GITHUB_OUTPUT
-                fi
-            - name: Check out repository code
-              uses: actions/checkout@v5
-              with:
-                ref: ${{ steps.get-metadata.outputs.ref_name }}
-            - name: Setup go
-              uses: actions/setup-go@v5
-            - name: Prepare matrix
-              id: generate-matrix
-              env:
-                FROM_VERSION: ${{ inputs.from_version }}
-                UPGRADE_NAME: ${{ inputs.upgrade_name }}
-              run: |
-                cd ./tests/interchain
-                # Print debug information
-                echo "Using FROM_VERSION=${FROM_VERSION:-auto}"
-                echo "Using UPGRADE_NAME=${UPGRADE_NAME:-auto}"
-                echo "matrix=$(go run ./matrix_tool/main.go ${{ steps.get-metadata.outputs.tag_name }})" | tee -a $GITHUB_OUTPUT
-        outputs:
-            matrix: ${{ steps.generate-matrix.outputs.matrix }}
-            ref_name: ${{ steps.get-metadata.outputs.ref_name }}
-    test:
-        needs: prepare-matrix
-        runs-on: ubuntu-latest
-        name: "${{ matrix.previous_version }} -> ${{ matrix.test_version }} test ${{ matrix.test_name }}"
-        strategy:
-            matrix:
-                ${{fromJson(needs.prepare-matrix.outputs.matrix)}}
-            fail-fast: false
-            max-parallel: 10
-        steps:
-            - name: Check out repository code
-              uses: actions/checkout@v5
-              with:
-                ref: ${{ needs.prepare-matrix.outputs.ref_name }}
-            - name: Setup go
-              uses: actions/setup-go@v5
-            - name: Run test
-              env:
-                TEST_DOCKER_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
-                TEST_OLD_GAIA_IMAGE_VERSION: "${{ matrix.previous_version }}"
-                TEST_NEW_GAIA_IMAGE_VERSION: "${{ matrix.test_version }}"
-                TEST_UPGRADE_NAME: "${{ matrix.upgrade_name }}"
-              run: |
-                cd ./tests/interchain
-                go install github.com/mfridman/tparse@latest
-                set -o pipefail
-                go test -v ./... -failfast -p 1 -timeout 5h -run="^${{ matrix.test_name }}" -json | tee ../../output-${{ matrix.previous_version }}-${{ matrix.test_name }}.json | tparse -follow -all
-            - name: Upload output
-              uses: actions/upload-artifact@v4
-              if: always()
-              with:
-                name: output-${{ matrix.previous_version }}-${{ matrix.test_name }}
-                path: output-${{ matrix.previous_version }}-${{ matrix.test_name }}.json
-    test-report:
-        needs: [test, prepare-matrix]
+  prepare-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get metadata
+        id: get-metadata
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RAW_REF_NAME: ${{ github.ref_name }}
+          RAW_TO_VERSION: ${{ inputs.to_version }}
+          PD_REF_NAME: ${{ github.event.client_payload.ref_name }}
+          PD_TAG_NAME: ${{ github.event.client_payload.tag_name }}
+        run: |
+          set -euo pipefail
+
+          VERSION_RE='^v?[0-9]+(?:\.[0-9]+){0,2}(?:-[A-Za-z0-9._-]+)?$'
+
+          fail_invalid() {
+            echo "ERROR: Invalid version value: '$1'" >&2
+            echo "Allowed format: MAJOR[.MINOR[.PATCH]] with optional leading 'v' and optional -prerelease (alnum . _ -)." >&2
+            exit 1
+          }
+
+          validate_or_fail() {
+            local val="${1:-}"
+            [[ -n "$val" ]] || return 1
+            [[ "$val" =~ $VERSION_RE ]] || return 1
+            return 0
+          }
+
+          if [[ "${EVENT_NAME}" == 'repository_dispatch' ]]; then
+            ref="${PD_REF_NAME:-}"
+            tag="${PD_TAG_NAME:-}"
+
+            if [[ -n "$tag" ]]; then
+              validate_or_fail "$tag" || fail_invalid "$tag"
+              echo "ref_name=${ref}" >> "$GITHUB_OUTPUT"
+              echo "tag_name=${tag}" >> "$GITHUB_OUTPUT"
+            else
+              validate_or_fail "$ref" || fail_invalid "$ref"
+              echo "ref_name=${ref}" >> "$GITHUB_OUTPUT"
+              echo "tag_name=${ref}" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            ref="${RAW_REF_NAME:-}"
+            tover="${RAW_TO_VERSION:-}"
+
+            if [[ -n "$tover" ]]; then
+              validate_or_fail "$tover" || fail_invalid "$tover"
+              chosen="$tover"
+            else
+              validate_or_fail "$ref" || fail_invalid "$ref"
+              chosen="$ref"
+            fi
+
+            echo "ref_name=${ref}" >> "$GITHUB_OUTPUT"
+            echo "tag_name=${chosen}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out repository code
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.get-metadata.outputs.ref_name }}
+
+      - name: Setup go
+        uses: actions/setup-go@v5
+
+      - name: Prepare matrix
+        id: generate-matrix
+        env:
+          FROM_VERSION: ${{ inputs.from_version }}
+          UPGRADE_NAME: ${{ inputs.upgrade_name }}
+          TAG_NAME: ${{ steps.get-metadata.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          cd ./tests/interchain
+          echo "Using FROM_VERSION=${FROM_VERSION:-auto}"
+          echo "Using UPGRADE_NAME=${UPGRADE_NAME:-auto}"
+          echo "Using TAG_NAME=${TAG_NAME:-(none)}"
+
+          matrix_json="$(go run ./matrix_tool/main.go "$TAG_NAME")"
+          echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
+    outputs:
+      matrix: ${{ steps.generate-matrix.outputs.matrix }}
+      ref_name: ${{ steps.get-metadata.outputs.ref_name }}
+
+  test:
+    needs: prepare-matrix
+    runs-on: ubuntu-latest
+    name: "${{ matrix.previous_version }} -> ${{ matrix.test_version }} test ${{ matrix.test_name }}"
+    strategy:
+      matrix:
+        ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
+      fail-fast: false
+      max-parallel: 10
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.prepare-matrix.outputs.ref_name }}
+
+      - name: Setup go
+        uses: actions/setup-go@v5
+
+      - name: Run test
+        env:
+          TEST_DOCKER_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
+          TEST_OLD_GAIA_IMAGE_VERSION: "${{ matrix.previous_version }}"
+          TEST_NEW_GAIA_IMAGE_VERSION: "${{ matrix.test_version }}"
+          TEST_UPGRADE_NAME: "${{ matrix.upgrade_name }}"
+        run: |
+          set -euo pipefail
+          cd ./tests/interchain
+          go install github.com/mfridman/tparse@latest
+          set -o pipefail
+          go test -v ./... -failfast -p 1 -timeout 5h -run="^${{ matrix.test_name }}" -json | tee "../../output-${{ matrix.previous_version }}-${{ matrix.test_name }}.json" | tparse -follow -all
+
+      - name: Upload output
+        uses: actions/upload-artifact@v4
         if: always()
-        runs-on: ubuntu-latest
-        steps:
-            - name: Download all artifacts
-              uses: actions/download-artifact@v5
-              with:
-                path: ./outputs
-            - name: Setup go
-              uses: actions/setup-go@v5
-            - name: Prep report
-              env:
-                TEST_MATRIX: ${{ needs.prepare-matrix.outputs.matrix }}
-              run: |
-                go install github.com/becheran/go-testreport@latest
-                TEST_VERSION=$(echo "$TEST_MATRIX" | jq -r '.test_version[0]')
-                UPGRADE_NAME=$(echo "$TEST_MATRIX" | jq -r '.upgrade_name[0]')
-                echo "$TEST_MATRIX" | jq -r '.previous_version[]' | while read PREV_VERSION; do
-                  cat ./outputs/output-${PREV_VERSION}-*/*.json > combined-${PREV_VERSION}.json
-                  go-testreport -vars="Title:${PREV_VERSION} -> ${UPGRADE_NAME} (${TEST_VERSION})" -output="test-report-${PREV_VERSION}.md" -input="combined-${PREV_VERSION}.json" || true
-                  echo '' >> test-report-${PREV_VERSION}.md
-                done
-                cat test-report-*.md > test-report.md
-                cat test-report.md > $GITHUB_STEP_SUMMARY
-            - name: Upload output
-              uses: actions/upload-artifact@v4
-              with:
-                name: test-report
-                path: test-report.md
+        with:
+          name: output-${{ matrix.previous_version }}-${{ matrix.test_name }}
+          path: output-${{ matrix.previous_version }}-${{ matrix.test_name }}.json
+
+  test-report:
+    needs: [test, prepare-matrix]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v5
+        with:
+          path: ./outputs
+
+      - name: Setup go
+        uses: actions/setup-go@v5
+
+      - name: Prep report
+        env:
+          TEST_MATRIX: ${{ needs.prepare-matrix.outputs.matrix }}
+        run: |
+          set -euo pipefail
+          go install github.com/becheran/go-testreport@latest
+
+          TEST_VERSION="$(echo "$TEST_MATRIX" | jq -r '.test_version[0]')"
+          UPGRADE_NAME="$(echo "$TEST_MATRIX" | jq -r '.upgrade_name[0]')"
+
+          echo "$TEST_MATRIX" | jq -r '.previous_version[]' | while read -r PREV_VERSION; do
+            cat ./outputs/output-"${PREV_VERSION}"-*/*.json > "combined-${PREV_VERSION}.json"
+            go-testreport -vars="Title:${PREV_VERSION} -> ${UPGRADE_NAME} (${TEST_VERSION})" -output="test-report-${PREV_VERSION}.md" -input="combined-${PREV_VERSION}.json" || true
+            echo '' >> "test-report-${PREV_VERSION}.md"
+          done
+
+          cat test-report-*.md > test-report.md
+          cat test-report.md > "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload output
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: test-report.md

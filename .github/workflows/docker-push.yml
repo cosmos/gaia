@@ -56,7 +56,7 @@ jobs:
         if: ${{ env.NEW_COMMIT_COUNT > 0 }}
 
       - name: Dispatch Interchain test
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           event-type: image-pushed
           client-payload: |

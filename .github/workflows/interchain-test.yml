@@ -37,7 +37,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          VERSION_RE='^v?[0-9]+(?:\.[0-9]+){0,2}(?:-[A-Za-z0-9._-]+)?$'
+          VERSION_RE='^v?[0-9]+(\.[0-9]+){0,2}(-[A-Za-z0-9._-]+)?$'
 
           fail_invalid() {
             echo "ERROR: Invalid version value: '$1'" >&2

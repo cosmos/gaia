@@ -47,7 +47,6 @@ jobs:
 
           validate_or_fail() {
             local val="${1:-}"
-            echo "Validating version value: '$val'"
             [[ -n "$val" ]] || return 1
             [[ "$val" =~ $VERSION_RE ]] || return 1
             return 0
@@ -70,9 +69,6 @@ jobs:
             echo "Not a repo dispatch event"
             ref="${RAW_REF_NAME:-}"
             tover="${RAW_TO_VERSION:-}"
-
-            echo "ref: $ref"
-            echo "tover: $tover"
 
             if [[ -n "$tover" ]]; then
               validate_or_fail "$tover" || fail_invalid "$tover"

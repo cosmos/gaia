@@ -66,8 +66,12 @@ jobs:
               echo "tag_name=${ref}" >> "$GITHUB_OUTPUT"
             fi
           else
+            echo "Not a repo dispatch event"
             ref="${RAW_REF_NAME:-}"
             tover="${RAW_TO_VERSION:-}"
+
+            echo "ref: $ref"
+            echo "tover: $tover"
 
             if [[ -n "$tover" ]]; then
               validate_or_fail "$tover" || fail_invalid "$tover"

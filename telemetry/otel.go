@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/pborman/uuid"
@@ -42,6 +43,10 @@ type (
 		cfg      OtelConfig
 		vi       ValidatorInfo
 		gatherer prometheus.Gatherer
+		ctx      context.Context
+		cancel   context.CancelFunc
+		mu       sync.RWMutex
+		stopped  bool
 	}
 )
 
@@ -57,10 +62,13 @@ func NewOtelClient(otelConfig OtelConfig, vi ValidatorInfo, opts ...OtelOption) 
 	if vi.Moniker == "" {
 		vi.Moniker = "UNKNOWN-" + uuid.NewUUID().String()
 	}
+	ctx, cancel := context.WithCancel(context.Background())
 	client := &OtelClient{
 		cfg:      otelConfig,
 		vi:       vi,
 		gatherer: prometheus.DefaultGatherer,
+		ctx:      ctx,
+		cancel:   cancel,
 	}
 
 	for _, opt := range opts {
@@ -77,7 +85,6 @@ func (o *OtelClient) StartExporter(logger log.Logger) error {
 		return nil
 	}
 	logger.Debug("starting otlp exporter")
-	ctx := context.Background()
 
 	opts := []otlpmetrichttp.Option{
 		otlpmetrichttp.WithEndpoint(cfg.CollectorEndpoint),
@@ -92,12 +99,12 @@ func (o *OtelClient) StartExporter(logger log.Logger) error {
 		opts = append(opts, otlpmetrichttp.WithInsecure())
 	}
 
-	exporter, err := otlpmetrichttp.New(ctx, opts...)
+	exporter, err := otlpmetrichttp.New(o.ctx, opts...)
 	if err != nil {
 		return fmt.Errorf("OTLP exporter setup failed: %w", err)
 	}
 
-	res, _ := resource.New(ctx, resource.WithAttributes(
+	res, _ := resource.New(o.ctx, resource.WithAttributes(
 		semconv.ServiceName(fmt.Sprintf("%s.%s", serviceName, o.vi.ChainID)),
 		semconv.ServiceVersion(version.Version),
 	))
@@ -113,13 +120,33 @@ func (o *OtelClient) StartExporter(logger log.Logger) error {
 		gauges := make(map[string]otmetric.Float64Gauge)
 		histograms := make(map[string]otmetric.Float64Histogram)
 		ticker := time.NewTicker(cfg.PushInterval)
-		for range ticker.C {
-			if err := o.scrapePrometheusMetrics(ctx, logger, meter, gauges, histograms); err != nil {
-				logger.Debug("error scraping metrics", "error", err)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-o.ctx.Done():
+				logger.Debug("stopping otlp metrics scraper")
+				return
+			case <-ticker.C:
+				if err := o.scrapePrometheusMetrics(o.ctx, logger, meter, gauges, histograms); err != nil {
+					logger.Debug("error scraping metrics", "error", err)
+				}
 			}
 		}
 	}()
 	return nil
+}
+
+func (o *OtelClient) Stop() {
+	o.mu.Lock()
+	defer o.mu.Unlock()
+
+	if o.stopped {
+		return
+	}
+
+	o.cancel()
+	o.stopped = true
 }
 
 func (o *OtelClient) SetValidatorStatus(isVal bool) {

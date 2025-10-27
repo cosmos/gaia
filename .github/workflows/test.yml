@@ -47,7 +47,7 @@ jobs:
         if: env.GIT_DIFF
         run: |
           go test -v -coverprofile=profile.out -covermode=atomic -coverpkg=./... $(go list ./... | grep -v -e '/tests/e2e' | grep -v -e '/tests/interchain')
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: env.GIT_DIFF
         with:
           name: "${{ github.sha }}-coverage"

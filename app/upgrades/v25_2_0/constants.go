@@ -1,4 +1,4 @@
-package v25_1_0 //nolint:revive
+package v25_2_0 //nolint:revive
 
 import (
 	"github.com/cosmos/gaia/v25/app/upgrades"
@@ -6,7 +6,7 @@ import (
 
 const (
 	// UpgradeName defines the on-chain upgrade name.
-	UpgradeName = "v25.1.0"
+	UpgradeName = "v25.2.0"
 )
 
 var Upgrade = upgrades.Upgrade{

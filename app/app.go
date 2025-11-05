@@ -71,13 +71,7 @@ import (
 	gaiaante "github.com/cosmos/gaia/v25/ante"
 	"github.com/cosmos/gaia/v25/app/keepers"
 	"github.com/cosmos/gaia/v25/app/upgrades"
-<<<<<<< HEAD
-	v251 "github.com/cosmos/gaia/v25/app/upgrades/v25_1_0"
-=======
 	v252 "github.com/cosmos/gaia/v25/app/upgrades/v25_2_0"
-	gaiatelemetry "github.com/cosmos/gaia/v25/telemetry"
-	"github.com/cosmos/gaia/v25/x/telemetry"
->>>>>>> f5f6925 (!chore: Upgrade handler for v25.2.0 (#3889))
 )
 
 var (

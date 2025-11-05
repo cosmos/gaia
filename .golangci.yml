@@ -82,6 +82,10 @@ linters:
           - staticcheck
         path: migrations
         text: 'SA1019:'
+      - linters:
+          - staticcheck
+        path: x/metaprotocols
+        text: 'SA1019:'
     paths:
       - third_party$
       - builtin$

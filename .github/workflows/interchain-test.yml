@@ -154,7 +154,7 @@ jobs:
      runs-on: depot-ubuntu-22.04-4
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           path: ./outputs
 

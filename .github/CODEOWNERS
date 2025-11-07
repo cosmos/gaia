@@ -1,9 +1,0 @@
-# CODEOWNERS: https://help.github.com/articles/about-codeowners/
-
-# Primary repo maintainers
-*       @cosmos/interchain_inc_gaia_write @cosmos/interchain_inc_gaia_admin
-
-# CODEOWNERS for interchain tests
-
-/tests/interchain   @dasanchez @LexaMichaelides @fastfadingviolets @cosmos/interchain_inc_gaia_write
-/.github/workflows/interchain-test.yml   @dasanchez @LexaMichaelides @fastfadingviolets @cosmos/interchain_inc_gaia_write

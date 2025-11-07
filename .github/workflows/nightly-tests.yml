@@ -15,7 +15,7 @@ jobs:
     uses: cosmos/gaia/.github/workflows/sims.yml@main
 
   run-vulncheck:
-    runs-on: ubuntu-latest
+    runs-on: depot-ubuntu-22.04-4
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
@@ -30,7 +30,7 @@ jobs:
   warn-if-failure:
     if: failure()
     needs: [ run-tests, run-vulncheck, run-simulations]
-    runs-on: ubuntu-latest
+    runs-on: depot-ubuntu-22.04-4
     steps:
       - name: Notify Slack on failure
         uses: slackapi/slack-github-action@v2.1.1

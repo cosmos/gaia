@@ -8,7 +8,7 @@ on:
 jobs:
   update-changelog:
     if: github.actor == 'dependabot[bot]'
-    runs-on: ubuntu-latest
+    runs-on: depot-ubuntu-22.04-4
     permissions:
       contents: write # needed for pushing changes
 

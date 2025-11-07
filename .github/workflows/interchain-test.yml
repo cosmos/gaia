@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   prepare-matrix:
-    runs-on: ubuntu-latest
+    runs-on: depot-ubuntu-22.04-4
     steps:
       - name: Get metadata
         id: get-metadata
@@ -112,7 +112,7 @@ jobs:
 
   test:
     needs: prepare-matrix
-    runs-on: ubuntu-latest
+     runs-on: depot-ubuntu-22.04-4
     name: "${{ matrix.previous_version }} -> ${{ matrix.test_version }} test ${{ matrix.test_name }}"
     strategy:
       matrix:
@@ -151,7 +151,7 @@ jobs:
   test-report:
     needs: [test, prepare-matrix]
     if: always()
-    runs-on: ubuntu-latest
+     runs-on: depot-ubuntu-22.04-4
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v5

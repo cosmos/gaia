@@ -10,7 +10,7 @@ import (
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	"github.com/cosmos/gaia/v25/types"
+	"github.com/cosmos/gaia/v26/types"
 )
 
 // ica tests

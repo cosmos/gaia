@@ -150,6 +150,40 @@ distclean: clean
 	rm -rf vendor/
 
 ###############################################################################
+###                              Version Bump                               ###
+###############################################################################
+
+# Bump the major version number in go.mod and all import paths
+# Usage: make bump-version OLD_VERSION=25 NEW_VERSION=26
+bump-version:
+ifndef OLD_VERSION
+	$(error OLD_VERSION is required. Usage: make bump-version OLD_VERSION=25 NEW_VERSION=26)
+endif
+ifndef NEW_VERSION
+	$(error NEW_VERSION is required. Usage: make bump-version OLD_VERSION=25 NEW_VERSION=26)
+endif
+	@echo "--> Bumping version from v$(OLD_VERSION) to v$(NEW_VERSION)"
+	@echo "--> Updating go.mod module path"
+	@sed -i.bak 's|github.com/cosmos/gaia/v$(OLD_VERSION)|github.com/cosmos/gaia/v$(NEW_VERSION)|g' go.mod && rm go.mod.bak
+	@echo "--> Updating import paths in Go files"
+	@find . -name "*.go" -not -path "./vendor/*" -not -path "./.git/*" -exec sed -i.bak 's|github.com/cosmos/gaia/v$(OLD_VERSION)|github.com/cosmos/gaia/v$(NEW_VERSION)|g' {} \; -exec rm {}.bak \;
+	@echo "--> Updating tests/interchain/go.mod if it exists"
+	@if [ -f tests/interchain/go.mod ]; then \
+		sed -i.bak 's|github.com/cosmos/gaia/v$(OLD_VERSION)|github.com/cosmos/gaia/v$(NEW_VERSION)|g' tests/interchain/go.mod && rm tests/interchain/go.mod.bak; \
+	fi
+	@echo "--> Running go mod tidy"
+	@go mod tidy
+	@echo "--> Running go mod tidy in tests/interchain"
+	@if [ -f tests/interchain/go.mod ]; then \
+		cd tests/interchain && go mod tidy; \
+	fi
+	@echo "--> Version bump complete!"
+	@echo "    Remember to:"
+	@echo "    1. Create new upgrade handler directory (app/upgrades/v$(NEW_VERSION)_0_0/)"
+	@echo "    2. Update CHANGELOG.md"
+	@echo "    3. Register the new upgrade in app/app.go"
+
+###############################################################################
 ###                                Release                                  ###
 ###############################################################################
 

@@ -14,7 +14,7 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v25/telemetry"
+	"github.com/cosmos/gaia/v26/telemetry"
 )
 
 const (

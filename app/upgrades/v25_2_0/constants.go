@@ -1,7 +1,7 @@
 package v25_2_0 //nolint:revive
 
 import (
-	"github.com/cosmos/gaia/v25/app/upgrades"
+	"github.com/cosmos/gaia/v26/app/upgrades"
 )
 
 const (

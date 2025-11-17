@@ -1,4 +1,4 @@
-package v25_2_0 //nolint:revive
+package v26_0_0 //nolint:revive
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/gaia/v26/app/keepers"
 )
 
-// CreateUpgradeHandler returns an upgrade handler for Gaia v25.
+// CreateUpgradeHandler returns an upgrade handler for Gaia v26.
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -27,7 +27,7 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
 
-		ctx.Logger().Info("Upgrade v25.2.0 complete")
+		ctx.Logger().Info("Upgrade v26 complete")
 		return vm, nil
 	}
 }

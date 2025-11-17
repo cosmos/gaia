@@ -60,11 +60,11 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	"github.com/cosmos/gaia/v25/x/liquid"
-	liquidtypes "github.com/cosmos/gaia/v25/x/liquid/types"
-	"github.com/cosmos/gaia/v25/x/metaprotocols"
-	metaprotocolstypes "github.com/cosmos/gaia/v25/x/metaprotocols/types"
-	"github.com/cosmos/gaia/v25/x/telemetry"
+	"github.com/cosmos/gaia/v26/x/liquid"
+	liquidtypes "github.com/cosmos/gaia/v26/x/liquid/types"
+	"github.com/cosmos/gaia/v26/x/metaprotocols"
+	metaprotocolstypes "github.com/cosmos/gaia/v26/x/metaprotocols/types"
+	"github.com/cosmos/gaia/v26/x/telemetry"
 )
 
 var maccPerms = map[string][]string{

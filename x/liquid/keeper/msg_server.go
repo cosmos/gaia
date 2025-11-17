@@ -15,7 +15,7 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v25/x/liquid/types"
+	"github.com/cosmos/gaia/v26/x/liquid/types"
 )
 
 type msgServer struct {

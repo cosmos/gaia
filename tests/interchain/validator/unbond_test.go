@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/cosmos/gaia/v25/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v26/tests/interchain/chainsuite"
 	"github.com/cosmos/interchaintest/v10"
 
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"

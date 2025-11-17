@@ -22,7 +22,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	gaia "github.com/cosmos/gaia/v25/app"
+	gaia "github.com/cosmos/gaia/v26/app"
 
 	"cosmossdk.io/log"
 	"github.com/cometbft/cometbft/crypto"

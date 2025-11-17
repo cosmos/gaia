@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/cosmos/gaia/v25/app/keepers"
+	"github.com/cosmos/gaia/v26/app/keepers"
 )
 
 // CreateUpgradeHandler returns an upgrade handler for Gaia v25.

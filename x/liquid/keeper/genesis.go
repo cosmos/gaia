@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v25/x/liquid/types"
+	"github.com/cosmos/gaia/v26/x/liquid/types"
 )
 
 // InitGenesis sets liquid information for genesis

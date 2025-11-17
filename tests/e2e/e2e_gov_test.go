@@ -15,9 +15,9 @@ import (
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
-	"github.com/cosmos/gaia/v25/tests/e2e/common"
-	"github.com/cosmos/gaia/v25/tests/e2e/msg"
-	"github.com/cosmos/gaia/v25/tests/e2e/query"
+	"github.com/cosmos/gaia/v26/tests/e2e/common"
+	"github.com/cosmos/gaia/v26/tests/e2e/msg"
+	"github.com/cosmos/gaia/v26/tests/e2e/query"
 )
 
 /*

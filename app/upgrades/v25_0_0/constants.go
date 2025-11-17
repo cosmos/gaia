@@ -5,7 +5,7 @@ import (
 
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 
-	"github.com/cosmos/gaia/v25/app/upgrades"
+	"github.com/cosmos/gaia/v26/app/upgrades"
 )
 
 const (

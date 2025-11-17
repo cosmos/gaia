@@ -23,7 +23,7 @@ import (
 	stakingtestutil "github.com/cosmos/cosmos-sdk/x/staking/testutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v25/telemetry"
+	"github.com/cosmos/gaia/v26/telemetry"
 )
 
 func TestPreBlock(t *testing.T) {

@@ -37,33 +37,14 @@ jobs:
         run: |
           set -euo pipefail
 
-          VERSION_RE='^v?[0-9]+(\.[0-9]+){0,2}(-[A-Za-z0-9._-]+)?$'
-
-          fail_invalid() {
-            echo "ERROR: Invalid version value: '$1'" >&2
-            echo "Allowed format: MAJOR[.MINOR[.PATCH]] with optional leading 'v' and optional -prerelease (alnum . _ -), or 'nightly'." >&2
-            exit 1
-          }
-
-          validate_or_fail() {
-            local val="${1:-}"
-            [[ -n "$val" ]] || return 1
-            # Allow "nightly" as a special case
-            [[ "$val" == "nightly" ]] && return 0
-            [[ "$val" =~ $VERSION_RE ]] || return 1
-            return 0
-          }
-
           if [[ "${EVENT_NAME}" == 'repository_dispatch' ]]; then
             ref="${PD_REF_NAME:-}"
             tag="${PD_TAG_NAME:-}"
 
             if [[ -n "$tag" ]]; then
-              validate_or_fail "$tag" || fail_invalid "$tag"
               echo "ref_name=${ref}" >> "$GITHUB_OUTPUT"
               echo "tag_name=${tag}" >> "$GITHUB_OUTPUT"
             else
-              validate_or_fail "$ref" || fail_invalid "$ref"
               echo "ref_name=${ref}" >> "$GITHUB_OUTPUT"
               echo "tag_name=${ref}" >> "$GITHUB_OUTPUT"
             fi
@@ -72,10 +53,8 @@ jobs:
             tover="${RAW_TO_VERSION:-}"
 
             if [[ -n "$tover" ]]; then
-              validate_or_fail "$tover" || fail_invalid "$tover"
               chosen="$tover"
             else
-              validate_or_fail "$ref" || fail_invalid "$ref"
               chosen="$ref"
             fi
 
@@ -112,7 +91,7 @@ jobs:
 
   test:
     needs: prepare-matrix
-     runs-on: depot-ubuntu-22.04-4
+    runs-on: depot-ubuntu-22.04-4
     name: "${{ matrix.previous_version }} -> ${{ matrix.test_version }} test ${{ matrix.test_name }}"
     strategy:
       matrix:
@@ -151,7 +130,7 @@ jobs:
   test-report:
     needs: [test, prepare-matrix]
     if: always()
-     runs-on: depot-ubuntu-22.04-4
+    runs-on: depot-ubuntu-22.04-4
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v6

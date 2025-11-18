@@ -10,6 +10,10 @@
 - Bump [github.com/go-viper/mapstructure/v2](https://github.com/go-viper/mapstructure) from 2.2.1 to 2.3.0 ([#3813](https://github.com/cosmos/gaia/pull/3813))
 - Bump [github.com/CosmWasm/wasmd](https://github.com/CosmWasm/wasmd) from v0.60.1 to v0.60.2 ([#3888](https://github.com/cosmos/gaia/pull/3888))
 
+## v25.2.0
+
+**November 6, 2025**
+
 ### Dependencies
 
 - Bump [slackapi/slack-github-action](https://github.com/slackapi/slack-github-action) from 1.27.0 to 2.1.1 ([#3830](https://github.com/cosmos/gaia/pull/3830))

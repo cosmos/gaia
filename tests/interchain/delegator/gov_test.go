@@ -11,8 +11,8 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 
-	"github.com/cosmos/gaia/v25/tests/interchain/chainsuite"
-	"github.com/cosmos/gaia/v25/tests/interchain/delegator"
+	"github.com/cosmos/gaia/v26/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v26/tests/interchain/delegator"
 	"github.com/cosmos/interchaintest/v10"
 	"github.com/cosmos/interchaintest/v10/ibc"
 )

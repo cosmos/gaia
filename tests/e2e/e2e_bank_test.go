@@ -12,9 +12,9 @@ import (
 	authTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/cosmos/gaia/v25/tests/e2e/common"
-	"github.com/cosmos/gaia/v25/tests/e2e/query"
-	extensiontypes "github.com/cosmos/gaia/v25/x/metaprotocols/types"
+	"github.com/cosmos/gaia/v26/tests/e2e/common"
+	"github.com/cosmos/gaia/v26/tests/e2e/query"
+	extensiontypes "github.com/cosmos/gaia/v26/x/metaprotocols/types"
 )
 
 func (s *IntegrationTestSuite) testBankTokenTransfer() {

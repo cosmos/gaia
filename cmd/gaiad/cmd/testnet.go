@@ -46,8 +46,8 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaia "github.com/cosmos/gaia/v25/app"
-	"github.com/cosmos/gaia/v25/telemetry"
+	gaia "github.com/cosmos/gaia/v26/app"
+	"github.com/cosmos/gaia/v26/telemetry"
 )
 
 var (

@@ -22,9 +22,9 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	lsmkeeper "github.com/cosmos/gaia/v25/x/liquid/keeper"
-	lsmtypes "github.com/cosmos/gaia/v25/x/liquid/types"
-	"github.com/cosmos/gaia/v25/x/liquid/types/mocks"
+	lsmkeeper "github.com/cosmos/gaia/v26/x/liquid/keeper"
+	lsmtypes "github.com/cosmos/gaia/v26/x/liquid/types"
+	"github.com/cosmos/gaia/v26/x/liquid/types/mocks"
 )
 
 var PKs = simtestutil.CreateTestPubKeys(500)

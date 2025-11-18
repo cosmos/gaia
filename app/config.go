@@ -5,7 +5,7 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	"github.com/cosmos/gaia/v25/telemetry"
+	"github.com/cosmos/gaia/v26/telemetry"
 )
 
 type AppConfig struct {

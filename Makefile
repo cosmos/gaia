@@ -150,6 +150,46 @@ distclean: clean
 	rm -rf vendor/
 
 ###############################################################################
+###                              Version Bump                               ###
+###############################################################################
+
+# Bump the major version number in go.mod and all import paths
+# Usage: make bump-version OLD_VERSION=v25.2.0 NEW_VERSION=v26.0.0
+bump-version:
+ifndef OLD_VERSION
+	$(error OLD_VERSION is required. Usage: make bump-version OLD_VERSION=v25.2.0 NEW_VERSION=v26.0.0)
+endif
+ifndef NEW_VERSION
+	$(error NEW_VERSION is required. Usage: make bump-version OLD_VERSION=v25.2.0 NEW_VERSION=v26.0.0)
+endif
+	$(eval OLD_MAJOR := $(shell echo $(OLD_VERSION) | sed 's/^v//' | cut -d. -f1))
+	$(eval NEW_MAJOR := $(shell echo $(NEW_VERSION) | sed 's/^v//' | cut -d. -f1))
+	$(eval OLD_FULL := $(shell echo $(OLD_VERSION) | sed 's/^v//'))
+	$(eval NEW_FULL := $(shell echo $(NEW_VERSION) | sed 's/^v//'))
+	@echo "--> Bumping version from v$(OLD_MAJOR) to v$(NEW_MAJOR)"
+	@echo "--> Updating go.mod module path"
+	@sed -i.bak 's|github.com/cosmos/gaia/v$(OLD_MAJOR)|github.com/cosmos/gaia/v$(NEW_MAJOR)|g' go.mod && rm go.mod.bak
+	@echo "--> Updating import paths in Go files"
+	@find . -name "*.go" -not -path "./vendor/*" -not -path "./.git/*" -exec sed -i.bak 's|github.com/cosmos/gaia/v$(OLD_MAJOR)|github.com/cosmos/gaia/v$(NEW_MAJOR)|g' {} \; -exec rm {}.bak \;
+	@echo "--> Updating tests/interchain/go.mod if it exists"
+	@if [ -f tests/interchain/go.mod ]; then \
+		sed -i.bak 's|github.com/cosmos/gaia/v$(OLD_MAJOR)|github.com/cosmos/gaia/v$(NEW_MAJOR)|g' tests/interchain/go.mod && rm tests/interchain/go.mod.bak; \
+	fi
+	@echo "--> Running go mod tidy"
+	@go mod tidy
+	@echo "--> Running go mod tidy in tests/interchain"
+	@if [ -f tests/interchain/go.mod ]; then \
+		cd tests/interchain && go mod tidy; \
+	fi
+	@echo "--> Updating old gaiad version in .github/workflows/test.yml to v$(OLD_FULL)"
+	@sed -i.bak 's|download/v[0-9]*\.[0-9]*\.[0-9]*/gaiad-v[0-9]*\.[0-9]*\.[0-9]*|download/v$(OLD_FULL)/gaiad-v$(OLD_FULL)|g' .github/workflows/test.yml && rm .github/workflows/test.yml.bak
+	@echo "--> Version bump complete!"
+	@echo "    Remember to:"
+	@echo "    1. Create new upgrade handler directory (app/upgrades/v$(NEW_MAJOR)_0_0/)"
+	@echo "    2. Update CHANGELOG.md"
+	@echo "    3. Register the new upgrade in app/app.go"
+
+###############################################################################
 ###                                Release                                  ###
 ###############################################################################
 

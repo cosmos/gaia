@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	vesting "github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
 
-	"github.com/cosmos/gaia/v25/x/liquid/types"
+	"github.com/cosmos/gaia/v26/x/liquid/types"
 )
 
 // SetTotalLiquidStakedTokens stores the total outstanding tokens owned by a liquid staking provider

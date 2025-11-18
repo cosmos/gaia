@@ -20,6 +20,7 @@ on:
 # Least-privilege by default; grant per-job if needed.
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   prepare-matrix:
@@ -34,12 +35,16 @@ jobs:
           RAW_TO_VERSION: ${{ inputs.to_version }}
           PD_REF_NAME: ${{ github.event.client_payload.ref_name }}
           PD_TAG_NAME: ${{ github.event.client_payload.tag_name }}
+          PD_PR_NUMBER: ${{ github.event.client_payload.pr_number }}
+          PD_PR_HEAD_SHA: ${{ github.event.client_payload.pr_head_sha }}
         run: |
           set -euo pipefail
 
           if [[ "${EVENT_NAME}" == 'repository_dispatch' ]]; then
             ref="${PD_REF_NAME:-}"
             tag="${PD_TAG_NAME:-}"
+            pr_num="${PD_PR_NUMBER:-}"
+            pr_sha="${PD_PR_HEAD_SHA:-}"
 
             if [[ -n "$tag" ]]; then
               echo "ref_name=${ref}" >> "$GITHUB_OUTPUT"
@@ -48,6 +53,9 @@ jobs:
               echo "ref_name=${ref}" >> "$GITHUB_OUTPUT"
               echo "tag_name=${ref}" >> "$GITHUB_OUTPUT"
             fi
+
+            echo "pr_number=${pr_num}" >> "$GITHUB_OUTPUT"
+            echo "pr_head_sha=${pr_sha}" >> "$GITHUB_OUTPUT"
           else
             ref="${RAW_REF_NAME:-}"
             tover="${RAW_TO_VERSION:-}"
@@ -60,6 +68,8 @@ jobs:
 
             echo "ref_name=${ref}" >> "$GITHUB_OUTPUT"
             echo "tag_name=${chosen}" >> "$GITHUB_OUTPUT"
+            echo "pr_number=" >> "$GITHUB_OUTPUT"
+            echo "pr_head_sha=" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Check out repository code
@@ -88,6 +98,8 @@ jobs:
     outputs:
       matrix: ${{ steps.generate-matrix.outputs.matrix }}
       ref_name: ${{ steps.get-metadata.outputs.ref_name }}
+      pr_number: ${{ steps.get-metadata.outputs.pr_number }}
+      pr_head_sha: ${{ steps.get-metadata.outputs.pr_head_sha }}
 
   test:
     needs: prepare-matrix
@@ -164,3 +176,35 @@ jobs:
         with:
           name: test-report
           path: test-report.md
+
+  post-commit-status:
+    needs: [test, prepare-matrix]
+    if: always() && needs.prepare-matrix.outputs.pr_head_sha != ''
+    runs-on: depot-ubuntu-22.04-4
+    steps:
+      - name: Set commit status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const testJob = context.payload.workflow_run ||
+              (await github.rest.actions.listJobsForWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.runId
+              })).data.jobs.find(j => j.name.includes('test'));
+
+            const conclusion = '${{ needs.test.result }}';
+            const state = conclusion === 'success' ? 'success' : 'failure';
+            const description = conclusion === 'success'
+              ? 'All interchain tests passed'
+              : 'Some interchain tests failed';
+
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ needs.prepare-matrix.outputs.pr_head_sha }}',
+              state: state,
+              target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              description: description,
+              context: 'Interchain Tests'
+            });

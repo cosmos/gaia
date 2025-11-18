@@ -80,6 +80,21 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v5
 
+      - name: Post pending status
+        if: steps.get-metadata.outputs.pr_head_sha != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ steps.get-metadata.outputs.pr_head_sha }}',
+              state: 'pending',
+              target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              description: 'Interchain tests are running...',
+              context: 'Interchain Tests'
+            });
+
       - name: Prepare matrix
         id: generate-matrix
         env:

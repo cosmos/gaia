@@ -174,7 +174,7 @@ Here is an example of the `draft_proposal.json` file:
  ],
  "metadata": "ipfs://CID",
  "deposit": "1000000uatom",
- "title": "Updating the staking params (min_comission_rate)",
+ "title": "Updating the staking params (min_commission_rate)",
  "summary": "This proposal will attempt to update the min_commission_rate staking parameter. During proposal creation and submission **all** proposal fields must be specified. Pay attention that you don't unintentionally specify different values for fields that you did not intend to change."
 }
 ```

@@ -30,6 +30,8 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
+
 	liquidtypes "github.com/cosmos/gaia/v26/x/liquid/types"
 )
 
@@ -60,6 +62,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		feemarkettypes.StoreKey,
 		wasmtypes.StoreKey,
 		ibcwasmtypes.StoreKey,
+		tokenfactorytypes.StoreKey,
 		liquidtypes.StoreKey,
 	)
 

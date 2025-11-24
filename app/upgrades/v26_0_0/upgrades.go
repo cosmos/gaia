@@ -9,6 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
+
 	"github.com/cosmos/gaia/v26/app/keepers"
 )
 
@@ -26,6 +28,15 @@ func CreateUpgradeHandler(
 		if err != nil {
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
+
+		// Initialize tokenfactory params
+		ctx.Logger().Info("Initializing tokenfactory module...")
+		tokenfactoryParams := tokenfactorytypes.DefaultParams()
+		tokenfactoryParams.DenomCreationFee = sdk.NewCoins(sdk.NewInt64Coin("uatom", 100000000)) // 100 ATOM
+		if err := keepers.TokenFactoryKeeper.SetParams(ctx, tokenfactoryParams); err != nil {
+			return vm, errorsmod.Wrapf(err, "setting tokenfactory params")
+		}
+		ctx.Logger().Info("Tokenfactory module initialized successfully")
 
 		ctx.Logger().Info("Upgrade v26 complete")
 		return vm, nil

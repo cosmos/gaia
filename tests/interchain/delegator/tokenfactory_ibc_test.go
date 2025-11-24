@@ -16,8 +16,8 @@ import (
 
 type TokenFactoryIBCSuite struct {
 	*delegator.Suite
-	ChainB           *chainsuite.Chain
-	ChainBWallet     ibc.Wallet
+	ChainB       *chainsuite.Chain
+	ChainBWallet ibc.Wallet
 }
 
 func (s *TokenFactoryIBCSuite) SetupSuite() {

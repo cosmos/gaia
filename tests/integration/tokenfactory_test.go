@@ -9,7 +9,6 @@ import (
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	// TODO: Update import path once tokenfactory is integrated
 	// banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	// tokenfactorykeeper "github.com/cosmos/tokenfactory/x/tokenfactory/keeper"

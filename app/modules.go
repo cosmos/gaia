@@ -60,6 +60,9 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	"github.com/cosmos/tokenfactory/x/tokenfactory"
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
+
 	"github.com/cosmos/gaia/v26/x/liquid"
 	liquidtypes "github.com/cosmos/gaia/v26/x/liquid/types"
 	"github.com/cosmos/gaia/v26/x/metaprotocols"
@@ -81,6 +84,7 @@ var maccPerms = map[string][]string{
 	wasmtypes.ModuleName:              {authtypes.Burner},
 	feemarkettypes.ModuleName:         nil,
 	feemarkettypes.FeeCollectorName:   nil,
+	tokenfactorytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 }
 
 func appModules(
@@ -122,6 +126,7 @@ func appModules(
 		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
 		tendermint.NewAppModule(tmLightClientModule),
 		liquid.NewAppModule(appCodec, app.LiquidKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(tokenfactorytypes.ModuleName)),
 		telemetry.NewAppModule(&stakingkeeper.Querier{Keeper: app.StakingKeeper}, app.otelClient),
 	}
 }
@@ -206,6 +211,7 @@ func orderBeginBlockers() []string {
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		liquidtypes.ModuleName,
+		tokenfactorytypes.ModuleName,
 		wasmtypes.ModuleName,
 		ibcwasmtypes.ModuleName,
 	}
@@ -245,6 +251,7 @@ func orderEndBlockers() []string {
 		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
+		tokenfactorytypes.ModuleName,
 		wasmtypes.ModuleName,
 		ibcwasmtypes.ModuleName,
 	}
@@ -291,6 +298,7 @@ func orderInitBlockers() []string {
 		wasmtypes.ModuleName,
 		ibcwasmtypes.ModuleName,
 		liquidtypes.ModuleName,
+		tokenfactorytypes.ModuleName,
 		// crisis needs to be last so that the genesis state is consistent
 		// when it checks invariants
 		crisistypes.ModuleName,

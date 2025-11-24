@@ -10,6 +10,10 @@
 - Bump [github.com/go-viper/mapstructure/v2](https://github.com/go-viper/mapstructure) from 2.2.1 to 2.3.0 ([#3813](https://github.com/cosmos/gaia/pull/3813))
 - Bump [github.com/CosmWasm/wasmd](https://github.com/CosmWasm/wasmd) from v0.60.1 to v0.60.2 ([#3888](https://github.com/cosmos/gaia/pull/3888))
 
+### Dependencies
+
+- Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.74.2 to 1.77.0 ([#3904](https://github.com/cosmos/gaia/pull/3904))
+
 ## v25.2.0
 
 **November 6, 2025**

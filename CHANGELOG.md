@@ -10,6 +10,10 @@
 - Bump [github.com/go-viper/mapstructure/v2](https://github.com/go-viper/mapstructure) from 2.2.1 to 2.3.0 ([#3813](https://github.com/cosmos/gaia/pull/3813))
 - Bump [github.com/CosmWasm/wasmd](https://github.com/CosmWasm/wasmd) from v0.60.1 to v0.60.2 ([#3888](https://github.com/cosmos/gaia/pull/3888))
 
+### Dependencies
+
+- Bump [github.com/spf13/pflag](https://github.com/spf13/pflag) from 1.0.7 to 1.0.10 ([#3908](https://github.com/cosmos/gaia/pull/3908))
+
 ## v25.2.0
 
 **November 6, 2025**

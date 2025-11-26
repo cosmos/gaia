@@ -23,7 +23,7 @@ The Cosmos Hub is built using the [Cosmos SDK](https://github.com/cosmos/cosmos-
 
 ## Documentation
 
-For the most up to date documentation please visit [hub.cosmos.network](https://hub.cosmos.network).
+For the most up-to-date documentation please visit [hub.cosmos.network](https://hub.cosmos.network).
 
 For an overview of the Interchain Stack (the Cosmos SDK, IBC, etc.), as well as examples and exercises to help developers get a quick start, please visit [tutorials.cosmos.network](https://tutorials.cosmos.network).
 

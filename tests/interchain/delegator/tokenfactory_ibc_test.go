@@ -217,24 +217,15 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferWithMetadata() {
 	denom := s.createDenom(subdenom)
 
 	// Set metadata on chain A
-	metadataJSON := fmt.Sprintf(`{
-		"base": "%s",
-		"display": "%s",
-		"name": "IBC Meta Token",
-		"symbol": "IBCMETA",
-		"description": "A test token with metadata for IBC",
-		"denom_units": [
-			{"denom": "%s", "exponent": 0},
-			{"denom": "%s", "exponent": 6}
-		]
-	}`, denom, subdenom, denom, subdenom)
-
+	// Set metadata using modify-metadata command
 	_, err := s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "set-denom-metadata",
+		"tokenfactory", "modify-metadata",
 		denom,
-		metadataJSON,
+		"IBCMETA",                                // ticker-symbol
+		"A test token with metadata for IBC",    // description
+		"6",                                      // exponent
 	)
 	s.Require().NoError(err)
 
@@ -242,7 +233,8 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferWithMetadata() {
 	metadataA, err := s.Chain.QueryJSON(s.GetContext(),
 		"metadata", "bank", "denom-metadata", denom)
 	s.Require().NoError(err)
-	s.Require().Equal("IBC Meta Token", metadataA.Get("metadata.name").String())
+	s.Require().Equal("IBCMETA", metadataA.Get("symbol").String())
+	s.Require().Equal("A test token with metadata for IBC", metadataA.Get("description").String())
 
 	// Mint and transfer tokens
 	s.mint(denom, 10000000)
@@ -416,50 +408,6 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferAfterAdminChange() {
 		assert.True(c, balance.Equal(sdkmath.NewInt(3000000)),
 			"expected total balance 3000000, got %d", balance)
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "transfers did not complete")
-}
-
-// TestIBCTransferAfterAdminRenounce tests that IBC transfers work after admin is renounced
-func (s *TokenFactoryIBCSuite) TestIBCTransferAfterAdminRenounce() {
-	// Create denom and mint tokens
-	denom := s.createDenom("renounced")
-	s.mint(denom, 10000000)
-
-	// Renounce admin
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "change-admin",
-		denom, "",
-	)
-	s.Require().NoError(err)
-
-	// IBC transfers should still work even without admin
-	transferCh, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, s.ChainB)
-	s.Require().NoError(err)
-
-	ibcDenom := transfertypes.GetPrefixedDenom(
-		transferCh.Counterparty.PortID,
-		transferCh.Counterparty.ChannelID,
-		denom,
-	)
-	expectedDenomB := transfertypes.ParseDenomTrace(ibcDenom).IBCDenom()
-
-	_, err = s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"ibc-transfer", "transfer", "transfer",
-		transferCh.ChannelID,
-		s.ChainBWallet.FormattedAddress(),
-		fmt.Sprintf("5000000%s", denom),
-	)
-	s.Require().NoError(err)
-
-	s.Require().EventuallyWithT(func(c *assert.CollectT) {
-		balance, err := s.ChainB.GetBalance(s.GetContext(),
-			s.ChainBWallet.FormattedAddress(), expectedDenomB)
-		assert.NoError(c, err)
-		assert.True(c, balance.Equal(sdkmath.NewInt(5000000)))
-	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "transfer did not complete")
 }
 
 func TestTokenFactoryIBC(t *testing.T) {

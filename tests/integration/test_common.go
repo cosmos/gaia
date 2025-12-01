@@ -38,6 +38,10 @@ import (
 	"github.com/cosmos/gaia/v26/x/liquid"
 	liquidkeeper "github.com/cosmos/gaia/v26/x/liquid/keeper"
 	liquidtypes "github.com/cosmos/gaia/v26/x/liquid/types"
+
+	"github.com/cosmos/tokenfactory/x/tokenfactory"
+	tokenfactorykeeper "github.com/cosmos/tokenfactory/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 )
 
 type fixture struct {
@@ -52,12 +56,13 @@ type fixture struct {
 	distributionKeeper distributionkeeper.Keeper
 	stakingKeeper      *stakingkeeper.Keeper
 	liquidKeeper       *liquidkeeper.Keeper
+	tokenFactoryKeeper tokenfactorykeeper.Keeper
 }
 
 func initFixture(tb testing.TB) *fixture {
 	tb.Helper()
 	keys := storetypes.NewKVStoreKeys(
-		authtypes.StoreKey, banktypes.StoreKey, distributiontypes.StoreKey, stakingtypes.StoreKey, liquidtypes.StoreKey,
+		authtypes.StoreKey, banktypes.StoreKey, distributiontypes.StoreKey, stakingtypes.StoreKey, liquidtypes.StoreKey, tokenfactorytypes.StoreKey,
 	)
 	cdc := moduletestutil.MakeTestEncodingConfig(auth.AppModuleBasic{}, staking.AppModuleBasic{}, vesting.AppModuleBasic{}).Codec
 
@@ -74,6 +79,7 @@ func initFixture(tb testing.TB) *fixture {
 		stakingtypes.ModuleName:        {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		tokenfactorytypes.ModuleName:   {authtypes.Minter, authtypes.Burner},
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
@@ -106,12 +112,24 @@ func initFixture(tb testing.TB) *fixture {
 	liquidKeeper := liquidkeeper.NewKeeper(cdc, runtime.NewKVStoreService(keys[liquidtypes.StoreKey]), accountKeeper,
 		bankKeeper, stakingKeeper, distributionKeeper, authority.String())
 
+	tokenFactoryKeeper := tokenfactorykeeper.NewKeeper(
+		cdc,
+		keys[tokenfactorytypes.StoreKey],
+		maccPerms,
+		accountKeeper,
+		bankKeeper,
+		distributionKeeper,
+		[]string{tokenfactorytypes.EnableSetMetadata, tokenfactorytypes.EnableCommunityPoolFeeFunding},
+		authority.String(),
+	)
+
 	authModule := auth.NewAppModule(cdc, accountKeeper, authsims.RandomGenesisAccounts, nil)
 	bankModule := bank.NewAppModule(cdc, bankKeeper, accountKeeper, nil)
 	stakingModule := staking.NewAppModule(cdc, stakingKeeper, accountKeeper, bankKeeper, nil)
 	distributionModule := distribution.NewAppModule(cdc, distributionKeeper, accountKeeper, bankKeeper,
 		stakingKeeper, nil)
 	liquidModule := liquid.NewAppModule(cdc, liquidKeeper, accountKeeper, bankKeeper, stakingKeeper)
+	tokenFactoryModule := tokenfactory.NewAppModule(tokenFactoryKeeper, accountKeeper, bankKeeper, nil)
 
 	integrationApp := integration.NewIntegrationApp(newCtx, logger, keys, cdc, map[string]appmodule.AppModule{
 		authtypes.ModuleName:         authModule,
@@ -119,6 +137,7 @@ func initFixture(tb testing.TB) *fixture {
 		distributiontypes.ModuleName: distributionModule,
 		stakingtypes.ModuleName:      stakingModule,
 		liquidtypes.ModuleName:       liquidModule,
+		tokenfactorytypes.ModuleName: tokenFactoryModule,
 	})
 
 	sdkCtx := sdk.UnwrapSDKContext(integrationApp.Context())
@@ -141,6 +160,14 @@ func initFixture(tb testing.TB) *fixture {
 	// set default liquid params
 	require.NoError(tb, liquidKeeper.SetParams(sdkCtx, liquidtypes.DefaultParams()))
 
+	// Register tokenfactory MsgServer and QueryServer
+	tokenfactorytypes.RegisterMsgServer(integrationApp.MsgServiceRouter(), tokenfactorykeeper.NewMsgServerImpl(tokenFactoryKeeper))
+	tokenfactorytypes.RegisterQueryServer(integrationApp.QueryHelper(), tokenFactoryKeeper)
+
+	// Set default tokenfactory params
+	err := tokenFactoryKeeper.SetParams(sdkCtx, tokenfactorytypes.DefaultParams())
+	require.NoError(tb, err)
+
 	f := fixture{
 		app:                integrationApp,
 		sdkCtx:             sdkCtx,
@@ -151,6 +178,7 @@ func initFixture(tb testing.TB) *fixture {
 		distributionKeeper: distributionKeeper,
 		stakingKeeper:      stakingKeeper,
 		liquidKeeper:       liquidKeeper,
+		tokenFactoryKeeper: tokenFactoryKeeper,
 	}
 
 	return &f

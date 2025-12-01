@@ -249,7 +249,7 @@ func NewAppKeeper(
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.DistrKeeper,
-		nil, // No allowed denoms restriction
+		[]string{tokenfactorytypes.EnableSetMetadata, tokenfactorytypes.EnableCommunityPoolFeeFunding}, // enabled capabilities
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 

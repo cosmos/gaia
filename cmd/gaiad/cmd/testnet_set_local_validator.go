@@ -1,5 +1,4 @@
 //go:build unsafe_start_local_validator
-// +build unsafe_start_local_validator
 
 package cmd
 
@@ -12,19 +11,10 @@ import (
 	"strings"
 	"time"
 
-	"cosmossdk.io/math"
-	cometdbm "github.com/cometbft/cometbft-db"
-	dbm "github.com/cosmos/cosmos-db"
-	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
-	"github.com/cosmos/cosmos-sdk/server"
-	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	gaia "github.com/cosmos/gaia/v26/app"
-
-	"cosmossdk.io/log"
+	cometdbm "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/crypto"
 	tmd25519 "github.com/cometbft/cometbft/crypto/ed25519"
 	cmtstate "github.com/cometbft/cometbft/proto/tendermint/state"
@@ -32,12 +22,24 @@ import (
 	sm "github.com/cometbft/cometbft/state"
 	"github.com/cometbft/cometbft/store"
 	tmtypes "github.com/cometbft/cometbft/types"
+
+	dbm "github.com/cosmos/cosmos-db"
+
+	"cosmossdk.io/log"
+	"cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	"github.com/cosmos/cosmos-sdk/server"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
+	gaia "github.com/cosmos/gaia/v26/app"
 )
 
 const (

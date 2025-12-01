@@ -3,13 +3,13 @@ package v26_0_0 //nolint:revive
 import (
 	"context"
 
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
+
 	errorsmod "cosmossdk.io/errors"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-
-	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
 	"github.com/cosmos/gaia/v26/app/keepers"
 )

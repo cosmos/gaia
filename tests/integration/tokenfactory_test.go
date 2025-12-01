@@ -6,13 +6,13 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	tokenfactorykeeper "github.com/cosmos/tokenfactory/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
+
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-
-	tokenfactorykeeper "github.com/cosmos/tokenfactory/x/tokenfactory/keeper"
-	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 )
 
 // TestCreateDenom tests the creation of a new token denomination

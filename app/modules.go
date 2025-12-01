@@ -16,6 +16,8 @@ import (
 	no_valupdates_genutil "github.com/cosmos/interchain-security/v7/x/ccv/no_valupdates_genutil"
 	no_valupdates_staking "github.com/cosmos/interchain-security/v7/x/ccv/no_valupdates_staking"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
+	"github.com/cosmos/tokenfactory/x/tokenfactory"
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
 	"cosmossdk.io/x/evidence"
 	evidencetypes "cosmossdk.io/x/evidence/types"
@@ -59,9 +61,6 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-
-	"github.com/cosmos/tokenfactory/x/tokenfactory"
-	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
 	"github.com/cosmos/gaia/v26/x/liquid"
 	liquidtypes "github.com/cosmos/gaia/v26/x/liquid/types"

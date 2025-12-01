@@ -42,6 +42,9 @@ import (
 	icsprovider "github.com/cosmos/interchain-security/v7/x/ccv/provider"
 	icsproviderkeeper "github.com/cosmos/interchain-security/v7/x/ccv/provider/keeper"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
+	tokenfactorybindings "github.com/cosmos/tokenfactory/x/tokenfactory/bindings"
+	tokenfactorykeeper "github.com/cosmos/tokenfactory/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
 	"cosmossdk.io/log"
 	storetypes "cosmossdk.io/store/types"
@@ -86,10 +89,6 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-
-	tokenfactorybindings "github.com/cosmos/tokenfactory/x/tokenfactory/bindings"
-	tokenfactorykeeper "github.com/cosmos/tokenfactory/x/tokenfactory/keeper"
-	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
 	gaiaparams "github.com/cosmos/gaia/v26/app/params"
 	liquidkeeper "github.com/cosmos/gaia/v26/x/liquid/keeper"

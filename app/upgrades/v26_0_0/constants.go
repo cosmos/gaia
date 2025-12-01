@@ -1,9 +1,9 @@
-package v26_0_0 //nolint:revive
+package v26_0_0
 
 import (
-	storetypes "cosmossdk.io/store/types"
-
 	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
+
+	storetypes "cosmossdk.io/store/types"
 
 	"github.com/cosmos/gaia/v26/app/upgrades"
 )

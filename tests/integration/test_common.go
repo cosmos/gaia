@@ -8,6 +8,10 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	cmtprototypes "github.com/cometbft/cometbft/proto/tendermint/types"
 
+	"github.com/cosmos/tokenfactory/x/tokenfactory"
+	tokenfactorykeeper "github.com/cosmos/tokenfactory/x/tokenfactory/keeper"
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
+
 	"cosmossdk.io/core/appmodule"
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
@@ -38,10 +42,6 @@ import (
 	"github.com/cosmos/gaia/v26/x/liquid"
 	liquidkeeper "github.com/cosmos/gaia/v26/x/liquid/keeper"
 	liquidtypes "github.com/cosmos/gaia/v26/x/liquid/types"
-
-	"github.com/cosmos/tokenfactory/x/tokenfactory"
-	tokenfactorykeeper "github.com/cosmos/tokenfactory/x/tokenfactory/keeper"
-	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 )
 
 type fixture struct {

@@ -11,6 +11,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
 	storetypes "cosmossdk.io/store/types"
 	evidencetypes "cosmossdk.io/x/evidence/types"
@@ -29,8 +30,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-
-	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
 	liquidtypes "github.com/cosmos/gaia/v26/x/liquid/types"
 )

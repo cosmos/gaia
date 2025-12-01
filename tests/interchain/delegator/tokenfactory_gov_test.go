@@ -14,7 +14,7 @@ import (
 )
 
 type TokenFactoryGovSuite struct {
-	*delegator.Suite
+	*TokenFactoryBaseSuite
 }
 
 func (s *TokenFactoryGovSuite) SetupSuite() {
@@ -27,28 +27,6 @@ func (s *TokenFactoryGovSuite) SetupSuite() {
 		s.Chain.ValidatorWallets[0].ValoperAddress, stakeAmount)
 	node.StakingDelegate(s.GetContext(), s.DelegatorWallet2.KeyName(),
 		s.Chain.ValidatorWallets[0].ValoperAddress, stakeAmount)
-}
-
-// createDenom creates a tokenfactory denom
-func (s *TokenFactoryGovSuite) createDenom(subdenom string) string {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "create-denom", subdenom,
-	)
-	s.Require().NoError(err)
-	return fmt.Sprintf("factory/%s/%s", s.DelegatorWallet.FormattedAddress(), subdenom)
-}
-
-// mint mints tokens
-func (s *TokenFactoryGovSuite) mint(denom string, amount int64) {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "mint",
-		fmt.Sprintf("%d%s", amount, denom),
-	)
-	s.Require().NoError(err)
 }
 
 // TestParamChangeCreationFee tests changing the denom creation fee via governance
@@ -166,11 +144,13 @@ func (s *TokenFactoryGovSuite) TestParamChangeCreationFee() {
 
 // TestMetadataModification tests setting metadata on tokenfactory denoms
 func (s *TokenFactoryGovSuite) TestMetadataModification() {
-	denom := s.createDenom("metadata")
-	s.mint(denom, 1000000)
+	denom, err := s.CreateDenom(s.DelegatorWallet, "metadata")
+	s.Require().NoError(err, "failed to create denom 'metadata'")
+	err = s.Mint(s.DelegatorWallet, denom, 1000000)
+	s.Require().NoError(err, "failed to mint tokens for metadata test")
 
 	// Set metadata
-	_, err := s.Chain.GetNode().ExecTx(
+	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
 		"tokenfactory", "modify-metadata",
@@ -191,11 +171,13 @@ func (s *TokenFactoryGovSuite) TestMetadataModification() {
 
 // TestAdminChange tests transferring admin privileges for tokenfactory denoms
 func (s *TokenFactoryGovSuite) TestAdminChange() {
-	denom := s.createDenom("adminchange")
-	s.mint(denom, 1000000)
+	denom, err := s.CreateDenom(s.DelegatorWallet, "adminchange")
+	s.Require().NoError(err, "failed to create denom 'adminchange'")
+	err = s.Mint(s.DelegatorWallet, denom, 1000000)
+	s.Require().NoError(err, "failed to mint tokens for admin change test")
 
 	// Verify original admin can mint
-	_, err := s.Chain.GetNode().ExecTx(
+	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
 		"tokenfactory", "mint",
@@ -240,10 +222,12 @@ func (s *TokenFactoryGovSuite) TestAdminChange() {
 // TestCreateDenomAfterUpgrade tests that new denoms can be created after upgrade
 func (s *TokenFactoryGovSuite) TestCreateDenomAfterUpgrade() {
 	// Create new denom
-	denom := s.createDenom("postupgrade")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "postupgrade")
+	s.Require().NoError(err, "failed to create denom 'postupgrade'")
 
 	// Mint tokens
-	s.mint(denom, 5000000)
+	err = s.Mint(s.DelegatorWallet, denom, 5000000)
+	s.Require().NoError(err, "failed to mint tokens for postupgrade test")
 
 	// Verify balance
 	balance, err := s.Chain.GetBalance(s.GetContext(),
@@ -285,8 +269,10 @@ func (s *TokenFactoryGovSuite) TestGovernanceProposalWithTokenFactoryToken() {
 	// even if they can't be used as staking tokens
 
 	// Create tokenfactory denom
-	denom := s.createDenom("govtoken")
-	s.mint(denom, 100000000)
+	denom, err := s.CreateDenom(s.DelegatorWallet, "govtoken")
+	s.Require().NoError(err, "failed to create denom 'govtoken'")
+	err = s.Mint(s.DelegatorWallet, denom, 100000000)
+	s.Require().NoError(err, "failed to mint tokens for gov token test")
 
 	// Submit a text proposal (normal governance with ATOM)
 	prop, err := s.Chain.BuildProposal(
@@ -337,10 +323,12 @@ func mustParseUint(s string) uint64 {
 
 func TestTokenFactoryGov(t *testing.T) {
 	s := &TokenFactoryGovSuite{
-		Suite: &delegator.Suite{
-			Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
-				UpgradeOnSetup: true, // Upgrade to v26 before running tests
-			}),
+		TokenFactoryBaseSuite: &TokenFactoryBaseSuite{
+			Suite: &delegator.Suite{
+				Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+					UpgradeOnSetup: true, // Upgrade to v26 before running tests
+				}),
+			},
 		},
 	}
 	suite.Run(t, s)

@@ -15,7 +15,7 @@ import (
 )
 
 type TokenFactoryIBCSuite struct {
-	*delegator.Suite
+	*TokenFactoryBaseSuite
 	ChainB       *chainsuite.Chain
 	ChainBWallet ibc.Wallet
 }
@@ -42,36 +42,16 @@ func (s *TokenFactoryIBCSuite) SetupSuite() {
 	s.Require().NoError(err)
 }
 
-// createDenom creates a tokenfactory denom on chain A
-func (s *TokenFactoryIBCSuite) createDenom(subdenom string) string {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "create-denom", subdenom,
-	)
-	s.Require().NoError(err)
-	return fmt.Sprintf("factory/%s/%s", s.DelegatorWallet.FormattedAddress(), subdenom)
-}
-
-// mint mints tokens on chain A
-func (s *TokenFactoryIBCSuite) mint(denom string, amount int64) {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "mint",
-		fmt.Sprintf("%d%s", amount, denom),
-	)
-	s.Require().NoError(err)
-}
-
 // TestIBCTransferToChainB tests transferring tokenfactory tokens to another chain
 func (s *TokenFactoryIBCSuite) TestIBCTransferToChainB() {
 	// Create tokenfactory denom on chain A
-	denom := s.createDenom("ibctoken")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "ibctoken")
+	s.Require().NoError(err, "failed to create denom 'ibctoken'")
 
 	// Mint tokens on chain A
 	mintAmount := int64(10000000)
-	s.mint(denom, mintAmount)
+	err = s.Mint(s.DelegatorWallet, denom, mintAmount)
+	s.Require().NoError(err, "failed to mint tokens for IBC transfer test")
 
 	// Verify balance on chain A
 	balanceA, err := s.Chain.GetBalance(s.GetContext(),
@@ -128,11 +108,13 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferToChainB() {
 // TestIBCTransferRoundTrip tests transferring tokenfactory tokens to another chain and back
 func (s *TokenFactoryIBCSuite) TestIBCTransferRoundTrip() {
 	// Create tokenfactory denom on chain A
-	denom := s.createDenom("roundtrip")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "roundtrip")
+	s.Require().NoError(err, "failed to create denom 'roundtrip'")
 
 	// Mint tokens on chain A
 	mintAmount := int64(10000000)
-	s.mint(denom, mintAmount)
+	err = s.Mint(s.DelegatorWallet, denom, mintAmount)
+	s.Require().NoError(err, "failed to mint tokens for round trip test")
 
 	// Get IBC transfer channel
 	transferChAtoB, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, s.ChainB)
@@ -214,11 +196,12 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferRoundTrip() {
 func (s *TokenFactoryIBCSuite) TestIBCTransferWithMetadata() {
 	// Create tokenfactory denom on chain A
 	subdenom := "metatoken"
-	denom := s.createDenom(subdenom)
+	denom, err := s.CreateDenom(s.DelegatorWallet, subdenom)
+	s.Require().NoError(err, "failed to create denom 'metatoken'")
 
 	// Set metadata on chain A
 	// Set metadata using modify-metadata command
-	_, err := s.Chain.GetNode().ExecTx(
+	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
 		"tokenfactory", "modify-metadata",
@@ -237,7 +220,8 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferWithMetadata() {
 	s.Require().Equal("A test token with metadata for IBC", metadataA.Get("description").String())
 
 	// Mint and transfer tokens
-	s.mint(denom, 10000000)
+	err = s.Mint(s.DelegatorWallet, denom, 10000000)
+	s.Require().NoError(err, "failed to mint tokens for metadata test")
 
 	transferCh, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, s.ChainB)
 	s.Require().NoError(err)
@@ -286,14 +270,20 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferWithMetadata() {
 // TestMultipleTokenFactoryIBCTransfers tests multiple tokenfactory tokens over IBC
 func (s *TokenFactoryIBCSuite) TestMultipleTokenFactoryIBCTransfers() {
 	// Create multiple tokenfactory denoms
-	denom1 := s.createDenom("ibc1")
-	denom2 := s.createDenom("ibc2")
-	denom3 := s.createDenom("ibc3")
+	denom1, err := s.CreateDenom(s.DelegatorWallet, "ibc1")
+	s.Require().NoError(err, "failed to create denom 'ibc1'")
+	denom2, err := s.CreateDenom(s.DelegatorWallet, "ibc2")
+	s.Require().NoError(err, "failed to create denom 'ibc2'")
+	denom3, err := s.CreateDenom(s.DelegatorWallet, "ibc3")
+	s.Require().NoError(err, "failed to create denom 'ibc3'")
 
 	// Mint tokens for each
-	s.mint(denom1, 10000000)
-	s.mint(denom2, 20000000)
-	s.mint(denom3, 30000000)
+	err = s.Mint(s.DelegatorWallet, denom1, 10000000)
+	s.Require().NoError(err, "failed to mint tokens for denom1")
+	err = s.Mint(s.DelegatorWallet, denom2, 20000000)
+	s.Require().NoError(err, "failed to mint tokens for denom2")
+	err = s.Mint(s.DelegatorWallet, denom3, 30000000)
+	s.Require().NoError(err, "failed to mint tokens for denom3")
 
 	// Get transfer channel
 	transferCh, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, s.ChainB)
@@ -342,11 +332,13 @@ func (s *TokenFactoryIBCSuite) TestMultipleTokenFactoryIBCTransfers() {
 // TestIBCTransferAfterAdminChange tests that IBC transfers work after admin change
 func (s *TokenFactoryIBCSuite) TestIBCTransferAfterAdminChange() {
 	// Create denom with DelegatorWallet as admin
-	denom := s.createDenom("adminchange")
-	s.mint(denom, 10000000)
+	denom, err := s.CreateDenom(s.DelegatorWallet, "adminchange")
+	s.Require().NoError(err, "failed to create denom 'adminchange'")
+	err = s.Mint(s.DelegatorWallet, denom, 10000000)
+	s.Require().NoError(err, "failed to mint tokens for admin change test")
 
 	// Transfer some tokens to DelegatorWallet2
-	_, err := s.Chain.GetNode().ExecTx(
+	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
 		"bank", "send",
@@ -412,11 +404,13 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferAfterAdminChange() {
 
 func TestTokenFactoryIBC(t *testing.T) {
 	s := &TokenFactoryIBCSuite{
-		Suite: &delegator.Suite{
-			Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
-				UpgradeOnSetup: true,
-				CreateRelayer:  true,
-			}),
+		TokenFactoryBaseSuite: &TokenFactoryBaseSuite{
+			Suite: &delegator.Suite{
+				Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+					UpgradeOnSetup: true,
+					CreateRelayer:  true,
+				}),
+			},
 		},
 	}
 	suite.Run(t, s)

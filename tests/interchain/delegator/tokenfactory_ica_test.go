@@ -20,7 +20,7 @@ import (
 )
 
 type ICATokenFactorySuite struct {
-	*delegator.Suite
+	*TokenFactoryBaseSuite
 	Host          *chainsuite.Chain
 	HostWallet    ibc.Wallet
 	icaAddress    string
@@ -30,11 +30,13 @@ type ICATokenFactorySuite struct {
 
 func TestICATokenFactory(t *testing.T) {
 	s := &ICATokenFactorySuite{
-		Suite: &delegator.Suite{
-			Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
-				UpgradeOnSetup: true,
-				CreateRelayer:  true, // Required for ICA tests
-			}),
+		TokenFactoryBaseSuite: &TokenFactoryBaseSuite{
+			Suite: &delegator.Suite{
+				Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+					UpgradeOnSetup: true,
+					CreateRelayer:  true, // Required for ICA tests
+				}),
+			},
 		},
 	}
 	suite.Run(t, s)

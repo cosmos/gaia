@@ -14,34 +14,12 @@ import (
 )
 
 type TokenFactoryAuthzSuite struct {
-	*delegator.Suite
-}
-
-// createDenom creates a tokenfactory denom and returns the full denom string
-func (s *TokenFactoryAuthzSuite) createDenom(subdenom string) string {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "create-denom", subdenom,
-	)
-	s.Require().NoError(err)
-	return fmt.Sprintf("factory/%s/%s", s.DelegatorWallet.FormattedAddress(), subdenom)
-}
-
-// mint mints tokens for a given denom
-func (s *TokenFactoryAuthzSuite) mint(denom string, amount int64) {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "mint",
-		fmt.Sprintf("%d%s", amount, denom),
-	)
-	s.Require().NoError(err)
+	*TokenFactoryBaseSuite
 }
 
 // authzGenExec generates a transaction and executes it via authz exec
 func (s *TokenFactoryAuthzSuite) authzGenExec(ctx context.Context, grantee ibc.Wallet, command ...string) error {
-	txjson, err := s.Chain.GenerateTx(ctx, 1, command...)
+	txjson, err := s.Chain.GenerateTx(ctx, 0, command...)
 	s.Require().NoError(err)
 
 	err = s.Chain.GetNode().WriteFile(ctx, []byte(txjson), "tx.json")
@@ -50,7 +28,7 @@ func (s *TokenFactoryAuthzSuite) authzGenExec(ctx context.Context, grantee ibc.W
 	_, err = s.Chain.GetNode().ExecTx(
 		ctx,
 		grantee.FormattedAddress(),
-		"authz", "exec", path.Join(s.Chain.Validators[1].HomeDir(), "tx.json"),
+		"authz", "exec", path.Join(s.Chain.Validators[0].HomeDir(), "tx.json"),
 	)
 	return err
 }
@@ -81,14 +59,15 @@ func (s *TokenFactoryAuthzSuite) TestAuthzMint() {
 	ctx := s.GetContext()
 
 	// Create denom with DelegatorWallet (admin)
-	denom := s.createDenom("authzmint")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "authzmint")
+	s.Require().NoError(err, "failed to create denom 'authzmint'")
 
 	// Grant MsgMint authorization to DelegatorWallet2
 	s.grantGenericAuthz(s.DelegatorWallet, s.DelegatorWallet2, "/osmosis.tokenfactory.v1beta1.MsgMint")
 
 	// DelegatorWallet2 executes mint on behalf of DelegatorWallet
 	mintAmount := int64(1000000)
-	err := s.authzGenExec(ctx, s.DelegatorWallet2,
+	err = s.authzGenExec(ctx, s.DelegatorWallet2,
 		"tokenfactory", "mint", fmt.Sprintf("%d%s", mintAmount, denom),
 		"--from", s.DelegatorWallet.FormattedAddress())
 	s.Require().NoError(err)
@@ -113,16 +92,18 @@ func (s *TokenFactoryAuthzSuite) TestAuthzBurn() {
 	ctx := s.GetContext()
 
 	// Create denom and mint tokens
-	denom := s.createDenom("authzburn")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "authzburn")
+	s.Require().NoError(err, "failed to create denom 'authzburn'")
 	mintAmount := int64(2000000)
-	s.mint(denom, mintAmount)
+	err = s.Mint(s.DelegatorWallet, denom, mintAmount)
+	s.Require().NoError(err, "failed to mint tokens for authz burn test")
 
 	// Grant MsgBurn authorization
 	s.grantGenericAuthz(s.DelegatorWallet, s.DelegatorWallet2, "/osmosis.tokenfactory.v1beta1.MsgBurn")
 
 	// DelegatorWallet2 executes burn
 	burnAmount := int64(500000)
-	err := s.authzGenExec(ctx, s.DelegatorWallet2,
+	err = s.authzGenExec(ctx, s.DelegatorWallet2,
 		"tokenfactory", "burn", fmt.Sprintf("%d%s", burnAmount, denom),
 		"--from", s.DelegatorWallet.FormattedAddress())
 	s.Require().NoError(err)
@@ -186,13 +167,14 @@ func (s *TokenFactoryAuthzSuite) TestAuthzChangeAdmin() {
 	ctx := s.GetContext()
 
 	// Create denom with DelegatorWallet
-	denom := s.createDenom("authzadmin")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "authzadmin")
+	s.Require().NoError(err, "failed to create denom 'authzadmin'")
 
 	// Grant MsgChangeAdmin authorization
 	s.grantGenericAuthz(s.DelegatorWallet, s.DelegatorWallet2, "/osmosis.tokenfactory.v1beta1.MsgChangeAdmin")
 
 	// DelegatorWallet2 executes change-admin to DelegatorWallet3
-	err := s.authzGenExec(ctx, s.DelegatorWallet2,
+	err = s.authzGenExec(ctx, s.DelegatorWallet2,
 		"tokenfactory", "change-admin", denom, s.DelegatorWallet3.FormattedAddress(),
 		"--from", s.DelegatorWallet.FormattedAddress())
 	s.Require().NoError(err)
@@ -219,13 +201,14 @@ func (s *TokenFactoryAuthzSuite) TestAuthzModifyMetadata() {
 	ctx := s.GetContext()
 
 	// Create denom
-	denom := s.createDenom("authzmeta")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "authzmeta")
+	s.Require().NoError(err, "failed to create denom 'authzmeta'")
 
 	// Grant MsgSetDenomMetadata authorization
 	s.grantGenericAuthz(s.DelegatorWallet, s.DelegatorWallet2, "/osmosis.tokenfactory.v1beta1.MsgSetDenomMetadata")
 
 	// DelegatorWallet2 executes modify-metadata
-	err := s.authzGenExec(ctx, s.DelegatorWallet2,
+	err = s.authzGenExec(ctx, s.DelegatorWallet2,
 		"tokenfactory", "modify-metadata", denom, "AUTHZ", "Authz Test Token", "6",
 		"--from", s.DelegatorWallet.FormattedAddress())
 	s.Require().NoError(err)
@@ -249,8 +232,10 @@ func (s *TokenFactoryAuthzSuite) TestAuthzMultipleOperations() {
 	ctx := s.GetContext()
 
 	// Create denom and mint
-	denom := s.createDenom("authzmulti")
-	s.mint(denom, 3000000)
+	denom, err := s.CreateDenom(s.DelegatorWallet, "authzmulti")
+	s.Require().NoError(err, "failed to create denom 'authzmulti'")
+	err = s.Mint(s.DelegatorWallet, denom, 3000000)
+	s.Require().NoError(err, "failed to mint tokens for authz multi test")
 
 	// Grant multiple authorizations
 	s.grantGenericAuthz(s.DelegatorWallet, s.DelegatorWallet2, "/osmosis.tokenfactory.v1beta1.MsgMint")
@@ -258,7 +243,7 @@ func (s *TokenFactoryAuthzSuite) TestAuthzMultipleOperations() {
 	s.grantGenericAuthz(s.DelegatorWallet, s.DelegatorWallet2, "/osmosis.tokenfactory.v1beta1.MsgSetDenomMetadata")
 
 	// DelegatorWallet2 performs all three operations
-	err := s.authzGenExec(ctx, s.DelegatorWallet2,
+	err = s.authzGenExec(ctx, s.DelegatorWallet2,
 		"tokenfactory", "mint", fmt.Sprintf("%d%s", 1000000, denom),
 		"--from", s.DelegatorWallet.FormattedAddress())
 	s.Require().NoError(err)
@@ -315,7 +300,8 @@ func (s *TokenFactoryAuthzSuite) TestAuthzChainedDelegation() {
 	ctx := s.GetContext()
 
 	// Create denom
-	denom := s.createDenom("authzchain")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "authzchain")
+	s.Require().NoError(err, "failed to create denom 'authzchain'")
 
 	// DelegatorWallet grants mint to DelegatorWallet2
 	s.grantGenericAuthz(s.DelegatorWallet, s.DelegatorWallet2, "/osmosis.tokenfactory.v1beta1.MsgMint")
@@ -324,7 +310,7 @@ func (s *TokenFactoryAuthzSuite) TestAuthzChainedDelegation() {
 	s.grantGenericAuthz(s.DelegatorWallet2, s.DelegatorWallet3, "/osmosis.tokenfactory.v1beta1.MsgMint")
 
 	// DelegatorWallet3 attempts mint on behalf of DelegatorWallet (should fail - no chaining)
-	err := s.authzGenExec(ctx, s.DelegatorWallet3,
+	err = s.authzGenExec(ctx, s.DelegatorWallet3,
 		"tokenfactory", "mint", fmt.Sprintf("%d%s", 1000, denom),
 		"--from", s.DelegatorWallet.FormattedAddress())
 	s.Require().Error(err)
@@ -335,10 +321,11 @@ func (s *TokenFactoryAuthzSuite) TestAuthzUnauthorizedOperation() {
 	ctx := s.GetContext()
 
 	// Create denom
-	denom := s.createDenom("authzunauth")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "authzunauth")
+	s.Require().NoError(err, "failed to create denom 'authzunauth'")
 
 	// DelegatorWallet2 attempts mint WITHOUT grant (should fail)
-	err := s.authzGenExec(ctx, s.DelegatorWallet2,
+	err = s.authzGenExec(ctx, s.DelegatorWallet2,
 		"tokenfactory", "mint", fmt.Sprintf("%d%s", 1000, denom),
 		"--from", s.DelegatorWallet.FormattedAddress())
 	s.Require().Error(err)
@@ -370,10 +357,12 @@ func (s *TokenFactoryAuthzSuite) TestAuthzUnauthorizedOperation() {
 
 func TestTokenFactoryAuthz(t *testing.T) {
 	s := &TokenFactoryAuthzSuite{
-		Suite: &delegator.Suite{
-			Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
-				UpgradeOnSetup: true,
-			}),
+		TokenFactoryBaseSuite: &TokenFactoryBaseSuite{
+			Suite: &delegator.Suite{
+				Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+					UpgradeOnSetup: true,
+				}),
+			},
 		},
 	}
 	suite.Run(t, s)

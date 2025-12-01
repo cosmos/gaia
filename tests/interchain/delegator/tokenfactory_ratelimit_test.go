@@ -18,7 +18,7 @@ import (
 )
 
 type TokenFactoryRateLimitSuite struct {
-	*delegator.Suite
+	*TokenFactoryBaseSuite
 	ChainB       *chainsuite.Chain
 	ChainBWallet ibc.Wallet
 }
@@ -55,28 +55,6 @@ func (s *TokenFactoryRateLimitSuite) SetupSuite() {
 
 // Helper functions
 
-// createDenom creates a tokenfactory denom on chain A
-func (s *TokenFactoryRateLimitSuite) createDenom(subdenom string) string {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "create-denom", subdenom,
-	)
-	s.Require().NoError(err)
-	return fmt.Sprintf("factory/%s/%s", s.DelegatorWallet.FormattedAddress(), subdenom)
-}
-
-// mint mints tokens on chain A
-func (s *TokenFactoryRateLimitSuite) mint(denom string, amount int64) {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "mint",
-		fmt.Sprintf("%d%s", amount, denom),
-	)
-	s.Require().NoError(err)
-}
-
 // addRateLimit creates a governance proposal to add rate limit
 func (s *TokenFactoryRateLimitSuite) addRateLimit(
 	ctx context.Context,
@@ -96,11 +74,9 @@ func (s *TokenFactoryRateLimitSuite) addRateLimit(
 		"authority": "%s",
 		"denom": "%s",
 		"channel_or_client_id": "%s",
-		"quota": {
-			"max_percent_send": "%d",
-			"max_percent_recv": "%d",
-			"duration_hours": "%d"
-		}
+		"max_percent_send": "%d",
+		"max_percent_recv": "%d",
+		"duration_hours": "%d"
 	}`, authority, denom, channel, sendPercent, recvPercent, durationHours)
 
 	// Create proposal using ProposalJSON struct
@@ -120,6 +96,74 @@ func (s *TokenFactoryRateLimitSuite) addRateLimit(
 	s.Require().NoError(err)
 
 	proposalPath := s.Chain.GetNode().HomeDir() + "/ratelimit-proposal.json"
+
+	// Submit proposal using ExecTx
+	_, err = s.Chain.GetNode().ExecTx(ctx, s.DelegatorWallet.FormattedAddress(),
+		"gov", "submit-proposal", proposalPath)
+	s.Require().NoError(err)
+
+	// Query for the last proposal ID
+	lastProposal, err := s.Chain.QueryJSON(ctx, "proposals.@reverse.0.id", "gov", "proposals")
+	s.Require().NoError(err)
+	proposalID := lastProposal.String()
+
+	// Pass the proposal
+	err = s.Chain.PassProposal(ctx, proposalID)
+	s.Require().NoError(err)
+
+	// Wait for proposal to be executed
+	s.Require().Eventually(func() bool {
+		proposal, err := s.Chain.GovQueryProposalV1(ctx, mustParseUint(proposalID))
+		if err != nil {
+			return false
+		}
+		return proposal.Status == govv1.StatusPassed
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout,
+		"proposal did not pass")
+
+	return proposalID
+}
+
+// updateRateLimit creates a governance proposal to update an existing rate limit
+func (s *TokenFactoryRateLimitSuite) updateRateLimit(
+	ctx context.Context,
+	denom string,
+	channel string,
+	sendPercent, recvPercent int64,
+	durationHours uint64,
+) string {
+	// Get gov module authority address
+	authority, err := s.Chain.GetGovernanceAddress(ctx)
+	s.Require().NoError(err)
+
+	// Create MsgUpdateRateLimit message as JSON
+	rateLimitMessage := fmt.Sprintf(`{
+		"@type": "/ratelimit.v1.MsgUpdateRateLimit",
+		"authority": "%s",
+		"denom": "%s",
+		"channel_or_client_id": "%s",
+		"max_percent_send": "%d",
+		"max_percent_recv": "%d",
+		"duration_hours": "%d"
+	}`, authority, denom, channel, sendPercent, recvPercent, durationHours)
+
+	// Create proposal using ProposalJSON struct
+	proposal := ProposalJSON{
+		Messages:       []json.RawMessage{json.RawMessage(rateLimitMessage)},
+		InitialDeposit: fmt.Sprintf("%duatom", chainsuite.GovMinDepositAmount),
+		Title:          "Update Rate Limit for " + denom,
+		Summary:        fmt.Sprintf("Update to %d%% send, %d%% recv quota", sendPercent, recvPercent),
+		Metadata:       "ipfs://CID",
+	}
+
+	// Write proposal to file
+	proposalBytes, err := json.MarshalIndent(proposal, "", "  ")
+	s.Require().NoError(err)
+
+	err = s.Chain.GetNode().WriteFile(ctx, proposalBytes, "ratelimit-update-proposal.json")
+	s.Require().NoError(err)
+
+	proposalPath := s.Chain.GetNode().HomeDir() + "/ratelimit-update-proposal.json"
 
 	// Submit proposal using ExecTx
 	_, err = s.Chain.GetNode().ExecTx(ctx, s.DelegatorWallet.FormattedAddress(),
@@ -248,10 +292,15 @@ func (s *TokenFactoryRateLimitSuite) verifyBalance(
 	denom string,
 	expected sdkmath.Int,
 	message string,
-) {
+) error {
 	balance, err := chain.GetBalance(ctx, address, denom)
-	s.Require().NoError(err)
-	s.Require().Equal(expected, balance, message)
+	if err != nil {
+		return err
+	}
+	if !balance.Equal(expected) {
+		return fmt.Errorf("%s: expected %s, got %s", message, expected, balance)
+	}
+	return nil
 }
 
 // Test 1: TestRateLimitBasicTransfer
@@ -259,15 +308,18 @@ func (s *TokenFactoryRateLimitSuite) TestRateLimitBasicTransfer() {
 	ctx := s.GetContext()
 
 	// Create tokenfactory denom on chain A
-	denom := s.createDenom("ratelimitcoin")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "ratelimitcoin")
+	s.Require().NoError(err, "failed to create denom 'ratelimitcoin'")
 
 	// Mint 1,000,000 tokens
 	totalSupply := int64(1_000_000)
-	s.mint(denom, totalSupply)
+	err = s.Mint(s.DelegatorWallet, denom, totalSupply)
+	s.Require().NoError(err, "failed to mint %d tokens for denom %s", totalSupply, denom)
 
 	// Verify initial balance
-	s.verifyBalance(ctx, s.Chain, s.DelegatorWallet.FormattedAddress(), denom,
+	err = s.verifyBalance(ctx, s.Chain, s.DelegatorWallet.FormattedAddress(), denom,
 		sdkmath.NewInt(totalSupply), "initial balance should equal minted amount")
+	s.Require().NoError(err)
 
 	// Get IBC transfer channel
 	transferCh, err := s.Relayer.GetTransferChannel(ctx, s.Chain, s.ChainB)
@@ -331,9 +383,11 @@ func (s *TokenFactoryRateLimitSuite) TestRateLimitBidirectional() {
 	ctx := s.GetContext()
 
 	// Create tokenfactory denom on chain A, mint 1M tokens
-	denom := s.createDenom("bidir")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "bidir")
+	s.Require().NoError(err, "failed to create denom 'bidir'")
 	totalSupply := int64(1_000_000)
-	s.mint(denom, totalSupply)
+	err = s.Mint(s.DelegatorWallet, denom, totalSupply)
+	s.Require().NoError(err, "failed to mint %d tokens for denom %s", totalSupply, denom)
 
 	// Get IBC transfer channel
 	transferChAtoB, err := s.Relayer.GetTransferChannel(ctx, s.Chain, s.ChainB)
@@ -376,11 +430,12 @@ func (s *TokenFactoryRateLimitSuite) TestRateLimitBidirectional() {
 	balanceABefore, err := s.Chain.GetBalance(ctx, s.DelegatorWallet.FormattedAddress(), denom)
 	s.Require().NoError(err)
 
-	// Transfer 50k from B→A (5% inflow on A) → should PASS
-	amount2 := s.calculateQuota(sdkmath.NewInt(totalSupply), 5)
+	// Transfer 80k from B→A (8% inflow on A, net inflow = 80k - 100k = -20k) → should PASS
+	// Note: Rate limits track NET flow (inflow - outflow), not absolute flow
+	amount2 := s.calculateQuota(sdkmath.NewInt(totalSupply), 8)
 	err = s.attemptTransfer(ctx, s.ChainB, s.ChainBWallet,
 		s.DelegatorWallet.FormattedAddress(), amount2, expectedDenomB, transferChBtoA.ChannelID)
-	s.Require().NoError(err, "return transfer B→A (5%%) should succeed")
+	s.Require().NoError(err, "return transfer B→A (8%%) should succeed (net inflow -20%%)")
 
 	// Wait for return transfer
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
@@ -389,11 +444,12 @@ func (s *TokenFactoryRateLimitSuite) TestRateLimitBidirectional() {
 		assert.True(c, balance.Sub(balanceABefore).Equal(amount2), "chain A should receive return transfer")
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
 
-	// Transfer 10k more from B→A → should FAIL (exceed receive quota)
-	amount3 := s.calculateQuota(sdkmath.NewInt(totalSupply), 1)
+	// Transfer 80k more from B→A (total inflow 160k, net inflow = 160k - 100k = 60k)
+	// Net inflow 60k > 5% quota (50k) → should FAIL
+	amount3 := s.calculateQuota(sdkmath.NewInt(totalSupply), 8)
 	err = s.attemptTransfer(ctx, s.ChainB, s.ChainBWallet,
 		s.DelegatorWallet.FormattedAddress(), amount3, expectedDenomB, transferChBtoA.ChannelID)
-	s.Require().Error(err, "second return transfer should fail (exceed receive quota)")
+	s.Require().Error(err, "second return transfer should fail (net inflow would exceed 5%% receive quota)")
 }
 
 // Test 3: TestRateLimitMultipleUsers
@@ -401,9 +457,11 @@ func (s *TokenFactoryRateLimitSuite) TestRateLimitMultipleUsers() {
 	ctx := s.GetContext()
 
 	// Create tokenfactory denom
-	denom := s.createDenom("multiuser")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "multiuser")
+	s.Require().NoError(err, "failed to create denom 'multiuser'")
 	totalSupply := int64(1_000_000)
-	s.mint(denom, totalSupply)
+	err = s.Mint(s.DelegatorWallet, denom, totalSupply)
+	s.Require().NoError(err, "failed to mint %d tokens for denom %s", totalSupply, denom)
 
 	// Distribute tokens to DelegatorWallet2 and create a third wallet
 	wallet3, err := s.Chain.BuildWallet(ctx, "user3", "")
@@ -460,9 +518,11 @@ func (s *TokenFactoryRateLimitSuite) TestRateLimitGovernanceUpdate() {
 	ctx := s.GetContext()
 
 	// Create tokenfactory denom
-	denom := s.createDenom("govupdate")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "govupdate")
+	s.Require().NoError(err, "failed to create denom 'govupdate'")
 	totalSupply := int64(1_000_000)
-	s.mint(denom, totalSupply)
+	err = s.Mint(s.DelegatorWallet, denom, totalSupply)
+	s.Require().NoError(err, "failed to mint %d tokens for denom %s", totalSupply, denom)
 
 	// Get IBC transfer channel
 	transferCh, err := s.Relayer.GetTransferChannel(ctx, s.Chain, s.ChainB)
@@ -483,10 +543,8 @@ func (s *TokenFactoryRateLimitSuite) TestRateLimitGovernanceUpdate() {
 		s.ChainBWallet.FormattedAddress(), amount2, denom, transferCh.ChannelID)
 	s.Require().Error(err, "transfer should fail (exceeds 5%% quota)")
 
-	// Submit governance proposal to increase to 10%
-	// Note: We need to update the existing rate limit, not add a new one
-	// The addRateLimit function will update if it already exists
-	s.addRateLimit(ctx, denom, transferCh.ChannelID, 10, 10, 24)
+	// Submit governance proposal to update rate limit from 5% to 10%
+	s.updateRateLimit(ctx, denom, transferCh.ChannelID, 10, 10, 24)
 
 	// Transfer 5% more → should PASS (9% total, within new 10% limit)
 	amount3 := s.calculateQuota(sdkmath.NewInt(totalSupply), 5)
@@ -500,9 +558,11 @@ func (s *TokenFactoryRateLimitSuite) TestRateLimitRemoval() {
 	ctx := s.GetContext()
 
 	// Create tokenfactory denom
-	denom := s.createDenom("removal")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "removal")
+	s.Require().NoError(err, "failed to create denom 'removal'")
 	totalSupply := int64(1_000_000)
-	s.mint(denom, totalSupply)
+	err = s.Mint(s.DelegatorWallet, denom, totalSupply)
+	s.Require().NoError(err, "failed to mint %d tokens for denom %s", totalSupply, denom)
 
 	// Get IBC transfer channel
 	transferCh, err := s.Relayer.GetTransferChannel(ctx, s.Chain, s.ChainB)
@@ -535,11 +595,13 @@ func (s *TokenFactoryRateLimitSuite) TestRateLimitRemoval() {
 
 func TestTokenFactoryRateLimit(t *testing.T) {
 	s := &TokenFactoryRateLimitSuite{
-		Suite: &delegator.Suite{
-			Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
-				UpgradeOnSetup: true,
-				CreateRelayer:  true,
-			}),
+		TokenFactoryBaseSuite: &TokenFactoryBaseSuite{
+			Suite: &delegator.Suite{
+				Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+					UpgradeOnSetup: true,
+					CreateRelayer:  true,
+				}),
+			},
 		},
 	}
 	suite.Run(t, s)

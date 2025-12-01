@@ -15,105 +15,103 @@ import (
 )
 
 type TokenFactoryVestingSuite struct {
-	*delegator.Suite
-	VestingWallet ibc.Wallet // DelayedVestingAccount (10 seconds)
+	*TokenFactoryBaseSuite
 }
 
-func (s *TokenFactoryVestingSuite) SetupSuite() {
-	s.Suite.SetupSuite()
+// createVestingAccount creates a vesting account funded with tokenfactory tokens
+func (s *TokenFactoryVestingSuite) createVestingAccount(
+	denom string,
+	amount int64,
+	vestingDuration time.Duration,
+) (ibc.Wallet, int64) {
 	ctx := s.GetContext()
 
-	// Create delayed vesting account (10 second vesting period)
-	vestingEnd := time.Now().Add(10 * time.Second).Unix()
-	wallet, err := s.Chain.BuildWallet(ctx, fmt.Sprintf("vesting-delayed-%d", vestingEnd), "")
+	vestingEnd := time.Now().Add(vestingDuration).Unix()
+	wallet, err := s.Chain.BuildWallet(ctx,
+		fmt.Sprintf("vesting-%d", time.Now().UnixNano()), "")
 	s.Require().NoError(err)
-	s.VestingWallet = wallet
 
-	vestingAmount := sdkmath.NewInt(50_000_000_000)
-	_, err = s.Chain.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName,
-		"vesting", "create-vesting-account", s.VestingWallet.FormattedAddress(),
-		fmt.Sprintf("%s%s", vestingAmount.String(), s.Chain.Config().Denom),
+	// Create vesting account with tokenfactory tokens
+	_, err = s.Chain.GetNode().ExecTx(ctx, s.DelegatorWallet.KeyName(),
+		"vesting", "create-vesting-account", wallet.FormattedAddress(),
+		fmt.Sprintf("%d%s", amount, denom),
 		fmt.Sprintf("%d", vestingEnd))
 	s.Require().NoError(err)
 
-	// Give vesting account gas money
-	err = s.Chain.SendFunds(ctx, interchaintest.FaucetAccountKeyName, ibc.WalletAmount{
-		Amount:  sdkmath.NewInt(10_000_000),
-		Denom:   s.Chain.Config().Denom,
-		Address: s.VestingWallet.FormattedAddress(),
-	})
+	// Fund with gas money (300M uatom for creation fees + tx fees)
+	err = s.Chain.SendFunds(ctx, interchaintest.FaucetAccountKeyName,
+		ibc.WalletAmount{
+			Amount:  sdkmath.NewInt(300_000_000),
+			Denom:   s.Chain.Config().Denom,
+			Address: wallet.FormattedAddress(),
+		})
 	s.Require().NoError(err)
-}
 
-// createDenom creates a tokenfactory denom using the specified wallet
-func (s *TokenFactoryVestingSuite) createDenom(wallet ibc.Wallet, subdenom string) string {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		wallet.KeyName(),
-		"tokenfactory", "create-denom", subdenom,
-	)
-	s.Require().NoError(err)
-	return fmt.Sprintf("factory/%s/%s", wallet.FormattedAddress(), subdenom)
-}
-
-// mint mints tokens for a given denom using the specified wallet
-func (s *TokenFactoryVestingSuite) mint(wallet ibc.Wallet, denom string, amount int64) {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		wallet.KeyName(),
-		"tokenfactory", "mint",
-		fmt.Sprintf("%d%s", amount, denom),
-	)
-	s.Require().NoError(err)
+	return wallet, vestingEnd
 }
 
 // TestDelayedVestingAsAdmin verifies vesting account can perform admin operations during vesting
 func (s *TokenFactoryVestingSuite) TestDelayedVestingAsAdmin() {
 	ctx := s.GetContext()
 
-	// Create denom with VestingWallet (becomes admin)
-	denom := s.createDenom(s.VestingWallet, "admintest1")
+	// Create tokenfactory denom for this test
+	subdenom := "admintest1"
+	denom, err := s.CreateDenom(s.DelegatorWallet, subdenom)
+	s.Require().NoError(err, "failed to create denom")
 
-	// Verify admin
+	// Mint tokens to DelegatorWallet
+	mintAmt := int64(50_000_000_000)
+	err = s.Mint(s.DelegatorWallet, denom, mintAmt)
+	s.Require().NoError(err, "failed to mint tokens")
+
+	// Create vesting account with these tokens (30s vesting)
+	vestingWallet, _ := s.createVestingAccount(denom, mintAmt, 30*time.Second)
+
+	// Create another denom with vesting account as admin
+	adminDenom, err := s.CreateDenom(vestingWallet, "vadmin")
+	s.Require().NoError(err, "failed to create denom with vesting wallet as admin")
+
+	// Verify vesting account is admin
 	admin, err := s.Chain.QueryJSON(ctx,
-		"authority_metadata.admin", "tokenfactory", "denom-authority-metadata", denom)
+		"authority_metadata.admin", "tokenfactory", "denom-authority-metadata", adminDenom)
 	s.Require().NoError(err)
-	s.Require().Equal(s.VestingWallet.FormattedAddress(), admin.String())
+	s.Require().Equal(vestingWallet.FormattedAddress(), admin.String())
 
-	// Mint tokens (should succeed - admin operations allowed during vesting)
-	mintAmount := int64(1000000)
-	s.mint(s.VestingWallet, denom, mintAmount)
+	// Perform admin operations (mint, burn, modify-metadata)
+	adminMintAmount := int64(1_000_000)
+	err = s.Mint(vestingWallet, adminDenom, adminMintAmount)
+	s.Require().NoError(err, "failed to mint tokens with vesting wallet")
 
 	// Verify balance
-	balance, err := s.Chain.GetBalance(ctx, s.VestingWallet.FormattedAddress(), denom)
+	balance, err := s.Chain.GetBalance(ctx, vestingWallet.FormattedAddress(), adminDenom)
 	s.Require().NoError(err)
-	s.Require().Equal(sdkmath.NewInt(mintAmount), balance)
+	s.Require().Equal(sdkmath.NewInt(adminMintAmount), balance)
 
 	// Burn tokens (should succeed)
-	burnAmount := int64(500000)
-	_, err = s.Chain.GetNode().ExecTx(ctx, s.VestingWallet.KeyName(),
-		"tokenfactory", "burn", fmt.Sprintf("%d%s", burnAmount, denom))
+	burnAmount := int64(500_000)
+	_, err = s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
+		"tokenfactory", "burn", fmt.Sprintf("%d%s", burnAmount, adminDenom))
 	s.Require().NoError(err)
 
 	// Verify reduced balance
-	balance, err = s.Chain.GetBalance(ctx, s.VestingWallet.FormattedAddress(), denom)
+	balance, err = s.Chain.GetBalance(ctx, vestingWallet.FormattedAddress(), adminDenom)
 	s.Require().NoError(err)
-	s.Require().Equal(sdkmath.NewInt(mintAmount-burnAmount), balance)
+	s.Require().Equal(sdkmath.NewInt(adminMintAmount-burnAmount), balance)
 
 	// Change admin to DelegatorWallet2
-	_, err = s.Chain.GetNode().ExecTx(ctx, s.VestingWallet.KeyName(),
-		"tokenfactory", "change-admin", denom, s.DelegatorWallet2.FormattedAddress())
+	_, err = s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
+		"tokenfactory", "change-admin", adminDenom, s.DelegatorWallet2.FormattedAddress())
 	s.Require().NoError(err)
 
 	// Verify admin changed
 	admin, err = s.Chain.QueryJSON(ctx,
-		"authority_metadata.admin", "tokenfactory", "denom-authority-metadata", denom)
+		"authority_metadata.admin", "tokenfactory", "denom-authority-metadata", adminDenom)
 	s.Require().NoError(err)
 	s.Require().Equal(s.DelegatorWallet2.FormattedAddress(), admin.String())
 
 	// VestingWallet can no longer mint (admin transferred)
-	_, err = s.Chain.GetNode().ExecTx(ctx, s.VestingWallet.KeyName(),
-		"tokenfactory", "mint", fmt.Sprintf("%d%s", 1000, denom))
+	_, err = s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
+		"tokenfactory", "mint", fmt.Sprintf("%d%s", 1000, adminDenom))
 	s.Require().Error(err)
 	s.Require().Contains(err.Error(), "unauthorized")
 }
@@ -122,183 +120,213 @@ func (s *TokenFactoryVestingSuite) TestDelayedVestingAsAdmin() {
 func (s *TokenFactoryVestingSuite) TestVestingMultipleAdminOperations() {
 	ctx := s.GetContext()
 
+	// Create tokenfactory denom for this test
+	subdenom := "admintest2"
+	denom, err := s.CreateDenom(s.DelegatorWallet, subdenom)
+	s.Require().NoError(err, "failed to create denom")
+
+	// Mint tokens to DelegatorWallet
+	mintAmt := int64(50_000_000_000)
+	err = s.Mint(s.DelegatorWallet, denom, mintAmt)
+	s.Require().NoError(err, "failed to mint tokens")
+
+	// Create vesting account with these tokens (30s vesting)
+	vestingWallet, _ := s.createVestingAccount(denom, mintAmt, 30*time.Second)
+
 	// Create denom with VestingWallet
-	denom := s.createDenom(s.VestingWallet, "admintest2")
+	adminDenom, err := s.CreateDenom(vestingWallet, "admintest2b")
+	s.Require().NoError(err, "failed to create denom with vesting wallet")
 
 	// Mint tokens before vesting ends
-	mintAmount := int64(2000000)
-	s.mint(s.VestingWallet, denom, mintAmount)
+	adminMintAmount := int64(2_000_000)
+	err = s.Mint(vestingWallet, adminDenom, adminMintAmount)
+	s.Require().NoError(err, "failed to mint tokens for admin operations test")
 
 	// Verify balance
-	balance, err := s.Chain.GetBalance(ctx, s.VestingWallet.FormattedAddress(), denom)
+	balance, err := s.Chain.GetBalance(ctx, vestingWallet.FormattedAddress(), adminDenom)
 	s.Require().NoError(err)
-	s.Require().Equal(sdkmath.NewInt(mintAmount), balance)
+	s.Require().Equal(sdkmath.NewInt(adminMintAmount), balance)
 
 	// Modify metadata (test another admin operation)
-	_, err = s.Chain.GetNode().ExecTx(ctx, s.VestingWallet.KeyName(),
-		"tokenfactory", "modify-metadata", denom, "TEST", "Test Token", "6")
+	_, err = s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
+		"tokenfactory", "modify-metadata", adminDenom, "TEST", "Test Token", "6")
 	s.Require().NoError(err)
 
 	// Verify metadata
-	metadata, err := s.Chain.QueryJSON(ctx, "metadata", "bank", "denom-metadata", denom)
+	metadata, err := s.Chain.QueryJSON(ctx, "metadata", "bank", "denom-metadata", adminDenom)
 	s.Require().NoError(err)
 	s.Require().Equal("TEST", metadata.Get("symbol").String())
 
 	// Create multiple denoms from same vesting account
-	denom2 := s.createDenom(s.VestingWallet, "admintest3")
+	adminDenom2, err := s.CreateDenom(vestingWallet, "admintest3")
+	s.Require().NoError(err, "failed to create denom 'admintest3' with vesting wallet")
 	admin, err := s.Chain.QueryJSON(ctx,
-		"authority_metadata.admin", "tokenfactory", "denom-authority-metadata", denom2)
+		"authority_metadata.admin", "tokenfactory", "denom-authority-metadata", adminDenom2)
 	s.Require().NoError(err)
-	s.Require().Equal(s.VestingWallet.FormattedAddress(), admin.String())
+	s.Require().Equal(vestingWallet.FormattedAddress(), admin.String())
 }
 
-// TestVestingAccountCannotTransferUnvestedTokens verifies vesting accounts
-// can hold tokenfactory tokens but cannot transfer unvested amounts
+// TestVestingAccountCannotTransferUnvestedTokens verifies vested tokenfactory
+// tokens cannot be transferred before vesting period ends
 func (s *TokenFactoryVestingSuite) TestVestingAccountCannotTransferUnvestedTokens() {
 	ctx := s.GetContext()
 
-	// Create denom with DelegatorWallet
-	denom := s.createDenom(s.DelegatorWallet, "transfertest")
+	// Create tokenfactory denom
+	subdenom := "locktest"
+	denom, err := s.CreateDenom(s.DelegatorWallet, subdenom)
+	s.Require().NoError(err, "failed to create denom")
 
-	// Mint tokenfactory tokens to DelegatorWallet
-	mintAmount := int64(5000000)
-	s.mint(s.DelegatorWallet, denom, mintAmount)
+	// Mint tokens
+	vestingAmount := int64(50_000_000_000)
+	err = s.Mint(s.DelegatorWallet, denom, vestingAmount)
+	s.Require().NoError(err, "failed to mint tokens")
 
-	// Transfer tokenfactory tokens to VestingWallet (still vesting)
-	_, err := s.Chain.GetNode().ExecTx(ctx, s.DelegatorWallet.KeyName(),
-		"bank", "send", s.DelegatorWallet.FormattedAddress(),
-		s.VestingWallet.FormattedAddress(),
-		fmt.Sprintf("%d%s", mintAmount, denom))
-	s.Require().NoError(err)
+	// Create vesting account with 60 second vesting period
+	vestingWallet, vestingEnd := s.createVestingAccount(denom, vestingAmount, 60*time.Second)
 
-	// Verify VestingWallet has the tokenfactory tokens
-	s.Require().EventuallyWithT(func(c *assert.CollectT) {
-		balance, err := s.Chain.GetBalance(ctx, s.VestingWallet.FormattedAddress(), denom)
-		assert.NoError(c, err)
-		assert.Equal(c, sdkmath.NewInt(mintAmount), balance)
-	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
-
-	// Attempt bank send of ALL tokenfactory tokens (should FAIL - unvested)
-	_, err = s.Chain.GetNode().ExecTx(ctx, s.VestingWallet.KeyName(),
-		"bank", "send", s.VestingWallet.FormattedAddress(),
+	// IMMEDIATELY attempt transfer (should FAIL - tokens locked)
+	// At this point ~32s elapsed (4 txs * 8s)
+	_, err = s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
+		"bank", "send", vestingWallet.FormattedAddress(),
 		s.DelegatorWallet2.FormattedAddress(),
-		fmt.Sprintf("%d%s", mintAmount, denom))
-	s.Require().Error(err)
+		fmt.Sprintf("%d%s", vestingAmount, denom))
+	s.Require().Error(err, "transfer should fail before vesting ends")
 
-	// Wait for vesting period to complete
-	time.Sleep(15 * time.Second)
+	// Calculate remaining vesting time
+	// ~40s elapsed so far (5 txs * 8s), need to wait until vesting end + buffer
+	waitDuration := time.Until(time.Unix(vestingEnd, 0)) + (5 * chainsuite.CommitTimeout)
+	time.Sleep(waitDuration)
 
-	// Attempt bank send again (should SUCCEED - now vested)
-	_, err = s.Chain.GetNode().ExecTx(ctx, s.VestingWallet.KeyName(),
-		"bank", "send", s.VestingWallet.FormattedAddress(),
+	// Attempt transfer again (should SUCCEED - now vested)
+	_, err = s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
+		"bank", "send", vestingWallet.FormattedAddress(),
 		s.DelegatorWallet2.FormattedAddress(),
-		fmt.Sprintf("%d%s", mintAmount, denom))
-	s.Require().NoError(err)
+		fmt.Sprintf("%d%s", vestingAmount, denom))
+	s.Require().NoError(err, "transfer should succeed after vesting completes")
 
 	// Verify transfer succeeded
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
 		balance, err := s.Chain.GetBalance(ctx, s.DelegatorWallet2.FormattedAddress(), denom)
 		assert.NoError(c, err)
-		assert.Equal(c, sdkmath.NewInt(mintAmount), balance)
+		assert.Equal(c, sdkmath.NewInt(vestingAmount), balance)
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
+}
+
+// TestVestingAccountCanTransferNonVestedTokens verifies tokens sent TO a vesting account
+// AFTER creation are NOT locked
+func (s *TokenFactoryVestingSuite) TestVestingAccountCanTransferNonVestedTokens() {
+	ctx := s.GetContext()
+
+	// Create tokenfactory denom
+	subdenom := "nonvestedtest"
+	denom, err := s.CreateDenom(s.DelegatorWallet, subdenom)
+	s.Require().NoError(err, "failed to create denom")
+
+	// Mint tokens
+	vestedAmount := int64(30_000_000_000)
+	nonVestedAmount := int64(20_000_000_000)
+	err = s.Mint(s.DelegatorWallet, denom, vestedAmount+nonVestedAmount)
+	s.Require().NoError(err, "failed to mint tokens")
+
+	// Create vesting account with ONLY vestedAmount (60s vesting)
+	vestingWallet, _ := s.createVestingAccount(denom, vestedAmount, 60*time.Second)
+
+	// Send additional tokens TO vesting account (these are NOT vested)
+	_, err = s.Chain.GetNode().ExecTx(ctx, s.DelegatorWallet.KeyName(),
+		"bank", "send", s.DelegatorWallet.FormattedAddress(),
+		vestingWallet.FormattedAddress(),
+		fmt.Sprintf("%d%s", nonVestedAmount, denom))
+	s.Require().NoError(err)
+
+	// Verify total balance
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		balance, err := s.Chain.GetBalance(ctx, vestingWallet.FormattedAddress(), denom)
+		assert.NoError(c, err)
+		assert.Equal(c, sdkmath.NewInt(vestedAmount+nonVestedAmount), balance)
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
+
+	// Transfer the non-vested tokens (should SUCCEED - only vested tokens locked)
+	_, err = s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
+		"bank", "send", vestingWallet.FormattedAddress(),
+		s.DelegatorWallet2.FormattedAddress(),
+		fmt.Sprintf("%d%s", nonVestedAmount, denom))
+	s.Require().NoError(err, "can transfer non-vested tokens")
+
+	// Verify transfer succeeded
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		balance, err := s.Chain.GetBalance(ctx, s.DelegatorWallet2.FormattedAddress(), denom)
+		assert.NoError(c, err)
+		assert.Equal(c, sdkmath.NewInt(nonVestedAmount), balance)
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
+
+	// Attempt to transfer vested tokens (should FAIL - still locked)
+	_, err = s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
+		"bank", "send", vestingWallet.FormattedAddress(),
+		s.DelegatorWallet2.FormattedAddress(),
+		fmt.Sprintf("%d%s", vestedAmount, denom))
+	s.Require().Error(err, "cannot transfer vested tokens while vesting")
 }
 
 // TestVestingAccountHoldsMultipleDenoms verifies vesting accounts can hold multiple tokenfactory denoms
 func (s *TokenFactoryVestingSuite) TestVestingAccountHoldsMultipleDenoms() {
 	ctx := s.GetContext()
 
-	// Create 3 different tokenfactory denoms with DelegatorWallet
+	// Create 3 different tokenfactory denoms
 	denoms := make([]string, 3)
+	totalAmount := int64(0)
 	for i := 0; i < 3; i++ {
-		denoms[i] = s.createDenom(s.DelegatorWallet, fmt.Sprintf("multidenom%d", i))
-		s.mint(s.DelegatorWallet, denoms[i], 1000000)
+		denom, err := s.CreateDenom(s.DelegatorWallet, fmt.Sprintf("multidenom%d", i))
+		s.Require().NoError(err, "failed to create denom 'multidenom%d'", i)
+		denoms[i] = denom
+
+		amount := int64(1_000_000 * (i + 1))
+		err = s.Mint(s.DelegatorWallet, denom, amount)
+		s.Require().NoError(err, "failed to mint tokens for multidenom%d", i)
+		totalAmount += amount
 	}
 
-	// Transfer all 3 denoms to VestingWallet (still vesting)
-	for _, denom := range denoms {
+	// Create vesting account but only with the first denom vesting (30s)
+	vestingWallet, _ := s.createVestingAccount(denoms[0], 1_000_000, 30*time.Second)
+
+	// Transfer the other 2 denoms to vesting wallet (not vested)
+	for i := 1; i < 3; i++ {
+		amount := int64(1_000_000 * (i + 1))
 		_, err := s.Chain.GetNode().ExecTx(ctx, s.DelegatorWallet.KeyName(),
 			"bank", "send", s.DelegatorWallet.FormattedAddress(),
-			s.VestingWallet.FormattedAddress(),
-			fmt.Sprintf("%d%s", 1000000, denom))
+			vestingWallet.FormattedAddress(),
+			fmt.Sprintf("%d%s", amount, denoms[i]))
 		s.Require().NoError(err)
 	}
 
 	// Verify all balances on vesting account
-	for _, denom := range denoms {
+	for i, denom := range denoms {
+		amount := int64(1_000_000 * (i + 1))
 		s.Require().EventuallyWithT(func(c *assert.CollectT) {
-			balance, err := s.Chain.GetBalance(ctx, s.VestingWallet.FormattedAddress(), denom)
+			balance, err := s.Chain.GetBalance(ctx, vestingWallet.FormattedAddress(), denom)
 			assert.NoError(c, err)
-			assert.Equal(c, sdkmath.NewInt(1000000), balance)
+			assert.Equal(c, sdkmath.NewInt(amount), balance)
 		}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
 	}
 
-	// Wait for vesting to complete
-	time.Sleep(15 * time.Second)
-
-	// Transfer all 3 denoms out successfully
-	for _, denom := range denoms {
-		_, err := s.Chain.GetNode().ExecTx(ctx, s.VestingWallet.KeyName(),
-			"bank", "send", s.VestingWallet.FormattedAddress(),
+	// Transfer non-vested denoms (should succeed immediately)
+	for i := 1; i < 3; i++ {
+		amount := int64(1_000_000 * (i + 1))
+		_, err := s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
+			"bank", "send", vestingWallet.FormattedAddress(),
 			s.DelegatorWallet2.FormattedAddress(),
-			fmt.Sprintf("%d%s", 1000000, denom))
-		s.Require().NoError(err)
+			fmt.Sprintf("%d%s", amount, denoms[i]))
+		s.Require().NoError(err, "non-vested denom should transfer immediately")
 	}
 
-	// Verify all transfers succeeded
-	for _, denom := range denoms {
+	// Verify transfers succeeded
+	for i := 1; i < 3; i++ {
+		amount := int64(1_000_000 * (i + 1))
 		s.Require().EventuallyWithT(func(c *assert.CollectT) {
-			balance, err := s.Chain.GetBalance(ctx, s.DelegatorWallet2.FormattedAddress(), denom)
+			balance, err := s.Chain.GetBalance(ctx, s.DelegatorWallet2.FormattedAddress(), denoms[i])
 			assert.NoError(c, err)
-			assert.Equal(c, sdkmath.NewInt(1000000), balance)
+			assert.Equal(c, sdkmath.NewInt(amount), balance)
 		}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
 	}
-}
-
-// TestDelayedVestingCannotTransferBeforeEnd verifies delayed vesting is all-or-nothing
-func (s *TokenFactoryVestingSuite) TestDelayedVestingCannotTransferBeforeEnd() {
-	ctx := s.GetContext()
-
-	// Create denom and mint
-	denom := s.createDenom(s.DelegatorWallet, "delayedtest")
-	s.mint(s.DelegatorWallet, denom, 3000000)
-
-	// Fund DelayedVestingAccount with tokenfactory tokens
-	_, err := s.Chain.GetNode().ExecTx(ctx, s.DelegatorWallet.KeyName(),
-		"bank", "send", s.DelegatorWallet.FormattedAddress(),
-		s.VestingWallet.FormattedAddress(),
-		fmt.Sprintf("%d%s", 3000000, denom))
-	s.Require().NoError(err)
-
-	// Verify balance
-	s.Require().EventuallyWithT(func(c *assert.CollectT) {
-		balance, err := s.Chain.GetBalance(ctx, s.VestingWallet.FormattedAddress(), denom)
-		assert.NoError(c, err)
-		assert.Equal(c, sdkmath.NewInt(3000000), balance)
-	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
-
-	// Verify cannot transfer ANY amount before end time
-	_, err = s.Chain.GetNode().ExecTx(ctx, s.VestingWallet.KeyName(),
-		"bank", "send", s.VestingWallet.FormattedAddress(),
-		s.DelegatorWallet2.FormattedAddress(),
-		fmt.Sprintf("%d%s", 100, denom))
-	s.Require().Error(err)
-
-	// Wait for end time
-	time.Sleep(15 * time.Second)
-
-	// Verify can transfer all tokens
-	_, err = s.Chain.GetNode().ExecTx(ctx, s.VestingWallet.KeyName(),
-		"bank", "send", s.VestingWallet.FormattedAddress(),
-		s.DelegatorWallet2.FormattedAddress(),
-		fmt.Sprintf("%d%s", 3000000, denom))
-	s.Require().NoError(err)
-
-	// Verify transfer succeeded
-	s.Require().EventuallyWithT(func(c *assert.CollectT) {
-		balance, err := s.Chain.GetBalance(ctx, s.DelegatorWallet2.FormattedAddress(), denom)
-		assert.NoError(c, err)
-		assert.Equal(c, sdkmath.NewInt(3000000), balance)
-	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
 }
 
 // TestVestingAccountDelegationDoesNotAffectTokenFactory verifies delegating native tokens
@@ -306,55 +334,85 @@ func (s *TokenFactoryVestingSuite) TestDelayedVestingCannotTransferBeforeEnd() {
 func (s *TokenFactoryVestingSuite) TestVestingAccountDelegationDoesNotAffectTokenFactory() {
 	ctx := s.GetContext()
 
-	// Create tokenfactory denom and mint to VestingWallet
-	denom := s.createDenom(s.DelegatorWallet, "delegatetest")
-	s.mint(s.DelegatorWallet, denom, 2000000)
+	// Create tokenfactory denom
+	subdenom := "delegatetest"
+	denom, err := s.CreateDenom(s.DelegatorWallet, subdenom)
+	s.Require().NoError(err, "failed to create denom")
 
-	_, err := s.Chain.GetNode().ExecTx(ctx, s.DelegatorWallet.KeyName(),
-		"bank", "send", s.DelegatorWallet.FormattedAddress(),
-		s.VestingWallet.FormattedAddress(),
-		fmt.Sprintf("%d%s", 2000000, denom))
+	// Mint tokenfactory tokens
+	tfAmount := int64(50_000_000_000)
+	err = s.Mint(s.DelegatorWallet, denom, tfAmount)
+	s.Require().NoError(err, "failed to mint tokens")
+
+	// Create vesting account with native uatom (60s vesting)
+	nativeAmount := int64(100_000_000)
+	nativeDenom := s.Chain.Config().Denom
+	vestingEnd := time.Now().Add(60 * time.Second).Unix()
+	vestingWallet, err := s.Chain.BuildWallet(ctx,
+		fmt.Sprintf("vesting-%d", time.Now().UnixNano()), "")
 	s.Require().NoError(err)
 
-	// Verify balance
+	// Create vesting account with native tokens
+	_, err = s.Chain.GetNode().ExecTx(ctx, s.DelegatorWallet.KeyName(),
+		"vesting", "create-vesting-account", vestingWallet.FormattedAddress(),
+		fmt.Sprintf("%d%s", nativeAmount, nativeDenom),
+		fmt.Sprintf("%d", vestingEnd))
+	s.Require().NoError(err)
+
+	// Fund with more gas money
+	err = s.Chain.SendFunds(ctx, interchaintest.FaucetAccountKeyName,
+		ibc.WalletAmount{
+			Amount:  sdkmath.NewInt(300_000_000),
+			Denom:   nativeDenom,
+			Address: vestingWallet.FormattedAddress(),
+		})
+	s.Require().NoError(err)
+
+	// Send tokenfactory tokens to vesting account (not vested)
+	_, err = s.Chain.GetNode().ExecTx(ctx, s.DelegatorWallet.KeyName(),
+		"bank", "send", s.DelegatorWallet.FormattedAddress(),
+		vestingWallet.FormattedAddress(),
+		fmt.Sprintf("%d%s", tfAmount, denom))
+	s.Require().NoError(err)
+
+	// Verify tokenfactory balance
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
-		balance, err := s.Chain.GetBalance(ctx, s.VestingWallet.FormattedAddress(), denom)
+		balance, err := s.Chain.GetBalance(ctx, vestingWallet.FormattedAddress(), denom)
 		assert.NoError(c, err)
-		assert.Equal(c, sdkmath.NewInt(2000000), balance)
+		assert.Equal(c, sdkmath.NewInt(tfAmount), balance)
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
 
-	// Delegate uatom to a validator
+	// Delegate native uatom to a validator
 	validatorWallet := s.Chain.ValidatorWallets[0]
 	delegateAmount := int64(10_000_000)
-	_, err = s.Chain.GetNode().ExecTx(ctx, s.VestingWallet.KeyName(),
+	_, err = s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
 		"staking", "delegate", validatorWallet.ValoperAddress,
-		fmt.Sprintf("%d%s", delegateAmount, s.Chain.Config().Denom))
+		fmt.Sprintf("%d%s", delegateAmount, nativeDenom))
 	s.Require().NoError(err)
 
-	// Wait for vesting to complete
-	time.Sleep(15 * time.Second)
-
-	// Verify can still transfer tokenfactory tokens (they're independent)
-	_, err = s.Chain.GetNode().ExecTx(ctx, s.VestingWallet.KeyName(),
-		"bank", "send", s.VestingWallet.FormattedAddress(),
+	// Verify can transfer tokenfactory tokens (they're independent and not vested)
+	_, err = s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
+		"bank", "send", vestingWallet.FormattedAddress(),
 		s.DelegatorWallet2.FormattedAddress(),
-		fmt.Sprintf("%d%s", 2000000, denom))
-	s.Require().NoError(err)
+		fmt.Sprintf("%d%s", tfAmount, denom))
+	s.Require().NoError(err, "tokenfactory tokens should be transferable regardless of native delegation")
 
 	// Verify transfer succeeded
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
 		balance, err := s.Chain.GetBalance(ctx, s.DelegatorWallet2.FormattedAddress(), denom)
 		assert.NoError(c, err)
-		assert.Equal(c, sdkmath.NewInt(2000000), balance)
+		assert.Equal(c, sdkmath.NewInt(tfAmount), balance)
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
 }
 
 func TestTokenFactoryVesting(t *testing.T) {
 	s := &TokenFactoryVestingSuite{
-		Suite: &delegator.Suite{
-			Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
-				UpgradeOnSetup: true,
-			}),
+		TokenFactoryBaseSuite: &TokenFactoryBaseSuite{
+			Suite: &delegator.Suite{
+				Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+					UpgradeOnSetup: true,
+				}),
+			},
 		},
 	}
 	suite.Run(t, s)

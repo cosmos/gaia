@@ -228,9 +228,7 @@ gaiad tx tokenfactory force-transfer 1000factory/cosmos1...addr.../mytoken cosmo
 ##### change-admin
 
 The command `change-admin` allows denom admins to change the admin of a denom.
-
 * The admin address can be set to the gov module account.
-* The admin address can be set to an empty string to renounce admin control entirely.
 
 Usage:
 
@@ -520,4 +518,3 @@ The JSON below can be used as a reference proposal to update the tokenfactory mo
 Each denom has an `authority metadata`, which lists the denom admin.
 * The admin is allowed to submit mint, burn force transfer, and change admin transactions.
 * If a denom admin is set to the governance module, transactions can only be processed through a governance proposal.
-* If a denom admin is set to an empty string, the denom becomes a fixed supply token with no further mint and burn operations allowed.

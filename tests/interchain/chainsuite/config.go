@@ -55,6 +55,10 @@ const (
 	// This is needed because not every ics image is in the default heighliner registry
 	HyphaICSRepo = "ghcr.io/hyphacoop/ics"
 	ICSUidGuid   = "1025:1025"
+	// Osmosis chain constants
+	OsmosisDenom   = "uosmo"
+	OsmosisVersion = "30.0.5"
+	OsmosisRepo    = "osmolabs/osmosis"
 )
 
 // These have to be vars so we can take their address
@@ -184,5 +188,47 @@ func DefaultGenesis() []cosmos.GenesisKV {
 		cosmos.NewGenesisKV("app_state.feemarket.params.fee_denom", Uatom),
 		cosmos.NewGenesisKV("app_state.wasm.params.code_upload_access.permission", "Nobody"),
 		cosmos.NewGenesisKV("app_state.wasm.params.instantiate_default_permission", "AnyOfAddresses"),
+	}
+}
+
+// OsmosisGenesis returns genesis modifications for Osmosis chain
+func OsmosisGenesis() []cosmos.GenesisKV {
+	return []cosmos.GenesisKV{
+		cosmos.NewGenesisKV("app_state.gov.params.voting_period", GovVotingPeriod.String()),
+		cosmos.NewGenesisKV("app_state.gov.params.max_deposit_period", GovDepositPeriod.String()),
+		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.denom", OsmosisDenom),
+		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.amount", strconv.Itoa(GovMinDepositAmount)),
+		cosmos.NewGenesisKV("app_state.slashing.params.signed_blocks_window", strconv.Itoa(ProviderSlashingWindow)),
+		cosmos.NewGenesisKV("app_state.slashing.params.downtime_jail_duration", DowntimeJailDuration.String()),
+	}
+}
+
+// OsmosisChainSpec returns the chain spec for Osmosis
+func OsmosisChainSpec() *interchaintest.ChainSpec {
+	fullNodes := 0
+	return &interchaintest.ChainSpec{
+		Name:          "osmosis",
+		ChainName:     "osmosis",
+		NumFullNodes:  &fullNodes,
+		NumValidators: &OneValidator,
+		Version:       OsmosisVersion,
+		ChainConfig: ibc.ChainConfig{
+			Type:          "cosmos",
+			Bin:           "osmosisd",
+			Bech32Prefix:  "osmo",
+			Denom:         OsmosisDenom,
+			GasPrices:     "0.025" + OsmosisDenom,
+			GasAdjustment: 2.0,
+			ConfigFileOverrides: map[string]any{
+				"config/config.toml": DefaultConfigToml(),
+			},
+			Images: []ibc.DockerImage{{
+				Repository: OsmosisRepo,
+				Version:    OsmosisVersion,
+				UIDGID:     "1025:1025",
+			}},
+			ModifyGenesis:        cosmos.ModifyGenesis(OsmosisGenesis()),
+			ModifyGenesisAmounts: DefaultGenesisAmounts(OsmosisDenom),
+		},
 	}
 }

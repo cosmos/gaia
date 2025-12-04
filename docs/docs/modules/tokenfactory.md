@@ -133,6 +133,8 @@ gaiad tx tokenfactory --help
 
 The command `create-denom` allows users to create a new denom.
 
+If the `CommunityPoolFunding` capability is enabled in the app, the denom creation fee is sent to the community pool. If this capability is not enabled, the denom creation fee is burned.
+
 Usage:
 
 ```bash
@@ -197,6 +199,8 @@ gaiad tx tokenfactory burn 1000factory/cosmos1...addr.../mytoken --from=mykey
 
 The command `burn-from` allows denom admins to burn tokens from a specific address.
 
+> The `BurnFrom` capability must be enabled in the app to allow this transaction.
+
 Usage:
 
 ```bash
@@ -212,6 +216,8 @@ gaiad tx tokenfactory burn-from cosmos1...addr... 1000factory/cosmos1...addr.../
 ##### force-transfer
 
 The command `force-transfer` allows denom admins to transfer tokens from one address to another.
+
+> The `ForceTransfer` capability must be enabled in the app to allow this transaction.
 
 Usage:
 
@@ -245,6 +251,8 @@ gaiad tx tokenfactory change-admin factory/cosmos1...addr.../mytoken cosmos1...n
 ##### modify-metadata
 
 The command `modify-metadata` allows denom admins to modify the bank metadata of a denom.
+
+> The `SetMetadata` capability must be enabled in the app to allow this transaction.
 
 Usage:
 
@@ -486,6 +494,8 @@ The `tokenfactory` module uses the following parameters, both of which can be up
 * Denom Creation Gas Consume
   * Param: `denom_creation_gas_consume`
   * This is the gas that will be consumed each time a denom is created.
+
+If the `CommunityPoolFunding` capability is enabled in the app, the denom creation fee is sent to the community pool. If this capability is not enabled, the denom creation fee is burned.
 
 The JSON below can be used as a reference proposal to update the tokenfactory module params.
 ```json

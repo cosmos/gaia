@@ -312,6 +312,151 @@ func (s *TokenFactoryGovSuite) TestGovernanceProposalWithTokenFactoryToken() {
 	s.Require().Equal(sdkmath.NewInt(100000000), balance)
 }
 
+// TestGovOwnedDenomOperations tests transferring denom admin to governance
+// and then using governance proposals to mint and burn tokens.
+func (s *TokenFactoryGovSuite) TestGovOwnedDenomOperations() {
+	// Create a denom owned by DelegatorWallet
+	denom, err := s.CreateDenom(s.DelegatorWallet, "govowned")
+	s.Require().NoError(err, "failed to create denom 'govowned'")
+
+	// Get governance module address
+	govAddr, err := s.Chain.GetGovernanceAddress(s.GetContext())
+	s.Require().NoError(err)
+
+	// Transfer admin to governance module
+	_, err = s.Chain.GetNode().ExecTx(
+		s.GetContext(),
+		s.DelegatorWallet.KeyName(),
+		"tokenfactory", "change-admin",
+		denom, govAddr,
+	)
+	s.Require().NoError(err)
+
+	// Verify gov is now the admin
+	admin, err := s.Chain.QueryJSON(s.GetContext(),
+		"authority_metadata.admin", "tokenfactory", "denom-authority-metadata", denom)
+	s.Require().NoError(err)
+	s.Require().Equal(govAddr, admin.String())
+
+	// === MINT VIA GOVERNANCE ===
+	mintAmount := int64(1000000)
+	mintMsg := fmt.Sprintf(`{
+		"@type": "/osmosis.tokenfactory.v1beta1.MsgMint",
+		"sender": "%s",
+		"amount": {"denom": "%s", "amount": "%d"},
+		"mintToAddress": "%s"
+	}`, govAddr, denom, mintAmount, s.DelegatorWallet2.FormattedAddress())
+
+	proposalID := s.submitTokenFactoryProposal(mintMsg, "Mint gov-owned tokens", "Mint tokens via governance")
+
+	// Pass the proposal
+	err = s.Chain.PassProposal(s.GetContext(), proposalID)
+	s.Require().NoError(err)
+
+	// Wait for proposal to pass
+	s.Require().Eventually(func() bool {
+		proposal, err := s.Chain.GovQueryProposalV1(s.GetContext(), mustParseUint(proposalID))
+		if err != nil {
+			return false
+		}
+		return proposal.Status == govv1.StatusPassed
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "mint proposal did not pass")
+
+	// Verify DelegatorWallet2 received the tokens
+	balance, err := s.Chain.GetBalance(s.GetContext(), s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount), balance, "mint via governance failed")
+
+	// === BURN VIA GOVERNANCE ===
+	// First, mint some tokens to the gov module itself so we can burn them
+	mintToGovMsg := fmt.Sprintf(`{
+		"@type": "/osmosis.tokenfactory.v1beta1.MsgMint",
+		"sender": "%s",
+		"amount": {"denom": "%s", "amount": "%d"},
+		"mintToAddress": "%s"
+	}`, govAddr, denom, mintAmount, govAddr)
+
+	proposalID = s.submitTokenFactoryProposal(mintToGovMsg, "Mint to gov module", "Mint tokens to gov module for burn test")
+	err = s.Chain.PassProposal(s.GetContext(), proposalID)
+	s.Require().NoError(err)
+
+	s.Require().Eventually(func() bool {
+		proposal, err := s.Chain.GovQueryProposalV1(s.GetContext(), mustParseUint(proposalID))
+		if err != nil {
+			return false
+		}
+		return proposal.Status == govv1.StatusPassed
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "mint-to-gov proposal did not pass")
+
+	// Verify gov module received tokens
+	govBalance, err := s.Chain.GetBalance(s.GetContext(), govAddr, denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount), govBalance, "gov module should have tokens")
+
+	// Now burn half of the gov module's tokens
+	burnAmount := int64(500000)
+	burnMsg := fmt.Sprintf(`{
+		"@type": "/osmosis.tokenfactory.v1beta1.MsgBurn",
+		"sender": "%s",
+		"amount": {"denom": "%s", "amount": "%d"},
+		"burnFromAddress": "%s"
+	}`, govAddr, denom, burnAmount, govAddr)
+
+	proposalID = s.submitTokenFactoryProposal(burnMsg, "Burn gov-owned tokens", "Burn tokens via governance")
+	err = s.Chain.PassProposal(s.GetContext(), proposalID)
+	s.Require().NoError(err)
+
+	s.Require().Eventually(func() bool {
+		proposal, err := s.Chain.GovQueryProposalV1(s.GetContext(), mustParseUint(proposalID))
+		if err != nil {
+			return false
+		}
+		return proposal.Status == govv1.StatusPassed
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "burn proposal did not pass")
+
+	// Verify gov module balance decreased
+	govBalance, err = s.Chain.GetBalance(s.GetContext(), govAddr, denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount-burnAmount), govBalance, "burn via governance failed")
+}
+
+// submitTokenFactoryProposal submits a governance proposal with a tokenfactory message
+// and returns the proposal ID.
+func (s *TokenFactoryGovSuite) submitTokenFactoryProposal(message, title, summary string) string {
+	type ProposalJSON struct {
+		Messages       []json.RawMessage `json:"messages"`
+		InitialDeposit string            `json:"deposit"`
+		Title          string            `json:"title"`
+		Summary        string            `json:"summary"`
+		Metadata       string            `json:"metadata"`
+	}
+
+	proposal := ProposalJSON{
+		Messages:       []json.RawMessage{json.RawMessage(message)},
+		InitialDeposit: fmt.Sprintf("%duatom", chainsuite.GovMinDepositAmount),
+		Title:          title,
+		Summary:        summary,
+		Metadata:       "ipfs://CID",
+	}
+
+	proposalBytes, err := json.MarshalIndent(proposal, "", "  ")
+	s.Require().NoError(err)
+
+	err = s.Chain.GetNode().WriteFile(s.GetContext(), proposalBytes, "tf-gov-proposal.json")
+	s.Require().NoError(err)
+
+	proposalPath := s.Chain.GetNode().HomeDir() + "/tf-gov-proposal.json"
+
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet.FormattedAddress(),
+		"gov", "submit-proposal", proposalPath)
+	s.Require().NoError(err)
+
+	// Query for the last proposal ID
+	lastProposal, err := s.Chain.QueryJSON(s.GetContext(), "proposals.@reverse.0.id", "gov", "proposals")
+	s.Require().NoError(err)
+	return lastProposal.String()
+}
+
 // Helper function to parse uint
 func mustParseUint(s string) uint64 {
 	val, err := strconv.ParseUint(s, 10, 64)

@@ -1,6 +1,8 @@
-package v26_0_0 //nolint:revive
+package v26_0_0
 
 import (
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
+
 	storetypes "cosmossdk.io/store/types"
 
 	"github.com/cosmos/gaia/v26/app/upgrades"
@@ -14,5 +16,7 @@ const (
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
 	CreateUpgradeHandler: CreateUpgradeHandler,
-	StoreUpgrades:        storetypes.StoreUpgrades{},
+	StoreUpgrades: storetypes.StoreUpgrades{
+		Added: []string{tokenfactorytypes.ModuleName},
+	},
 }

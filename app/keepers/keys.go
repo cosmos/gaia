@@ -11,6 +11,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
 	storetypes "cosmossdk.io/store/types"
 	evidencetypes "cosmossdk.io/x/evidence/types"
@@ -60,6 +61,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		feemarkettypes.StoreKey,
 		wasmtypes.StoreKey,
 		ibcwasmtypes.StoreKey,
+		tokenfactorytypes.StoreKey,
 		liquidtypes.StoreKey,
 	)
 

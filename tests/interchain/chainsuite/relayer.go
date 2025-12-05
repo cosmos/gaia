@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/interchaintest/v10"
 	"github.com/cosmos/interchaintest/v10/ibc"
 	"github.com/cosmos/interchaintest/v10/relayer"
+	"github.com/docker/docker/api/types/container"
 	"github.com/tidwall/gjson"
 )
 
@@ -40,6 +41,41 @@ func (r *Relayer) SetupChainKeys(ctx context.Context, chain *Chain) error {
 	}
 
 	return r.RestoreKey(ctx, rep, chain.Config(), chainName, chain.RelayerWallet.Mnemonic())
+}
+
+// SetMaxGas modifies the hermes config to set max_gas for all chains and restarts the relayer
+func (r *Relayer) SetMaxGas(ctx context.Context, maxGas int) error {
+	// Modify the config file
+	cmd := fmt.Sprintf("sed -i 's/max_gas = [0-9]*/max_gas = %d/g' /home/hermes/.hermes/config.toml", maxGas)
+	rs := r.Exec(ctx, GetRelayerExecReporter(ctx), []string{"sh", "-c", cmd}, nil)
+	if rs.Err != nil {
+		return fmt.Errorf("failed to set max_gas: %w", rs.Err)
+	}
+
+	// Get the relayer container
+	dockerClient, _ := GetDockerContext(ctx)
+	containers, err := dockerClient.ContainerList(ctx, container.ListOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to list containers: %w", err)
+	}
+
+	// Find and restart the hermes container
+	for _, c := range containers {
+		for _, name := range c.Names {
+			if len(name) > 0 && name[0] == '/' {
+				name = name[1:] // Remove leading /
+			}
+			if len(name) > 6 && name[:6] == "hermes" {
+				timeout := 10
+				if err := dockerClient.ContainerRestart(ctx, c.ID, container.StopOptions{Timeout: &timeout}); err != nil {
+					return fmt.Errorf("failed to restart hermes container %s: %w", c.ID, err)
+				}
+				GetLogger(ctx).Sugar().Infof("Restarted hermes container with max_gas=%d", maxGas)
+				return nil
+			}
+		}
+	}
+	return fmt.Errorf("hermes container not found")
 }
 
 func (r *Relayer) GetTransferChannel(ctx context.Context, chain, counterparty *Chain) (*ibc.ChannelOutput, error) {

@@ -394,13 +394,14 @@ func (s *TokenFactoryGovSuite) TestGovOwnedDenomOperations() {
 	s.Require().Equal(sdkmath.NewInt(mintAmount), govBalance, "gov module should have tokens")
 
 	// Now burn half of the gov module's tokens
+	// Note: We don't specify burnFromAddress here because when the sender burns their own tokens,
+	// it defaults to sender. Specifying burnFromAddress requires the EnableBurnFrom capability.
 	burnAmount := int64(500000)
 	burnMsg := fmt.Sprintf(`{
 		"@type": "/osmosis.tokenfactory.v1beta1.MsgBurn",
 		"sender": "%s",
-		"amount": {"denom": "%s", "amount": "%d"},
-		"burnFromAddress": "%s"
-	}`, govAddr, denom, burnAmount, govAddr)
+		"amount": {"denom": "%s", "amount": "%d"}
+	}`, govAddr, denom, burnAmount)
 
 	proposalID = s.submitTokenFactoryProposal(burnMsg, "Burn gov-owned tokens", "Burn tokens via governance")
 	err = s.Chain.PassProposal(s.GetContext(), proposalID)

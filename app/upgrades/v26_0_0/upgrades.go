@@ -32,7 +32,7 @@ func CreateUpgradeHandler(
 		// Initialize tokenfactory params
 		ctx.Logger().Info("Initializing tokenfactory module...")
 		tokenfactoryParams := tokenfactorytypes.DefaultParams()
-		tokenfactoryParams.DenomCreationFee = sdk.NewCoins(sdk.NewInt64Coin("uatom", 100000000)) // 100 ATOM
+		tokenfactoryParams.DenomCreationFee = sdk.NewCoins(sdk.NewInt64Coin("uatom", 1000000)) // 1 ATOM
 		if err := keepers.TokenFactoryKeeper.SetParams(ctx, tokenfactoryParams); err != nil {
 			return vm, errorsmod.Wrapf(err, "setting tokenfactory params")
 		}

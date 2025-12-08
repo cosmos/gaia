@@ -329,6 +329,72 @@ func (s *TokenFactoryIBCSuite) TestMultipleTokenFactoryIBCTransfers() {
 	}
 }
 
+// TestIBCTransferWithMintTo tests that tokens minted via mint-to can be transferred via IBC
+func (s *TokenFactoryIBCSuite) TestIBCTransferWithMintTo() {
+	// Create tokenfactory denom with DelegatorWallet as admin
+	denom, err := s.CreateDenom(s.DelegatorWallet, "minttotransfer")
+	s.Require().NoError(err, "failed to create denom 'minttotransfer'")
+
+	// Mint tokens directly to DelegatorWallet2 using mint-to
+	mintAmount := int64(10000000)
+	err = s.MintTo(s.DelegatorWallet, denom, mintAmount, s.DelegatorWallet2.FormattedAddress())
+	s.Require().NoError(err, "mint-to should succeed")
+
+	// Verify DelegatorWallet2 has the tokens
+	balance, err := s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount), balance,
+		"DelegatorWallet2 should have received minted tokens via mint-to")
+
+	// Verify admin (DelegatorWallet) does NOT have any tokens
+	adminBalance, err := s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().True(adminBalance.IsZero(),
+		"admin should not have received tokens when using mint-to")
+
+	// Get IBC transfer channel
+	transferCh, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, s.ChainB)
+	s.Require().NoError(err)
+
+	// Calculate expected IBC denom on chain B
+	ibcDenom := transfertypes.GetPrefixedDenom(
+		transferCh.Counterparty.PortID,
+		transferCh.Counterparty.ChannelID,
+		denom,
+	)
+	expectedDenomB := transfertypes.ParseDenomTrace(ibcDenom).IBCDenom()
+
+	// DelegatorWallet2 (non-admin, but has tokens via mint-to) transfers to chain B
+	transferAmount := int64(5000000)
+	_, err = s.Chain.GetNode().ExecTx(
+		s.GetContext(),
+		s.DelegatorWallet2.KeyName(),
+		"ibc-transfer", "transfer", "transfer",
+		transferCh.ChannelID,
+		s.ChainBWallet.FormattedAddress(),
+		fmt.Sprintf("%d%s", transferAmount, denom),
+	)
+	s.Require().NoError(err)
+
+	// Verify transfer completed on chain B
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		balanceB, err := s.ChainB.GetBalance(s.GetContext(),
+			s.ChainBWallet.FormattedAddress(), expectedDenomB)
+		assert.NoError(c, err)
+		assert.True(c, balanceB.Equal(sdkmath.NewInt(transferAmount)),
+			"expected balance %d on chain B, got %d", transferAmount, balanceB)
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "IBC transfer did not complete")
+
+	// Verify sender balance decreased
+	senderBalance, err := s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount-transferAmount), senderBalance,
+		"sender balance should be reduced after IBC transfer")
+}
+
 // TestIBCTransferAfterAdminChange tests that IBC transfers work after admin change
 func (s *TokenFactoryIBCSuite) TestIBCTransferAfterAdminChange() {
 	// Create denom with DelegatorWallet as admin

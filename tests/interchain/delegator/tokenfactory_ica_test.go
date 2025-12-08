@@ -227,6 +227,72 @@ func (s *ICATokenFactorySuite) TestICAMintTokens() {
 	chainsuite.GetLogger(ctx).Sugar().Infof("Successfully minted %d %s via ICA", mintAmount, denom)
 }
 
+// TestICAMintTo tests minting tokens to a specific address via ICA using mintToAddress
+func (s *ICATokenFactorySuite) TestICAMintTo() {
+	ctx := s.GetContext()
+	subdenom := "minttotest"
+	mintAmount := int64(1000000)
+	srcConnection := s.srcChannel.ConnectionHops[0]
+
+	// First create the denom
+	createMsg := fmt.Sprintf(`{
+		"@type": "/osmosis.tokenfactory.v1beta1.MsgCreateDenom",
+		"sender": "%s",
+		"subdenom": "%s"
+	}`, s.icaAddress, subdenom)
+
+	s.Require().NoError(s.sendICATx(ctx, s.DelegatorWallet.FormattedAddress(), srcConnection, createMsg))
+	s.Relayer.ClearTransferChannel(ctx, s.Chain, s.Host)
+	time.Sleep(2 * chainsuite.CommitTimeout)
+
+	denom := fmt.Sprintf("factory/%s/%s", s.icaAddress, subdenom)
+
+	// Verify the ICA account has zero balance before minting
+	icaBalanceResult, err := s.Host.QueryJSON(ctx, "balance.amount", "bank", "balance", s.icaAddress, denom)
+	s.Require().NoError(err)
+	icaBalance, ok := sdkmath.NewIntFromString(icaBalanceResult.String())
+	s.Require().True(ok)
+	s.Require().True(icaBalance.IsZero(), "ICA account should have zero balance before mint-to")
+
+	// Mint tokens directly to HostWallet using mintToAddress
+	mintToMsg := fmt.Sprintf(`{
+		"@type": "/osmosis.tokenfactory.v1beta1.MsgMint",
+		"sender": "%s",
+		"amount": {
+			"denom": "%s",
+			"amount": "%d"
+		},
+		"mintToAddress": "%s"
+	}`, s.icaAddress, denom, mintAmount, s.HostWallet.FormattedAddress())
+
+	chainsuite.GetLogger(ctx).Sugar().Infof("Sending ICA mint-to tx targeting %s", s.HostWallet.FormattedAddress())
+
+	s.Require().NoError(s.sendICATx(ctx, s.DelegatorWallet.FormattedAddress(), srcConnection, mintToMsg))
+	s.Relayer.ClearTransferChannel(ctx, s.Chain, s.Host)
+
+	// Verify tokens were minted to HostWallet (the mint-to target)
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		balanceResult, err := s.Host.QueryJSON(ctx, "balance.amount", "bank", "balance", s.HostWallet.FormattedAddress(), denom)
+		assert.NoError(c, err)
+		balance, ok := sdkmath.NewIntFromString(balanceResult.String())
+		assert.True(c, ok)
+		assert.Equal(c, sdkmath.NewInt(mintAmount), balance,
+			"HostWallet should have received minted tokens via mint-to")
+	}, 10*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
+
+	// Verify ICA account did NOT receive the tokens (they went to HostWallet)
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		icaBalanceResult, err := s.Host.QueryJSON(ctx, "balance.amount", "bank", "balance", s.icaAddress, denom)
+		assert.NoError(c, err)
+		icaBalance, ok := sdkmath.NewIntFromString(icaBalanceResult.String())
+		assert.True(c, ok)
+		assert.True(c, icaBalance.IsZero(),
+			"ICA account should not have received tokens when using mint-to")
+	}, 10*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
+
+	chainsuite.GetLogger(ctx).Sugar().Infof("Successfully minted %d %s to %s via ICA mint-to", mintAmount, denom, s.HostWallet.FormattedAddress())
+}
+
 // TestICABurnTokens tests burning tokens via ICA
 func (s *ICATokenFactorySuite) TestICABurnTokens() {
 	ctx := s.GetContext()

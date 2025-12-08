@@ -87,6 +87,57 @@ func (s *TokenFactoryAuthzSuite) TestAuthzMint() {
 	s.Require().Error(err)
 }
 
+// TestAuthzMintTo verifies delegate mint-to capability via authz
+func (s *TokenFactoryAuthzSuite) TestAuthzMintTo() {
+	ctx := s.GetContext()
+
+	// Create denom with DelegatorWallet (admin)
+	denom, err := s.CreateDenom(s.DelegatorWallet, "authzmintto")
+	s.Require().NoError(err, "failed to create denom 'authzmintto'")
+
+	// Grant MsgMint authorization to DelegatorWallet2
+	s.grantGenericAuthz(s.DelegatorWallet, s.DelegatorWallet2, "/osmosis.tokenfactory.v1beta1.MsgMint")
+
+	// Verify DelegatorWallet3 has no balance before mint-to
+	balance, err := s.Chain.GetBalance(ctx, s.DelegatorWallet3.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().True(balance.IsZero(), "recipient should have zero balance before mint-to")
+
+	// DelegatorWallet2 executes mint-to on behalf of DelegatorWallet, targeting DelegatorWallet3
+	mintAmount := int64(1000000)
+	err = s.authzGenExec(ctx, s.DelegatorWallet2,
+		"tokenfactory", "mint-to", s.DelegatorWallet3.FormattedAddress(), fmt.Sprintf("%d%s", mintAmount, denom),
+		"--from", s.DelegatorWallet.FormattedAddress())
+	s.Require().NoError(err)
+
+	// Verify tokens minted to DelegatorWallet3 (the target of mint-to)
+	balance, err = s.Chain.GetBalance(ctx, s.DelegatorWallet3.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount), balance,
+		"DelegatorWallet3 should have received minted tokens")
+
+	// Verify granter (DelegatorWallet) did NOT receive the tokens
+	granterBalance, err := s.Chain.GetBalance(ctx, s.DelegatorWallet.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().True(granterBalance.IsZero(),
+		"granter should not have received any tokens")
+
+	// Verify grantee (DelegatorWallet2) did NOT receive the tokens either
+	granteeBalance, err := s.Chain.GetBalance(ctx, s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().True(granteeBalance.IsZero(),
+		"grantee should not have received any tokens")
+
+	// Revoke authorization
+	s.revokeAuthz(s.DelegatorWallet, s.DelegatorWallet2, "/osmosis.tokenfactory.v1beta1.MsgMint")
+
+	// Attempt mint-to again (should fail)
+	err = s.authzGenExec(ctx, s.DelegatorWallet2,
+		"tokenfactory", "mint-to", s.DelegatorWallet3.FormattedAddress(), fmt.Sprintf("%d%s", mintAmount, denom),
+		"--from", s.DelegatorWallet.FormattedAddress())
+	s.Require().Error(err)
+}
+
 // TestAuthzBurn verifies delegate burning capability
 func (s *TokenFactoryAuthzSuite) TestAuthzBurn() {
 	ctx := s.GetContext()

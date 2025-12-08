@@ -166,6 +166,68 @@ func (s *TokenFactoryVestingSuite) TestVestingMultipleAdminOperations() {
 	s.Require().Equal(vestingWallet.FormattedAddress(), admin.String())
 }
 
+// TestMintToVestingAccount verifies that mint-to can send tokens directly to a vesting account
+// and those tokens are NOT subject to vesting restrictions (since they weren't part of initial vesting)
+func (s *TokenFactoryVestingSuite) TestMintToVestingAccount() {
+	ctx := s.GetContext()
+
+	// Create tokenfactory denom
+	subdenom := "minttovestingtest"
+	denom, err := s.CreateDenom(s.DelegatorWallet, subdenom)
+	s.Require().NoError(err, "failed to create denom")
+
+	// Mint some tokens to DelegatorWallet for creating vesting account
+	initialMintAmount := int64(10_000_000_000)
+	err = s.Mint(s.DelegatorWallet, denom, initialMintAmount)
+	s.Require().NoError(err, "failed to mint tokens")
+
+	// Create vesting account with a portion of the tokens (60s vesting)
+	vestingAmount := int64(5_000_000_000)
+	vestingWallet, _ := s.createVestingAccount(denom, vestingAmount, 60*time.Second)
+
+	// Use mint-to to send additional tokens DIRECTLY to vesting account
+	// These tokens should NOT be vested since they weren't part of initial vesting creation
+	mintToAmount := int64(3_000_000_000)
+	err = s.MintTo(s.DelegatorWallet, denom, mintToAmount, vestingWallet.FormattedAddress())
+	s.Require().NoError(err, "mint-to should succeed")
+
+	// Verify vesting account has both vested and mint-to'd tokens
+	totalExpected := vestingAmount + mintToAmount
+	balance, err := s.Chain.GetBalance(ctx, vestingWallet.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(totalExpected), balance,
+		"vesting account should have both vested and mint-to'd tokens")
+
+	// The mint-to'd tokens should be immediately transferable
+	// (only the originally vested tokens are locked)
+	_, err = s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
+		"bank", "send", vestingWallet.FormattedAddress(),
+		s.DelegatorWallet2.FormattedAddress(),
+		fmt.Sprintf("%d%s", mintToAmount, denom))
+	s.Require().NoError(err, "mint-to'd tokens should be transferable immediately")
+
+	// Verify transfer succeeded
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		recipientBalance, err := s.Chain.GetBalance(ctx, s.DelegatorWallet2.FormattedAddress(), denom)
+		assert.NoError(c, err)
+		assert.Equal(c, sdkmath.NewInt(mintToAmount), recipientBalance,
+			"recipient should have received mint-to'd tokens")
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
+
+	// Verify vesting account still has the vested portion
+	remainingBalance, err := s.Chain.GetBalance(ctx, vestingWallet.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(vestingAmount), remainingBalance,
+		"vesting account should still have vested tokens")
+
+	// Attempting to transfer the vested tokens should fail (still locked)
+	_, err = s.Chain.GetNode().ExecTx(ctx, vestingWallet.KeyName(),
+		"bank", "send", vestingWallet.FormattedAddress(),
+		s.DelegatorWallet2.FormattedAddress(),
+		fmt.Sprintf("%d%s", vestingAmount, denom))
+	s.Require().Error(err, "vested tokens should still be locked")
+}
+
 // TestVestingAccountCannotTransferUnvestedTokens verifies vested tokenfactory
 // tokens cannot be transferred before vesting period ends
 func (s *TokenFactoryVestingSuite) TestVestingAccountCannotTransferUnvestedTokens() {

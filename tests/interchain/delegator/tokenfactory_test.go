@@ -75,6 +75,44 @@ func (s *TokenFactorySuite) TestMintBurnCLI() {
 	s.Require().Equal(sdkmath.NewInt(mintAmount-burnAmount), balance)
 }
 
+// TestMintToAddress tests minting tokens directly to a recipient address
+func (s *TokenFactorySuite) TestMintToAddress() {
+	// Create a denom
+	denom, err := s.CreateDenom(s.DelegatorWallet, "minttotarget")
+	s.Require().NoError(err, "failed to create denom 'minttotarget'")
+
+	// Verify creator has no balance before mint-to
+	creatorBalance, err := s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().True(creatorBalance.IsZero(), "creator should have zero balance before mint")
+
+	// Verify recipient has no balance before mint-to
+	recipientBalance, err := s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().True(recipientBalance.IsZero(), "recipient should have zero balance before mint")
+
+	// Mint directly to DelegatorWallet2 using mint-to
+	mintAmount := int64(1000000)
+	err = s.MintTo(s.DelegatorWallet, denom, mintAmount, s.DelegatorWallet2.FormattedAddress())
+	s.Require().NoError(err, "mint-to should succeed")
+
+	// Verify recipient received the tokens
+	recipientBalance, err = s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount), recipientBalance,
+		"recipient should have received minted tokens")
+
+	// Verify creator did NOT receive the tokens
+	creatorBalance, err = s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().True(creatorBalance.IsZero(),
+		"creator should still have zero balance after mint-to")
+}
+
 // TestSetDenomMetadataCLI tests setting denom metadata via CLI
 func (s *TokenFactorySuite) TestSetDenomMetadataCLI() {
 	// Create a denom
@@ -162,6 +200,18 @@ func (s *TokenFactorySuite) TestUnauthorizedMint() {
 		"tokenfactory", "mint",
 		fmt.Sprintf("100000%s", denom),
 	)
+	s.Require().Error(err)
+	s.Require().Contains(err.Error(), "unauthorized")
+}
+
+// TestUnauthorizedMintTo tests that non-admin cannot mint-to tokens
+func (s *TokenFactorySuite) TestUnauthorizedMintTo() {
+	// Create denom with DelegatorWallet
+	denom, err := s.CreateDenom(s.DelegatorWallet, "unauthorizedmintto")
+	s.Require().NoError(err, "failed to create denom 'unauthorizedmintto'")
+
+	// Attempt to mint-to with DelegatorWallet2 (non-admin) targeting DelegatorWallet3
+	err = s.MintTo(s.DelegatorWallet2, denom, 100000, s.DelegatorWallet3.FormattedAddress())
 	s.Require().Error(err)
 	s.Require().Contains(err.Error(), "unauthorized")
 }
@@ -394,8 +444,8 @@ func (s *TokenFactorySuite) TestCreationFeeFundsCommunityPool() {
 	// Calculate increase
 	increase := finalBalance.Sub(initialBalance)
 
-	// Expected fee is 100 ATOM = 100000000 uatom (from upgrade handler)
-	expectedFee := sdkmath.NewInt(100000000)
+	// Expected fee is 1 ATOM = 1000000 uatom
+	expectedFee := sdkmath.NewInt(1000000)
 
 	chainsuite.GetLogger(s.GetContext()).Sugar().Infof(
 		"Community pool increased by: %s (expected: %s)",

@@ -593,6 +593,89 @@ func (s *TokenFactoryRateLimitSuite) TestRateLimitRemoval() {
 	s.Require().NoError(err, "transfer (50%%) should succeed after rate limit removal")
 }
 
+// Test 6: TestRateLimitWithMintTo tests that tokens minted via mint-to are subject to the same rate limits
+func (s *TokenFactoryRateLimitSuite) TestRateLimitWithMintTo() {
+	ctx := s.GetContext()
+
+	// Create tokenfactory denom on chain A
+	denom, err := s.CreateDenom(s.DelegatorWallet, "minttoratelimit")
+	s.Require().NoError(err, "failed to create denom 'minttoratelimit'")
+
+	// Use mint-to to mint tokens directly to DelegatorWallet2 (not to the admin)
+	totalSupply := int64(1_000_000)
+	err = s.MintTo(s.DelegatorWallet, denom, totalSupply, s.DelegatorWallet2.FormattedAddress())
+	s.Require().NoError(err, "mint-to should succeed")
+
+	// Verify DelegatorWallet2 has the tokens
+	balance, err := s.Chain.GetBalance(ctx, s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(totalSupply), balance,
+		"DelegatorWallet2 should have all minted tokens via mint-to")
+
+	// Verify admin (DelegatorWallet) has no tokens
+	adminBalance, err := s.Chain.GetBalance(ctx, s.DelegatorWallet.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().True(adminBalance.IsZero(), "admin should have zero tokens when using mint-to")
+
+	// Get IBC transfer channel
+	transferCh, err := s.Relayer.GetTransferChannel(ctx, s.Chain, s.ChainB)
+	s.Require().NoError(err)
+
+	// Set rate limit via governance: 10% send quota over 24 hours
+	s.addRateLimit(ctx, denom, transferCh.ChannelID, 10, 10, 24)
+
+	// Calculate expected IBC denom on chain B
+	ibcDenom := transfertypes.GetPrefixedDenom(
+		transferCh.Counterparty.PortID,
+		transferCh.Counterparty.ChannelID,
+		denom,
+	)
+	expectedDenomB := transfertypes.ParseDenomTrace(ibcDenom).IBCDenom()
+
+	// DelegatorWallet2 (who received tokens via mint-to) transfers 5% → should PASS
+	amount1 := s.calculateQuota(sdkmath.NewInt(totalSupply), 5)
+	err = s.attemptTransfer(ctx, s.Chain, s.DelegatorWallet2,
+		s.ChainBWallet.FormattedAddress(), amount1, denom, transferCh.ChannelID)
+	s.Require().NoError(err, "first transfer (5%%) should succeed")
+
+	// Wait for transfer to complete
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		balance, err := s.ChainB.GetBalance(ctx, s.ChainBWallet.FormattedAddress(), expectedDenomB)
+		assert.NoError(c, err)
+		assert.True(c, balance.Equal(amount1), "chain B should receive first transfer")
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
+
+	// Transfer another 5% → should PASS (10% total)
+	amount2 := s.calculateQuota(sdkmath.NewInt(totalSupply), 5)
+	err = s.attemptTransfer(ctx, s.Chain, s.DelegatorWallet2,
+		s.ChainBWallet.FormattedAddress(), amount2, denom, transferCh.ChannelID)
+	s.Require().NoError(err, "second transfer (5%%) should succeed, total 10%%")
+
+	// Wait for second transfer
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		balance, err := s.ChainB.GetBalance(ctx, s.ChainBWallet.FormattedAddress(), expectedDenomB)
+		assert.NoError(c, err)
+		assert.True(c, balance.Equal(amount1.Add(amount2)), "chain B should receive both transfers")
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
+
+	// Get balance before failed transfer attempt
+	balanceBefore, err := s.Chain.GetBalance(ctx, s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+
+	// Transfer 1% more → should FAIL (would exceed 10% quota)
+	// This verifies that mint-to'd tokens are subject to the same rate limits
+	amount3 := s.calculateQuota(sdkmath.NewInt(totalSupply), 1)
+	err = s.attemptTransfer(ctx, s.Chain, s.DelegatorWallet2,
+		s.ChainBWallet.FormattedAddress(), amount3, denom, transferCh.ChannelID)
+	s.Require().Error(err, "third transfer should fail (would exceed 10%% quota)")
+	s.Require().Contains(err.Error(), "quota", "error should mention quota/rate limit")
+
+	// Verify balance unchanged after failed transfer
+	balanceAfter, err := s.Chain.GetBalance(ctx, s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(balanceBefore, balanceAfter, "balance should be unchanged after failed transfer")
+}
+
 func TestTokenFactoryRateLimit(t *testing.T) {
 	s := &TokenFactoryRateLimitSuite{
 		TokenFactoryBaseSuite: &TokenFactoryBaseSuite{

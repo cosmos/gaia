@@ -40,6 +40,19 @@ func (s *TokenFactoryBaseSuite) Mint(wallet ibc.Wallet, denom string, amount int
 	return err
 }
 
+// MintTo mints tokens for a tokenfactory denom directly to a recipient address.
+// Returns an error if the mint fails, allowing the caller to provide context.
+func (s *TokenFactoryBaseSuite) MintTo(wallet ibc.Wallet, denom string, amount int64, recipient string) error {
+	_, err := s.Chain.GetNode().ExecTx(
+		s.GetContext(),
+		wallet.KeyName(),
+		"tokenfactory", "mint-to",
+		recipient,
+		fmt.Sprintf("%d%s", amount, denom),
+	)
+	return err
+}
+
 // CreateAndMint creates a tokenfactory denom and mints tokens in one operation.
 // Returns the denom string and any error that occurred.
 func (s *TokenFactoryBaseSuite) CreateAndMint(wallet ibc.Wallet, subdenom string, amount int64) (string, error) {

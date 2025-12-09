@@ -79,6 +79,7 @@ func (s *OsmosisIBCSuite) TestNativeTransfer_GaiaToOsmosis() {
 		fmt.Sprintf("%d%s", transferAmount, chainsuite.Uatom),
 	)
 	s.Require().NoError(err)
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, s.Osmosis)
 
 	// Wait for transfer to complete and verify balance on Osmosis
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
@@ -86,7 +87,7 @@ func (s *OsmosisIBCSuite) TestNativeTransfer_GaiaToOsmosis() {
 			s.OsmosisWallet.FormattedAddress(), expectedDenomOsmosis)
 		assert.NoError(c, err)
 		assert.True(c, balanceOsmosis.Sub(osmosisBalanceBefore).Equal(sdkmath.NewInt(transferAmount)),
-			"expected balance increase of %d, got %d", transferAmount, balanceOsmosis.Sub(osmosisBalanceBefore))
+			"expected balance increase of %d, got %s", transferAmount, balanceOsmosis.Sub(osmosisBalanceBefore).String())
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "Osmosis balance did not increase")
 
 	// Verify balance decreased on Gaia
@@ -127,6 +128,7 @@ func (s *OsmosisIBCSuite) TestNativeTransfer_OsmosisToGaia() {
 		fmt.Sprintf("%d%s", transferAmount, chainsuite.OsmosisDenom),
 	)
 	s.Require().NoError(err)
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Osmosis, s.Chain)
 
 	// Wait for transfer to complete and verify balance on Gaia
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
@@ -134,7 +136,7 @@ func (s *OsmosisIBCSuite) TestNativeTransfer_OsmosisToGaia() {
 			s.DelegatorWallet.FormattedAddress(), expectedDenomGaia)
 		assert.NoError(c, err)
 		assert.True(c, balanceGaia.Sub(gaiaBalanceBefore).Equal(sdkmath.NewInt(transferAmount)),
-			"expected balance increase of %d, got %d", transferAmount, balanceGaia.Sub(gaiaBalanceBefore))
+			"expected balance increase of %d, got %s", transferAmount, balanceGaia.Sub(gaiaBalanceBefore).String())
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "Gaia balance did not increase")
 }
 
@@ -172,6 +174,7 @@ func (s *OsmosisIBCSuite) TestGaiaTokenFactoryToOsmosis() {
 		fmt.Sprintf("%d%s", transferAmount, denom),
 	)
 	s.Require().NoError(err)
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, s.Osmosis)
 
 	// Wait for transfer and verify balance on Osmosis
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
@@ -179,7 +182,7 @@ func (s *OsmosisIBCSuite) TestGaiaTokenFactoryToOsmosis() {
 			s.OsmosisWallet.FormattedAddress(), expectedDenomOsmosis)
 		assert.NoError(c, err)
 		assert.True(c, balanceOsmosis.Equal(sdkmath.NewInt(transferAmount)),
-			"expected balance %d, got %d", transferAmount, balanceOsmosis)
+			"expected balance %d, got %s", transferAmount, balanceOsmosis.String())
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "Osmosis balance did not update")
 
 	// Verify balance on Gaia decreased
@@ -245,6 +248,7 @@ func (s *OsmosisIBCSuite) TestOsmosisTokenFactoryToGaia() {
 		fmt.Sprintf("%d%s", transferAmount, denom),
 	)
 	s.Require().NoError(err)
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Osmosis, s.Chain)
 
 	// Wait for transfer and verify balance on Gaia
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
@@ -252,7 +256,7 @@ func (s *OsmosisIBCSuite) TestOsmosisTokenFactoryToGaia() {
 			s.DelegatorWallet.FormattedAddress(), expectedDenomGaia)
 		assert.NoError(c, err)
 		assert.True(c, balanceGaia.Equal(sdkmath.NewInt(transferAmount)),
-			"expected balance %d, got %d", transferAmount, balanceGaia)
+			"expected balance %d, got %s", transferAmount, balanceGaia.String())
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "Gaia balance did not update")
 
 	// Verify balance on Osmosis decreased
@@ -296,6 +300,7 @@ func (s *OsmosisIBCSuite) TestTokenFactoryRoundTrip_GaiaOrigin() {
 		fmt.Sprintf("%d%s", transferAmount, denom),
 	)
 	s.Require().NoError(err)
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, s.Osmosis)
 
 	// Wait for transfer to Osmosis
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
@@ -325,6 +330,7 @@ func (s *OsmosisIBCSuite) TestTokenFactoryRoundTrip_GaiaOrigin() {
 		fmt.Sprintf("%d%s", returnAmount, ibcDenomOnOsmosis),
 	)
 	s.Require().NoError(err)
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Osmosis, s.Chain)
 
 	// Wait for return transfer and verify tokens are unwrapped on Gaia
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
@@ -332,7 +338,7 @@ func (s *OsmosisIBCSuite) TestTokenFactoryRoundTrip_GaiaOrigin() {
 			s.DelegatorWallet.FormattedAddress(), denom)
 		assert.NoError(c, err)
 		assert.True(c, gaiaBalance.Sub(gaiaBalanceBefore).Equal(sdkmath.NewInt(returnAmount)),
-			"expected balance increase of %d, got %d", returnAmount, gaiaBalance.Sub(gaiaBalanceBefore))
+			"expected balance increase of %d, got %s", returnAmount, gaiaBalance.Sub(gaiaBalanceBefore).String())
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "Gaia balance did not increase")
 
 	// Verify final balances
@@ -397,6 +403,7 @@ func (s *OsmosisIBCSuite) TestTokenFactoryRoundTrip_OsmosisOrigin() {
 		fmt.Sprintf("%d%s", transferAmount, denom),
 	)
 	s.Require().NoError(err)
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Osmosis, s.Chain)
 
 	// Wait for transfer to Gaia
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
@@ -426,6 +433,7 @@ func (s *OsmosisIBCSuite) TestTokenFactoryRoundTrip_OsmosisOrigin() {
 		fmt.Sprintf("%d%s", returnAmount, ibcDenomOnGaia),
 	)
 	s.Require().NoError(err)
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, s.Osmosis)
 
 	// Wait for return transfer and verify tokens are unwrapped on Osmosis
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
@@ -433,7 +441,7 @@ func (s *OsmosisIBCSuite) TestTokenFactoryRoundTrip_OsmosisOrigin() {
 			s.OsmosisWallet.FormattedAddress(), denom)
 		assert.NoError(c, err)
 		assert.True(c, osmosisBalance.Sub(osmosisBalanceBefore).Equal(sdkmath.NewInt(returnAmount)),
-			"expected balance increase of %d, got %d", returnAmount, osmosisBalance.Sub(osmosisBalanceBefore))
+			"expected balance increase of %d, got %s", returnAmount, osmosisBalance.Sub(osmosisBalanceBefore).String())
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "Osmosis balance did not increase")
 
 	// Verify final balances

@@ -309,7 +309,7 @@ enable = true
 #
 # For Cosmos SDK-based chains, trust_period should usually be about 2/3 of the unbonding time (~2
 # weeks) during which they can be financially punished (slashed) for misbehavior.
-rpc_servers = "https://cosmos-rpc.polkachu.com:443,https://rpc-cosmoshub-ia.cosmosia.notional.ventures:443"
+rpc_servers = "https://cosmos-rpc.polkachu.com:443,https://rpc.cosmoshub-main.ccvalidators.com:443"
 trust_height = 8959784
 trust_hash = "3D8F12EA302AEDA66E80939F7FC785206692F8B6EE6F727F1655F1AFB6A873A5"
 trust_period = "168h0m0s"
@@ -334,7 +334,9 @@ Once state sync successfully completes, the node will begin to process blocks no
 
 ### Quicksync
 
-Quicksync.io offers several  daily snapshots of the Cosmos Hub with varying levels of pruning (`archive` 1.4TB, `default` 540GB, and `pruned` 265GB). For downloads and installation instructions, visit the [Cosmos Quicksync guide](https://quicksync.io/networks/cosmos.html).
+CryptoCrew offers archive snapshots of the Cosmos Hub. For downloads and installation instructions, visit their [archive snapshot page](https://github.com/cryptocrew-validators/CryptoCrew-Validators/blob/main/chains/cosmoshub/service_Archive_Snapshot.md).
+
+Quicksync.io offers several daily snapshots of the Cosmos Hub with varying levels of pruning (`archive`, `default`, and `pruned`). For downloads and installation instructions, visit their [Cosmos Quicksync guide](https://quicksync.io/networks/cosmos.html).
 
 <!-- #end -->
 

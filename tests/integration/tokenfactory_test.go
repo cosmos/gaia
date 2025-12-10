@@ -672,6 +672,69 @@ func TestMultipleDenoms(t *testing.T) {
 	require.Equal(t, adminAddr.String(), authorityMetadata3.Admin)
 }
 
+// TestMintTo tests minting tokens to a different address
+// Verifies:
+// - Admin can mint tokens to another address
+// - Recipient balance increases correctly
+// - Admin balance unchanged
+// - Total supply tracking is accurate
+func TestMintTo(t *testing.T) {
+	t.Parallel()
+	f := initFixture(t)
+	ctx := f.sdkCtx
+
+	// Setup admin account
+	adminAddr := sdk.AccAddress("test_mintto_admin__")
+	adminAcc := f.accountKeeper.NewAccountWithAddress(ctx, adminAddr)
+	f.accountKeeper.SetAccount(ctx, adminAcc)
+
+	// Fund admin for creation fee
+	creationFee := sdk.NewCoins(sdk.NewCoin("stake", math.NewInt(10000000)))
+	require.NoError(t, f.bankKeeper.MintCoins(ctx, "mint", creationFee))
+	require.NoError(t, f.bankKeeper.SendCoinsFromModuleToAccount(ctx, "mint", adminAddr, creationFee))
+
+	// Setup recipient account
+	recipientAddr := sdk.AccAddress("test_mintto_recip__")
+	recipientAcc := f.accountKeeper.NewAccountWithAddress(ctx, recipientAddr)
+	f.accountKeeper.SetAccount(ctx, recipientAcc)
+
+	// Create denom
+	subdenom := "minttotest"
+	denom := fmt.Sprintf("factory/%s/%s", adminAddr.String(), subdenom)
+	msgServer := tokenfactorykeeper.NewMsgServerImpl(f.tokenFactoryKeeper)
+	createMsg := tokenfactorytypes.NewMsgCreateDenom(adminAddr.String(), subdenom)
+	_, err := msgServer.CreateDenom(ctx, createMsg)
+	require.NoError(t, err)
+
+	// Mint to recipient (not admin)
+	mintAmount := sdk.NewCoin(denom, math.NewInt(500000))
+	mintToMsg := tokenfactorytypes.NewMsgMintTo(adminAddr.String(), mintAmount, recipientAddr.String())
+	_, err = msgServer.Mint(ctx, mintToMsg)
+	require.NoError(t, err)
+
+	// Verify recipient got tokens
+	recipientBalance := f.bankKeeper.GetBalance(ctx, recipientAddr, denom)
+	require.Equal(t, math.NewInt(500000), recipientBalance.Amount)
+
+	// Verify admin didn't get tokens
+	adminBalance := f.bankKeeper.GetBalance(ctx, adminAddr, denom)
+	require.Equal(t, math.ZeroInt(), adminBalance.Amount)
+
+	// Verify total supply
+	totalSupply := f.bankKeeper.GetSupply(ctx, denom)
+	require.Equal(t, math.NewInt(500000), totalSupply.Amount)
+
+	// Test that non-admin cannot mint-to
+	nonAdminAddr := sdk.AccAddress("test_mintto_nonAdmn")
+	nonAdminAcc := f.accountKeeper.NewAccountWithAddress(ctx, nonAdminAddr)
+	f.accountKeeper.SetAccount(ctx, nonAdminAcc)
+
+	unauthorizedMintTo := tokenfactorytypes.NewMsgMintTo(nonAdminAddr.String(), mintAmount, recipientAddr.String())
+	_, err = msgServer.Mint(ctx, unauthorizedMintTo)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "unauthorized")
+}
+
 // TestGenesisExportImport tests state preservation across genesis export/import
 // Verifies:
 // - Denoms are preserved

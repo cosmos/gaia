@@ -47,7 +47,6 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	gaia "github.com/cosmos/gaia/v26/app"
-	"github.com/cosmos/gaia/v26/telemetry"
 )
 
 var (
@@ -247,15 +246,9 @@ func initTestnetFiles(
 	serverCfg.Telemetry.PrometheusRetentionTime = 60
 	serverCfg.Telemetry.EnableHostnameLabel = false
 	serverCfg.Telemetry.GlobalLabels = [][]string{{"chain_id", args.chainID}}
-	otelConfig := telemetry.LocalOtelConfig
-	if args.useDocker {
-		// if useDocker, we need to use the docker networking. localhost is troublesome in the setup.
-		otelConfig.CollectorEndpoint = "host.docker.internal:4318"
-	}
 	gaiaCfg := gaia.AppConfig{
-		Config:        *serverCfg,
-		Wasm:          wasmtypes.NodeConfig{},
-		OpenTelemetry: otelConfig,
+		Config: *serverCfg,
+		Wasm:   wasmtypes.NodeConfig{},
 	}
 
 	var (

@@ -470,18 +470,6 @@ proto-update-deps:
 .PHONY: proto-all proto-gen proto-swagger-gen proto-format proto-lint proto-check-breaking proto-update-deps
 
 ###############################################################################
-###                                Open Telemetry                           ###
-###############################################################################
-
-start-telemetry-server:
-	cd contrib/telemetry && docker compose up -d
-
-stop-telemetry-server:
-	cd contrib/telemetry && docker compose down --remove-orphans
-
-.PHONY: start-telemetry-server stop-telemetry-server
-
-###############################################################################
 ###                                Localnet                                 ###
 ###############################################################################
 

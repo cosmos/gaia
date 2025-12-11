@@ -57,7 +57,6 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	gaia "github.com/cosmos/gaia/v26/app"
-	"github.com/cosmos/gaia/v26/telemetry"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -138,23 +137,7 @@ func NewRootCmd() *cobra.Command {
 			customAppTemplate, customAppConfig := initAppConfig()
 			customCometConfig := initCometConfig()
 
-			err = server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customCometConfig)
-			if err != nil {
-				return err
-			}
-
-			// if open telemetry is not disabled, we force the SDK telemetry to be enabled.
-			serverCtx := server.GetServerContextFromCmd(cmd)
-			if !serverCtx.Viper.GetBool("opentelemetry.disable") {
-				serverCtx.Config.Instrumentation.Prometheus = true
-				serverCtx.Viper.Set("telemetry.enabled", true)
-				serverCtx.Viper.Set("telemetry.prometheus-retention-time", 60)
-				if err := server.SetCmdServerContext(cmd, serverCtx); err != nil {
-					return fmt.Errorf("could not set cmd server context: %w", err)
-				}
-			}
-
-			return nil
+			return server.InterceptConfigsPreRunHandler(cmd, customAppTemplate, customAppConfig, customCometConfig)
 		},
 	}
 
@@ -197,18 +180,13 @@ func initAppConfig() (string, interface{}) {
 	srvCfg := serverconfig.DefaultConfig()
 	srvCfg.StateSync.SnapshotInterval = 1000
 	srvCfg.StateSync.SnapshotKeepRecent = 10
-	srvCfg.Telemetry.Enabled = true
-	if srvCfg.Telemetry.PrometheusRetentionTime <= 0 {
-		srvCfg.Telemetry.PrometheusRetentionTime = 60
-	}
 
 	customAppConfig := gaia.AppConfig{
-		Config:        *srvCfg,
-		Wasm:          wasmtypes.DefaultNodeConfig(),
-		OpenTelemetry: telemetry.DefaultOtelConfig,
+		Config: *srvCfg,
+		Wasm:   wasmtypes.DefaultNodeConfig(),
 	}
 
-	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate() + telemetry.OpenTelemetryTemplate()
+	defaultAppTemplate := serverconfig.DefaultConfigTemplate + wasmtypes.DefaultConfigTemplate()
 
 	return defaultAppTemplate, customAppConfig
 }

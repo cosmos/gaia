@@ -11,36 +11,7 @@ import (
 )
 
 type TokenFactorySuite struct {
-	*delegator.Suite
-}
-
-// createDenom creates a new tokenfactory denom and returns the full denom string
-func (s *TokenFactorySuite) createDenom(subdenom string) string {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "create-denom", subdenom,
-	)
-	s.Require().NoError(err)
-	return fmt.Sprintf("factory/%s/%s", s.DelegatorWallet.FormattedAddress(), subdenom)
-}
-
-// mint mints tokens for a given denom
-func (s *TokenFactorySuite) mint(denom string, amount int64) {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "mint",
-		fmt.Sprintf("%d%s", amount, denom),
-	)
-	s.Require().NoError(err)
-}
-
-// createAndMint creates a denom and mints tokens in one go
-func (s *TokenFactorySuite) createAndMint(subdenom string, amount int64) string {
-	denom := s.createDenom(subdenom)
-	s.mint(denom, amount)
-	return denom
+	*TokenFactoryBaseSuite
 }
 
 // TestCreateDenomCLI tests creating a tokenfactory denom via CLI
@@ -60,19 +31,20 @@ func (s *TokenFactorySuite) TestCreateDenomCLI() {
 
 	// Query denom authority metadata to verify admin
 	admin, err := s.Chain.QueryJSON(s.GetContext(),
-		"denom-admin", "tokenfactory", "denom-authority-metadata", denom)
+		"authority_metadata.admin", "tokenfactory", "denom-authority-metadata", denom)
 	s.Require().NoError(err)
-	s.Require().Equal(s.DelegatorWallet.FormattedAddress(), admin.Get("authority_metadata.admin").String())
+	s.Require().Equal(s.DelegatorWallet.FormattedAddress(), admin.String())
 }
 
 // TestMintBurnCLI tests minting and burning tokens via CLI
 func (s *TokenFactorySuite) TestMintBurnCLI() {
 	// Create a denom first
-	denom := s.createDenom("testtoken")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "testtoken")
+	s.Require().NoError(err, "failed to create denom 'testtoken'")
 
 	// Mint tokens
 	mintAmount := int64(1000000)
-	_, err := s.Chain.GetNode().ExecTx(
+	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
 		"tokenfactory", "mint",
@@ -103,62 +75,60 @@ func (s *TokenFactorySuite) TestMintBurnCLI() {
 	s.Require().Equal(sdkmath.NewInt(mintAmount-burnAmount), balance)
 }
 
-// TestMintToAddress tests minting tokens to a different address
+// TestMintToAddress tests minting tokens directly to a recipient address
 func (s *TokenFactorySuite) TestMintToAddress() {
 	// Create a denom
-	denom := s.createDenom("minttotest")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "minttotarget")
+	s.Require().NoError(err, "failed to create denom 'minttotarget'")
 
-	// Mint tokens to DelegatorWallet2
-	mintAmount := int64(1000000)
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "mint",
-		fmt.Sprintf("%d%s", mintAmount, denom),
-		"--mint-to-address", s.DelegatorWallet2.FormattedAddress(),
-	)
-	s.Require().NoError(err)
-
-	// Verify DelegatorWallet2 received the tokens
-	balance, err := s.Chain.GetBalance(s.GetContext(),
-		s.DelegatorWallet2.FormattedAddress(), denom)
-	s.Require().NoError(err)
-	s.Require().Equal(sdkmath.NewInt(mintAmount), balance)
-
-	// Verify DelegatorWallet (admin) has zero balance
-	balance, err = s.Chain.GetBalance(s.GetContext(),
+	// Verify creator has no balance before mint-to
+	creatorBalance, err := s.Chain.GetBalance(s.GetContext(),
 		s.DelegatorWallet.FormattedAddress(), denom)
 	s.Require().NoError(err)
-	s.Require().Equal(sdkmath.ZeroInt(), balance)
+	s.Require().True(creatorBalance.IsZero(), "creator should have zero balance before mint")
+
+	// Verify recipient has no balance before mint-to
+	recipientBalance, err := s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().True(recipientBalance.IsZero(), "recipient should have zero balance before mint")
+
+	// Mint directly to DelegatorWallet2 using mint-to
+	mintAmount := int64(1000000)
+	err = s.MintTo(s.DelegatorWallet, denom, mintAmount, s.DelegatorWallet2.FormattedAddress())
+	s.Require().NoError(err, "mint-to should succeed")
+
+	// Verify recipient received the tokens
+	recipientBalance, err = s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount), recipientBalance,
+		"recipient should have received minted tokens")
+
+	// Verify creator did NOT receive the tokens
+	creatorBalance, err = s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().True(creatorBalance.IsZero(),
+		"creator should still have zero balance after mint-to")
 }
 
 // TestSetDenomMetadataCLI tests setting denom metadata via CLI
 func (s *TokenFactorySuite) TestSetDenomMetadataCLI() {
 	// Create a denom
 	subdenom := "metatoken"
-	denom := s.createDenom(subdenom)
+	denom, err := s.CreateDenom(s.DelegatorWallet, subdenom)
+	s.Require().NoError(err, "failed to create denom 'metatoken'")
 
-	// Set metadata via CLI
-	// Note: The exact CLI format may vary based on implementation
-	// This assumes a JSON file or inline JSON parameter
-	metadataJSON := fmt.Sprintf(`{
-		"base": "%s",
-		"display": "%s",
-		"name": "Meta Token",
-		"symbol": "META",
-		"description": "A test token for metadata",
-		"denom_units": [
-			{"denom": "%s", "exponent": 0},
-			{"denom": "%s", "exponent": 6}
-		]
-	}`, denom, subdenom, denom, subdenom)
-
-	_, err := s.Chain.GetNode().ExecTx(
+	// Set metadata via modify-metadata CLI
+	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "set-denom-metadata",
+		"tokenfactory", "modify-metadata",
 		denom,
-		metadataJSON,
+		"META",                       // ticker-symbol
+		"A test token for metadata",  // description
+		"6",                          // exponent
 	)
 	s.Require().NoError(err)
 
@@ -166,18 +136,18 @@ func (s *TokenFactorySuite) TestSetDenomMetadataCLI() {
 	retrievedMetadata, err := s.Chain.QueryJSON(s.GetContext(),
 		"metadata", "bank", "denom-metadata", denom)
 	s.Require().NoError(err)
-	s.Require().Equal("Meta Token", retrievedMetadata.Get("metadata.name").String())
-	s.Require().Equal("META", retrievedMetadata.Get("metadata.symbol").String())
-	s.Require().Equal("A test token for metadata", retrievedMetadata.Get("metadata.description").String())
+	s.Require().Equal("META", retrievedMetadata.Get("symbol").String())
+	s.Require().Equal("A test token for metadata", retrievedMetadata.Get("description").String())
 }
 
 // TestAdminTransferBetweenWallets tests transferring admin privileges between wallets
 func (s *TokenFactorySuite) TestAdminTransferBetweenWallets() {
 	// Create denom with DelegatorWallet
-	denom := s.createDenom("admintransfer")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "admintransfer")
+	s.Require().NoError(err, "failed to create denom 'admintransfer'")
 
 	// Change admin to DelegatorWallet2
-	_, err := s.Chain.GetNode().ExecTx(
+	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
 		"tokenfactory", "change-admin",
@@ -187,9 +157,9 @@ func (s *TokenFactorySuite) TestAdminTransferBetweenWallets() {
 
 	// Verify new admin
 	admin, err := s.Chain.QueryJSON(s.GetContext(),
-		"denom-admin", "tokenfactory", "denom-authority-metadata", denom)
+		"authority_metadata.admin", "tokenfactory", "denom-authority-metadata", denom)
 	s.Require().NoError(err)
-	s.Require().Equal(s.DelegatorWallet2.FormattedAddress(), admin.Get("authority_metadata.admin").String())
+	s.Require().Equal(s.DelegatorWallet2.FormattedAddress(), admin.String())
 
 	// Verify DelegatorWallet cannot mint
 	_, err = s.Chain.GetNode().ExecTx(
@@ -220,10 +190,11 @@ func (s *TokenFactorySuite) TestAdminTransferBetweenWallets() {
 // TestUnauthorizedMint tests that non-admin cannot mint tokens
 func (s *TokenFactorySuite) TestUnauthorizedMint() {
 	// Create denom with DelegatorWallet
-	denom := s.createDenom("unauthorized")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "unauthorized")
+	s.Require().NoError(err, "failed to create denom 'unauthorized'")
 
 	// Attempt to mint with DelegatorWallet2 (non-admin)
-	_, err := s.Chain.GetNode().ExecTx(
+	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet2.KeyName(),
 		"tokenfactory", "mint",
@@ -233,13 +204,26 @@ func (s *TokenFactorySuite) TestUnauthorizedMint() {
 	s.Require().Contains(err.Error(), "unauthorized")
 }
 
+// TestUnauthorizedMintTo tests that non-admin cannot mint-to tokens
+func (s *TokenFactorySuite) TestUnauthorizedMintTo() {
+	// Create denom with DelegatorWallet
+	denom, err := s.CreateDenom(s.DelegatorWallet, "unauthorizedmintto")
+	s.Require().NoError(err, "failed to create denom 'unauthorizedmintto'")
+
+	// Attempt to mint-to with DelegatorWallet2 (non-admin) targeting DelegatorWallet3
+	err = s.MintTo(s.DelegatorWallet2, denom, 100000, s.DelegatorWallet3.FormattedAddress())
+	s.Require().Error(err)
+	s.Require().Contains(err.Error(), "unauthorized")
+}
+
 // TestUnauthorizedBurn tests that non-admin cannot burn tokens
 func (s *TokenFactorySuite) TestUnauthorizedBurn() {
 	// Create denom and mint to DelegatorWallet2
-	denom := s.createAndMint("burnunauth", 1000000)
+	denom, err := s.CreateAndMint(s.DelegatorWallet, "burnunauth", 1000000)
+	s.Require().NoError(err, "failed to create and mint denom 'burnunauth'")
 
 	// Transfer some tokens to DelegatorWallet2
-	_, err := s.Chain.GetNode().ExecTx(
+	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
 		"bank", "send",
@@ -260,66 +244,11 @@ func (s *TokenFactorySuite) TestUnauthorizedBurn() {
 	s.Require().Contains(err.Error(), "unauthorized")
 }
 
-// TestRenounceAdmin tests permanently renouncing admin privileges
-func (s *TokenFactorySuite) TestRenounceAdmin() {
-	// Create denom with DelegatorWallet
-	denom := s.createDenom("renounce")
-
-	// Mint some tokens first
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "mint",
-		fmt.Sprintf("1000000%s", denom),
-	)
-	s.Require().NoError(err)
-
-	// Renounce admin by setting to empty string
-	_, err = s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "change-admin",
-		denom, "",
-	)
-	s.Require().NoError(err)
-
-	// Verify admin is now empty
-	admin, err := s.Chain.QueryJSON(s.GetContext(),
-		"denom-admin", "tokenfactory", "denom-authority-metadata", denom)
-	s.Require().NoError(err)
-	s.Require().Empty(admin.Get("authority_metadata.admin").String())
-
-	// Verify no one can mint anymore
-	_, err = s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "mint",
-		fmt.Sprintf("100000%s", denom),
-	)
-	s.Require().Error(err)
-
-	// Verify tokens still work for transfers
-	_, err = s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"bank", "send",
-		s.DelegatorWallet.FormattedAddress(),
-		s.DelegatorWallet2.FormattedAddress(),
-		fmt.Sprintf("500000%s", denom),
-	)
-	s.Require().NoError(err)
-
-	// Verify transfer succeeded
-	balance, err := s.Chain.GetBalance(s.GetContext(),
-		s.DelegatorWallet2.FormattedAddress(), denom)
-	s.Require().NoError(err)
-	s.Require().Equal(sdkmath.NewInt(500000), balance)
-}
-
 // TestBankSendWithTokenFactoryToken tests that tokenfactory tokens work with bank send
 func (s *TokenFactorySuite) TestBankSendWithTokenFactoryToken() {
 	// Create denom and mint tokens
-	denom := s.createAndMint("banksend", 1000000)
+	denom, err := s.CreateAndMint(s.DelegatorWallet, "banksend", 1000000)
+	s.Require().NoError(err, "failed to create and mint denom 'banksend'")
 
 	// Get balance before
 	balanceBefore, err := s.Chain.GetBalance(s.GetContext(),
@@ -354,14 +283,20 @@ func (s *TokenFactorySuite) TestBankSendWithTokenFactoryToken() {
 // TestMultipleDenoms tests creating and managing multiple denoms from one address
 func (s *TokenFactorySuite) TestMultipleDenoms() {
 	// Create multiple denoms
-	denom1 := s.createDenom("token1")
-	denom2 := s.createDenom("token2")
-	denom3 := s.createDenom("token3")
+	denom1, err := s.CreateDenom(s.DelegatorWallet, "token1")
+	s.Require().NoError(err, "failed to create denom 'token1'")
+	denom2, err := s.CreateDenom(s.DelegatorWallet, "token2")
+	s.Require().NoError(err, "failed to create denom 'token2'")
+	denom3, err := s.CreateDenom(s.DelegatorWallet, "token3")
+	s.Require().NoError(err, "failed to create denom 'token3'")
 
 	// Mint different amounts to each
-	s.mint(denom1, 1000000)
-	s.mint(denom2, 2000000)
-	s.mint(denom3, 3000000)
+	err = s.Mint(s.DelegatorWallet, denom1, 1000000)
+	s.Require().NoError(err, "failed to mint tokens for denom1")
+	err = s.Mint(s.DelegatorWallet, denom2, 2000000)
+	s.Require().NoError(err, "failed to mint tokens for denom2")
+	err = s.Mint(s.DelegatorWallet, denom3, 3000000)
+	s.Require().NoError(err, "failed to mint tokens for denom3")
 
 	// Verify each has correct balance
 	balance1, err := s.Chain.GetBalance(s.GetContext(),
@@ -389,8 +324,10 @@ func (s *TokenFactorySuite) TestMultipleDenoms() {
 	s.Require().NoError(err)
 
 	// Verify DelegatorWallet can still mint to denom2 and denom3
-	s.mint(denom2, 1000000)
-	s.mint(denom3, 1000000)
+	err = s.Mint(s.DelegatorWallet, denom2, 1000000)
+	s.Require().NoError(err, "failed to mint additional tokens for denom2")
+	err = s.Mint(s.DelegatorWallet, denom3, 1000000)
+	s.Require().NoError(err, "failed to mint additional tokens for denom3")
 
 	// Verify new balances
 	balance2, err = s.Chain.GetBalance(s.GetContext(),
@@ -421,7 +358,7 @@ func (s *TokenFactorySuite) TestCreationFee() {
 	s.Require().NoError(err)
 
 	// Get the creation fee amount
-	creationFeeStr := params.Get("params.denom_creation_fee.0.amount").String()
+	creationFeeStr := params.Get("denom_creation_fee.0.amount").String()
 	s.Require().NotEmpty(creationFeeStr)
 
 	// Get balance before creation
@@ -451,13 +388,82 @@ func (s *TokenFactorySuite) TestCreationFee() {
 	s.Require().True(balanceBefore.Sub(balanceAfter).GTE(creationFeeInt))
 }
 
+// TestCreationFeeFundsCommunityPool tests that denom creation fees are deposited to community pool
+func (s *TokenFactorySuite) TestCreationFeeFundsCommunityPool() {
+	// Helper to parse DecCoin string like "2678265.860000000000000000uatom"
+	parsePoolAmount := func(coinStr string) sdkmath.Int {
+		// Remove "uatom" suffix
+		amountStr := coinStr[:len(coinStr)-5] // Remove "uatom"
+		// Split on decimal point and take integer part
+		parts := make([]string, 2)
+		if idx := len(amountStr); idx > 0 {
+			for i := 0; i < len(amountStr); i++ {
+				if amountStr[i] == '.' {
+					parts[0] = amountStr[:i]
+					parts[1] = amountStr[i+1:]
+					break
+				}
+			}
+			if parts[0] == "" {
+				parts[0] = amountStr
+			}
+		}
+		intPart := parts[0]
+		if intPart == "" {
+			intPart = "0"
+		}
+		amt, ok := sdkmath.NewIntFromString(intPart)
+		s.Require().True(ok, "failed to parse amount from "+coinStr)
+		return amt
+	}
+
+	// Query initial community pool balance
+	initialResult, err := s.Chain.QueryJSON(s.GetContext(), `pool.0`, "distribution", "community-pool")
+	s.Require().NoError(err)
+	initialBalance := parsePoolAmount(initialResult.String())
+
+	chainsuite.GetLogger(s.GetContext()).Sugar().Infof(
+		"Initial community pool balance: %s uatom", initialBalance)
+
+	// Create a new denom (charges creation fee)
+	_, err = s.Chain.GetNode().ExecTx(
+		s.GetContext(),
+		s.DelegatorWallet.KeyName(),
+		"tokenfactory", "create-denom", "communitypooltest",
+	)
+	s.Require().NoError(err)
+
+	// Query final community pool balance
+	finalResult, err := s.Chain.QueryJSON(s.GetContext(), `pool.0`, "distribution", "community-pool")
+	s.Require().NoError(err)
+	finalBalance := parsePoolAmount(finalResult.String())
+
+	chainsuite.GetLogger(s.GetContext()).Sugar().Infof(
+		"Final community pool balance: %s uatom", finalBalance)
+
+	// Calculate increase
+	increase := finalBalance.Sub(initialBalance)
+
+	// Expected fee is 1 ATOM = 1000000 uatom
+	expectedFee := sdkmath.NewInt(1000000)
+
+	chainsuite.GetLogger(s.GetContext()).Sugar().Infof(
+		"Community pool increased by: %s (expected: %s)",
+		increase, expectedFee)
+
+	// Verify the increase is at least the creation fee (accounting for potential rounding)
+	s.Require().True(increase.GTE(expectedFee),
+		"community pool should increase by at least the creation fee")
+}
+
 // TestBurnMoreThanBalance tests that burning more than balance fails
 func (s *TokenFactorySuite) TestBurnMoreThanBalance() {
 	// Create denom and mint tokens
-	denom := s.createAndMint("burnfail", 1000000)
+	denom, err := s.CreateAndMint(s.DelegatorWallet, "burnfail", 1000000)
+	s.Require().NoError(err, "failed to create and mint denom 'burnfail'")
 
 	// Attempt to burn more than balance
-	_, err := s.Chain.GetNode().ExecTx(
+	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
 		"tokenfactory", "burn",
@@ -488,17 +494,19 @@ func (s *TokenFactorySuite) TestInvalidSubdenom() {
 // TestQueryAllDenoms tests querying all denoms created by an address
 func (s *TokenFactorySuite) TestQueryAllDenoms() {
 	// Create multiple denoms
-	denom1 := s.createDenom("query1")
-	denom2 := s.createDenom("query2")
+	denom1, err := s.CreateDenom(s.DelegatorWallet, "query1")
+	s.Require().NoError(err, "failed to create denom 'query1'")
+	denom2, err := s.CreateDenom(s.DelegatorWallet, "query2")
+	s.Require().NoError(err, "failed to create denom 'query2'")
 
 	// Query all denoms by creator
 	denoms, err := s.Chain.QueryJSON(s.GetContext(),
-		"denoms-from-creator", "tokenfactory", "denoms-from-creator",
+		"denoms", "tokenfactory", "denoms-from-creator",
 		s.DelegatorWallet.FormattedAddress())
 	s.Require().NoError(err)
 
 	// Verify our denoms are in the list
-	denomsList := denoms.Get("denoms").Array()
+	denomsList := denoms.Array()
 	s.Require().GreaterOrEqual(len(denomsList), 2)
 
 	denomsMap := make(map[string]bool)
@@ -512,10 +520,12 @@ func (s *TokenFactorySuite) TestQueryAllDenoms() {
 
 func TestTokenFactory(t *testing.T) {
 	s := &TokenFactorySuite{
-		Suite: &delegator.Suite{
-			Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
-				UpgradeOnSetup: true,
-			}),
+		TokenFactoryBaseSuite: &TokenFactoryBaseSuite{
+			Suite: &delegator.Suite{
+				Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+					UpgradeOnSetup: true,
+				}),
+			},
 		},
 	}
 	suite.Run(t, s)

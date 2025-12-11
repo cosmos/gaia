@@ -3,6 +3,8 @@ package v26_0_0 //nolint:revive
 import (
 	"context"
 
+	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
+
 	errorsmod "cosmossdk.io/errors"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
@@ -26,6 +28,16 @@ func CreateUpgradeHandler(
 		if err != nil {
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
+
+		// Initialize tokenfactory params
+		ctx.Logger().Info("Initializing tokenfactory module...")
+		tokenfactoryParams := tokenfactorytypes.DefaultParams()
+		tokenfactoryParams.DenomCreationFee = sdk.NewCoins(sdk.NewInt64Coin("uatom", 1000000)) // 1 ATOM
+		tokenfactoryParams.DenomCreationGasConsume = 2_000_000
+		if err := keepers.TokenFactoryKeeper.SetParams(ctx, tokenfactoryParams); err != nil {
+			return vm, errorsmod.Wrapf(err, "setting tokenfactory params")
+		}
+		ctx.Logger().Info("Tokenfactory module initialized successfully")
 
 		ctx.Logger().Info("Upgrade v26 complete")
 		return vm, nil

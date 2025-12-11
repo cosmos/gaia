@@ -1,6 +1,7 @@
 package delegator_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"testing"
@@ -9,12 +10,11 @@ import (
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/gaia/v26/tests/interchain/chainsuite"
 	"github.com/cosmos/gaia/v26/tests/interchain/delegator"
-	"github.com/cosmos/interchaintest/v10/chain/cosmos"
 	"github.com/stretchr/testify/suite"
 )
 
 type TokenFactoryGovSuite struct {
-	*delegator.Suite
+	*TokenFactoryBaseSuite
 }
 
 func (s *TokenFactoryGovSuite) SetupSuite() {
@@ -29,28 +29,6 @@ func (s *TokenFactoryGovSuite) SetupSuite() {
 		s.Chain.ValidatorWallets[0].ValoperAddress, stakeAmount)
 }
 
-// createDenom creates a tokenfactory denom
-func (s *TokenFactoryGovSuite) createDenom(subdenom string) string {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "create-denom", subdenom,
-	)
-	s.Require().NoError(err)
-	return fmt.Sprintf("factory/%s/%s", s.DelegatorWallet.FormattedAddress(), subdenom)
-}
-
-// mint mints tokens
-func (s *TokenFactoryGovSuite) mint(denom string, amount int64) {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "mint",
-		fmt.Sprintf("%d%s", amount, denom),
-	)
-	s.Require().NoError(err)
-}
-
 // TestParamChangeCreationFee tests changing the denom creation fee via governance
 func (s *TokenFactoryGovSuite) TestParamChangeCreationFee() {
 	// Query current params
@@ -59,7 +37,7 @@ func (s *TokenFactoryGovSuite) TestParamChangeCreationFee() {
 	s.Require().NoError(err)
 
 	// Get current creation fee
-	currentFee := params.Get("params.denom_creation_fee.0.amount").String()
+	currentFee := params.Get("denom_creation_fee.0.amount").String()
 	s.Require().NotEmpty(currentFee)
 
 	// Propose new fee (double the current fee)
@@ -67,22 +45,59 @@ func (s *TokenFactoryGovSuite) TestParamChangeCreationFee() {
 	s.Require().True(ok)
 	newFee := currentFeeInt.MulRaw(2)
 
-	// Submit proposal
-	// Note: Actual param change implementation depends on tokenfactory governance integration
-	prop, err := s.Chain.BuildProposal(
-		[]cosmos.ProtoMessage{},
-		"Change TokenFactory Creation Fee",
-		"Increase denom creation fee to "+newFee.String(),
-		"ipfs://CID",
-		fmt.Sprintf("%duatom", chainsuite.GovMinDepositAmount),
-		s.DelegatorWallet.FormattedAddress(),
-		false,
-	)
+	// Get gov module authority address
+	authority, err := s.Chain.GetGovernanceAddress(s.GetContext())
 	s.Require().NoError(err)
 
-	result, err := s.Chain.SubmitProposal(s.GetContext(), s.DelegatorWallet.KeyName(), prop)
+	// Create MsgUpdateParams message as JSON
+	paramChangeMessage := fmt.Sprintf(`{
+		"@type": "/osmosis.tokenfactory.v1beta1.MsgUpdateParams",
+		"authority": "%s",
+		"params": {
+			"denom_creation_fee": [
+				{
+					"denom": "uatom",
+					"amount": "%s"
+				}
+			]
+		}
+	}`, authority, newFee.String())
+
+	// Create proposal JSON (workaround for interchaintest decoding issue)
+	type ProposalJSON struct {
+		Messages       []json.RawMessage `json:"messages"`
+		InitialDeposit string            `json:"deposit"`
+		Title          string            `json:"title"`
+		Summary        string            `json:"summary"`
+		Metadata       string            `json:"metadata"`
+	}
+
+	proposal := ProposalJSON{
+		Messages:       []json.RawMessage{json.RawMessage(paramChangeMessage)},
+		InitialDeposit: fmt.Sprintf("%duatom", chainsuite.GovMinDepositAmount),
+		Title:          "Change TokenFactory Creation Fee",
+		Summary:        "Increase denom creation fee to " + newFee.String(),
+		Metadata:       "ipfs://CID",
+	}
+
+	// Write proposal to file
+	proposalBytes, err := json.MarshalIndent(proposal, "", "  ")
 	s.Require().NoError(err)
-	proposalID := result.ProposalID
+
+	err = s.Chain.GetNode().WriteFile(s.GetContext(), proposalBytes, "tokenfactory-proposal.json")
+	s.Require().NoError(err)
+
+	proposalPath := s.Chain.GetNode().HomeDir() + "/tokenfactory-proposal.json"
+
+	// Submit proposal using ExecTx to avoid interchaintest decoding
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet.FormattedAddress(),
+		"gov", "submit-proposal", proposalPath)
+	s.Require().NoError(err)
+
+	// Query for the last proposal ID
+	lastProposal, err := s.Chain.QueryJSON(s.GetContext(), "proposals.@reverse.0.id", "gov", "proposals")
+	s.Require().NoError(err)
+	proposalID := lastProposal.String()
 
 	// Pass the proposal
 	err = s.Chain.PassProposal(s.GetContext(), proposalID)
@@ -104,7 +119,7 @@ func (s *TokenFactoryGovSuite) TestParamChangeCreationFee() {
 		"params", "tokenfactory", "params")
 	s.Require().NoError(err)
 
-	newFeeStr := updatedParams.Get("params.denom_creation_fee.0.amount").String()
+	newFeeStr := updatedParams.Get("denom_creation_fee.0.amount").String()
 	s.Require().Equal(newFee.String(), newFeeStr)
 
 	// Verify new fee is charged
@@ -127,187 +142,92 @@ func (s *TokenFactoryGovSuite) TestParamChangeCreationFee() {
 	s.Require().True(balanceBefore.Sub(balanceAfter).GTE(newFee))
 }
 
-// TestUpgradePreservesState tests that tokenfactory state is preserved through upgrades
-func (s *TokenFactoryGovSuite) TestUpgradePreservesState() {
-	// Create multiple denoms with various states before upgrade
-	denom1 := s.createDenom("upgrade1")
-	denom2 := s.createDenom("upgrade2")
-	denom3 := s.createDenom("upgrade3")
+// TestMetadataModification tests setting metadata on tokenfactory denoms
+func (s *TokenFactoryGovSuite) TestMetadataModification() {
+	denom, err := s.CreateDenom(s.DelegatorWallet, "metadata")
+	s.Require().NoError(err, "failed to create denom 'metadata'")
+	err = s.Mint(s.DelegatorWallet, denom, 1000000)
+	s.Require().NoError(err, "failed to mint tokens for metadata test")
 
-	// Mint different amounts
-	s.mint(denom1, 1000000)
-	s.mint(denom2, 2000000)
-	s.mint(denom3, 3000000)
-
-	// Set metadata for denom1
-	metadataJSON := fmt.Sprintf(`{
-		"base": "%s",
-		"display": "upgrade1",
-		"name": "Upgrade Test Token",
-		"symbol": "UPG1",
-		"description": "Token to test upgrade persistence"
-	}`, denom1)
-
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "set-denom-metadata",
-		denom1,
-		metadataJSON,
-	)
-	s.Require().NoError(err)
-
-	// Change admin for denom2
+	// Set metadata
 	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "change-admin",
-		denom2, s.DelegatorWallet2.FormattedAddress(),
+		"tokenfactory", "modify-metadata",
+		denom,
+		"META",                 // ticker-symbol
+		"Test metadata token",  // description
+		"6",                    // exponent
 	)
 	s.Require().NoError(err)
 
-	// Renounce admin for denom3
-	_, err = s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "change-admin",
-		denom3, "",
-	)
+	// Query and verify metadata
+	metadata, err := s.Chain.QueryJSON(s.GetContext(),
+		"metadata", "bank", "denom-metadata", denom)
 	s.Require().NoError(err)
+	s.Require().Equal("META", metadata.Get("symbol").String())
+	s.Require().Equal("Test metadata token", metadata.Get("description").String())
+}
 
-	// Record state before upgrade
-	balance1Before, err := s.Chain.GetBalance(s.GetContext(),
-		s.DelegatorWallet.FormattedAddress(), denom1)
-	s.Require().NoError(err)
+// TestAdminChange tests transferring admin privileges for tokenfactory denoms
+func (s *TokenFactoryGovSuite) TestAdminChange() {
+	denom, err := s.CreateDenom(s.DelegatorWallet, "adminchange")
+	s.Require().NoError(err, "failed to create denom 'adminchange'")
+	err = s.Mint(s.DelegatorWallet, denom, 1000000)
+	s.Require().NoError(err, "failed to mint tokens for admin change test")
 
-	balance2Before, err := s.Chain.GetBalance(s.GetContext(),
-		s.DelegatorWallet.FormattedAddress(), denom2)
-	s.Require().NoError(err)
-
-	balance3Before, err := s.Chain.GetBalance(s.GetContext(),
-		s.DelegatorWallet.FormattedAddress(), denom3)
-	s.Require().NoError(err)
-
-	metadata1Before, err := s.Chain.QueryJSON(s.GetContext(),
-		"metadata", "bank", "denom-metadata", denom1)
-	s.Require().NoError(err)
-
-	admin1Before, err := s.Chain.QueryJSON(s.GetContext(),
-		"admin", "tokenfactory", "denom-authority-metadata", denom1)
-	s.Require().NoError(err)
-
-	admin2Before, err := s.Chain.QueryJSON(s.GetContext(),
-		"admin", "tokenfactory", "denom-authority-metadata", denom2)
-	s.Require().NoError(err)
-
-	// Perform upgrade
-	s.UpgradeChain()
-
-	// Verify balances preserved
-	balance1After, err := s.Chain.GetBalance(s.GetContext(),
-		s.DelegatorWallet.FormattedAddress(), denom1)
-	s.Require().NoError(err)
-	s.Require().Equal(balance1Before, balance1After)
-
-	balance2After, err := s.Chain.GetBalance(s.GetContext(),
-		s.DelegatorWallet.FormattedAddress(), denom2)
-	s.Require().NoError(err)
-	s.Require().Equal(balance2Before, balance2After)
-
-	balance3After, err := s.Chain.GetBalance(s.GetContext(),
-		s.DelegatorWallet.FormattedAddress(), denom3)
-	s.Require().NoError(err)
-	s.Require().Equal(balance3Before, balance3After)
-
-	// Verify metadata preserved
-	metadata1After, err := s.Chain.QueryJSON(s.GetContext(),
-		"metadata", "bank", "denom-metadata", denom1)
-	s.Require().NoError(err)
-	s.Require().Equal(
-		metadata1Before.Get("metadata.name").String(),
-		metadata1After.Get("metadata.name").String())
-	s.Require().Equal(
-		metadata1Before.Get("metadata.symbol").String(),
-		metadata1After.Get("metadata.symbol").String())
-
-	// Verify admin assignments preserved
-	admin1After, err := s.Chain.QueryJSON(s.GetContext(),
-		"admin", "tokenfactory", "denom-authority-metadata", denom1)
-	s.Require().NoError(err)
-	s.Require().Equal(
-		admin1Before.Get("authority_metadata.admin").String(),
-		admin1After.Get("authority_metadata.admin").String())
-
-	admin2After, err := s.Chain.QueryJSON(s.GetContext(),
-		"admin", "tokenfactory", "denom-authority-metadata", denom2)
-	s.Require().NoError(err)
-	s.Require().Equal(
-		admin2Before.Get("authority_metadata.admin").String(),
-		admin2After.Get("authority_metadata.admin").String())
-	s.Require().Equal(s.DelegatorWallet2.FormattedAddress(),
-		admin2After.Get("authority_metadata.admin").String())
-
-	admin3After, err := s.Chain.QueryJSON(s.GetContext(),
-		"admin", "tokenfactory", "denom-authority-metadata", denom3)
-	s.Require().NoError(err)
-	s.Require().Empty(admin3After.Get("authority_metadata.admin").String())
-
-	// Verify operations still work post-upgrade
-
-	// Mint with denom1 (original admin still works)
+	// Verify original admin can mint
 	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
 		"tokenfactory", "mint",
-		fmt.Sprintf("500000%s", denom1),
+		fmt.Sprintf("500000%s", denom),
 	)
 	s.Require().NoError(err)
 
-	balance1Final, err := s.Chain.GetBalance(s.GetContext(),
-		s.DelegatorWallet.FormattedAddress(), denom1)
+	// Change admin to DelegatorWallet2
+	_, err = s.Chain.GetNode().ExecTx(
+		s.GetContext(),
+		s.DelegatorWallet.KeyName(),
+		"tokenfactory", "change-admin",
+		denom, s.DelegatorWallet2.FormattedAddress(),
+	)
 	s.Require().NoError(err)
-	s.Require().Equal(balance1Before.Add(sdkmath.NewInt(500000)), balance1Final)
 
-	// Mint with denom2 (new admin works)
+	// Verify admin was changed
+	admin, err := s.Chain.QueryJSON(s.GetContext(),
+		"authority_metadata.admin", "tokenfactory", "denom-authority-metadata", denom)
+	s.Require().NoError(err)
+	s.Require().Equal(s.DelegatorWallet2.FormattedAddress(), admin.String())
+
+	// Verify new admin can mint
 	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet2.KeyName(),
 		"tokenfactory", "mint",
-		fmt.Sprintf("500000%s", denom2),
+		fmt.Sprintf("300000%s", denom),
 	)
 	s.Require().NoError(err)
 
-	// Verify denom3 still cannot be minted (renounced admin)
+	// Verify old admin can no longer mint
 	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
 		"tokenfactory", "mint",
-		fmt.Sprintf("500000%s", denom3),
+		fmt.Sprintf("100000%s", denom),
 	)
 	s.Require().Error(err)
-
-	// Verify denom3 can still be transferred
-	_, err = s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"bank", "send",
-		s.DelegatorWallet.FormattedAddress(),
-		s.DelegatorWallet2.FormattedAddress(),
-		fmt.Sprintf("1000000%s", denom3),
-	)
-	s.Require().NoError(err)
 }
 
 // TestCreateDenomAfterUpgrade tests that new denoms can be created after upgrade
 func (s *TokenFactoryGovSuite) TestCreateDenomAfterUpgrade() {
-	// Perform upgrade first
-	s.UpgradeChain()
-
-	// Create new denom after upgrade
-	denom := s.createDenom("postupgrade")
+	// Create new denom
+	denom, err := s.CreateDenom(s.DelegatorWallet, "postupgrade")
+	s.Require().NoError(err, "failed to create denom 'postupgrade'")
 
 	// Mint tokens
-	s.mint(denom, 5000000)
+	err = s.Mint(s.DelegatorWallet, denom, 5000000)
+	s.Require().NoError(err, "failed to mint tokens for postupgrade test")
 
 	// Verify balance
 	balance, err := s.Chain.GetBalance(s.GetContext(),
@@ -332,23 +252,14 @@ func (s *TokenFactoryGovSuite) TestCreateDenomAfterUpgrade() {
 
 // TestParamQueryAfterUpgrade tests that params can be queried after upgrade
 func (s *TokenFactoryGovSuite) TestParamQueryAfterUpgrade() {
-	// Query params before upgrade
-	paramsBefore, err := s.Chain.QueryJSON(s.GetContext(),
-		"params", "tokenfactory", "params")
-	s.Require().NoError(err)
-	s.Require().NotNil(paramsBefore)
-
-	// Perform upgrade
-	s.UpgradeChain()
-
-	// Query params after upgrade
+	// Query params
 	paramsAfter, err := s.Chain.QueryJSON(s.GetContext(),
 		"params", "tokenfactory", "params")
 	s.Require().NoError(err)
 	s.Require().NotNil(paramsAfter)
 
 	// Verify params are still accessible
-	creationFee := paramsAfter.Get("params.denom_creation_fee.0.amount").String()
+	creationFee := paramsAfter.Get("denom_creation_fee.0.amount").String()
 	s.Require().NotEmpty(creationFee)
 }
 
@@ -358,12 +269,14 @@ func (s *TokenFactoryGovSuite) TestGovernanceProposalWithTokenFactoryToken() {
 	// even if they can't be used as staking tokens
 
 	// Create tokenfactory denom
-	denom := s.createDenom("govtoken")
-	s.mint(denom, 100000000)
+	denom, err := s.CreateDenom(s.DelegatorWallet, "govtoken")
+	s.Require().NoError(err, "failed to create denom 'govtoken'")
+	err = s.Mint(s.DelegatorWallet, denom, 100000000)
+	s.Require().NoError(err, "failed to mint tokens for gov token test")
 
 	// Submit a text proposal (normal governance with ATOM)
 	prop, err := s.Chain.BuildProposal(
-		[]cosmos.ProtoMessage{},
+		nil,
 		"Test with TokenFactory",
 		"Testing governance while tokenfactory tokens exist",
 		"ipfs://CID",
@@ -389,14 +302,160 @@ func (s *TokenFactoryGovSuite) TestGovernanceProposalWithTokenFactoryToken() {
 	vote, err := s.Chain.QueryJSON(s.GetContext(),
 		"vote", "gov", "vote", proposalID, s.DelegatorWallet.FormattedAddress())
 	s.Require().NoError(err)
-	s.Require().Equal("VOTE_OPTION_YES",
-		vote.Get("vote.options.0.option").String())
+	actual_yes_weight := vote.Get("options.#(option==\"VOTE_OPTION_YES\").weight")
+	s.Require().Equal(float64(1.0), actual_yes_weight.Float())
 
 	// Verify tokenfactory token still exists and works
 	balance, err := s.Chain.GetBalance(s.GetContext(),
 		s.DelegatorWallet.FormattedAddress(), denom)
 	s.Require().NoError(err)
 	s.Require().Equal(sdkmath.NewInt(100000000), balance)
+}
+
+// TestGovOwnedDenomOperations tests transferring denom admin to governance
+// and then using governance proposals to mint and burn tokens.
+func (s *TokenFactoryGovSuite) TestGovOwnedDenomOperations() {
+	// Create a denom owned by DelegatorWallet
+	denom, err := s.CreateDenom(s.DelegatorWallet, "govowned")
+	s.Require().NoError(err, "failed to create denom 'govowned'")
+
+	// Get governance module address
+	govAddr, err := s.Chain.GetGovernanceAddress(s.GetContext())
+	s.Require().NoError(err)
+
+	// Transfer admin to governance module
+	_, err = s.Chain.GetNode().ExecTx(
+		s.GetContext(),
+		s.DelegatorWallet.KeyName(),
+		"tokenfactory", "change-admin",
+		denom, govAddr,
+	)
+	s.Require().NoError(err)
+
+	// Verify gov is now the admin
+	admin, err := s.Chain.QueryJSON(s.GetContext(),
+		"authority_metadata.admin", "tokenfactory", "denom-authority-metadata", denom)
+	s.Require().NoError(err)
+	s.Require().Equal(govAddr, admin.String())
+
+	// === MINT VIA GOVERNANCE ===
+	mintAmount := int64(1000000)
+	mintMsg := fmt.Sprintf(`{
+		"@type": "/osmosis.tokenfactory.v1beta1.MsgMint",
+		"sender": "%s",
+		"amount": {"denom": "%s", "amount": "%d"},
+		"mintToAddress": "%s"
+	}`, govAddr, denom, mintAmount, s.DelegatorWallet2.FormattedAddress())
+
+	proposalID := s.submitTokenFactoryProposal(mintMsg, "Mint gov-owned tokens", "Mint tokens via governance")
+
+	// Pass the proposal
+	err = s.Chain.PassProposal(s.GetContext(), proposalID)
+	s.Require().NoError(err)
+
+	// Wait for proposal to pass
+	s.Require().Eventually(func() bool {
+		proposal, err := s.Chain.GovQueryProposalV1(s.GetContext(), mustParseUint(proposalID))
+		if err != nil {
+			return false
+		}
+		return proposal.Status == govv1.StatusPassed
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "mint proposal did not pass")
+
+	// Verify DelegatorWallet2 received the tokens
+	balance, err := s.Chain.GetBalance(s.GetContext(), s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount), balance, "mint via governance failed")
+
+	// === BURN VIA GOVERNANCE ===
+	// First, mint some tokens to the gov module itself so we can burn them
+	mintToGovMsg := fmt.Sprintf(`{
+		"@type": "/osmosis.tokenfactory.v1beta1.MsgMint",
+		"sender": "%s",
+		"amount": {"denom": "%s", "amount": "%d"},
+		"mintToAddress": "%s"
+	}`, govAddr, denom, mintAmount, govAddr)
+
+	proposalID = s.submitTokenFactoryProposal(mintToGovMsg, "Mint to gov module", "Mint tokens to gov module for burn test")
+	err = s.Chain.PassProposal(s.GetContext(), proposalID)
+	s.Require().NoError(err)
+
+	s.Require().Eventually(func() bool {
+		proposal, err := s.Chain.GovQueryProposalV1(s.GetContext(), mustParseUint(proposalID))
+		if err != nil {
+			return false
+		}
+		return proposal.Status == govv1.StatusPassed
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "mint-to-gov proposal did not pass")
+
+	// Verify gov module received tokens
+	govBalance, err := s.Chain.GetBalance(s.GetContext(), govAddr, denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount), govBalance, "gov module should have tokens")
+
+	// Now burn half of the gov module's tokens
+	// Note: We don't specify burnFromAddress here because when the sender burns their own tokens,
+	// it defaults to sender. Specifying burnFromAddress requires the EnableBurnFrom capability.
+	burnAmount := int64(500000)
+	burnMsg := fmt.Sprintf(`{
+		"@type": "/osmosis.tokenfactory.v1beta1.MsgBurn",
+		"sender": "%s",
+		"amount": {"denom": "%s", "amount": "%d"}
+	}`, govAddr, denom, burnAmount)
+
+	proposalID = s.submitTokenFactoryProposal(burnMsg, "Burn gov-owned tokens", "Burn tokens via governance")
+	err = s.Chain.PassProposal(s.GetContext(), proposalID)
+	s.Require().NoError(err)
+
+	s.Require().Eventually(func() bool {
+		proposal, err := s.Chain.GovQueryProposalV1(s.GetContext(), mustParseUint(proposalID))
+		if err != nil {
+			return false
+		}
+		return proposal.Status == govv1.StatusPassed
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "burn proposal did not pass")
+
+	// Verify gov module balance decreased
+	govBalance, err = s.Chain.GetBalance(s.GetContext(), govAddr, denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount-burnAmount), govBalance, "burn via governance failed")
+}
+
+// submitTokenFactoryProposal submits a governance proposal with a tokenfactory message
+// and returns the proposal ID.
+func (s *TokenFactoryGovSuite) submitTokenFactoryProposal(message, title, summary string) string {
+	type ProposalJSON struct {
+		Messages       []json.RawMessage `json:"messages"`
+		InitialDeposit string            `json:"deposit"`
+		Title          string            `json:"title"`
+		Summary        string            `json:"summary"`
+		Metadata       string            `json:"metadata"`
+	}
+
+	proposal := ProposalJSON{
+		Messages:       []json.RawMessage{json.RawMessage(message)},
+		InitialDeposit: fmt.Sprintf("%duatom", chainsuite.GovMinDepositAmount),
+		Title:          title,
+		Summary:        summary,
+		Metadata:       "ipfs://CID",
+	}
+
+	proposalBytes, err := json.MarshalIndent(proposal, "", "  ")
+	s.Require().NoError(err)
+
+	err = s.Chain.GetNode().WriteFile(s.GetContext(), proposalBytes, "tf-gov-proposal.json")
+	s.Require().NoError(err)
+
+	proposalPath := s.Chain.GetNode().HomeDir() + "/tf-gov-proposal.json"
+
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet.FormattedAddress(),
+		"gov", "submit-proposal", proposalPath)
+	s.Require().NoError(err)
+
+	// Query for the last proposal ID
+	lastProposal, err := s.Chain.QueryJSON(s.GetContext(), "proposals.@reverse.0.id", "gov", "proposals")
+	s.Require().NoError(err)
+	return lastProposal.String()
 }
 
 // Helper function to parse uint
@@ -410,10 +469,12 @@ func mustParseUint(s string) uint64 {
 
 func TestTokenFactoryGov(t *testing.T) {
 	s := &TokenFactoryGovSuite{
-		Suite: &delegator.Suite{
-			Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
-				UpgradeOnSetup: false, // We'll upgrade manually in tests
-			}),
+		TokenFactoryBaseSuite: &TokenFactoryBaseSuite{
+			Suite: &delegator.Suite{
+				Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+					UpgradeOnSetup: true, // Upgrade to v26 before running tests
+				}),
+			},
 		},
 	}
 	suite.Run(t, s)

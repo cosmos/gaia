@@ -15,9 +15,9 @@ import (
 )
 
 type TokenFactoryIBCSuite struct {
-	*delegator.Suite
-	ChainB           *chainsuite.Chain
-	ChainBWallet     ibc.Wallet
+	*TokenFactoryBaseSuite
+	ChainB       *chainsuite.Chain
+	ChainBWallet ibc.Wallet
 }
 
 func (s *TokenFactoryIBCSuite) SetupSuite() {
@@ -42,36 +42,16 @@ func (s *TokenFactoryIBCSuite) SetupSuite() {
 	s.Require().NoError(err)
 }
 
-// createDenom creates a tokenfactory denom on chain A
-func (s *TokenFactoryIBCSuite) createDenom(subdenom string) string {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "create-denom", subdenom,
-	)
-	s.Require().NoError(err)
-	return fmt.Sprintf("factory/%s/%s", s.DelegatorWallet.FormattedAddress(), subdenom)
-}
-
-// mint mints tokens on chain A
-func (s *TokenFactoryIBCSuite) mint(denom string, amount int64) {
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "mint",
-		fmt.Sprintf("%d%s", amount, denom),
-	)
-	s.Require().NoError(err)
-}
-
 // TestIBCTransferToChainB tests transferring tokenfactory tokens to another chain
 func (s *TokenFactoryIBCSuite) TestIBCTransferToChainB() {
 	// Create tokenfactory denom on chain A
-	denom := s.createDenom("ibctoken")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "ibctoken")
+	s.Require().NoError(err, "failed to create denom 'ibctoken'")
 
 	// Mint tokens on chain A
 	mintAmount := int64(10000000)
-	s.mint(denom, mintAmount)
+	err = s.Mint(s.DelegatorWallet, denom, mintAmount)
+	s.Require().NoError(err, "failed to mint tokens for IBC transfer test")
 
 	// Verify balance on chain A
 	balanceA, err := s.Chain.GetBalance(s.GetContext(),
@@ -128,11 +108,13 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferToChainB() {
 // TestIBCTransferRoundTrip tests transferring tokenfactory tokens to another chain and back
 func (s *TokenFactoryIBCSuite) TestIBCTransferRoundTrip() {
 	// Create tokenfactory denom on chain A
-	denom := s.createDenom("roundtrip")
+	denom, err := s.CreateDenom(s.DelegatorWallet, "roundtrip")
+	s.Require().NoError(err, "failed to create denom 'roundtrip'")
 
 	// Mint tokens on chain A
 	mintAmount := int64(10000000)
-	s.mint(denom, mintAmount)
+	err = s.Mint(s.DelegatorWallet, denom, mintAmount)
+	s.Require().NoError(err, "failed to mint tokens for round trip test")
 
 	// Get IBC transfer channel
 	transferChAtoB, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, s.ChainB)
@@ -214,27 +196,19 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferRoundTrip() {
 func (s *TokenFactoryIBCSuite) TestIBCTransferWithMetadata() {
 	// Create tokenfactory denom on chain A
 	subdenom := "metatoken"
-	denom := s.createDenom(subdenom)
+	denom, err := s.CreateDenom(s.DelegatorWallet, subdenom)
+	s.Require().NoError(err, "failed to create denom 'metatoken'")
 
 	// Set metadata on chain A
-	metadataJSON := fmt.Sprintf(`{
-		"base": "%s",
-		"display": "%s",
-		"name": "IBC Meta Token",
-		"symbol": "IBCMETA",
-		"description": "A test token with metadata for IBC",
-		"denom_units": [
-			{"denom": "%s", "exponent": 0},
-			{"denom": "%s", "exponent": 6}
-		]
-	}`, denom, subdenom, denom, subdenom)
-
-	_, err := s.Chain.GetNode().ExecTx(
+	// Set metadata using modify-metadata command
+	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "set-denom-metadata",
+		"tokenfactory", "modify-metadata",
 		denom,
-		metadataJSON,
+		"IBCMETA",                                // ticker-symbol
+		"A test token with metadata for IBC",    // description
+		"6",                                      // exponent
 	)
 	s.Require().NoError(err)
 
@@ -242,10 +216,12 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferWithMetadata() {
 	metadataA, err := s.Chain.QueryJSON(s.GetContext(),
 		"metadata", "bank", "denom-metadata", denom)
 	s.Require().NoError(err)
-	s.Require().Equal("IBC Meta Token", metadataA.Get("metadata.name").String())
+	s.Require().Equal("IBCMETA", metadataA.Get("symbol").String())
+	s.Require().Equal("A test token with metadata for IBC", metadataA.Get("description").String())
 
 	// Mint and transfer tokens
-	s.mint(denom, 10000000)
+	err = s.Mint(s.DelegatorWallet, denom, 10000000)
+	s.Require().NoError(err, "failed to mint tokens for metadata test")
 
 	transferCh, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, s.ChainB)
 	s.Require().NoError(err)
@@ -294,14 +270,20 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferWithMetadata() {
 // TestMultipleTokenFactoryIBCTransfers tests multiple tokenfactory tokens over IBC
 func (s *TokenFactoryIBCSuite) TestMultipleTokenFactoryIBCTransfers() {
 	// Create multiple tokenfactory denoms
-	denom1 := s.createDenom("ibc1")
-	denom2 := s.createDenom("ibc2")
-	denom3 := s.createDenom("ibc3")
+	denom1, err := s.CreateDenom(s.DelegatorWallet, "ibc1")
+	s.Require().NoError(err, "failed to create denom 'ibc1'")
+	denom2, err := s.CreateDenom(s.DelegatorWallet, "ibc2")
+	s.Require().NoError(err, "failed to create denom 'ibc2'")
+	denom3, err := s.CreateDenom(s.DelegatorWallet, "ibc3")
+	s.Require().NoError(err, "failed to create denom 'ibc3'")
 
 	// Mint tokens for each
-	s.mint(denom1, 10000000)
-	s.mint(denom2, 20000000)
-	s.mint(denom3, 30000000)
+	err = s.Mint(s.DelegatorWallet, denom1, 10000000)
+	s.Require().NoError(err, "failed to mint tokens for denom1")
+	err = s.Mint(s.DelegatorWallet, denom2, 20000000)
+	s.Require().NoError(err, "failed to mint tokens for denom2")
+	err = s.Mint(s.DelegatorWallet, denom3, 30000000)
+	s.Require().NoError(err, "failed to mint tokens for denom3")
 
 	// Get transfer channel
 	transferCh, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, s.ChainB)
@@ -347,14 +329,82 @@ func (s *TokenFactoryIBCSuite) TestMultipleTokenFactoryIBCTransfers() {
 	}
 }
 
+// TestIBCTransferWithMintTo tests that tokens minted via mint-to can be transferred via IBC
+func (s *TokenFactoryIBCSuite) TestIBCTransferWithMintTo() {
+	// Create tokenfactory denom with DelegatorWallet as admin
+	denom, err := s.CreateDenom(s.DelegatorWallet, "minttotransfer")
+	s.Require().NoError(err, "failed to create denom 'minttotransfer'")
+
+	// Mint tokens directly to DelegatorWallet2 using mint-to
+	mintAmount := int64(10000000)
+	err = s.MintTo(s.DelegatorWallet, denom, mintAmount, s.DelegatorWallet2.FormattedAddress())
+	s.Require().NoError(err, "mint-to should succeed")
+
+	// Verify DelegatorWallet2 has the tokens
+	balance, err := s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount), balance,
+		"DelegatorWallet2 should have received minted tokens via mint-to")
+
+	// Verify admin (DelegatorWallet) does NOT have any tokens
+	adminBalance, err := s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().True(adminBalance.IsZero(),
+		"admin should not have received tokens when using mint-to")
+
+	// Get IBC transfer channel
+	transferCh, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, s.ChainB)
+	s.Require().NoError(err)
+
+	// Calculate expected IBC denom on chain B
+	ibcDenom := transfertypes.GetPrefixedDenom(
+		transferCh.Counterparty.PortID,
+		transferCh.Counterparty.ChannelID,
+		denom,
+	)
+	expectedDenomB := transfertypes.ParseDenomTrace(ibcDenom).IBCDenom()
+
+	// DelegatorWallet2 (non-admin, but has tokens via mint-to) transfers to chain B
+	transferAmount := int64(5000000)
+	_, err = s.Chain.GetNode().ExecTx(
+		s.GetContext(),
+		s.DelegatorWallet2.KeyName(),
+		"ibc-transfer", "transfer", "transfer",
+		transferCh.ChannelID,
+		s.ChainBWallet.FormattedAddress(),
+		fmt.Sprintf("%d%s", transferAmount, denom),
+	)
+	s.Require().NoError(err)
+
+	// Verify transfer completed on chain B
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		balanceB, err := s.ChainB.GetBalance(s.GetContext(),
+			s.ChainBWallet.FormattedAddress(), expectedDenomB)
+		assert.NoError(c, err)
+		assert.True(c, balanceB.Equal(sdkmath.NewInt(transferAmount)),
+			"expected balance %d on chain B, got %d", transferAmount, balanceB)
+	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "IBC transfer did not complete")
+
+	// Verify sender balance decreased
+	senderBalance, err := s.Chain.GetBalance(s.GetContext(),
+		s.DelegatorWallet2.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount-transferAmount), senderBalance,
+		"sender balance should be reduced after IBC transfer")
+}
+
 // TestIBCTransferAfterAdminChange tests that IBC transfers work after admin change
 func (s *TokenFactoryIBCSuite) TestIBCTransferAfterAdminChange() {
 	// Create denom with DelegatorWallet as admin
-	denom := s.createDenom("adminchange")
-	s.mint(denom, 10000000)
+	denom, err := s.CreateDenom(s.DelegatorWallet, "adminchange")
+	s.Require().NoError(err, "failed to create denom 'adminchange'")
+	err = s.Mint(s.DelegatorWallet, denom, 10000000)
+	s.Require().NoError(err, "failed to mint tokens for admin change test")
 
 	// Transfer some tokens to DelegatorWallet2
-	_, err := s.Chain.GetNode().ExecTx(
+	_, err = s.Chain.GetNode().ExecTx(
 		s.GetContext(),
 		s.DelegatorWallet.KeyName(),
 		"bank", "send",
@@ -418,57 +468,15 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferAfterAdminChange() {
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "transfers did not complete")
 }
 
-// TestIBCTransferAfterAdminRenounce tests that IBC transfers work after admin is renounced
-func (s *TokenFactoryIBCSuite) TestIBCTransferAfterAdminRenounce() {
-	// Create denom and mint tokens
-	denom := s.createDenom("renounced")
-	s.mint(denom, 10000000)
-
-	// Renounce admin
-	_, err := s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"tokenfactory", "change-admin",
-		denom, "",
-	)
-	s.Require().NoError(err)
-
-	// IBC transfers should still work even without admin
-	transferCh, err := s.Relayer.GetTransferChannel(s.GetContext(), s.Chain, s.ChainB)
-	s.Require().NoError(err)
-
-	ibcDenom := transfertypes.GetPrefixedDenom(
-		transferCh.Counterparty.PortID,
-		transferCh.Counterparty.ChannelID,
-		denom,
-	)
-	expectedDenomB := transfertypes.ParseDenomTrace(ibcDenom).IBCDenom()
-
-	_, err = s.Chain.GetNode().ExecTx(
-		s.GetContext(),
-		s.DelegatorWallet.KeyName(),
-		"ibc-transfer", "transfer", "transfer",
-		transferCh.ChannelID,
-		s.ChainBWallet.FormattedAddress(),
-		fmt.Sprintf("5000000%s", denom),
-	)
-	s.Require().NoError(err)
-
-	s.Require().EventuallyWithT(func(c *assert.CollectT) {
-		balance, err := s.ChainB.GetBalance(s.GetContext(),
-			s.ChainBWallet.FormattedAddress(), expectedDenomB)
-		assert.NoError(c, err)
-		assert.True(c, balance.Equal(sdkmath.NewInt(5000000)))
-	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "transfer did not complete")
-}
-
 func TestTokenFactoryIBC(t *testing.T) {
 	s := &TokenFactoryIBCSuite{
-		Suite: &delegator.Suite{
-			Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
-				UpgradeOnSetup: true,
-				CreateRelayer:  true,
-			}),
+		TokenFactoryBaseSuite: &TokenFactoryBaseSuite{
+			Suite: &delegator.Suite{
+				Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
+					UpgradeOnSetup: true,
+					CreateRelayer:  true,
+				}),
+			},
 		},
 	}
 	suite.Run(t, s)

@@ -3,7 +3,7 @@
 ## UNRELEASED
 
 ### FEATURES
-- Add OpenTelemetry metrics ([\#3805](https://github.com/cosmos/gaia/pull/3805))
+
 
 ### DEPENDENCIES
 - Bump [go.opentelemetry.io/otel/sdk/metric](https://github.com/open-telemetry/opentelemetry-go) from 1.36.0 to 1.37.0 ([#3820](https://github.com/cosmos/gaia/pull/3820))

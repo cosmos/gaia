@@ -54,7 +54,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
@@ -64,7 +63,6 @@ import (
 	liquidtypes "github.com/cosmos/gaia/v26/x/liquid/types"
 	"github.com/cosmos/gaia/v26/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v26/x/metaprotocols/types"
-	"github.com/cosmos/gaia/v26/x/telemetry"
 )
 
 var maccPerms = map[string][]string{
@@ -122,7 +120,6 @@ func appModules(
 		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
 		tendermint.NewAppModule(tmLightClientModule),
 		liquid.NewAppModule(appCodec, app.LiquidKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		telemetry.NewAppModule(&stakingkeeper.Querier{Keeper: app.StakingKeeper}, app.otelClient),
 	}
 }
 

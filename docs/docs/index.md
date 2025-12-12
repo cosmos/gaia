@@ -36,7 +36,7 @@ These community-maintained web and mobile wallets allow you to store & transfer 
 - [ShapeShift](https://app.shapeshift.com/) - Android, iOS, Web
 - [imToken](https://token.im/) - Android, iOS
 - [Math Wallet](https://www.mathwallet.org/en/) - Android, iOS, Web
-- [Rainbow Wallet](https://www.rainbow.one) - Android, iOS
+- [Rainbow Wallet](https://www.rainbow.me) - Android, iOS
 - [Trust Wallet](https://trustwallet.com/) Android, iOS
 - [Komodo Wallet](https://atomicdex.io/en/)
 

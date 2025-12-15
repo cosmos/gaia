@@ -13,6 +13,7 @@
 ### Dependencies
 
 - Bump [github.com/cosmos/gogoproto](https://github.com/cosmos/gogoproto) from 1.7.0 to 1.7.2 ([#3916](https://github.com/cosmos/gaia/pull/3916))
+- Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.4 to 0.53.5 ([#3926](https://github.com/cosmos/gaia/pull/3926))
 
 ## v25.2.0
 

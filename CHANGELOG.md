@@ -13,6 +13,7 @@
 ### Dependencies
 
 - Bump [github.com/cosmos/gogoproto](https://github.com/cosmos/gogoproto) from 1.7.0 to 1.7.2 ([#3916](https://github.com/cosmos/gaia/pull/3916))
+- Bump google.golang.org/protobuf from 1.36.10 to 1.36.11 ([#3925](https://github.com/cosmos/gaia/pull/3925))
 
 ## v25.2.0
 

@@ -5,9 +5,6 @@
 ### DEPENDENCIES
 - Bump [cometbft](https://github.com/cometbft/cometbft) from v0.38.19 to [v0.38.20](https://github.com/cometbft/cometbft/releases/tag/v0.38.20)
 
-### Dependencies
-- Bump [github.com/cosmos/gogoproto](https://github.com/cosmos/gogoproto) from 1.7.0 to 1.7.2 ([#3916](https://github.com/cosmos/gaia/pull/3916))
-
 ## v25.2.0
 
 **November 6, 2025**

@@ -2,6 +2,9 @@
 
 ## UNRELEASED
 
+### DEPENDENCIES
+- Bump [cometbft](https://github.com/cometbft/cometbft) from v0.38.19 to [v0.38.20](https://github.com/cometbft/cometbft/releases/tag/v0.38.20)
+
 ## v25.2.0
 
 **November 6, 2025**

@@ -13,6 +13,7 @@
 
 ### Dependencies
 - Bump [github.com/cosmos/gogoproto](https://github.com/cosmos/gogoproto) from 1.7.0 to 1.7.2 ([#3916](https://github.com/cosmos/gaia/pull/3916))
+- Bump [github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10](https://github.com/cosmos/ibc-go) from 10.3.0 to 10.4.0 ([#3927](https://github.com/cosmos/gaia/pull/3927))
 
 ## v25.2.0
 

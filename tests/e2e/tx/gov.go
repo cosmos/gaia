@@ -40,7 +40,4 @@ func (h *TestingSuite) RunGovExec(c *common.Chain, valIdx int, submitterAddr, go
 	h.Suite.T().Logf("Executing gaiad tx gov %s on chain %s", govCommand, c.ID)
 	h.ExecuteGaiaTxCommand(ctx, c, gaiaCommand, valIdx, validateResponse)
 	h.Suite.T().Logf("Successfully executed %s", govCommand)
-
-	// Wait for the account sequence to be updated on-chain to prevent sequence mismatch errors
-	time.Sleep(2 * time.Second)
 }

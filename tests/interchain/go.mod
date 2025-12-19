@@ -19,13 +19,8 @@ replace (
 require (
 	cosmossdk.io/math v1.5.3
 	github.com/cometbft/cometbft v0.38.20
-<<<<<<< HEAD
 	github.com/cosmos/cosmos-sdk v0.53.0
 	github.com/cosmos/ibc-go/v10 v10.3.0
-=======
-	github.com/cosmos/cosmos-sdk v0.53.4
-	github.com/cosmos/ibc-go/v10 v10.5.0
->>>>>>> 8303076 (bump ibc-go to v10.5.0 (#3931))
 	github.com/cosmos/interchain-security/v7 v7.0.1
 	github.com/docker/docker v28.0.0+incompatible
 	github.com/google/go-github/v62 v62.0.0
@@ -33,12 +28,8 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/prometheus/client_model v0.6.1
 	github.com/prometheus/common v0.63.0
-<<<<<<< HEAD
 	github.com/strangelove-ventures/interchaintest/v8 v8.6.2-0.20240821162827-3ea6fbce13ba
 	github.com/stretchr/testify v1.10.0
-=======
-	github.com/stretchr/testify v1.11.1
->>>>>>> 8303076 (bump ibc-go to v10.5.0 (#3931))
 	github.com/tidwall/gjson v1.18.0
 	github.com/tidwall/sjson v1.2.5
 	go.uber.org/multierr v1.11.0
@@ -276,15 +267,9 @@ require (
 	golang.org/x/tools v0.31.0 // indirect
 	google.golang.org/api v0.222.0 // indirect
 	google.golang.org/genproto v0.0.0-20241118233622-e639e219e697 // indirect
-<<<<<<< HEAD
 	google.golang.org/genproto/googleapis/api v0.0.0-20250414145226-207652e42e2e // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250422160041-2d3770c4ea7f // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
-=======
-	google.golang.org/genproto/googleapis/api v0.0.0-20250707201910-8d1bb00bc6a7 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250707201910-8d1bb00bc6a7 // indirect
-	google.golang.org/protobuf v1.36.8 // indirect
->>>>>>> 8303076 (bump ibc-go to v10.5.0 (#3931))
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/v3 v3.5.2 // indirect

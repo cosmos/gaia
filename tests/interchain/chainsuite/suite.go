@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/stretchr/testify/suite"
-	"golang.org/x/mod/semver"
 )
 
 type Suite struct {
@@ -59,7 +58,7 @@ func (s *Suite) GetContext() context.Context {
 
 func (s *Suite) UpgradeChain() {
 	GetLogger(s.GetContext()).Sugar().Infof("Upgrade %s from %s to %s", s.Env.UpgradeName, s.Env.OldGaiaImageVersion, s.Env.NewGaiaImageVersion)
-	if s.Env.UpgradeName == semver.Major(s.Env.OldGaiaImageVersion) {
+	if s.Env.UpgradeName == s.Env.OldGaiaImageVersion {
 		// Not an on-chain upgrade, just replace the image.
 		s.Require().NoError(s.Chain.ReplaceImagesAndRestart(s.GetContext(), s.Env.NewGaiaImageVersion))
 	} else {

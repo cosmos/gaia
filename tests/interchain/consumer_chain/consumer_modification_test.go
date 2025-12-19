@@ -12,10 +12,10 @@ import (
 	"github.com/cosmos/gaia/v25/tests/interchain/chainsuite"
 	transfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
-	"github.com/strangelove-ventures/interchaintest/v8"
-	"github.com/strangelove-ventures/interchaintest/v8/chain/cosmos"
-	"github.com/strangelove-ventures/interchaintest/v8/ibc"
-	"github.com/strangelove-ventures/interchaintest/v8/testutil"
+	"github.com/cosmos/interchaintest/v10"
+	"github.com/cosmos/interchaintest/v10/chain/cosmos"
+	"github.com/cosmos/interchaintest/v10/ibc"
+	"github.com/cosmos/interchaintest/v10/testutil"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/sync/errgroup"
 )
@@ -361,6 +361,9 @@ func (s *ConsumerModificationSuite) TestLaunchWithAllowListThenModify() {
 	_, err = s.Chain.Validators[3].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[3].Moniker,
 		"provider", "opt-in", consumerID)
 	s.Require().NoError(err)
+
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
+
 	validators, err = consumer.QueryJSON(s.GetContext(), "validators", "tendermint-validator-set")
 	s.Require().NoError(err)
 	s.Require().Equal(4, len(validators.Array()))

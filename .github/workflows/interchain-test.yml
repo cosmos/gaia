@@ -74,7 +74,7 @@ jobs:
           fi
 
       - name: Check out repository code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ steps.get-metadata.outputs.ref_name }}
 
@@ -128,7 +128,7 @@ jobs:
       max-parallel: 10
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ needs.prepare-matrix.outputs.ref_name }}
 

@@ -3,16 +3,9 @@
 ## UNRELEASED
 
 ### DEPENDENCIES
-<<<<<<< HEAD
-- Bump [cometbft](https://github.com/cometbft/cometbft) from v0.38.19 to [v0.38.20](https://github.com/cometbft/cometbft/releases/tag/v0.38.20)
-=======
-- Bump [go.opentelemetry.io/otel/sdk/metric](https://github.com/open-telemetry/opentelemetry-go) from 1.36.0 to 1.37.0 ([#3820](https://github.com/cosmos/gaia/pull/3820))
-- Bump [github.com/go-viper/mapstructure/v2](https://github.com/go-viper/mapstructure) from 2.2.1 to 2.3.0 ([#3813](https://github.com/cosmos/gaia/pull/3813))
-- Bump [github.com/CosmWasm/wasmd](https://github.com/CosmWasm/wasmd) from v0.60.1 to v0.60.2 ([#3888](https://github.com/cosmos/gaia/pull/3888))
-- Bump [github.com/cosmos/gogoproto](https://github.com/cosmos/gogoproto) from 1.7.0 to 1.7.2 ([#3916](https://github.com/cosmos/gaia/pull/3916))
 - Bump [cometbft](https://github.com/cometbft/cometbft) from v0.38.19 to [v0.38.20](https://github.com/cometbft/cometbft/releases/tag/v0.38.20)
 - Bump [github.com/cosmos/ibc-go/](https://github.com/cosmos/ibc-go) from 10.3.0 to [10.5.0](https://github.com/cosmos/ibc-go/releases/tag/v10.5.0)
->>>>>>> 8303076 (bump ibc-go to v10.5.0 (#3931))
+- Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.3 to [0.53.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.4)
 
 ## v25.2.0
 

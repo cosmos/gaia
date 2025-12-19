@@ -13,6 +13,10 @@
 - Bump [cometbft](https://github.com/cometbft/cometbft) from v0.38.19 to [v0.38.20](https://github.com/cometbft/cometbft/releases/tag/v0.38.20)
 - Bump [github.com/cosmos/ibc-go/](https://github.com/cosmos/ibc-go) from 10.3.0 to [10.5.0](https://github.com/cosmos/ibc-go/releases/tag/v10.5.0)
 
+### Dependencies
+
+- Bump [mdast-util-to-hast](https://github.com/syntax-tree/mdast-util-to-hast) from 13.2.0 to 13.2.1 ([#3914](https://github.com/cosmos/gaia/pull/3914))
+
 ## v25.2.0
 
 **November 6, 2025**

@@ -33,7 +33,7 @@ sed -i'' 's/persistent_peers = ""/persistent_peers = '"\"$(curl -s https://raw.g
 sed -i'' 's/enable = false/enable = true/' $HOME/.gaia/config/config.toml
 sed -i'' 's/trust_height = 0/trust_height = <BLOCK_HEIGHT>/' $HOME/.gaia/config/config.toml
 sed -i'' 's/trust_hash = ""/trust_hash = "<BLOCK_HASH>"/' $HOME/.gaia/config/config.toml
-sed -i'' 's/rpc_servers = ""/rpc_servers = "https:\/\/cosmos-rpc.polkachu.com:443,https:\/\/rpc-cosmoshub-ia.cosmosia.notional.ventures:443,https:\/\/rpc.cosmos.network:443"/' $HOME/.gaia/config/config.toml
+sed -i'' 's/rpc_servers = ""/rpc_servers = "https:\/\/cosmos-rpc.polkachu.com:443,https:\/\/rpc.cosmoshub-main.ccvalidators.com:443"/' $HOME/.gaia/config/config.toml
 
 #Start Gaia
 gaiad start --x-crisis-skip-assert-invariants
@@ -51,7 +51,10 @@ mkdir $HOME/.gaia/config -p
 
 ##### Start Quicksync Download
 
-Node Operators can decide how much of historical state they want to preserve by choosing between `Pruned`, `Default`, and `Archive`. See the [Quicksync.io downloads](https://quicksync.io/networks/cosmos.html) for up-to-date snapshot sizes.
+Node Operators can decide how much of historical state they want to preserve by choosing between `Pruned`, `Default`, and `Archive`.
+
+* CryptoCrew provides archive snapshots for the Hub. See their [archive snapshot page](https://github.com/cryptocrew-validators/CryptoCrew-Validators/blob/main/chains/cosmoshub/service_Archive_Snapshot.md) for download instructions.
+* The examples below use Chainlayer's QuickSync service. See their [snapshot downloads page](https://quicksync.io/networks/cosmos.html) for up-to-date snapshot sizes.
 
 ###### Default
 

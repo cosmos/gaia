@@ -4,6 +4,8 @@
 
 ### DEPENDENCIES
 - Bump [cometbft](https://github.com/cometbft/cometbft) from v0.38.19 to [v0.38.20](https://github.com/cometbft/cometbft/releases/tag/v0.38.20)
+- Bump [github.com/cosmos/ibc-go/](https://github.com/cosmos/ibc-go) from 10.3.0 to [10.5.0](https://github.com/cosmos/ibc-go/releases/tag/v10.5.0)
+- Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.3 to [0.53.4](https://github.com/cosmos/cosmos-sdk/releases/tag/v0.53.4)
 
 ## v25.2.0
 

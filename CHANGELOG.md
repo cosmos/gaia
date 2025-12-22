@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## UNRELEASED
+## v25.3.0
+
+*December 19, 2025*
 
 ### DEPENDENCIES
 - Bump [cometbft](https://github.com/cometbft/cometbft) from v0.38.19 to [v0.38.20](https://github.com/cometbft/cometbft/releases/tag/v0.38.20)

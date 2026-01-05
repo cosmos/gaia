@@ -15,38 +15,70 @@ import (
 	"github.com/cosmos/cosmos-sdk/types"
 )
 
+const (
+	// maxTxRetries is the maximum number of retries for sequence mismatch errors
+	maxTxRetries = 3
+	// initialRetryWait is the initial wait time before retrying (doubles each retry)
+	initialRetryWait = 2 * time.Second
+)
+
+// isSequenceMismatch checks if the transaction failed due to account sequence mismatch
+func isSequenceMismatch(stdOut []byte) bool {
+	return bytes.Contains(stdOut, []byte("account sequence mismatch")) ||
+		bytes.Contains(stdOut, []byte("incorrect account sequence"))
+}
+
 func (h *TestingSuite) ExecuteGaiaTxCommand(ctx context.Context, c *Chain, gaiaCommand []string, valIdx int, validation func([]byte, []byte) bool) {
 	if validation == nil {
 		validation = h.DefaultExecValidation(h.Resources.ChainA, 0)
 	}
-	var (
-		outBuf bytes.Buffer
-		errBuf bytes.Buffer
-	)
-	exec, err := h.Resources.DkrPool.Client.CreateExec(docker.CreateExecOptions{
-		Context:      ctx,
-		AttachStdout: true,
-		AttachStderr: true,
-		Container:    h.Resources.ValResources[c.ID][valIdx].Container.ID,
-		User:         "nonroot",
-		Cmd:          gaiaCommand,
-	})
-	h.Suite.Require().NoError(err)
 
-	err = h.Resources.DkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
-		Context:      ctx,
-		Detach:       false,
-		OutputStream: &outBuf,
-		ErrorStream:  &errBuf,
-	})
-	h.Suite.Require().NoError(err)
+	var lastStdOut, lastStdErr []byte
+	retryWait := initialRetryWait
 
-	stdOut := outBuf.Bytes()
-	stdErr := errBuf.Bytes()
-	if !validation(stdOut, stdErr) {
-		h.Suite.Require().FailNowf("Exec validation failed", "stdout: %s, stderr: %s",
-			string(stdOut), string(stdErr))
+	for attempt := 0; attempt <= maxTxRetries; attempt++ {
+		var outBuf, errBuf bytes.Buffer
+
+		exec, err := h.Resources.DkrPool.Client.CreateExec(docker.CreateExecOptions{
+			Context:      ctx,
+			AttachStdout: true,
+			AttachStderr: true,
+			Container:    h.Resources.ValResources[c.ID][valIdx].Container.ID,
+			User:         "nonroot",
+			Cmd:          gaiaCommand,
+		})
+		h.Suite.Require().NoError(err)
+
+		err = h.Resources.DkrPool.Client.StartExec(exec.ID, docker.StartExecOptions{
+			Context:      ctx,
+			Detach:       false,
+			OutputStream: &outBuf,
+			ErrorStream:  &errBuf,
+		})
+		h.Suite.Require().NoError(err)
+
+		lastStdOut = outBuf.Bytes()
+		lastStdErr = errBuf.Bytes()
+
+		if validation(lastStdOut, lastStdErr) {
+			return // Success
+		}
+
+		// Check if it's a sequence mismatch - if so, retry with exponential backoff
+		if attempt < maxTxRetries && isSequenceMismatch(lastStdOut) {
+			h.Suite.T().Logf("Sequence mismatch detected, retrying in %v (attempt %d/%d)",
+				retryWait, attempt+1, maxTxRetries)
+			time.Sleep(retryWait)
+			retryWait *= 2 // Exponential backoff
+			continue
+		}
+
+		// Not a sequence mismatch or out of retries - fail
+		break
 	}
+
+	h.Suite.Require().FailNowf("Exec validation failed", "stdout: %s, stderr: %s",
+		string(lastStdOut), string(lastStdErr))
 }
 
 func (h *TestingSuite) ExecuteHermesCommand(ctx context.Context, hermesCmd []string) ([]byte, error) {

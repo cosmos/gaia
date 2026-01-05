@@ -23,7 +23,7 @@ func NewRelayer(ctx context.Context, testName interchaintest.TestName) (*Relayer
 	rly := interchaintest.NewBuiltinRelayerFactory(
 		ibc.Hermes,
 		GetLogger(ctx),
-		relayer.CustomDockerImage("ghcr.io/informalsystems/hermes", "1.12.0", "2000:2000"),
+		relayer.CustomDockerImage("ghcr.io/informalsystems/hermes", "1.13.1", "2000:2000"),
 	).Build(testName, dockerClient, dockerNetwork)
 	return &Relayer{Relayer: rly}, nil
 }
@@ -219,10 +219,11 @@ func (r *Relayer) ConnectProviderConsumer(ctx context.Context, provider *Chain, 
 	for tCtx.Err() == nil {
 		var ch *ibc.ChannelOutput
 		ch, err = r.GetTransferChannel(ctx, provider, consumer)
-		if err == nil && ch != nil {
-			break
-		} else if err == nil {
-			err = fmt.Errorf("channel not found")
+		if err == nil {
+			if ch.State == "STATE_OPEN" {
+				break
+			}
+			err = fmt.Errorf("channel found but not open yet (state: %s)", ch.State)
 		}
 		time.Sleep(CommitTimeout)
 	}

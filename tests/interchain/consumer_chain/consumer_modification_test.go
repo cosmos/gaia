@@ -361,6 +361,9 @@ func (s *ConsumerModificationSuite) TestLaunchWithAllowListThenModify() {
 	_, err = s.Chain.Validators[3].ExecTx(s.GetContext(), s.Chain.ValidatorWallets[3].Moniker,
 		"provider", "opt-in", consumerID)
 	s.Require().NoError(err)
+
+	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
+
 	validators, err = consumer.QueryJSON(s.GetContext(), "validators", "tendermint-validator-set")
 	s.Require().NoError(err)
 	s.Require().Equal(4, len(validators.Array()))

@@ -10,6 +10,27 @@ Gaia uses a fork of Strangelove's implementaton of the tokenfactory module: [cos
 
 You can find more details in the [module documentation](https://github.com/cosmos/tokenfactory/blob/main/x/tokenfactory/README.md).
 
+## Admin Accounts
+
+Any account can create a new token with the `create-denom` transaction. The account that creates the denom becomes the admin for that token.
+Admin accounts are able to:
+* Mint tokens to themselves
+* Mint tokens to other accounts
+* Burn tokens from their balances
+* Burn tokens from other accounts' balances (requires the `EnableBurnFrom` capability to be enabled)
+* Transfer tokens between other accounts (requires the `EnableForceTransfer` capability to be enabled)
+* Modify the denom metadata (requires the `EnableSetMetadata` capability to be enabled)
+
+Admin account keys must be managed responsibly. Even in the case where the `burn-from` and `force-transfer` transactions are not enabled, a compromised admin key will allow an attacker to mint large amounts of tokens and revoke access by changing the admin account.
+
+### Mitigating Admin Account Risks
+
+The following actions can significantly reduce the risk of a single compromised key leading to unauthorized minting or admin changes:
+
+* Set up a multisig account to be the denom admin instead of a single account.
+* Grant authorization to limit what operator accounts can do. For example, an operator account can be granted authorization from the admin account to execute mint messages only. The authz module also enables time-locked operations via the expiration flag.
+* Transfer admin to the gov module account (`cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn`). This makes community proposals required for any admin actions.
+
 ## Client
 
 ### CLI

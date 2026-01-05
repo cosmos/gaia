@@ -54,7 +54,7 @@ jobs:
           path: ./profile.out
 
   test-e2e:
-    runs-on: Gaia-Runner-medium
+    runs-on: depot-ubuntu-22.04-4
     timeout-minutes: 45
     steps:
       - uses: actions/setup-go@v5
@@ -102,7 +102,7 @@ jobs:
           name: "${{ github.sha }}-coverage"
 
   liveness-test:
-    runs-on: Gaia-Runner-medium
+    runs-on: depot-ubuntu-22.04-4
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5

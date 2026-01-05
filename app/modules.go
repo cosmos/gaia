@@ -124,7 +124,6 @@ func appModules(
 		tendermint.NewAppModule(tmLightClientModule),
 		liquid.NewAppModule(appCodec, app.LiquidKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(tokenfactorytypes.ModuleName)),
-		telemetry.NewAppModule(&stakingkeeper.Querier{Keeper: app.StakingKeeper}, app.otelClient),
 	}
 }
 

@@ -126,9 +126,9 @@ func (s *TokenFactorySuite) TestSetDenomMetadataCLI() {
 		s.DelegatorWallet.KeyName(),
 		"tokenfactory", "modify-metadata",
 		denom,
-		"META",                       // ticker-symbol
-		"A test token for metadata",  // description
-		"6",                          // exponent
+		"META",                      // ticker-symbol
+		"A test token for metadata", // description
+		"6",                         // exponent
 	)
 	s.Require().NoError(err)
 
@@ -518,7 +518,7 @@ func (s *TokenFactorySuite) TestQueryAllDenoms() {
 	s.Require().True(denomsMap[denom2])
 }
 
-func TestTokenFactory(t *testing.T) {
+func TestBasicTokenFactory(t *testing.T) {
 	s := &TokenFactorySuite{
 		TokenFactoryBaseSuite: &TokenFactoryBaseSuite{
 			Suite: &delegator.Suite{

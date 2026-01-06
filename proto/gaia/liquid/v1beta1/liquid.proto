@@ -93,6 +93,7 @@ message LiquidValidator {
   string liquid_shares = 3 [
     (gogoproto.moretags) = "yaml:\"liquid_shares\"",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable) = false
+    (gogoproto.nullable) = false,
+    (cosmos_proto.scalar) = "cosmos.Dec"
   ];
 }

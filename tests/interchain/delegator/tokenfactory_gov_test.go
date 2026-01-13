@@ -45,10 +45,6 @@ func (s *TokenFactoryGovSuite) TestParamChange() {
 	s.Require().NoError(err)
 	newGasConsume := currentGasConsumeUint * 2
 
-	// Get gov module authority address
-	authority, err := s.Chain.GetGovernanceAddress(s.GetContext())
-	s.Require().NoError(err)
-
 	// Get current creation fee to include in params
 	currentFee := params.Get("denom_creation_fee.0.amount").String()
 	s.Require().NotEmpty(currentFee)
@@ -57,6 +53,10 @@ func (s *TokenFactoryGovSuite) TestParamChange() {
 	currentFeeInt, ok := sdkmath.NewIntFromString(currentFee)
 	s.Require().True(ok)
 	newFee := currentFeeInt.MulRaw(2)
+
+	// Get gov module authority address
+	authority, err := s.Chain.GetGovernanceAddress(s.GetContext())
+	s.Require().NoError(err)
 
 	// Create MsgUpdateParams message as JSON
 	paramChangeMessage := fmt.Sprintf(`{

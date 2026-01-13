@@ -30,7 +30,6 @@ type LSMSuite struct {
 	*chainsuite.Suite
 	LinkedChain *chainsuite.Chain
 	LSMWallets  map[string]ibc.Wallet
-	ShareFactor sdkmath.Int
 }
 
 type ProposalJSON struct {
@@ -83,7 +82,7 @@ func (s *LSMSuite) TestLSMHappyPath() {
 		sharesPostTokenize, err := s.Chain.QueryJSON(s.GetContext(), "liquid_validator.liquid_shares", "liquid",
 			"liquid-validator", providerWallet.ValoperAddress)
 		s.Require().NoError(err)
-		s.checkAMinusBEqualsX(sharesPostTokenize.String(), sharesPreTokenize.String(), sdkmath.NewInt(tokenize).Mul(s.ShareFactor))
+		s.checkAMinusBEqualsX(sharesPostTokenize.String(), sharesPreTokenize.String(), sdkmath.NewInt(tokenize))
 
 		balances, err := s.Chain.BankQueryAllBalances(s.GetContext(), s.LSMWallets[lsmLiquid1Moniker].FormattedAddress())
 		s.Require().NoError(err)
@@ -278,7 +277,7 @@ func (s *LSMSuite) TestTokenizeVested() {
 		"liquid-validator", validatorWallet.ValoperAddress)
 	s.Require().NoError(err)
 	sharesPostTokenize := sharesPostTokenizeResult.String()
-	s.checkAMinusBEqualsX(sharesPostTokenize, sharesPreTokenize, sdkmath.NewInt(tokenizeAmount).Mul(s.ShareFactor))
+	s.checkAMinusBEqualsX(sharesPostTokenize, sharesPreTokenize, sdkmath.NewInt(tokenizeAmount))
 }
 
 func (s *LSMSuite) TestLSMParams() {
@@ -553,11 +552,6 @@ func (s *LSMSuite) SetupSuite() {
 	secondChain, err := s.Chain.AddLinkedChain(s.GetContext(), s.T(), s.Relayer, chainsuite.DefaultChainSpec(s.Env))
 	s.Require().NoError(err)
 	s.LinkedChain = secondChain
-
-	shareFactor, ok := sdkmath.NewIntFromString("1000000000000000000")
-	s.Require().True(ok)
-	s.ShareFactor = shareFactor
-
 	s.setupLSMWallets()
 }
 

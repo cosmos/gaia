@@ -245,18 +245,58 @@ func (s *TokenFactoryCosmWasmSuite) TestContractQueryDenom() {
 	s.Require().Equal(denom, denomResult.String(), "query result: %s", result)
 }
 
+// TestContractUnauthorizedDenomMint tests that an admin cannot mint non-factory denoms.
+// We try to mint uatom with the contract.
+func (s *TokenFactoryCosmWasmSuite) TestContractUnauthorizedDenomMint() {
+	denom := chainsuite.Uatom
+	mintAmount := int64(1000000)
+	// The contract tries to mint uatom - should fail
+	err := s.executeContract(mintTokensMsg(denom, mintAmount, s.DelegatorWallet.FormattedAddress()))
+
+	s.Require().Error(err)
+	s.Require().Contains(err.Error(), "Invalid denom")
+}
+
 // TestContractUnauthorizedMint tests that a non-admin cannot mint.
-// We deploy a second contract and try to mint on a denom created by the first.
+// We create a brand new denom and try to mint on it with a non-contract wallet.
 func (s *TokenFactoryCosmWasmSuite) TestContractUnauthorizedMint() {
-	subdenom := "protected"
+	subdenom := "notmintable"
 
 	// Create denom via main contract (with creation fee)
 	denom := s.createDenomViaContract(subdenom)
 
-	// DelegatorWallet2 (not the contract) tries to mint via CLI - should fail
-	_, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet2.KeyName(),
+	// DelegatorWallet (not the contract) tries to mint via CLI - should fail
+	_, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet.KeyName(),
 		"tokenfactory", "mint",
 		fmt.Sprintf("1000000%s", denom),
+	)
+
+	s.Require().Error(err)
+	s.Require().Contains(err.Error(), "unauthorized")
+}
+
+// TestContractUnauthorizedBurn tests that a non-admin cannot burn.
+// We create a brand new denom, mint to increase the wallet balance, and try to burn with the (non-admin) wallet.
+func (s *TokenFactoryCosmWasmSuite) TestContractUnauthorizedBurn() {
+	subdenom := "notburnable"
+
+	// Create denom via main contract (with creation fee)
+	denom := s.createDenomViaContract(subdenom)
+
+	// Mint tokens
+	mintAmount := int64(1000000)
+	err := s.executeContract(mintTokensMsg(denom, mintAmount, s.DelegatorWallet.FormattedAddress()))
+	s.Require().NoError(err)
+
+	// Verify increased balance
+	balance, err := s.Chain.GetBalance(s.GetContext(), s.DelegatorWallet.FormattedAddress(), denom)
+	s.Require().NoError(err)
+	s.Require().Equal(sdkmath.NewInt(mintAmount), balance)
+
+	// DelegatorWallet (not the contract) tries to burn via CLI - should fail
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet.KeyName(),
+		"tokenfactory", "burn",
+		fmt.Sprintf("%d%s", mintAmount, denom),
 	)
 	s.Require().Error(err)
 	s.Require().Contains(err.Error(), "unauthorized")

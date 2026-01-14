@@ -29,14 +29,23 @@ func (s *TokenFactoryGovSuite) SetupSuite() {
 		s.Chain.ValidatorWallets[0].ValoperAddress, stakeAmount)
 }
 
-// TestParamChangeCreationFee tests changing the denom creation fee via governance
-func (s *TokenFactoryGovSuite) TestParamChangeCreationFee() {
+// TestParamChange tests changing the denom creation fee and gas consumed via governance
+func (s *TokenFactoryGovSuite) TestParamChange() {
 	// Query current params
 	params, err := s.Chain.QueryJSON(s.GetContext(),
 		"params", "tokenfactory", "params")
 	s.Require().NoError(err)
 
-	// Get current creation fee
+	// Get current gas consume value
+	currentGasConsume := params.Get("denom_creation_gas_consume").String()
+	s.Require().NotEmpty(currentGasConsume)
+
+	// Propose new gas consume value (double the current value)
+	currentGasConsumeUint, err := strconv.ParseUint(currentGasConsume, 10, 64)
+	s.Require().NoError(err)
+	newGasConsume := currentGasConsumeUint * 2
+
+	// Get current creation fee to include in params
 	currentFee := params.Get("denom_creation_fee.0.amount").String()
 	s.Require().NotEmpty(currentFee)
 
@@ -59,11 +68,12 @@ func (s *TokenFactoryGovSuite) TestParamChangeCreationFee() {
 					"denom": "uatom",
 					"amount": "%s"
 				}
-			]
+			],
+			"denom_creation_gas_consume": "%d"
 		}
-	}`, authority, newFee.String())
+	}`, authority, newFee.String(), newGasConsume)
 
-	// Create proposal JSON (workaround for interchaintest decoding issue)
+	// Create proposal JSON
 	type ProposalJSON struct {
 		Messages       []json.RawMessage `json:"messages"`
 		InitialDeposit string            `json:"deposit"`
@@ -75,8 +85,8 @@ func (s *TokenFactoryGovSuite) TestParamChangeCreationFee() {
 	proposal := ProposalJSON{
 		Messages:       []json.RawMessage{json.RawMessage(paramChangeMessage)},
 		InitialDeposit: fmt.Sprintf("%duatom", chainsuite.GovMinDepositAmount),
-		Title:          "Change TokenFactory Creation Fee",
-		Summary:        "Increase denom creation fee to " + newFee.String(),
+		Title:          "Change TokenFactory Params",
+		Summary:        fmt.Sprintf("Increase denom creation fee to %s and gas consume to %d", newFee.String(), newGasConsume),
 		Metadata:       "ipfs://CID",
 	}
 
@@ -84,12 +94,12 @@ func (s *TokenFactoryGovSuite) TestParamChangeCreationFee() {
 	proposalBytes, err := json.MarshalIndent(proposal, "", "  ")
 	s.Require().NoError(err)
 
-	err = s.Chain.GetNode().WriteFile(s.GetContext(), proposalBytes, "tokenfactory-proposal.json")
+	err = s.Chain.GetNode().WriteFile(s.GetContext(), proposalBytes, "tokenfactory-param-proposal.json")
 	s.Require().NoError(err)
 
-	proposalPath := s.Chain.GetNode().HomeDir() + "/tokenfactory-proposal.json"
+	proposalPath := s.Chain.GetNode().HomeDir() + "/tokenfactory-param-proposal.json"
 
-	// Submit proposal using ExecTx to avoid interchaintest decoding
+	// Submit proposal
 	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet.FormattedAddress(),
 		"gov", "submit-proposal", proposalPath)
 	s.Require().NoError(err)
@@ -118,6 +128,9 @@ func (s *TokenFactoryGovSuite) TestParamChangeCreationFee() {
 	updatedParams, err := s.Chain.QueryJSON(s.GetContext(),
 		"params", "tokenfactory", "params")
 	s.Require().NoError(err)
+
+	newGasConsumeStr := updatedParams.Get("denom_creation_gas_consume").String()
+	s.Require().Equal(fmt.Sprintf("%d", newGasConsume), newGasConsumeStr)
 
 	newFeeStr := updatedParams.Get("denom_creation_fee.0.amount").String()
 	s.Require().Equal(newFee.String(), newFeeStr)
@@ -155,9 +168,9 @@ func (s *TokenFactoryGovSuite) TestMetadataModification() {
 		s.DelegatorWallet.KeyName(),
 		"tokenfactory", "modify-metadata",
 		denom,
-		"META",                 // ticker-symbol
-		"Test metadata token",  // description
-		"6",                    // exponent
+		"META",                // ticker-symbol
+		"Test metadata token", // description
+		"6",                   // exponent
 	)
 	s.Require().NoError(err)
 

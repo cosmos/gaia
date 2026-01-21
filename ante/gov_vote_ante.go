@@ -105,6 +105,13 @@ func (g GovVoteDecorator) validMsg(ctx sdk.Context, m sdk.Msg) error {
 		return nil
 	}
 
+	return ValidateVoterStake(ctx, g.stakingKeeper, accAddr)
+}
+
+// ValidateVoterStake checks if an address has sufficient stake to vote.
+// This function is exported so it can be used by both the ante decorator
+// and the wasm message handler decorator.
+func ValidateVoterStake(ctx sdk.Context, stakingKeeper *stakingkeeper.Keeper, voter sdk.AccAddress) error {
 	if minStakedTokens.IsZero() {
 		return nil
 	}
@@ -112,12 +119,12 @@ func (g GovVoteDecorator) validMsg(ctx sdk.Context, m sdk.Msg) error {
 	enoughStake := false
 	delegationCount := 0
 	stakedTokens := math.LegacyNewDec(0)
-	err = g.stakingKeeper.IterateDelegatorDelegations(ctx, accAddr, func(delegation stakingtypes.Delegation) bool {
+	err := stakingKeeper.IterateDelegatorDelegations(ctx, voter, func(delegation stakingtypes.Delegation) bool {
 		validatorAddr, err := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
 		if err != nil {
 			panic(err) // shouldn't happen
 		}
-		validator, err := g.stakingKeeper.GetValidator(ctx, validatorAddr)
+		validator, err := stakingKeeper.GetValidator(ctx, validatorAddr)
 		if err == nil {
 			shares := delegation.Shares
 			tokens := validator.TokensFromSharesTruncated(shares)

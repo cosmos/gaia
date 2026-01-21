@@ -60,9 +60,8 @@ func (h *GovVoteMessageHandler) DispatchMsg(
 // validateGovVote checks if the message is a governance vote and validates
 // that the contract has sufficient stake to vote.
 func (h *GovVoteMessageHandler) validateGovVote(ctx sdk.Context, contractAddr sdk.AccAddress, msg wasmvmtypes.CosmosMsg) error {
-	isVoteMsg := msg.Gov != nil && msg.Gov.Vote != nil
-
 	// Check for standard Gov.Vote message
+	isVoteMsg := msg.Gov != nil && msg.Gov.Vote != nil
 
 	// Check for Gov.VoteWeighted message
 	if msg.Gov != nil && msg.Gov.VoteWeighted != nil {

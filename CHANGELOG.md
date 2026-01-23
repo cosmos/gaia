@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## UNRELEASED
+## v25.3.2
+
+*January 23, 2026*
 
 ### DEPENDENCIES
 - Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.20 to 0.38.21 ([#3951](https://github.com/cosmos/gaia/pull/3951))

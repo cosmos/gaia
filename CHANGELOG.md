@@ -1,14 +1,14 @@
 # CHANGELOG
 
-## UNRELEASED
+## v26.0.0
 
 ### FEATURES
 
+- Add `x/tokenfactory` module ([#3941](https://github.com/cosmos/gaia/pull/3941))
 - Add stake validation to vote messages from wasm contracts ([#3949](https://github.com/cosmos/gaia/pull/3949))
 
 ### BUG-FIXES
-- Add missing cosmos_proto.scalar cosmos.Dec annotation to x/liquid LiquidValidator.liquid_shares 
-  field ([#3936](https://github.com/cosmos/gaia/pull/3936))
+- Add missing cosmos_proto.scalar cosmos.Dec annotation to x/liquid LiquidValidator.liquid_shares field ([#3936](https://github.com/cosmos/gaia/pull/3936))
 
 ### DEPENDENCIES
 - Bump [github.com/go-viper/mapstructure/v2](https://github.com/go-viper/mapstructure) from 2.2.1 to 2.3.0 ([#3813](https://github.com/cosmos/gaia/pull/3813))

@@ -1,8 +1,11 @@
 package delegator_test
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+	"path"
 	"strconv"
 	"testing"
 
@@ -14,7 +17,9 @@ import (
 	"github.com/cosmos/gaia/v26/tests/interchain/chainsuite"
 	"github.com/cosmos/gaia/v26/tests/interchain/delegator"
 	"github.com/cosmos/interchaintest/v10"
+	"github.com/cosmos/interchaintest/v10/chain/cosmos"
 	"github.com/cosmos/interchaintest/v10/ibc"
+	"github.com/cosmos/interchaintest/v10/testutil"
 )
 
 const (
@@ -31,6 +36,14 @@ const (
 
 type GovSuite struct {
 	*delegator.Suite
+	Host            *chainsuite.Chain
+	icaAddress      string
+	srcChannel      *ibc.ChannelOutput
+	srcAddress      string
+	ibcStakeDenom   string
+	contractWasm    []byte
+	contractPath    string
+	contractAddress string
 }
 
 func (s *GovSuite) SetupSuite() {
@@ -39,6 +52,47 @@ func (s *GovSuite) SetupSuite() {
 	node := s.Chain.GetNode()
 	node.StakingDelegate(s.GetContext(), s.DelegatorWallet.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, string(govStakeAmount)+s.Chain.Config().Denom)
 	node.StakingDelegate(s.GetContext(), s.DelegatorWallet2.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, string(govStakeAmount)+s.Chain.Config().Denom)
+
+	// WASM: The delegate-vote contract will be used to test cosmwasm governance votes
+	contractWasm, err := os.ReadFile("testdata/delegate_vote.wasm")
+	s.Require().NoError(err)
+	s.contractWasm = contractWasm
+
+	// WriteFile expects a relative path from the node's home directory
+	s.Require().NoError(s.Chain.GetNode().WriteFile(s.GetContext(), s.contractWasm, "delegate_vote.wasm"))
+
+	// Store the contract path for later use - use full path within the container
+	s.contractPath = path.Join(s.Chain.GetNode().HomeDir(), "delegate_vote.wasm")
+
+	// Store the contract using tx wasm store command directly
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(),
+		"wasm", "store", s.contractPath, "--gas", "auto",
+	)
+	s.Require().NoError(err)
+
+	// Wait for blocks to ensure the contract is stored before instantiating
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 5, s.Chain))
+
+	// Instantiate the contract
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(),
+		"wasm", "instantiate", "1", "{}", "--label", "delegate-vote", "--no-admin", "--gas", "auto",
+	)
+	s.Require().NoError(err)
+
+	// Obtain the contract address
+	contractInfo, err := s.Chain.QueryJSON(s.GetContext(), "contracts", "wasm", "list-contract-by-code", "1")
+	s.Require().NoError(err)
+	s.contractAddress = contractInfo.Get("0").String()
+	fmt.Printf("Delegate-vote contract address: %s\n", s.contractAddress)
+
+	// Fund contract address with 10ATOM
+	err = s.Chain.SendFunds(s.GetContext(), interchaintest.FaucetAccountKeyName, ibc.WalletAmount{
+		Denom:   s.Chain.Config().Denom,
+		Amount:  sdkmath.NewInt(10000000),
+		Address: s.contractAddress,
+	})
+	s.Require().NoError(err)
+
 }
 
 func (s *GovSuite) TestProposal() {
@@ -229,9 +283,273 @@ func (s *GovSuite) TestGovFundCommunityPool() {
 	s.Require().GreaterOrEqual(balanceDifference, fundAmount)
 }
 
+func (s *GovSuite) TestVoteStakeValidation() {
+	// Test that votes without sufficient stake are rejected
+
+	// Submit proposal
+	prop, err := s.Chain.BuildProposal(nil, "Stake Validation Proposal", "Test Proposal", "ipfs://CID", chainsuite.GovDepositAmount, s.DelegatorWallet.FormattedAddress(), false)
+	s.Require().NoError(err)
+	result, err := s.Chain.SubmitProposal(s.GetContext(), s.DelegatorWallet.KeyName(), prop)
+	s.Require().NoError(err)
+	proposalId := result.ProposalID
+	// print proposalId
+	fmt.Println("Proposal ID:", proposalId)
+
+	// Get status
+	proposalIDuint, err := strconv.ParseUint(proposalId, 10, 64)
+	proposal, err := s.Chain.GovQueryProposalV1(s.GetContext(), proposalIDuint)
+	s.Require().NoError(err)
+
+	currentStatus := proposal.Status.String()
+	s.Require().Equal("PROPOSAL_STATUS_VOTING_PERIOD", currentStatus)
+
+	// Submit vote from delegator with insufficient stake
+	node := s.Chain.GetNode()
+	// Delegate 1uatom from delegator to ensure insufficient stake
+	node.StakingDelegate(s.GetContext(), s.DelegatorWallet3.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, "2uatom")
+	// Print delegator 3 delegations
+	response, err := s.Chain.StakingQueryDelegations(s.GetContext(), s.DelegatorWallet3.FormattedAddress())
+	s.Require().NoError(err)
+	// Verify the delegation amount
+	delegationBalance := response[0].Balance
+	// Verify it's exactly 2uatom
+	s.Require().Equal("2", delegationBalance.Amount.String())
+	s.Require().Equal("uatom", delegationBalance.Denom)
+
+	// Attempt to submit vote with insufficient stake
+	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(), "gov", "vote", proposalId, "yes", "--gas", "auto")
+	s.Require().Error(err)
+
+	// Attempt to submit weighted vote with insufficient stake
+	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(), "gov", "weighted-vote", proposalId, "yes=0.5,no=0.5", "--gas", "auto")
+	s.Require().Error(err)
+
+	err = node.StakingDelegate(s.GetContext(), s.DelegatorWallet3.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, string(govStakeAmount)+s.Chain.Config().Denom)
+	s.Require().NoError(err)
+
+	// Attempt to submit vote with required stake
+	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(), "gov", "vote", proposalId, "yes", "--gas", "auto")
+	s.Require().NoError(err)
+
+	// Attempt to submit weighted vote with required stake
+	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(), "gov", "weighted-vote", proposalId, "yes=0.5,no=0.5", "--gas", "auto")
+	s.Require().NoError(err)
+
+}
+
+func (s *GovSuite) TestAuthzVoteStakeValidation() {
+	// Test that votes submitted through authz without sufficient stake are rejected
+
+	// Unbond from delegator2 to ensure insufficient stake
+	node := s.Chain.GetNode()
+	err := node.StakingUnbond(s.GetContext(), s.DelegatorWallet2.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, string(govStakeAmount)+s.Chain.Config().Denom)
+	s.Require().NoError(err)
+
+	// First grant delegation and vote authorization from delegator 2 to delegator 3
+
+	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet2.KeyName(), "authz", "grant", s.DelegatorWallet3.FormattedAddress(),
+		"delegate", "--allowed-validators", s.Chain.ValidatorWallets[0].ValoperAddress, "--gas", "auto")
+	s.Require().NoError(err)
+	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet2.KeyName(), "authz", "grant", s.DelegatorWallet3.FormattedAddress(),
+		"generic", "--msg-type", "/cosmos.gov.v1.MsgVote", "--gas", "auto")
+	s.Require().NoError(err)
+	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet2.KeyName(), "authz", "grant", s.DelegatorWallet3.FormattedAddress(),
+		"generic", "--msg-type", "/cosmos.gov.v1.MsgVoteWeighted", "--gas", "auto")
+	s.Require().NoError(err)
+
+	// Verify grants to grantee
+	grants, err := s.Chain.AuthzQueryGrants(s.GetContext(), s.DelegatorWallet2.FormattedAddress(), s.DelegatorWallet3.FormattedAddress(), "")
+	s.Require().NoError(err)
+	s.Require().GreaterOrEqual(len(grants), 3)
+	fmt.Println("Authz grants from delegator 2 to delegator 3:", grants)
+
+	// Delegate 2uatom from delegator2 via authz to ensure insufficient stake
+	err = s.authzGenExec(s.GetContext(), s.DelegatorWallet3, "staking", "delegate", s.Chain.ValidatorWallets[0].ValoperAddress, "2uatom", "--from", string(s.DelegatorWallet2.FormattedAddress()))
+	s.Require().NoError(err)
+	// _, err = node.ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(), "authz", "exec", s.DelegatorWallet2.FormattedAddress(),
+	// "staking", "delegate", s.Chain.ValidatorWallets[0].ValoperAddress, "2uatom", "--gas", "auto")
+	// s.Require().NoError(err)
+	// Print delegator2 delegations
+	response, err := s.Chain.StakingQueryDelegations(s.GetContext(), s.DelegatorWallet2.FormattedAddress())
+	s.Require().NoError(err)
+	// Verify the delegation amount
+	delegationBalance := response[0].Balance
+	// Verify it's exactly 2uatom
+	s.Require().Equal("2", delegationBalance.Amount.String())
+	s.Require().Equal("uatom", delegationBalance.Denom)
+
+	// Submit proposal
+	prop, err := s.Chain.BuildProposal(nil, "Stake Validation Proposal", "Test Proposal", "ipfs://CID", chainsuite.GovDepositAmount, s.DelegatorWallet.FormattedAddress(), false)
+	s.Require().NoError(err)
+	result, err := s.Chain.SubmitProposal(s.GetContext(), s.DelegatorWallet.KeyName(), prop)
+	s.Require().NoError(err)
+	proposalId := result.ProposalID
+	// print proposalId
+	fmt.Println("Proposal ID:", proposalId)
+
+	// Get status
+	proposalIDuint, err := strconv.ParseUint(proposalId, 10, 64)
+	proposal, err := s.Chain.GovQueryProposalV1(s.GetContext(), proposalIDuint)
+	s.Require().NoError(err)
+
+	currentStatus := proposal.Status.String()
+	s.Require().Equal("PROPOSAL_STATUS_VOTING_PERIOD", currentStatus)
+
+	// Submit vote from delegator with insufficient stake via authz
+	// Submit authz vote tx
+	err = s.authzGenExec(s.GetContext(), s.DelegatorWallet3, "gov", "vote", proposalId, "yes", "--from", string(s.DelegatorWallet2.FormattedAddress()))
+	s.Require().Error(err)
+	// Submit authz weighted-vote tx
+	err = s.authzGenExec(s.GetContext(), s.DelegatorWallet3, "gov", "weighted-vote", proposalId, "yes=0.5,no=0.5", "--from", string(s.DelegatorWallet2.FormattedAddress()))
+	s.Require().Error(err)
+
+	// Delegate 1 atom from delegator2 via authz to ensure insufficient stake
+	err = s.authzGenExec(s.GetContext(), s.DelegatorWallet3, "staking", "delegate", s.Chain.ValidatorWallets[0].ValoperAddress, "1000000uatom", "--from", string(s.DelegatorWallet2.FormattedAddress()))
+	s.Require().NoError(err)
+
+	// Submit vote from delegator with required stake via authz
+	// Submit authz vote tx
+	err = s.authzGenExec(s.GetContext(), s.DelegatorWallet3, "gov", "vote", proposalId, "yes", "--from", string(s.DelegatorWallet2.FormattedAddress()))
+	s.Require().NoError(err)
+	// Submit authz weighted-vote tx
+	err = s.authzGenExec(s.GetContext(), s.DelegatorWallet3, "gov", "weighted-vote", proposalId, "yes=0.5,no=0.5", "--from", string(s.DelegatorWallet2.FormattedAddress()))
+	s.Require().NoError(err)
+}
+
+func (s *GovSuite) TestWasmVoteStakeValidation() {
+	// Test that votes submitted through cosmwasm contracts without sufficient stake are rejected
+
+	// Delegate 2uatom from contract address
+	// Excecute 'delegate' on contract
+	jsonDelegate := fmt.Sprintf(`{
+		"delegate": {
+			"validator": "%s",
+			"amount": {
+				"denom": "%s",
+				"amount": "2"
+			}
+		}
+	}`, s.Chain.ValidatorWallets[0].ValoperAddress, s.Chain.Config().Denom)
+
+	_, err := s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(),
+		"wasm", "execute", s.contractAddress, jsonDelegate, "--gas", "auto",
+	)
+	s.Require().NoError(err)
+
+	// Verify delegation
+	response, err := s.Chain.StakingQueryDelegations(s.GetContext(), s.contractAddress)
+	s.Require().NoError(err)
+	// Verify the delegation amount
+	delegationBalance := response[0].Balance
+	// Verify it's exactly 2uatom
+	s.Require().Equal("2", delegationBalance.Amount.String())
+	s.Require().Equal("uatom", delegationBalance.Denom)
+	// Print delegations
+	fmt.Println("Contract Delegations:", response)
+
+	// Submit proposal
+	prop, err := s.Chain.BuildProposal(nil, "Stake Validation Proposal", "Test Proposal", "ipfs://CID", chainsuite.GovDepositAmount, s.DelegatorWallet.FormattedAddress(), false)
+	s.Require().NoError(err)
+	result, err := s.Chain.SubmitProposal(s.GetContext(), s.DelegatorWallet.KeyName(), prop)
+	s.Require().NoError(err)
+	proposalId := result.ProposalID
+	// print proposalId
+	fmt.Println("Proposal ID:", proposalId)
+
+	// Get status
+	proposalIDuint, err := strconv.ParseUint(proposalId, 10, 64)
+	proposal, err := s.Chain.GovQueryProposalV1(s.GetContext(), proposalIDuint)
+	s.Require().NoError(err)
+
+	currentStatus := proposal.Status.String()
+	s.Require().Equal("PROPOSAL_STATUS_VOTING_PERIOD", currentStatus)
+
+	// Submit vote from contract with insufficient stake
+	jsonVote := fmt.Sprintf(`{
+		"vote": {
+			"proposal_id": %s,
+			"option": "yes"
+		}
+	}`, proposalId)
+
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(),
+		"wasm", "execute", s.contractAddress, jsonVote, "--gas", "auto",
+	)
+	s.Require().Error(err)
+
+	// Print tally after the vote
+	tallyAfter, err := s.Chain.QueryJSON(s.GetContext(), "tally", "gov", "tally", proposalId)
+	s.Require().NoError(err)
+	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("Tally after contract vote with insufficient stake: %s", tallyAfter.String())
+
+	// Delegate more tokens from contract to reach required stake
+	jsonDelegate = fmt.Sprintf(`{
+		"delegate": {
+			"validator": "%s",
+			"amount": {
+				"denom": "%s",
+				"amount": "%s"
+			}
+		}
+	}`, s.Chain.ValidatorWallets[0].ValoperAddress, s.Chain.Config().Denom, "1000000")
+
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(),
+		"wasm", "execute", s.contractAddress, jsonDelegate, "--gas", "auto",
+	)
+	s.Require().NoError(err)
+
+	// Submit vote from contract with sufficient stake
+	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(),
+		"wasm", "execute", s.contractAddress, jsonVote, "--gas", "auto",
+	)
+	s.Require().NoError(err)
+
+	// Print tally after the vote
+	tallyAfter, err = s.Chain.QueryJSON(s.GetContext(), "tally", "gov", "tally", proposalId)
+	s.Require().NoError(err)
+	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("Tally after contract vote with required stake: %s", tallyAfter.String())
+
+	// Test vote was counted
+	vote, err := s.Chain.QueryJSON(s.GetContext(), "vote", "gov", "vote", proposalId, s.contractAddress)
+	s.Require().NoError(err)
+	// Print vote
+	chainsuite.GetLogger(s.GetContext()).Sugar().Infof("Contract Vote: %s", vote.String())
+	actual_yes_weight := vote.Get("options.#(option==\"VOTE_OPTION_YES\").weight")
+	s.Require().Equal(float64(1.0), actual_yes_weight.Float())
+}
+
 func TestGovModule(t *testing.T) {
+	// Use permissionless wasm params
+	wasmGenesis := append(chainsuite.DefaultGenesis(),
+		cosmos.NewGenesisKV("app_state.wasm.params.code_upload_access.permission", "Everybody"),
+		cosmos.NewGenesisKV("app_state.wasm.params.instantiate_default_permission", "Everybody"),
+	)
+	// Create custom chain spec
+	chainSpec := chainsuite.DefaultChainSpec(chainsuite.GetEnvironment())
+	chainSpec.ChainConfig.ModifyGenesis = cosmos.ModifyGenesis(wasmGenesis)
+
 	s := &GovSuite{Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
-		UpgradeOnSetup: true,
+		ChainSpec:      chainSpec,
+		UpgradeOnSetup: false,
+		CreateRelayer:  true,
 	})}}
 	suite.Run(t, s)
+}
+
+func (s GovSuite) authzGenExec(ctx context.Context, grantee ibc.Wallet, command ...string) error {
+	txjson, err := s.Chain.GenerateTx(ctx, 0, command...)
+	s.Require().NoError(err)
+
+	// WriteFile expects a relative path from the node's home directory
+	err = s.Chain.GetNode().WriteFile(ctx, []byte(txjson), "tx.json")
+	s.Require().NoError(err)
+
+	// ExecTx needs the full path within the container
+	txFilePath := path.Join(s.Chain.GetNode().HomeDir(), "tx.json")
+	_, err = s.Chain.GetNode().ExecTx(
+		ctx,
+		grantee.KeyName(),
+		"authz", "exec", txFilePath,
+	)
+	return err
 }

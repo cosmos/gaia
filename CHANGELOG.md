@@ -4,6 +4,8 @@
 
 ### FEATURES
 
+- Add stake validation to vote messages from wasm contracts ([#3949](https://github.com/cosmos/gaia/pull/3949))
+
 ### BUG-FIXES
 - Add missing cosmos_proto.scalar cosmos.Dec annotation to x/liquid LiquidValidator.liquid_shares 
   field ([#3936](https://github.com/cosmos/gaia/pull/3936))

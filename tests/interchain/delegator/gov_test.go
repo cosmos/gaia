@@ -23,24 +23,18 @@ import (
 )
 
 const (
-	govStakeAmount          = "10000000" // 10 ATOM
-	govSubmissionDeposit    = "100"
-	proposalDepositInt      = chainsuite.GovMinDepositAmount
-	govCommunityPoolAmount  = "200000000" // 200 ATOM
-	govYesWeight            = 0.6
-	govNoWeight             = 0.3
-	govAbstainWeight        = 0.06
-	govVetoWeight           = 0.04
-	govQueryScaleMultiplier = 1000000000000000000 // 18 zeroes
+	govStakeAmount         = "10000000" // 10 ATOM
+	govSubmissionDeposit   = "100"
+	proposalDepositInt     = chainsuite.GovMinDepositAmount
+	govCommunityPoolAmount = "200000000" // 200 ATOM
+	govYesWeight           = 0.6
+	govNoWeight            = 0.3
+	govAbstainWeight       = 0.06
+	govVetoWeight          = 0.04
 )
 
 type GovSuite struct {
 	*delegator.Suite
-	Host            *chainsuite.Chain
-	icaAddress      string
-	srcChannel      *ibc.ChannelOutput
-	srcAddress      string
-	ibcStakeDenom   string
 	contractWasm    []byte
 	contractPath    string
 	contractAddress string

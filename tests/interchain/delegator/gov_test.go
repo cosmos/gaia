@@ -524,7 +524,7 @@ func TestGovModule(t *testing.T) {
 
 	s := &GovSuite{Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
 		ChainSpec:      chainSpec,
-		UpgradeOnSetup: false,
+		UpgradeOnSetup: true,
 		CreateRelayer:  true,
 	})}}
 	suite.Run(t, s)

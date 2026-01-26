@@ -13,6 +13,12 @@
 ### DEPENDENCIES
 - Bump [github.com/go-viper/mapstructure/v2](https://github.com/go-viper/mapstructure) from 2.2.1 to 2.3.0 ([#3813](https://github.com/cosmos/gaia/pull/3813))
 - Bump [github.com/cosmos/gogoproto](https://github.com/cosmos/gogoproto) from 1.7.0 to 1.7.2 ([#3916](https://github.com/cosmos/gaia/pull/3916))
+
+## v25.3.2
+
+*January 23,2026*
+
+### DEPENDENCIES
 - Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.20 to 0.38.21 ([#3951](https://github.com/cosmos/gaia/pull/3951))
 
 ## v25.3.0

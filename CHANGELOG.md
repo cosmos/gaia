@@ -15,6 +15,10 @@
 - Bump [github.com/cosmos/gogoproto](https://github.com/cosmos/gogoproto) from 1.7.0 to 1.7.2 ([#3916](https://github.com/cosmos/gaia/pull/3916))
 - Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.20 to 0.38.21 ([#3951](https://github.com/cosmos/gaia/pull/3951))
 
+### Dependencies
+
+- Bump [lodash](https://github.com/lodash/lodash) from 4.17.21 to 4.17.23 ([#3950](https://github.com/cosmos/gaia/pull/3950))
+
 ## v25.3.0
 
 *December 19, 2025*

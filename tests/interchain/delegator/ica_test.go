@@ -9,6 +9,8 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/gaia/v26/tests/interchain/chainsuite"
 	"github.com/cosmos/gaia/v26/tests/interchain/delegator"
+	"github.com/cosmos/interchaintest/v10"
+	"github.com/cosmos/interchaintest/v10/chain/cosmos"
 	"github.com/cosmos/interchaintest/v10/ibc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -27,7 +29,9 @@ const icaAcctFunds = int64(3_300_000_000)
 
 func (s *ICAControllerSuite) SetupSuite() {
 	s.Suite.SetupSuite()
-	host, err := s.Chain.AddLinkedChain(s.GetContext(), s.T(), s.Relayer, chainsuite.DefaultChainSpec(s.Env))
+	// Use upgraded chain spec for Host so it has the custom gov module with stake validation
+	hostSpec := upgradedChainSpec(s.Env)
+	host, err := s.Chain.AddLinkedChain(s.GetContext(), s.T(), s.Relayer, hostSpec)
 	s.Require().NoError(err)
 	s.Host = host
 	s.srcAddress = s.DelegatorWallet.FormattedAddress()
@@ -132,6 +136,103 @@ func (s *ICAControllerSuite) TestICADelegate() {
 	}, 10*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
 }
 
+func (s *ICAControllerSuite) TestICAGovVoteStakeValidation() {
+	// Test that ICA gov votes require sufficient stake (validates the fix for the ICA bypass vector)
+	const insufficientStake = int64(2)     // 2 uatom - insufficient for voting
+	const sufficientStake = int64(1000000) // 1 ATOM - sufficient for voting
+
+	validator := s.Host.ValidatorWallets[0]
+	srcConnection := s.srcChannel.ConnectionHops[0]
+
+	// 1. First delegate minimal tokens to ICA account (insufficient for voting)
+	jsonDelegate := fmt.Sprintf(`{
+		"@type": "/cosmos.staking.v1beta1.MsgDelegate",
+		"delegator_address": "%s",
+		"validator_address": "%s",
+		"amount": {
+			"denom": "%s",
+			"amount": "%d"
+		}
+	}`, s.icaAddress, validator.ValoperAddress, s.Host.Config().Denom, insufficientStake)
+	s.Require().NoError(s.sendICATx(s.GetContext(), s.srcAddress, srcConnection, jsonDelegate))
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, s.Host)
+
+	// Verify delegation was created with insufficient stake
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		delegations, _, err := s.Host.GetNode().ExecQuery(s.GetContext(), "staking",
+			"delegation", s.icaAddress, validator.ValoperAddress)
+		assert.NoError(c, err)
+		assert.Contains(c, string(delegations), s.icaAddress)
+	}, 10*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
+
+	// 2. Create and submit a proposal on the host chain
+	prop, err := s.Host.BuildProposal(nil, "ICA Vote Stake Test", "Test", "ipfs://CID",
+		chainsuite.GovDepositAmount, "", false)
+	s.Require().NoError(err)
+	result, err := s.Host.SubmitProposal(s.GetContext(), validator.Moniker, prop)
+	s.Require().NoError(err)
+	proposalId := result.ProposalID
+	fmt.Println("Proposal ID:", proposalId)
+
+	// 3. Attempt to vote via ICA with insufficient stake - should FAIL
+	// Note: sendICATx only sends the packet; failure happens on host chain via ack
+	jsonVote := fmt.Sprintf(`{
+		"@type": "/cosmos.gov.v1.MsgVote",
+		"proposal_id": "%s",
+		"voter": "%s",
+		"option": "VOTE_OPTION_YES"
+	}`, proposalId, s.icaAddress)
+	// Send the ICA tx - packet submission succeeds but execution on host should fail
+	s.Require().NoError(s.sendICATx(s.GetContext(), s.srcAddress, srcConnection, jsonVote))
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, s.Host)
+
+	// Wait and verify the vote was NOT recorded (rejected due to insufficient stake)
+	s.Require().Never(func() bool {
+		vote, err := s.Host.QueryJSON(s.GetContext(), "vote", "gov", "vote", proposalId, s.icaAddress)
+		if err != nil {
+			return false // Query error means vote doesn't exist - expected
+		}
+		// If we got a result, check if it has actual vote options
+		return vote.Get("options").Exists() && len(vote.Get("options").Array()) > 0
+	}, 5*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "vote should NOT be recorded with insufficient stake")
+
+	// 4. Delegate more tokens to meet stake requirement
+	jsonDelegate = fmt.Sprintf(`{
+		"@type": "/cosmos.staking.v1beta1.MsgDelegate",
+		"delegator_address": "%s",
+		"validator_address": "%s",
+		"amount": {
+			"denom": "%s",
+			"amount": "%d"
+		}
+	}`, s.icaAddress, validator.ValoperAddress, s.Host.Config().Denom, sufficientStake)
+	s.Require().NoError(s.sendICATx(s.GetContext(), s.srcAddress, srcConnection, jsonDelegate))
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, s.Host)
+
+	// Wait for delegation to be confirmed
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		response, err := s.Host.StakingQueryDelegations(s.GetContext(), s.icaAddress)
+		assert.NoError(c, err)
+		assert.NotEmpty(c, response)
+		// Verify total delegation is now sufficient (insufficientStake + sufficientStake)
+		totalStake := insufficientStake + sufficientStake
+		assert.True(c, response[0].Balance.Amount.GTE(sdkmath.NewInt(totalStake)),
+			"expected delegation >= %d, got %s", totalStake, response[0].Balance.Amount)
+	}, 10*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
+
+	// 5. Attempt to vote via ICA with sufficient stake - should SUCCEED
+	s.Require().NoError(s.sendICATx(s.GetContext(), s.srcAddress, srcConnection, jsonVote))
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, s.Host)
+
+	// 6. Verify vote was recorded
+	s.Require().EventuallyWithT(func(c *assert.CollectT) {
+		vote, err := s.Host.QueryJSON(s.GetContext(), "vote", "gov", "vote", proposalId, s.icaAddress)
+		assert.NoError(c, err)
+		yesWeight := vote.Get("options.#(option==\"VOTE_OPTION_YES\").weight")
+		assert.Equal(c, 1.0, yesWeight.Float())
+	}, 10*chainsuite.CommitTimeout, chainsuite.CommitTimeout)
+}
+
 func TestDelegatorICA(t *testing.T) {
 	s := &ICAControllerSuite{Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
 		UpgradeOnSetup: true,
@@ -159,4 +260,35 @@ func (s *ICAControllerSuite) sendICATx(ctx context.Context, srcAddress string, s
 		return err
 	}
 	return nil
+}
+
+// upgradedChainSpec returns a ChainSpec using the new Gaia version (with custom gov module)
+func upgradedChainSpec(env chainsuite.Environment) *interchaintest.ChainSpec {
+	fullNodes := 0
+	var repository string
+	if env.DockerRegistry == "" {
+		repository = env.GaiaImageName
+	} else {
+		repository = fmt.Sprintf("%s/%s", env.DockerRegistry, env.GaiaImageName)
+	}
+	return &interchaintest.ChainSpec{
+		Name:          "gaia",
+		NumFullNodes:  &fullNodes,
+		NumValidators: &chainsuite.OneValidator,
+		Version:       env.NewGaiaImageVersion, // Use NEW version with custom gov module
+		ChainConfig: ibc.ChainConfig{
+			Denom:         chainsuite.Uatom,
+			GasPrices:     chainsuite.GasPrices,
+			GasAdjustment: 2.0,
+			ConfigFileOverrides: map[string]any{
+				"config/config.toml": chainsuite.DefaultConfigToml(),
+			},
+			Images: []ibc.DockerImage{{
+				Repository: repository,
+				UIDGID:     "1025:1025",
+			}},
+			ModifyGenesis:        cosmos.ModifyGenesis(chainsuite.DefaultGenesis()),
+			ModifyGenesisAmounts: chainsuite.DefaultGenesisAmounts(chainsuite.Uatom),
+		},
+	}
 }

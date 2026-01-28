@@ -206,9 +206,9 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferWithMetadata() {
 		s.DelegatorWallet.KeyName(),
 		"tokenfactory", "modify-metadata",
 		denom,
-		"IBCMETA",                                // ticker-symbol
-		"A test token with metadata for IBC",    // description
-		"6",                                      // exponent
+		"IBCMETA",                            // ticker-symbol
+		"A test token with metadata for IBC", // description
+		"6",                                  // exponent
 	)
 	s.Require().NoError(err)
 

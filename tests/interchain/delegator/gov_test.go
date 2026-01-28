@@ -86,7 +86,6 @@ func (s *GovSuite) SetupSuite() {
 		Address: s.contractAddress,
 	})
 	s.Require().NoError(err)
-
 }
 
 func (s *GovSuite) TestProposal() {
@@ -328,7 +327,6 @@ func (s *GovSuite) TestVoteStakeValidation() {
 	// Attempt to submit weighted vote with required stake
 	_, err = node.ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(), "gov", "weighted-vote", proposalId, "yes=0.5,no=0.5", "--gas", "auto")
 	s.Require().NoError(err)
-
 }
 
 func (s *GovSuite) TestAuthzVoteStakeValidation() {

@@ -3,12 +3,33 @@
 ## UNRELEASED
 
 ### FEATURES
-- Add OpenTelemetry metrics ([\#3805](https://github.com/cosmos/gaia/pull/3805))
+
+- Add stake validation to vote messages from wasm contracts ([#3949](https://github.com/cosmos/gaia/pull/3949))
+
+### BUG-FIXES
+- Add missing cosmos_proto.scalar cosmos.Dec annotation to x/liquid LiquidValidator.liquid_shares 
+  field ([#3936](https://github.com/cosmos/gaia/pull/3936))
+
+### DEPENDENCIES
+- Bump [github.com/go-viper/mapstructure/v2](https://github.com/go-viper/mapstructure) from 2.2.1 to 2.3.0 ([#3813](https://github.com/cosmos/gaia/pull/3813))
+- Bump [github.com/cosmos/gogoproto](https://github.com/cosmos/gogoproto) from 1.7.0 to 1.7.2 ([#3916](https://github.com/cosmos/gaia/pull/3916))
+
+## v25.3.2
+
+*January 23,2026*
+
+### DEPENDENCIES
+- Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.20 to 0.38.21 ([#3951](https://github.com/cosmos/gaia/pull/3951))
+
+## v25.3.0
+
+*December 19, 2025*
 
 ### DEPENDENCIES
 - Bump [go.opentelemetry.io/otel/sdk/metric](https://github.com/open-telemetry/opentelemetry-go) from 1.36.0 to 1.37.0 ([#3820](https://github.com/cosmos/gaia/pull/3820))
-- Bump [github.com/go-viper/mapstructure/v2](https://github.com/go-viper/mapstructure) from 2.2.1 to 2.3.0 ([#3813](https://github.com/cosmos/gaia/pull/3813))
-- Bump [github.com/CosmWasm/wasmd](https://github.com/CosmWasm/wasmd) from v0.60.1 to v0.60.2 ([#3888](https://github.com/cosmos/gaia/pull/3888))
+- Bump [cometbft](https://github.com/cometbft/cometbft) from 0.38.19 to 0.38.20 ([#3930](https://github.com/cosmos/gaia/pull/3930))
+- Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.3 to 0.53.4 ([#3932](https://github.com/cosmos/gaia/pull/3932))
+- Bump [github.com/cosmos/ibc-go/](https://github.com/cosmos/ibc-go) from 10.3.0 to 10.5.0 ([#3932](https://github.com/cosmos/gaia/pull/3932))
 
 ## v25.2.0
 
@@ -19,7 +40,6 @@
 - Bump [slackapi/slack-github-action](https://github.com/slackapi/slack-github-action) from 1.27.0 to 2.1.1 ([#3830](https://github.com/cosmos/gaia/pull/3830))
 - Bump on-headers from 1.0.2 to 1.1.0 ([#3833](https://github.com/cosmos/gaia/pull/3833))
 - Bump compression from 1.8.0 to 1.8.1 ([#3833](https://github.com/cosmos/gaia/pull/3833))
-- Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.3 to 0.53.4 ([#3837](https://github.com/cosmos/gaia/pull/3837))
 - Bump [github.com/prometheus/client_golang](https://github.com/prometheus/client_golang) from 1.22.0 to 1.23.0 ([#3838](https://github.com/cosmos/gaia/pull/3838))
 - Bump [docker/metadata-action](https://github.com/docker/metadata-action) from 5.7.0 to 5.8.0 ([#3836](https://github.com/cosmos/gaia/pull/3836))
 - Bump [github.com/spf13/pflag](https://github.com/spf13/pflag) from 1.0.6 to 1.0.7 ([#3839](https://github.com/cosmos/gaia/pull/3839))
@@ -29,7 +49,8 @@
 - Bump [docker/login-action](https://github.com/docker/login-action) from 3.4.0 to 3.5.0 ([#3842](https://github.com/cosmos/gaia/pull/3842))
 - Bump [actions/download-artifact](https://github.com/actions/download-artifact) from 4 to 5 ([#3843](https://github.com/cosmos/gaia/pull/3843))
 - Bump [actions/download-artifact](https://github.com/actions/download-artifact) from 5 to 6 ([#3882](https://github.com/cosmos/gaia/pull/3882))
-
+- Bump [github.com/CosmWasm/wasmd](https://github.com/CosmWasm/wasmd) from v0.60.1 to v0.60.2 ([#3888](https://github.com/cosmos/gaia/pull/3888))
+- 
 ## v25.1.0
 
 *July 8, 2025*

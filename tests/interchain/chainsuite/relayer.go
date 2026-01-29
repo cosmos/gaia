@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/interchaintest/v10"
 	"github.com/cosmos/interchaintest/v10/ibc"
 	"github.com/cosmos/interchaintest/v10/relayer"
+	"github.com/docker/docker/api/types/container"
 	"github.com/tidwall/gjson"
 )
 
@@ -22,7 +23,7 @@ func NewRelayer(ctx context.Context, testName interchaintest.TestName) (*Relayer
 	rly := interchaintest.NewBuiltinRelayerFactory(
 		ibc.Hermes,
 		GetLogger(ctx),
-		relayer.CustomDockerImage("ghcr.io/informalsystems/hermes", "1.12.0", "2000:2000"),
+		relayer.CustomDockerImage("ghcr.io/informalsystems/hermes", "1.13.1", "2000:2000"),
 	).Build(testName, dockerClient, dockerNetwork)
 	return &Relayer{Relayer: rly}, nil
 }
@@ -40,6 +41,41 @@ func (r *Relayer) SetupChainKeys(ctx context.Context, chain *Chain) error {
 	}
 
 	return r.RestoreKey(ctx, rep, chain.Config(), chainName, chain.RelayerWallet.Mnemonic())
+}
+
+// SetMaxGas modifies the hermes config to set max_gas for all chains and restarts the relayer
+func (r *Relayer) SetMaxGas(ctx context.Context, maxGas int) error {
+	// Modify the config file
+	cmd := fmt.Sprintf("sed -i 's/max_gas = [0-9]*/max_gas = %d/g' /home/hermes/.hermes/config.toml", maxGas)
+	rs := r.Exec(ctx, GetRelayerExecReporter(ctx), []string{"sh", "-c", cmd}, nil)
+	if rs.Err != nil {
+		return fmt.Errorf("failed to set max_gas: %w", rs.Err)
+	}
+
+	// Get the relayer container
+	dockerClient, _ := GetDockerContext(ctx)
+	containers, err := dockerClient.ContainerList(ctx, container.ListOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to list containers: %w", err)
+	}
+
+	// Find and restart the hermes container
+	for _, c := range containers {
+		for _, name := range c.Names {
+			if len(name) > 0 && name[0] == '/' {
+				name = name[1:] // Remove leading /
+			}
+			if len(name) > 6 && name[:6] == "hermes" {
+				timeout := 10
+				if err := dockerClient.ContainerRestart(ctx, c.ID, container.StopOptions{Timeout: &timeout}); err != nil {
+					return fmt.Errorf("failed to restart hermes container %s: %w", c.ID, err)
+				}
+				GetLogger(ctx).Sugar().Infof("Restarted hermes container with max_gas=%d", maxGas)
+				return nil
+			}
+		}
+	}
+	return fmt.Errorf("hermes container not found")
 }
 
 func (r *Relayer) GetTransferChannel(ctx context.Context, chain, counterparty *Chain) (*ibc.ChannelOutput, error) {
@@ -183,10 +219,11 @@ func (r *Relayer) ConnectProviderConsumer(ctx context.Context, provider *Chain, 
 	for tCtx.Err() == nil {
 		var ch *ibc.ChannelOutput
 		ch, err = r.GetTransferChannel(ctx, provider, consumer)
-		if err == nil && ch != nil {
-			break
-		} else if err == nil {
-			err = fmt.Errorf("channel not found")
+		if err == nil {
+			if ch.State == "STATE_OPEN" {
+				break
+			}
+			err = fmt.Errorf("channel found but not open yet (state: %s)", ch.State)
 		}
 		time.Sleep(CommitTimeout)
 	}

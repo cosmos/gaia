@@ -20,6 +20,7 @@ builds:
         - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
     env:
       - CC=oa64-clang
+      - CGO_CFLAGS=-D__BLST_PORTABLE__
       - CGO_LDFLAGS=-L/lib
     tags:
       - netgo
@@ -55,6 +56,7 @@ builds:
         - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
     env:
       - CC=oa64-clang
+      - CGO_CFLAGS=-D__BLST_PORTABLE__
       - CGO_LDFLAGS=-L/lib
     tags:
       - netgo
@@ -82,6 +84,7 @@ builds:
   # gobinary: "go"
   # env:
   # - CGO_ENABLED=1
+  # - CGO_CFLAGS=-D__BLST_PORTABLE__
   # - CC=/opt/musl-cross/bin/x86_64-linux-musl-gcc
   # - LD=/opt/musl-cross/bin/x86_64-linux-musl-ld
   # - CGO_LDFLAGS=-L/lib

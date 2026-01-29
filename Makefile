@@ -119,7 +119,7 @@ BUILD_TARGETS := build install
 build: BUILD_ARGS=-o $(BUILDDIR)/
 
 $(BUILD_TARGETS): check_version go.sum $(BUILDDIR)/
-	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
+	CGO_CFLAGS="-D__BLST_PORTABLE__" go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
 
 $(BUILDDIR)/:
 	mkdir -p $(BUILDDIR)/
@@ -239,6 +239,7 @@ build-static-linux-amd64: go.sum $(BUILDDIR)/
 		--build-arg GIT_VERSION=$(VERSION) \
 		--build-arg GIT_COMMIT=$(COMMIT) \
 		--build-arg BUILD_TAGS=$(build_tags_comma_sep),muslc \
+		--build-arg CGO_CFLAGS="-D__BLST_PORTABLE__" \
 		--platform linux/amd64 \
 		-t gaiad-static-amd64 \
 		-f Dockerfile . \
@@ -258,6 +259,7 @@ build-static-linux-arm64: go.sum $(BUILDDIR)/
 		--build-arg GIT_VERSION=$(VERSION) \
 		--build-arg GIT_COMMIT=$(COMMIT) \
 		--build-arg BUILD_TAGS=$(build_tags_comma_sep),muslc \
+		--build-arg CGO_CFLAGS="-D__BLST_PORTABLE__" \
 		--platform linux/arm64 \
 		-t gaiad-static-arm64 \
 		-f Dockerfile . \
@@ -382,7 +384,7 @@ docker-build-all: docker-build-debug docker-build-hermes
 ###                                Linting                                  ###
 ###############################################################################
 golangci_lint_cmd=golangci-lint
-golangci_version=v2.1.6
+golangci_version=v2.6.2
 
 lint:
 	@echo "--> Running linter"
@@ -468,18 +470,6 @@ proto-update-deps:
 	$(DOCKER) run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
 
 .PHONY: proto-all proto-gen proto-swagger-gen proto-format proto-lint proto-check-breaking proto-update-deps
-
-###############################################################################
-###                                Open Telemetry                           ###
-###############################################################################
-
-start-telemetry-server:
-	cd contrib/telemetry && docker compose up -d
-
-stop-telemetry-server:
-	cd contrib/telemetry && docker compose down --remove-orphans
-
-.PHONY: start-telemetry-server stop-telemetry-server
 
 ###############################################################################
 ###                                Localnet                                 ###

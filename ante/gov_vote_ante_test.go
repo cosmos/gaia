@@ -398,3 +398,170 @@ func TestVoteSpamDecoratorGovV1(t *testing.T) {
 		}
 	}
 }
+
+// Test that the GovVoteDecorator rejects v1beta1 weighted vote messages from accounts with less than 1 atom staked
+func TestVoteSpamDecoratorGovV1Beta1Weighted(t *testing.T) {
+	gaiaApp := helpers.Setup(t)
+	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
+	decorator := ante.NewGovVoteDecorator(gaiaApp.AppCodec(), gaiaApp.StakingKeeper)
+	stakingKeeper := gaiaApp.StakingKeeper
+
+	// Get validator
+	validators, err := stakingKeeper.GetAllValidators(ctx)
+	require.NoError(t, err)
+	valAddr1, err := stakingKeeper.ValidatorAddressCodec().StringToBytes(validators[0].GetOperator())
+	require.NoError(t, err)
+	valAddr1 = sdk.ValAddress(valAddr1)
+
+	// Get delegator (this account was created during setup)
+	addr, err := gaiaApp.AccountKeeper.Accounts.Indexes.Number.MatchExact(ctx, 0)
+	require.NoError(t, err)
+	delegator, err := sdk.AccAddressFromBech32(addr.String())
+	require.NoError(t, err)
+
+	tests := []struct {
+		name       string
+		bondAmt    math.Int
+		expectPass bool
+	}{
+		{
+			name:       "weighted vote with 0 atom",
+			bondAmt:    math.ZeroInt(),
+			expectPass: false,
+		},
+		{
+			name:       "weighted vote with 0.5 atom",
+			bondAmt:    math.NewInt(500000),
+			expectPass: false,
+		},
+		{
+			name:       "weighted vote with 1 atom",
+			bondAmt:    math.NewInt(1000000),
+			expectPass: true,
+		},
+		{
+			name:       "weighted vote with 10 atom",
+			bondAmt:    math.NewInt(10000000),
+			expectPass: true,
+		},
+	}
+
+	for _, tc := range tests {
+		// Unbond all tokens for this delegator
+		delegations, err := stakingKeeper.GetAllDelegatorDelegations(ctx, delegator)
+		require.NoError(t, err)
+		for _, del := range delegations {
+			valAddr, err := sdk.ValAddressFromBech32(del.GetValidatorAddr())
+			require.NoError(t, err)
+			_, _, err = stakingKeeper.Undelegate(ctx, delegator, valAddr, del.GetShares())
+			require.NoError(t, err)
+		}
+
+		// Delegate tokens
+		if !tc.bondAmt.IsZero() {
+			val, err := stakingKeeper.GetValidator(ctx, valAddr1)
+			require.NoError(t, err)
+			_, err = stakingKeeper.Delegate(ctx, delegator, tc.bondAmt, stakingtypes.Unbonded, val, true)
+			require.NoError(t, err)
+		}
+
+		// Create weighted vote message
+		msg := govv1beta1.NewMsgVoteWeighted(
+			delegator,
+			0,
+			govv1beta1.NewNonSplitVoteOption(govv1beta1.OptionYes),
+		)
+
+		// Validate vote message
+		err = decorator.ValidateVoteMsgs(ctx, []sdk.Msg{msg})
+		if tc.expectPass {
+			require.NoError(t, err, "expected %v to pass", tc.name)
+		} else {
+			require.Error(t, err, "expected %v to fail", tc.name)
+		}
+	}
+}
+
+// Test that the GovVoteDecorator rejects v1 weighted vote messages from accounts with less than 1 atom staked
+func TestVoteSpamDecoratorGovV1Weighted(t *testing.T) {
+	gaiaApp := helpers.Setup(t)
+	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
+	decorator := ante.NewGovVoteDecorator(gaiaApp.AppCodec(), gaiaApp.StakingKeeper)
+	stakingKeeper := gaiaApp.StakingKeeper
+
+	// Get validator
+	validators, err := stakingKeeper.GetAllValidators(ctx)
+	require.NoError(t, err)
+	valAddr1, err := stakingKeeper.ValidatorAddressCodec().StringToBytes(validators[0].GetOperator())
+	require.NoError(t, err)
+	valAddr1 = sdk.ValAddress(valAddr1)
+
+	// Get delegator (this account was created during setup)
+	addr, err := gaiaApp.AccountKeeper.Accounts.Indexes.Number.MatchExact(ctx, 0)
+	require.NoError(t, err)
+	delegator, err := sdk.AccAddressFromBech32(addr.String())
+	require.NoError(t, err)
+
+	tests := []struct {
+		name       string
+		bondAmt    math.Int
+		expectPass bool
+	}{
+		{
+			name:       "weighted vote with 0 atom",
+			bondAmt:    math.ZeroInt(),
+			expectPass: false,
+		},
+		{
+			name:       "weighted vote with 0.5 atom",
+			bondAmt:    math.NewInt(500000),
+			expectPass: false,
+		},
+		{
+			name:       "weighted vote with 1 atom",
+			bondAmt:    math.NewInt(1000000),
+			expectPass: true,
+		},
+		{
+			name:       "weighted vote with 10 atom",
+			bondAmt:    math.NewInt(10000000),
+			expectPass: true,
+		},
+	}
+
+	for _, tc := range tests {
+		// Unbond all tokens for this delegator
+		delegations, err := stakingKeeper.GetAllDelegatorDelegations(ctx, delegator)
+		require.NoError(t, err)
+		for _, del := range delegations {
+			valAddr, err := sdk.ValAddressFromBech32(del.GetValidatorAddr())
+			require.NoError(t, err)
+			_, _, err = stakingKeeper.Undelegate(ctx, delegator, valAddr, del.GetShares())
+			require.NoError(t, err)
+		}
+
+		// Delegate tokens
+		if !tc.bondAmt.IsZero() {
+			val, err := stakingKeeper.GetValidator(ctx, valAddr1)
+			require.NoError(t, err)
+			_, err = stakingKeeper.Delegate(ctx, delegator, tc.bondAmt, stakingtypes.Unbonded, val, true)
+			require.NoError(t, err)
+		}
+
+		// Create weighted vote message with split options
+		msg := govv1.NewMsgVoteWeighted(
+			delegator,
+			0,
+			govv1.NewNonSplitVoteOption(govv1.VoteOption_VOTE_OPTION_YES),
+			"weighted-vote-test",
+		)
+
+		// Validate vote message
+		err = decorator.ValidateVoteMsgs(ctx, []sdk.Msg{msg})
+		if tc.expectPass {
+			require.NoError(t, err, "expected %v to pass", tc.name)
+		} else {
+			require.Error(t, err, "expected %v to fail", tc.name)
+		}
+	}
+}

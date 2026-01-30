@@ -63,7 +63,6 @@ func (s *ICAControllerSuite) SetupSuite() {
 }
 
 func (s *ICAControllerSuite) TestICABankSend() {
-	return // Temporarily disable this test due to flakiness; re-enable when root cause is identified
 	wallets := s.Host.ValidatorWallets
 	dstAddress := wallets[0].Address
 
@@ -89,7 +88,6 @@ func (s *ICAControllerSuite) TestICABankSend() {
 }
 
 func (s *ICAControllerSuite) TestICADelegate() {
-	return // Temporarily disable this test due to flakiness; re-enable when root cause is identified
 	const delegateAmount = int64(1000000)
 	// Get validator address from host chain
 	validator := s.Host.ValidatorWallets[0]

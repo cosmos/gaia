@@ -6,7 +6,6 @@
 package gov
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -87,9 +86,4 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	if err := cfg.RegisterMigration(govtypes.ModuleName, 4, m.Migrate4to5); err != nil {
 		panic(fmt.Sprintf("failed to migrate x/gov from version 4 to 5: %v", err))
 	}
-}
-
-// EndBlock returns the end blocker for the gov module.
-func (am AppModule) EndBlock(ctx context.Context) error {
-	return am.AppModule.EndBlock(ctx)
 }

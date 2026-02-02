@@ -7,8 +7,6 @@ import (
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-
-	"github.com/cosmos/gaia/v26/ante"
 )
 
 // msgServer wraps the SDK gov MsgServer to add vote validation.
@@ -39,7 +37,7 @@ func (m *msgServer) Vote(ctx context.Context, msg *govv1.MsgVote) (*govv1.MsgVot
 		return nil, err
 	}
 
-	if err := ante.ValidateVoterStake(sdkCtx, m.stakingKeeper, voter); err != nil {
+	if err := ValidateVoterStake(sdkCtx, m.stakingKeeper, voter); err != nil {
 		return nil, err
 	}
 
@@ -55,7 +53,7 @@ func (m *msgServer) VoteWeighted(ctx context.Context, msg *govv1.MsgVoteWeighted
 		return nil, err
 	}
 
-	if err := ante.ValidateVoterStake(sdkCtx, m.stakingKeeper, voter); err != nil {
+	if err := ValidateVoterStake(sdkCtx, m.stakingKeeper, voter); err != nil {
 		return nil, err
 	}
 

@@ -141,11 +141,32 @@ func (s *ICAControllerSuite) TestICAGovVoteStakeValidation() {
 	// Test that ICA gov votes require sufficient stake (validates the fix for the ICA bypass vector)
 	const insufficientStake = int64(2)     // 2 uatom - insufficient for voting
 	const sufficientStake = int64(1000000) // 1 ATOM - sufficient for voting
-
-	validator := s.Host.ValidatorWallets[0]
 	srcConnection := s.srcChannel.ConnectionHops[0]
 
+	// Undelegate any existing ICA delegations to start fresh
+	delegations, err := s.Host.StakingQueryDelegations(s.GetContext(), s.icaAddress)
+	s.Require().NoError(err)
+	for _, delegation := range delegations {
+		jsonUndelegate := fmt.Sprintf(`{
+            "@type": "/cosmos.staking.v1beta1.MsgUndelegate",
+            "delegator_address": "%s",
+            "validator_address": "%s",
+            "amount": {
+                "denom": "%s",
+                "amount": "%s"
+            }
+        }`, s.icaAddress, delegation.Delegation.ValidatorAddress,
+			delegation.Balance.Denom, delegation.Balance.Amount.String())
+
+		s.Require().NoError(s.sendICATx(s.GetContext(), s.srcAddress, srcConnection, jsonUndelegate))
+	}
+	s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, s.Host)
+
+	// Wait for undelegation tx to process
+	time.Sleep(5 * chainsuite.CommitTimeout)
+
 	// 1. First delegate minimal tokens to ICA account (insufficient for voting)
+	validator := s.Host.ValidatorWallets[0]
 	jsonDelegate := fmt.Sprintf(`{
 		"@type": "/cosmos.staking.v1beta1.MsgDelegate",
 		"delegator_address": "%s",
@@ -187,24 +208,15 @@ func (s *ICAControllerSuite) TestICAGovVoteStakeValidation() {
 	s.Require().NoError(s.sendICATx(s.GetContext(), s.srcAddress, srcConnection, jsonVote))
 	s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, s.Host)
 
-	// Wait one minute to ensure vote is not recorded
-	time.Sleep(1 * time.Minute)
+	// Wait five blocks
+	time.Sleep(5 * chainsuite.CommitTimeout)
 
 	// Print tally in host chain
 	tally, err := s.Host.QueryJSON(s.GetContext(), "tally", "gov", "tally", proposalId)
 	s.Require().NoError(err)
 	fmt.Println("Tally after insufficient stake vote attempt:", tally.String())
 
-	// Wait and verify the vote was NOT recorded (rejected due to insufficient stake)
-	s.Require().Never(func() bool {
-		vote, err := s.Host.QueryJSON(s.GetContext(), "vote", "gov", "vote", proposalId, s.icaAddress)
-		if err != nil {
-			return false // Query error means vote doesn't exist - expected
-		}
-		// If we got a result, check if it has actual vote options
-		return vote.Get("options").Exists() && len(vote.Get("options").Array()) > 0
-	}, 5*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "vote should NOT be recorded with insufficient stake")
-
+	// Verify vote was NOT counted
 	vote, err := s.Host.QueryJSON(s.GetContext(), "vote", "gov", "vote", proposalId, s.icaAddress)
 	s.Require().Error(err)
 
@@ -252,8 +264,8 @@ func (s *ICAControllerSuite) TestICAGovVoteStakeValidation() {
 	s.Require().NoError(s.sendICATx(s.GetContext(), s.srcAddress, srcConnection, jsonVote))
 	s.Relayer.ClearTransferChannel(s.GetContext(), s.Chain, s.Host)
 
-	// Wait one minute to ensure vote is recorded
-	time.Sleep(1 * time.Minute)
+	// Wait five blocks
+	time.Sleep(5 * chainsuite.CommitTimeout)
 
 	// Print tally in host chain
 	tally, err = s.Host.QueryJSON(s.GetContext(), "tally", "gov", "tally", proposalId)

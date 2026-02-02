@@ -14,9 +14,7 @@ import (
 	gaiagov "github.com/cosmos/gaia/v26/x/gov"
 )
 
-var (
-	maxWrappedMessageDepth = 20 // maximum depth of nested exec messages allowed
-)
+var maxWrappedMessageDepth = 20 // maximum depth of nested exec messages allowed
 
 type GovVoteDecorator struct {
 	stakingKeeper *stakingkeeper.Keeper

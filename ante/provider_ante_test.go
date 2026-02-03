@@ -5,13 +5,14 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
+
 	"cosmossdk.io/math"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	"github.com/cosmos/gaia/v26/ante"
 	"github.com/cosmos/gaia/v26/app/helpers"
@@ -19,7 +20,7 @@ import (
 
 func TestProviderDecorator_BlockMsgCreateConsumer(t *testing.T) {
 	app := helpers.Setup(t)
-	ctx := app.BaseApp.NewContext(false)
+	ctx := app.NewContext(false)
 	cdc := app.AppCodec()
 
 	decorator := ante.NewProviderDecorator(cdc)
@@ -47,7 +48,7 @@ func TestProviderDecorator_BlockMsgCreateConsumer(t *testing.T) {
 
 func TestProviderDecorator_AllowOtherMessages(t *testing.T) {
 	app := helpers.Setup(t)
-	ctx := app.BaseApp.NewContext(false)
+	ctx := app.NewContext(false)
 	cdc := app.AppCodec()
 
 	decorator := ante.NewProviderDecorator(cdc)
@@ -78,7 +79,7 @@ func TestProviderDecorator_AllowOtherMessages(t *testing.T) {
 
 func TestProviderDecorator_BlockAuthzWrappedMsgCreateConsumer(t *testing.T) {
 	app := helpers.Setup(t)
-	ctx := app.BaseApp.NewContext(false)
+	ctx := app.NewContext(false)
 	cdc := app.AppCodec()
 
 	decorator := ante.NewProviderDecorator(cdc)

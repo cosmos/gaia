@@ -1,12 +1,13 @@
 package ante
 
 import (
+	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
+
 	errorsmod "cosmossdk.io/errors"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
-	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	gaiaerrors "github.com/cosmos/gaia/v26/types/errors"
 )
@@ -26,7 +27,7 @@ func NewProviderDecorator(cdc codec.BinaryCodec) ProviderDecorator {
 
 func (p ProviderDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	for _, m := range tx.GetMsgs() {
-		if err := p.validateMsgRecursive(ctx, m, 0); err != nil {
+		if err := p.validateMsgRecursive(m, 0); err != nil {
 			return ctx, err
 		}
 	}
@@ -34,7 +35,7 @@ func (p ProviderDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool,
 	return next(ctx, tx, simulate)
 }
 
-func (p ProviderDecorator) validateMsgRecursive(ctx sdk.Context, m sdk.Msg, iters int) error {
+func (p ProviderDecorator) validateMsgRecursive(m sdk.Msg, iters int) error {
 	if iters >= maxWrappedMessageDepthProvider {
 		return errorsmod.Wrap(gaiaerrors.ErrNestedMessageLimitExceeded, "too many wrapped sdk messages")
 	}
@@ -46,7 +47,7 @@ func (p ProviderDecorator) validateMsgRecursive(ctx sdk.Context, m sdk.Msg, iter
 			if err := p.cdc.UnpackAny(v, &innerMsg); err != nil {
 				return errorsmod.Wrap(gaiaerrors.ErrUnauthorized, "cannot unmarshal authz exec msgs")
 			}
-			if err := p.validateMsgRecursive(ctx, innerMsg, iters+1); err != nil {
+			if err := p.validateMsgRecursive(innerMsg, iters+1); err != nil {
 				return err
 			}
 		}

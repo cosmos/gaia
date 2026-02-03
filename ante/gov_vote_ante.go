@@ -2,7 +2,6 @@ package ante
 
 import (
 	errorsmod "cosmossdk.io/errors"
-	"cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,22 +9,12 @@ import (
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	gaiaerrors "github.com/cosmos/gaia/v26/types/errors"
+	gaiagov "github.com/cosmos/gaia/v26/x/gov"
 )
 
-var (
-	minStakedTokens        = math.LegacyNewDec(1000000) // 1_000_000 uatom (or 1 atom)
-	maxDelegationsChecked  = 100                        // number of delegation to check for the minStakedTokens
-	maxWrappedMessageDepth = 20                         // maximum depth of nested exec messages allowed
-)
-
-// SetMinStakedTokens sets the minimum amount of staked tokens required to vote
-// Should only be used in testing
-func SetMinStakedTokens(tokens math.LegacyDec) {
-	minStakedTokens = tokens
-}
+var maxWrappedMessageDepth = 20 // maximum depth of nested exec messages allowed
 
 type GovVoteDecorator struct {
 	stakingKeeper *stakingkeeper.Keeper
@@ -115,46 +104,5 @@ func (g GovVoteDecorator) validMsg(ctx sdk.Context, m sdk.Msg) error {
 		return nil
 	}
 
-	return ValidateVoterStake(ctx, g.stakingKeeper, accAddr)
-}
-
-// ValidateVoterStake checks if an address has sufficient stake to vote.
-// This function is exported so it can be used by both the ante decorator
-// and the wasm message handler decorator.
-func ValidateVoterStake(ctx sdk.Context, stakingKeeper *stakingkeeper.Keeper, voter sdk.AccAddress) error {
-	if minStakedTokens.IsZero() {
-		return nil
-	}
-
-	enoughStake := false
-	delegationCount := 0
-	stakedTokens := math.LegacyNewDec(0)
-	err := stakingKeeper.IterateDelegatorDelegations(ctx, voter, func(delegation stakingtypes.Delegation) bool {
-		validatorAddr, err := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
-		if err != nil {
-			panic(err) // shouldn't happen
-		}
-		validator, err := stakingKeeper.GetValidator(ctx, validatorAddr)
-		if err == nil {
-			shares := delegation.Shares
-			tokens := validator.TokensFromSharesTruncated(shares)
-			stakedTokens = stakedTokens.Add(tokens)
-			if stakedTokens.GTE(minStakedTokens) {
-				enoughStake = true
-				return true // break the iteration
-			}
-		}
-		delegationCount++
-		// break the iteration if maxDelegationsChecked were already checked
-		return delegationCount >= maxDelegationsChecked
-	})
-	if err != nil {
-		return err
-	}
-
-	if !enoughStake {
-		return errorsmod.Wrapf(gaiaerrors.ErrInsufficientStake, "insufficient stake for voting - min required %v", minStakedTokens)
-	}
-
-	return nil
+	return gaiagov.ValidateVoterStake(ctx, g.stakingKeeper, accAddr)
 }

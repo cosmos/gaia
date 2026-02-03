@@ -27,6 +27,7 @@ import (
 	"github.com/cosmos/gaia/v26/ante"
 	gaia "github.com/cosmos/gaia/v26/app"
 	"github.com/cosmos/gaia/v26/app/sim"
+	gaiagov "github.com/cosmos/gaia/v26/x/gov"
 )
 
 // AppChainID hardcoded chainID for simulation
@@ -107,7 +108,7 @@ func TestAppStateDeterminism(t *testing.T) {
 
 			// NOTE: setting to zero to avoid failing the simulation
 			// due to the minimum staked tokens required to submit a vote
-			ante.SetMinStakedTokens(math.LegacyZeroDec())
+			gaiagov.SetMinStakedTokens(math.LegacyZeroDec())
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",

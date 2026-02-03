@@ -8,6 +8,8 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+
+	gaiagov "github.com/cosmos/gaia/v26/x/gov"
 )
 
 // govVoteTypeURLs contains the type URLs for governance vote messages
@@ -81,5 +83,5 @@ func (h *GovVoteMessageHandler) validateGovVote(ctx sdk.Context, contractAddr sd
 
 	// For governance votes, the contract itself is the voter
 	// Validate that the contract has sufficient stake
-	return ValidateVoterStake(ctx, h.stakingKeeper, contractAddr)
+	return gaiagov.ValidateVoterStake(ctx, h.stakingKeeper, contractAddr)
 }

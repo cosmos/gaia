@@ -52,10 +52,10 @@ func (s *UnbondingSuite) SetupSuite() {
 	s.Require().NoError(err)
 	s.Consumer = consumer
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), s.Consumer, s.Relayer, 1_000_000, 0, 1))
-	s.UpgradeChain()
 }
 
 func (s *UnbondingSuite) TestChainNotRemoved() {
+	s.UpgradeChain()
 	s.Require().NoError(s.Relayer.PauseRelayer(s.GetContext()))
 	defer s.Relayer.ResumeRelayer(s.GetContext())
 
@@ -70,6 +70,7 @@ func (s *UnbondingSuite) TestChainNotRemoved() {
 }
 
 func (s *UnbondingSuite) TestNoDelayForUnbonding() {
+	s.UpgradeChain()
 	s.Require().NoError(s.Relayer.PauseRelayer(s.GetContext()))
 	defer s.Relayer.ResumeRelayer(s.GetContext())
 
@@ -106,6 +107,8 @@ func (s *UnbondingSuite) TestCanLaunchAfterInitTimeout() {
 	spawnTime := time.Now().Add(2 * time.Minute)
 	err := s.Chain.CreateConsumerPermissionless(s.GetContext(), chainID, cfg, spawnTime)
 	s.Require().NoError(err)
+
+	s.UpgradeChain()
 
 	time.Sleep(time.Until(spawnTime))
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))

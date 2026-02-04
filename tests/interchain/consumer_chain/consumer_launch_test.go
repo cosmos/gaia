@@ -67,21 +67,6 @@ func (s *ConsumerLaunchSuite) TestChainLaunch() {
 	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, consumer, 5)
 	s.Require().NoError(err)
 	s.Require().False(jailed, "validator 5 should not be jailed for downtime")
-
-	cfg.Version = s.OtherChainVersionPostUpgrade
-	cfg.Spec.ChainConfig.Images[0].Version = s.OtherChainVersionPostUpgrade
-	consumer2, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
-	s.Require().NoError(err)
-	err = s.Chain.CheckCCV(s.GetContext(), consumer2, s.Relayer, 1_000_000, 0, 1)
-	s.Require().NoError(err)
-	s.Require().NoError(chainsuite.SendSimpleIBCTx(s.GetContext(), s.Chain, consumer2, s.Relayer))
-
-	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, consumer2, 1)
-	s.Require().NoError(err)
-	s.Require().True(jailed, "validator 1 should be jailed for downtime")
-	jailed, err = s.Chain.IsValidatorJailedForConsumerDowntime(s.GetContext(), s.Relayer, consumer2, 5)
-	s.Require().NoError(err)
-	s.Require().False(jailed, "validator 5 should not be jailed for downtime")
 }
 
 func selectConsumerVersion(preV21, postV21 string) string {

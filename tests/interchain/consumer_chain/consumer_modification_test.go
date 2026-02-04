@@ -49,6 +49,8 @@ func (s *ConsumerModificationSuite) TestChangeOwner() {
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
 
+	s.UpgradeChain()
+
 	govAddress, err := s.Chain.GetGovernanceAddress(s.GetContext())
 	s.Require().NoError(err)
 	consumerID, err := s.Chain.GetConsumerID(s.GetContext(), consumer.Config().ChainID)
@@ -106,6 +108,8 @@ func (s *ConsumerModificationSuite) TestChangePowerShaping() {
 	consumer, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
+
+	s.UpgradeChain()
 
 	consumerID, err := s.Chain.GetConsumerID(s.GetContext(), consumer.Config().ChainID)
 	s.Require().NoError(err)
@@ -174,6 +178,8 @@ func (s *ConsumerModificationSuite) TestConsumerCommissionRate() {
 	consumer2, err := s.Chain.AddConsumerChain(s.GetContext(), s.Relayer, cfg)
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer2, s.Relayer, 1_000_000, 0, 1))
+
+	s.UpgradeChain()
 
 	for i := 1; i < len(consumer1.Validators); i++ {
 		s.Require().NoError(consumer1.Validators[i].StopContainer(s.GetContext()))
@@ -331,6 +337,8 @@ func (s *ConsumerModificationSuite) TestLaunchWithAllowListThenModify() {
 
 	s.Require().NoError(s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1))
 
+	s.UpgradeChain()
+
 	consumerID, err := s.Chain.GetConsumerID(s.GetContext(), consumer.Config().ChainID)
 	s.Require().NoError(err)
 
@@ -378,7 +386,7 @@ func TestConsumerModification(t *testing.T) {
 		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
 			CreateRelayer:  true,
 			Scope:          chainsuite.ChainScopeTest,
-			UpgradeOnSetup: true,
+			UpgradeOnSetup: false,
 			ChainSpec: &interchaintest.ChainSpec{
 				NumValidators: &chainsuite.SixValidators,
 				ChainConfig: ibc.ChainConfig{

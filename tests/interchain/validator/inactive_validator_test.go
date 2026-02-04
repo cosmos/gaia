@@ -54,8 +54,6 @@ func (s *InactiveValidatorsSuite) SetupSuite() {
 	s.Require().NoError(err)
 	s.Require().NoError(s.Chain.PassProposal(s.GetContext(), propID))
 
-	s.UpgradeChain()
-
 	stakingParams, _, err := s.Chain.GetNode().ExecQuery(s.GetContext(), "staking", "params")
 	s.Require().NoError(err)
 
@@ -120,6 +118,9 @@ func (s *InactiveValidatorsSuite) SetupSuite() {
 	err = s.Chain.CheckCCV(s.GetContext(), consumer, s.Relayer, 1_000_000, 0, 1)
 	s.Require().NoError(err)
 	s.Consumer = consumer
+
+	s.UpgradeChain()
+
 }
 
 // This is called 0ValidatorSets because it should run first; if the validator sets are wrong, obviously the other tests will fail

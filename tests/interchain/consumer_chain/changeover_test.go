@@ -71,8 +71,6 @@ func (s *ChangeoverSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	s.Consumer = consumer
-
-	s.UpgradeChain()
 }
 
 func (s *ChangeoverSuite) TestRewardsWithChangeover() {
@@ -83,6 +81,8 @@ func (s *ChangeoverSuite) TestRewardsWithChangeover() {
 	s.Run("changeover", func() {
 		s.changeSovereignToConsumer(s.Consumer, transferCh)
 	})
+
+	s.UpgradeChain()
 
 	s.Run("rewards", func() {
 		govAuthority, err := s.Chain.GetGovernanceAddress(s.GetContext())

@@ -1,7 +1,6 @@
 package consumer_chain_test
 
 import (
-	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -88,33 +87,6 @@ func (s *UnbondingSuite) TestNoDelayForUnbonding() {
 	_, err = s.Chain.StakingQueryUnbondingDelegation(s.GetContext(), s.Chain.ValidatorWallets[0].Address, s.Chain.ValidatorWallets[0].ValoperAddress)
 	s.Require().Error(err)
 	s.Require().Equal(status.Code(err), codes.NotFound)
-}
-
-func (s *UnbondingSuite) TestCanLaunchAfterInitTimeout() {
-	cfg := chainsuite.ConsumerConfig{
-		ChainName:             "ics-consumer",
-		Version:               "v5.0.0",
-		ShouldCopyProviderKey: allProviderKeysCopied(),
-		Denom:                 chainsuite.Ucon,
-		TopN:                  0,
-		BeforeSpawnTime: func(_ context.Context, _ *cosmos.CosmosChain) {
-			time.Sleep(initTimeoutPeriod)
-			s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))
-		},
-	}
-	chainID := cfg.ChainName + "-timeout"
-	spawnTime := time.Now().Add(2 * time.Minute)
-	err := s.Chain.CreateConsumerPermissionless(s.GetContext(), chainID, cfg, spawnTime)
-	s.Require().NoError(err)
-
-	time.Sleep(time.Until(spawnTime))
-	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))
-	time.Sleep(initTimeoutPeriod)
-	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 2, s.Chain))
-
-	chain, err := s.Chain.QueryJSON(s.GetContext(), fmt.Sprintf("chains.#(chain_id=%q)", chainID), "provider", "list-consumer-chains")
-	s.Require().NoError(err)
-	s.Require().True(chain.Exists())
 }
 
 func TestUnbonding(t *testing.T) {

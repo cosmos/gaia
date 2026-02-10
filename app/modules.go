@@ -61,13 +61,12 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	gaiabank "github.com/cosmos/gaia/v26/x/bank"
 	gaiagov "github.com/cosmos/gaia/v26/x/gov"
 	"github.com/cosmos/gaia/v26/x/liquid"
 	liquidtypes "github.com/cosmos/gaia/v26/x/liquid/types"
 	"github.com/cosmos/gaia/v26/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v26/x/metaprotocols/types"
-
-	"github.com/cosmos/gaia/v26/app/handlers"
 )
 
 var maccPerms = map[string][]string{
@@ -102,10 +101,10 @@ func appModules(
 		),
 		auth.NewAppModule(appCodec, app.AccountKeeper, nil, app.GetSubspace(authtypes.ModuleName)),
 		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
-		handlers.NewBankAppModuleWrapper(
+		gaiabank.NewAppModuleWrapper(
 			bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
 			app.BankKeeper,
-			handlers.DefaultMultiSendConfig(),
+			gaiabank.DefaultMultiSendConfig(),
 		),
 		gaiagov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(govtypes.ModuleName)),
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),

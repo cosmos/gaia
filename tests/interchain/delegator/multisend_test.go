@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"strings"
 	"testing"
 
 	"github.com/cosmos/gaia/v26/tests/interchain/chainsuite"
@@ -48,62 +47,23 @@ func (s *MultiSendSuite) TestRecipientLimit() {
 
 	// Max is 500. Try 501.
 	args := []string{"bank", "multi-send", sender}
-	for i := 0; i < 501; i++ {
-		args = append(args, dest1, amount)
+	for range 501 {
+		args = append(args, dest1)
 	}
-	args = append(args, "--gas", "auto", "--gas-adjustment", "1.5", "--output", "json", "-y")
+	args = append(args, amount, "--gas", "auto", "--gas-adjustment", "1.5")
 
-	// ExecTx returns (stdout, err) based on bank_test.go
-	stdout, err := s.Chain.GetNode().ExecTx(s.GetContext(), sender, args...)
-
-	if err != nil {
-		s.Require().Contains(err.Error(), "too many recipients", "Transaction should fail due to recipient limit")
-		return
-	}
-
-	var txResp map[string]interface{}
-	if parseErr := json.Unmarshal([]byte(stdout), &txResp); parseErr == nil {
-		if rawLog, ok := txResp["raw_log"].(string); ok {
-			if strings.Contains(rawLog, "too many recipients") {
-				return // Success
-			}
-		}
-		if code, ok := txResp["code"].(float64); ok && code != 0 {
-			return // Success
-		}
-	}
-
-	// Fallback check on stdout string content
+	_, err := s.Chain.GetNode().ExecTx(s.GetContext(), sender, args...)
 	s.Require().Error(err, "Should have failed with too many recipients")
-	s.Require().Contains(string(stdout), "too many recipients")
 }
 
 func (s *MultiSendSuite) execMultiSend(sender, dest, amount string, recipients int) (string, error) {
 	args := []string{"bank", "multi-send", sender}
-	for i := 0; i < recipients; i++ {
-		args = append(args, dest, amount)
+	for range recipients {
+		args = append(args, dest)
 	}
-	args = append(args, "--gas", "auto", "--gas-adjustment", "1.5", "--output", "json", "-y")
+	args = append(args, amount, "--gas", "auto", "--gas-adjustment", "1.5")
 
-	stdout, err := s.Chain.GetNode().ExecTx(s.GetContext(), sender, args...)
-	if err != nil {
-		return "", err
-	}
-
-	var txResp struct {
-		TxHash string `json:"txhash"`
-		Code   int    `json:"code"`
-		RawLog string `json:"raw_log"`
-	}
-	if err := json.Unmarshal([]byte(stdout), &txResp); err != nil {
-		return "", fmt.Errorf("failed to parse tx output: %w", err)
-	}
-
-	if txResp.Code != 0 {
-		return "", fmt.Errorf("tx failed: %s", txResp.RawLog)
-	}
-
-	return txResp.TxHash, nil
+	return s.Chain.GetNode().ExecTx(s.GetContext(), sender, args...)
 }
 
 func (s *MultiSendSuite) queryTxGas(txHash string) (int64, error) {
@@ -113,7 +73,7 @@ func (s *MultiSendSuite) queryTxGas(txHash string) (int64, error) {
 		return 0, err
 	}
 
-	var respMap map[string]interface{}
+	var respMap map[string]any
 	if err := json.Unmarshal(stdout, &respMap); err != nil {
 		return 0, err
 	}

@@ -5,24 +5,29 @@ import (
 	"testing"
 	"time"
 
-	storetypes "cosmossdk.io/store/types"
+	"github.com/stretchr/testify/require"
+
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
+	storetypes "cosmossdk.io/store/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+
 	gaiahelpers "github.com/cosmos/gaia/v26/app/helpers"
-	"github.com/stretchr/testify/require"
 )
 
 func TestMultiSendGas(t *testing.T) {
 	app := gaiahelpers.Setup(t)
-	ctx := app.BaseApp.NewUncachedContext(false, tmproto.Header{Time: time.Now()})
+	ctx := app.NewUncachedContext(false, tmproto.Header{Time: time.Now()})
 
 	acc1 := sdk.AccAddress([]byte("addr1_______________"))
 
 	bk := app.BankKeeper
-	err := bk.MintCoins(ctx, banktypes.ModuleName, sdk.NewCoins(sdk.NewInt64Coin("uatom", 1000000000)))
+	err := bk.MintCoins(ctx, minttypes.ModuleName, sdk.NewCoins(sdk.NewInt64Coin("uatom", 1000000000)))
 	require.NoError(t, err)
-	err = bk.SendCoinsFromModuleToAccount(ctx, banktypes.ModuleName, acc1, sdk.NewCoins(sdk.NewInt64Coin("uatom", 1000000000)))
+	err = bk.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, acc1, sdk.NewCoins(sdk.NewInt64Coin("uatom", 1000000000)))
 	require.NoError(t, err)
 
 	runMeasure := func(n int) {

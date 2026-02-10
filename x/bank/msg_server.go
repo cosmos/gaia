@@ -1,14 +1,12 @@
-package handlers
+package bank
 
 import (
 	"context"
 
 	"cosmossdk.io/errors"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
@@ -24,37 +22,6 @@ func DefaultMultiSendConfig() MultiSendConfig {
 		MaxRecipients: 500,  // Limit to 500 recipients per transaction
 		GasFactor:     1000, // Default quadratic factor
 	}
-}
-
-// BankAppModuleWrapper wraps the standard bank module to intercept RegisterServices
-type BankAppModuleWrapper struct {
-	bank.AppModule
-	keeper bankkeeper.Keeper
-	config MultiSendConfig
-}
-
-// NewBankAppModuleWrapper creates a new wrapper for the bank module
-func NewBankAppModuleWrapper(am bank.AppModule, keeper bankkeeper.Keeper, config MultiSendConfig) BankAppModuleWrapper {
-	return BankAppModuleWrapper{
-		AppModule: am,
-		keeper:    keeper,
-		config:    config,
-	}
-}
-
-// RegisterServices overrides the standard bank module's RegisterServices to register our custom MsgServer
-func (am BankAppModuleWrapper) RegisterServices(cfg module.Configurator) {
-	// Register the QueryServer normally (delegating to the keeper)
-	banktypes.RegisterQueryServer(cfg.QueryServer(), am.keeper)
-
-	// Create the standard MsgServer implementation from the keeper
-	standardMsgServer := bankkeeper.NewMsgServerImpl(am.keeper)
-
-	// Wrap the standard MsgServer with our custom logic
-	wrappedMsgServer := NewMsgServerWrapper(standardMsgServer, am.config)
-
-	// Register our wrapped MsgServer
-	banktypes.RegisterMsgServer(cfg.MsgServer(), wrappedMsgServer)
 }
 
 // MsgServerWrapper wraps the standard bank MsgServer

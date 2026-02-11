@@ -33,6 +33,10 @@
 - Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.3 to 0.53.4 ([#3932](https://github.com/cosmos/gaia/pull/3932))
 - Bump [github.com/cosmos/ibc-go/](https://github.com/cosmos/ibc-go) from 10.3.0 to 10.5.0 ([#3932](https://github.com/cosmos/gaia/pull/3932))
 
+### Dependencies
+
+- Bump [js-yaml](https://github.com/nodeca/js-yaml) from 3.14.1 to 3.14.2 ([#3898](https://github.com/cosmos/gaia/pull/3898))
+
 ## v25.2.0
 
 **November 6, 2025**

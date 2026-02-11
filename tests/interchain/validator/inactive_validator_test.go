@@ -120,7 +120,6 @@ func (s *InactiveValidatorsSuite) SetupSuite() {
 	s.Consumer = consumer
 
 	s.UpgradeChain()
-
 }
 
 // This is called 0ValidatorSets because it should run first; if the validator sets are wrong, obviously the other tests will fail

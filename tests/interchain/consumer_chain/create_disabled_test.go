@@ -41,7 +41,6 @@ func (s *CreateDisabledSuite) SetupSuite() {
 		Amount:  sdkmath.NewInt(100_000_000_000),
 		Denom:   s.Chain.Config().Denom,
 	}))
-
 }
 
 func (s *CreateDisabledSuite) TestCreateConsumer() {

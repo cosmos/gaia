@@ -22,7 +22,7 @@ jobs:
     runs-on: depot-ubuntu-22.04-4
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
           fetch-depth: 0

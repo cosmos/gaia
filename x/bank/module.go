@@ -6,30 +6,42 @@
 package bank
 
 import (
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-// AppModuleWrapper wraps the standard bank module to intercept RegisterServices
-type AppModuleWrapper struct {
+// AppModule wraps the standard bank module to intercept RegisterServices
+type AppModule struct {
 	bank.AppModule
 	keeper bankkeeper.Keeper
 	config MultiSendConfig
+
+	// legacySubspace is used solely for migration of x/params managed parameters
+	legacySubspace paramstypes.Subspace
 }
 
-// NewAppModuleWrapper creates a new wrapper for the bank module
-func NewAppModuleWrapper(am bank.AppModule, keeper bankkeeper.Keeper, config MultiSendConfig) AppModuleWrapper {
-	return AppModuleWrapper{
-		AppModule: am,
-		keeper:    keeper,
-		config:    config,
+// NewAppModule creates a new AppModule object that wraps the SDK bank module
+// with additional multi-send validation.
+func NewAppModule(
+	cdc codec.Codec,
+	keeper bankkeeper.Keeper,
+	ak banktypes.AccountKeeper,
+	ss paramstypes.Subspace,
+) AppModule {
+	return AppModule{
+		AppModule:      bank.NewAppModule(cdc, keeper, ak, ss),
+		keeper:         keeper,
+		config:         DefaultMultiSendConfig(),
+		legacySubspace: ss,
 	}
 }
 
 // RegisterServices overrides the standard bank module's RegisterServices to register our custom MsgServer
-func (am AppModuleWrapper) RegisterServices(cfg module.Configurator) {
+func (am AppModule) RegisterServices(cfg module.Configurator) {
 	// Register the QueryServer normally (delegating to the keeper)
 	banktypes.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 

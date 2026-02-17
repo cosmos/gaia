@@ -19,8 +19,8 @@ type MultiSendConfig struct {
 // DefaultMultiSendConfig returns the default configuration
 func DefaultMultiSendConfig() MultiSendConfig {
 	return MultiSendConfig{
-		MaxRecipients: 500,  // Limit to 500 recipients per transaction
-		GasFactor:     1000, // Default quadratic factor
+		MaxRecipients: 500, // Limit to 500 recipients per transaction
+		GasFactor:     300, // Default quadratic factor
 	}
 }
 

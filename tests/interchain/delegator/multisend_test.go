@@ -20,6 +20,12 @@ func (s *MultiSendSuite) TestMultiSendGasCurve() {
 	dest1 := s.DelegatorWallet2.FormattedAddress()
 	amount := "100uatom"
 
+	gas_factor := 300
+	// Expected gas increase: A * (N^2 - M^2) where A=300, N=10, M=5
+	expectedIncrease := gas_factor * (10*10 - 5*5) // 300 * (100 - 25) = 300 * 75 = 22500
+
+	// Execute two multi-send transactions with different recipient counts and compare gas usage.
+
 	// 1. Send with 5 recipients
 	txHash5, err := s.execMultiSend(sender, dest1, amount, 5)
 	s.Require().NoError(err)
@@ -37,7 +43,7 @@ func (s *MultiSendSuite) TestMultiSendGasCurve() {
 	fmt.Printf("Gas Used (5 recipients): %d\n", gasUsed5)
 	fmt.Printf("Gas Used (10 recipients): %d\n", gasUsed10)
 
-	s.Require().Greater(gasUsed10, gasUsed5+50000, "Gas usage should enhance quadratically with recipients")
+	s.Require().Greater(gasUsed10, gasUsed5+int64(expectedIncrease), "Gas usage should enhance quadratically with recipients")
 }
 
 func (s *MultiSendSuite) TestRecipientLimit() {

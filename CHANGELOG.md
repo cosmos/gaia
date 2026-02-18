@@ -6,7 +6,8 @@
 
 - Add stake validation to vote messages from wasm contracts ([#3949](https://github.com/cosmos/gaia/pull/3949))
 - Add stake validation to vote messages from interchain accounts ([#3957](https://github.com/cosmos/gaia/pull/3957))
-- Add provider ante handler to disable the creation of new consumer chains ([#3959])https://github.com/cosmos/gaia/pull/3959
+- Add provider ante handler to disable the creation of new consumer chains ([#3959](https://github.com/cosmos/gaia/pull/3959))
+- Add a gas curve to multi-send messages to mitigate spam ([#3961](https://github.com/cosmos/gaia/pull/3961))
 
 ### BUG-FIXES
 - Add missing cosmos_proto.scalar cosmos.Dec annotation to x/liquid LiquidValidator.liquid_shares 

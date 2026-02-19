@@ -12,6 +12,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [github.com/ethereum/go-ethereum](https://github.com/ethereum/go-ethereum) from 1.15.11 to 1.17.0 ([#3969](https://github.com/cosmos/gaia/pull/3969))
+
 ## v26.0.0
 
 *February 9, 2026*

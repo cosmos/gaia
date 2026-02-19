@@ -8,7 +8,7 @@ import (
 	"time"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/gaia/v26/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v27/tests/interchain/chainsuite"
 	clienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 	"github.com/cosmos/interchaintest/v10"

@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	gaiabank "github.com/cosmos/gaia/v26/x/bank"
+	gaiabank "github.com/cosmos/gaia/v27/x/bank"
 )
 
 // MockMsgServer mocks basic MsgServer functionality

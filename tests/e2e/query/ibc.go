@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
 
-	"github.com/cosmos/gaia/v26/tests/e2e/common"
+	"github.com/cosmos/gaia/v27/tests/e2e/common"
 )
 
 func IbcWasmChecksums(endpoint string) ([]string, error) {

@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/cosmos/gaia/v26/ante"
+	"github.com/cosmos/gaia/v27/ante"
 )
 
 // PostHandlerOptions are the options required for constructing a FeeMarket PostHandler.

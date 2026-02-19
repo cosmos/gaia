@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 
-	gaiaerrors "github.com/cosmos/gaia/v26/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v27/types/errors"
 )
 
 const maxWrappedMessageDepthProvider = 4

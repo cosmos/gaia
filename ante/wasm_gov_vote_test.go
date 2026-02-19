@@ -16,8 +16,8 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v26/ante"
-	"github.com/cosmos/gaia/v26/app/helpers"
+	"github.com/cosmos/gaia/v27/ante"
+	"github.com/cosmos/gaia/v27/app/helpers"
 )
 
 // mockMessenger is a mock implementation of wasmkeeper.Messenger for testing

@@ -68,17 +68,17 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaante "github.com/cosmos/gaia/v26/ante"
-	"github.com/cosmos/gaia/v26/app/keepers"
-	"github.com/cosmos/gaia/v26/app/upgrades"
-	v260 "github.com/cosmos/gaia/v26/app/upgrades/v26_0_0"
+	gaiaante "github.com/cosmos/gaia/v27/ante"
+	"github.com/cosmos/gaia/v27/app/keepers"
+	"github.com/cosmos/gaia/v27/app/upgrades"
+	v270 "github.com/cosmos/gaia/v27/app/upgrades/v27_0_0"
 )
 
 var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v260.Upgrade}
+	Upgrades = []upgrades.Upgrade{v270.Upgrade}
 )
 
 var (

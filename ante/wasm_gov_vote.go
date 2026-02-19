@@ -9,7 +9,7 @@ import (
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
-	gaiagov "github.com/cosmos/gaia/v26/x/gov"
+	gaiagov "github.com/cosmos/gaia/v27/x/gov"
 )
 
 // govVoteTypeURLs contains the type URLs for governance vote messages

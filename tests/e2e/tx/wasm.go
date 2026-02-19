@@ -9,8 +9,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	"github.com/cosmos/gaia/v26/tests/e2e/common"
-	"github.com/cosmos/gaia/v26/tests/e2e/query"
+	"github.com/cosmos/gaia/v27/tests/e2e/common"
+	"github.com/cosmos/gaia/v27/tests/e2e/query"
 )
 
 // todo: change this to a query instead of a command when https://github.com/CosmWasm/wasmd/issues/2147 is fixed

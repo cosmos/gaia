@@ -39,9 +39,9 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v26/x/liquid"
-	liquidkeeper "github.com/cosmos/gaia/v26/x/liquid/keeper"
-	liquidtypes "github.com/cosmos/gaia/v26/x/liquid/types"
+	"github.com/cosmos/gaia/v27/x/liquid"
+	liquidkeeper "github.com/cosmos/gaia/v27/x/liquid/keeper"
+	liquidtypes "github.com/cosmos/gaia/v27/x/liquid/types"
 )
 
 type fixture struct {

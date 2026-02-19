@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/cosmos/gaia/v26/tests/e2e/common"
+	"github.com/cosmos/gaia/v27/tests/e2e/common"
 )
 
 func (h *TestingSuite) ExecBankSend(

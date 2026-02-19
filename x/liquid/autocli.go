@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 
-	"github.com/cosmos/gaia/v26/x/liquid/types"
+	"github.com/cosmos/gaia/v27/x/liquid/types"
 )
 
 func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {

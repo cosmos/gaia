@@ -10,8 +10,8 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 
-	gaiaerrors "github.com/cosmos/gaia/v26/types/errors"
-	gaiagov "github.com/cosmos/gaia/v26/x/gov"
+	gaiaerrors "github.com/cosmos/gaia/v27/types/errors"
+	gaiagov "github.com/cosmos/gaia/v27/x/gov"
 )
 
 var maxWrappedMessageDepth = 20 // maximum depth of nested exec messages allowed

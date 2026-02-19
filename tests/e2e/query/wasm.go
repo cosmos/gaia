@@ -5,7 +5,7 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm/types"
 
-	"github.com/cosmos/gaia/v26/tests/e2e/common"
+	"github.com/cosmos/gaia/v27/tests/e2e/common"
 )
 
 func WasmContractAddress(endpoint, creator string, idx uint64) (string, error) {

@@ -14,8 +14,8 @@ import (
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v26/app/helpers"
-	gaiagov "github.com/cosmos/gaia/v26/x/gov"
+	"github.com/cosmos/gaia/v27/app/helpers"
+	gaiagov "github.com/cosmos/gaia/v27/x/gov"
 )
 
 // TestMsgServerVoteValidation tests that the decorated MsgServer

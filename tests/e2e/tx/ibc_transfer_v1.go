@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	"github.com/cosmos/gaia/v26/tests/e2e/common"
+	"github.com/cosmos/gaia/v27/tests/e2e/common"
 )
 
 func (h *TestingSuite) SendIBC(c *common.Chain, valIdx int, sender, recipient, token, fees, note, channel string, absoluteTimeout *int64, expErr bool) {

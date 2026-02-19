@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/distribution/types"
 
-	"github.com/cosmos/gaia/v26/tests/e2e/common"
+	"github.com/cosmos/gaia/v27/tests/e2e/common"
 )
 
 func DelegatorWithdrawalAddress(endpoint string, delegatorAddr string) (types.QueryDelegatorWithdrawAddressResponse, error) {

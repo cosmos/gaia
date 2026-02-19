@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/gaia/v26/tests/interchain/chainsuite"
-	"github.com/cosmos/gaia/v26/tests/interchain/delegator"
+	"github.com/cosmos/gaia/v27/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v27/tests/interchain/delegator"
 	"github.com/stretchr/testify/suite"
 )
 

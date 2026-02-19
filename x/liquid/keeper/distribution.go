@@ -10,7 +10,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v26/x/liquid/types"
+	"github.com/cosmos/gaia/v27/x/liquid/types"
 )
 
 func (k Keeper) WithdrawSingleShareRecordReward(ctx context.Context, recordID uint64) error {

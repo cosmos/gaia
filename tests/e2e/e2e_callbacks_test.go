@@ -10,9 +10,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/gaia/v26/tests/e2e/common"
-	"github.com/cosmos/gaia/v26/tests/e2e/msg"
-	"github.com/cosmos/gaia/v26/tests/e2e/query"
+	"github.com/cosmos/gaia/v27/tests/e2e/common"
+	"github.com/cosmos/gaia/v27/tests/e2e/msg"
+	"github.com/cosmos/gaia/v27/tests/e2e/query"
 )
 
 const (

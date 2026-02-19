@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/cosmos/gaia/v26/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v27/tests/interchain/chainsuite"
 	"github.com/stretchr/testify/suite"
 	"golang.org/x/mod/semver"
 )

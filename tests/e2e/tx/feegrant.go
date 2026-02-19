@@ -9,7 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	"github.com/cosmos/gaia/v26/tests/e2e/common"
+	"github.com/cosmos/gaia/v27/tests/e2e/common"
 )
 
 func (h *TestingSuite) ExecFeeGrant(c *common.Chain, valIdx int, granter, grantee, spendLimit string, opt ...common.FlagOption) {

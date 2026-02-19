@@ -7,9 +7,9 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 
-	"github.com/cosmos/gaia/v26/tests/e2e/common"
-	"github.com/cosmos/gaia/v26/tests/e2e/msg"
-	"github.com/cosmos/gaia/v26/tests/e2e/query"
+	"github.com/cosmos/gaia/v27/tests/e2e/common"
+	"github.com/cosmos/gaia/v27/tests/e2e/msg"
+	"github.com/cosmos/gaia/v27/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) testAddRateLimits(v2 bool) {

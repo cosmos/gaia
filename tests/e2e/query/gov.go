@@ -3,10 +3,10 @@ package query
 import (
 	"fmt"
 
-	"github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	v1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	"github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
-	"github.com/cosmos/gaia/v26/tests/e2e/common"
+	"github.com/cosmos/gaia/v27/tests/e2e/common"
 )
 
 func GovProposal(endpoint string, proposalID int) (v1beta1.QueryProposalResponse, error) {

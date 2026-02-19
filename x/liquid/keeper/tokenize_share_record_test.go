@@ -3,7 +3,7 @@ package keeper_test
 import (
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 
-	"github.com/cosmos/gaia/v26/x/liquid/types"
+	"github.com/cosmos/gaia/v27/x/liquid/types"
 )
 
 func (suite *KeeperTestSuite) TestGetLastTokenizeShareRecordId() {

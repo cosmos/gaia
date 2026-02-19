@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 
-	"github.com/cosmos/gaia/v26/tests/e2e/common"
+	"github.com/cosmos/gaia/v27/tests/e2e/common"
 )
 
 func (h *TestingSuite) execVestingTx(

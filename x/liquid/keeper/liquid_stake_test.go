@@ -15,8 +15,8 @@ import (
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	lsmkeeper "github.com/cosmos/gaia/v26/x/liquid/keeper"
-	"github.com/cosmos/gaia/v26/x/liquid/types"
+	lsmkeeper "github.com/cosmos/gaia/v27/x/liquid/keeper"
+	"github.com/cosmos/gaia/v27/x/liquid/types"
 )
 
 // Tests Set/Get TotalLiquidStakedTokens

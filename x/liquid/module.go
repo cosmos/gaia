@@ -16,9 +16,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/cosmos/gaia/v26/x/liquid/client/cli"
-	"github.com/cosmos/gaia/v26/x/liquid/keeper"
-	"github.com/cosmos/gaia/v26/x/liquid/types"
+	"github.com/cosmos/gaia/v27/x/liquid/client/cli"
+	"github.com/cosmos/gaia/v27/x/liquid/keeper"
+	"github.com/cosmos/gaia/v27/x/liquid/types"
 )
 
 const (

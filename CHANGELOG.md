@@ -12,6 +12,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [filippo.io/edwards25519](https://github.com/FiloSottile/edwards25519) from 1.1.0 to 1.1.1 ([#3967](https://github.com/cosmos/gaia/pull/3967))
+
 ## v26.0.0
 
 *February 9, 2026*

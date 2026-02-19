@@ -4,18 +4,30 @@
 
 ### FEATURES
 
-- Add stake validation to vote messages from wasm contracts ([#3949](https://github.com/cosmos/gaia/pull/3949))
 - Add stake validation to vote messages from interchain accounts ([#3957](https://github.com/cosmos/gaia/pull/3957))
 - Add provider ante handler to disable the creation of new consumer chains ([#3959](https://github.com/cosmos/gaia/pull/3959))
 - Add a gas surcharge to multi-send messages to mitigate spam ([#3961](https://github.com/cosmos/gaia/pull/3961))
 
 ### BUG-FIXES
-- Add missing cosmos_proto.scalar cosmos.Dec annotation to x/liquid LiquidValidator.liquid_shares 
-  field ([#3936](https://github.com/cosmos/gaia/pull/3936))
+
+### DEPENDENCIES
+
+## v26.0.0
+
+*February 9, 2026*
+
+### FEATURES
+
+- Add `x/tokenfactory` module ([#3941](https://github.com/cosmos/gaia/pull/3941))
+- Add stake validation to vote messages from wasm contracts ([#3949](https://github.com/cosmos/gaia/pull/3949))
+
+### BUG-FIXES
+- Add missing cosmos_proto.scalar cosmos.Dec annotation to x/liquid LiquidValidator.liquid_shares field ([#3936](https://github.com/cosmos/gaia/pull/3936))
 
 ### DEPENDENCIES
 - Bump [github.com/go-viper/mapstructure/v2](https://github.com/go-viper/mapstructure) from 2.2.1 to 2.3.0 ([#3813](https://github.com/cosmos/gaia/pull/3813))
 - Bump [github.com/cosmos/gogoproto](https://github.com/cosmos/gogoproto) from 1.7.0 to 1.7.2 ([#3916](https://github.com/cosmos/gaia/pull/3916))
+
 
 ## v25.3.2
 

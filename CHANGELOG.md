@@ -17,6 +17,10 @@
 - Bump [github.com/go-viper/mapstructure/v2](https://github.com/go-viper/mapstructure) from 2.2.1 to 2.3.0 ([#3813](https://github.com/cosmos/gaia/pull/3813))
 - Bump [github.com/cosmos/gogoproto](https://github.com/cosmos/gogoproto) from 1.7.0 to 1.7.2 ([#3916](https://github.com/cosmos/gaia/pull/3916))
 
+### Dependencies
+
+- Bump [webpack](https://github.com/webpack/webpack) from 5.99.4 to 5.105.0 ([#3960](https://github.com/cosmos/gaia/pull/3960))
+
 ## v25.3.2
 
 *January 23,2026*

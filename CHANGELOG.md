@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## UNRELEASED
+## v27.0.0
+
+*February 20, 2026*
 
 ### FEATURES
 
@@ -8,9 +10,6 @@
 - Add provider ante handler to disable the creation of new consumer chains ([#3959](https://github.com/cosmos/gaia/pull/3959))
 - Add a gas surcharge to multi-send messages to mitigate spam ([#3961](https://github.com/cosmos/gaia/pull/3961))
 
-### BUG-FIXES
-
-### DEPENDENCIES
 
 ## v26.0.0
 

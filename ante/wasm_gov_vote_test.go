@@ -23,9 +23,6 @@ import (
 // mockMessenger is a mock implementation of wasmkeeper.Messenger for testing
 type mockMessenger struct {
 	dispatchMsgCalled bool
-	returnEvents      []sdk.Event
-	returnData        [][]byte
-	returnMsgResp     [][]*codectypes.Any
 	returnErr         error
 }
 
@@ -36,7 +33,7 @@ func (m *mockMessenger) DispatchMsg(
 	_ wasmvmtypes.CosmosMsg,
 ) ([]sdk.Event, [][]byte, [][]*codectypes.Any, error) {
 	m.dispatchMsgCalled = true
-	return m.returnEvents, m.returnData, m.returnMsgResp, m.returnErr
+	return nil, nil, nil, m.returnErr
 }
 
 // TestWasmGovVoteDecorator tests the GovVoteMessageHandler

@@ -12,6 +12,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [ajv](https://github.com/ajv-validator/ajv) from 6.12.6 to 6.14.0 ([#3971](https://github.com/cosmos/gaia/pull/3971))
+
 ## v26.0.0
 
 *February 9, 2026*

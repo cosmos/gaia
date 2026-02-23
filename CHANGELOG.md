@@ -12,6 +12,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [cosmossdk.io/api](https://github.com/cosmos/cosmos-sdk) from 0.9.2 to 1.0.0 ([#3972](https://github.com/cosmos/gaia/pull/3972))
+
 ## v26.0.0
 
 *February 9, 2026*

@@ -12,8 +12,8 @@
 
 ### DEPENDENCIES
 
-- Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.2 to 0.60.5
-- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.2.4 to v2.3.2
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.2 to 0.60.5 ([#3976](https://github.com/cosmos/gaia/pull/3976))
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.2.4 to v2.3.2 ([#3976](https://github.com/cosmos/gaia/pull/3976))
 
 ## v26.0.0
 

@@ -287,7 +287,7 @@ replace (
 	// Use cosmos keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	// Required by wasmd v0.60.5 until Gaia upgrades to v0.53.5
+	// wasmd calls in sdk v0.53.5: this is required until Gaia upgrades to v0.53.5 or higher
 	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.53.4
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134

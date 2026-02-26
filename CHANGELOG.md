@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## UNRELEASED
+
+### DEPENDENCIES
+
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.2 to 0.60.5 ([#3976](https://github.com/cosmos/gaia/pull/3976))
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.2.4 to v2.3.2 ([#3976](https://github.com/cosmos/gaia/pull/3976))
+
 ## v27.0.0
 
 *February 20, 2026*
@@ -9,10 +16,6 @@
 - Add stake validation to vote messages from interchain accounts ([#3957](https://github.com/cosmos/gaia/pull/3957))
 - Add provider ante handler to disable the creation of new consumer chains ([#3959](https://github.com/cosmos/gaia/pull/3959))
 - Add a gas surcharge to multi-send messages to mitigate spam ([#3961](https://github.com/cosmos/gaia/pull/3961))
-
-
-- Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.2 to 0.60.5 ([#3976](https://github.com/cosmos/gaia/pull/3976))
-- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.2.4 to v2.3.2 ([#3976](https://github.com/cosmos/gaia/pull/3976))
 
 ## v26.0.0
 

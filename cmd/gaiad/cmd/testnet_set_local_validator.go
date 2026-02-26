@@ -53,6 +53,7 @@ var (
 	flagValidatorPrivKey         = "validator-privkey"
 	flagAccountsToFund           = "accounts-to-fund"
 	flagReplaceValidator         = "replace-validator"
+	flagAutoFindTarget           = "auto-find-target"
 	flagReplacedOperatorAddress  = "replaced-operator-address"
 	flagReplacedConsensusAddress = "replaced-consensus-address"
 )
@@ -64,8 +65,9 @@ type valArgs struct {
 	accountsToFund           []sdk.AccAddress // list of accounts to fund and use for testing later on
 	homeDir                  string
 	replaceValidator         bool   // if set, replaces a validator with new keys
+	autoFindTarget           bool   // if set, automatically finds the first validator with an available vote to replace
 	replacedOperatorAddress  string // operator address of the validator to be replaced
-	replacedConsensusAddress string // consensus address of the validator to be replaced
+	replacedConsensusAddress string // consensus address of the validator to be replaced (hex)
 }
 
 func init() {
@@ -86,14 +88,17 @@ Example:
 	simd testnet unsafe-start-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pubkey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q==" --accounts-to-fund="cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl" [other_server_start_flags]
 	# Replaces the specified validator with the new keys
 	simd testnet unsafe-start-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pubkey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q==" --accounts-to-fund="cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl" --replace-validator -- replaced-operator-address="cosmosvaloper1r5v5srda7xfth3hn2s26txvrcrntldju7lnwmv" --replaced-consensus-address="04B333F6E43751948C2D56B273DC41C3E13E5932" [other_server_start_flags]
+	# Replaces the first validator with an available vote in the last commit (useful when the target validator's vote is absent)
+	simd testnet unsafe-start-local-validator --validator-operator="cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r" --validator-pubkey="SLpHEfzQHuuNO9J1BB/hXyiH6c1NmpoIVQ2pMWmyctE=" --validator-privkey="AiayvI2px5CZVl/uOGmacfFjcIBoyk3Oa2JPBO6zEcdIukcR/NAe64070nUEH+FfKIfpzU2amghVDakxabJy0Q==" --accounts-to-fund="cosmos1ju6tlfclulxumtt2kglvnxduj5d93a64r5czge,cosmos1r5v5srda7xfth3hn2s26txvrcrntldjumt8mhl" --replace-validator --auto-find-target [other_server_start_flags]
 	`
 	cmd.Flags().String(flagValidatorOperatorAddress, "", "Validator operator address e.g. cosmosvaloper17fjdcqy7g80pn0seexcch5pg0dtvs45p57t97r")
 	cmd.Flags().String(flagValidatorPubKey, "", "Validator tendermint/PubKeyEd25519 consensus public key from the priv_validator_key.json file")
 	cmd.Flags().String(flagValidatorPrivKey, "", "Validator tendermint/PrivKeyEd25519 consensus private key from the priv_validator_key.json file")
 	cmd.Flags().String(flagAccountsToFund, "", "Comma-separated list of account addresses that will be funded for testing purposes")
 	cmd.Flags().Bool(flagReplaceValidator, false, "Replaces a specified validator with the new keys")
-	cmd.Flags().String(flagReplacedOperatorAddress, "", "Operator address of the validator to be replaced")
-	cmd.Flags().String(flagReplacedConsensusAddress, "", "Consensus address of the validator to be replaced")
+	cmd.Flags().Bool(flagAutoFindTarget, false, "Automatically find the first validator with an available vote in the last commit and replace it (implies --replace-validator)")
+	cmd.Flags().String(flagReplacedOperatorAddress, "", "Operator address of the validator to be replaced (not required when --auto-find-target is set)")
+	cmd.Flags().String(flagReplacedConsensusAddress, "", "Consensus address (uppercase hex) of the validator to be replaced (not required when --auto-find-target is set)")
 
 	return cmd
 }
@@ -148,8 +153,15 @@ func getCommandArgs(appOpts servertypes.AppOptions) (valArgs, error) {
 	}
 
 	replaceValidator := cast.ToBool(appOpts.Get(flagReplaceValidator))
+	autoFindTarget := cast.ToBool(appOpts.Get(flagAutoFindTarget))
+	// --auto-find-target implies --replace-validator
+	if autoFindTarget {
+		replaceValidator = true
+	}
 	args.replaceValidator = replaceValidator
-	if replaceValidator {
+	args.autoFindTarget = autoFindTarget
+
+	if replaceValidator && !autoFindTarget {
 		replacedOperatorAddress := cast.ToString(appOpts.Get(flagReplacedOperatorAddress))
 		if replacedOperatorAddress == "" {
 			return args, errors.New("invalid replaced validator operator address string")
@@ -197,14 +209,21 @@ func (a appCreator) newTestingApp(
 	}
 
 	if args.replaceValidator {
-		logger.Info("Replacing validator", "operator_address", args.replacedOperatorAddress, "consensus_address", args.replacedConsensusAddress)
+		if args.autoFindTarget {
+			logger.Info("Replacing validator", "mode", "auto-find-target")
+		} else {
+			logger.Info("Replacing validator", "operator_address", args.replacedOperatorAddress, "consensus_address", args.replacedConsensusAddress)
+		}
 	} else {
 		logger.Info("Clearing the validator set")
 	}
 
-	err = updateConsensusState(logger, appOpts, gaiaApp.CommitMultiStore().LatestVersion(), args)
+	discoveredConsAddr, err := updateConsensusState(logger, appOpts, gaiaApp.CommitMultiStore().LatestVersion(), args)
 	if err != nil {
 		panic(err)
+	}
+	if discoveredConsAddr != "" {
+		args.replacedConsensusAddress = discoveredConsAddr
 	}
 	err = updateApplicationState(gaiaApp, args)
 	if err != nil {
@@ -258,32 +277,57 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 
 	foundTargetValidator := false
 	for _, v := range validators {
-		if (args.replaceValidator && v.GetOperator() == args.replacedOperatorAddress) || !args.replaceValidator {
-			valConsAddr, err := v.GetConsAddr()
-			if err != nil {
-				return err
+		matches := !args.replaceValidator
+		if args.replaceValidator {
+			valConsAddr, cerr := v.GetConsAddr()
+			if cerr != nil {
+				return cerr
 			}
+			if args.autoFindTarget {
+				matches = fmt.Sprintf("%X", valConsAddr) == args.replacedConsensusAddress
+			} else {
+				matches = v.GetOperator() == args.replacedOperatorAddress
+			}
+		}
+		if !matches {
+			continue
+		}
 
-			// delete the old validator record
-			valAddr, err := app.StakingKeeper.ValidatorAddressCodec().StringToBytes(v.GetOperator())
-			if err != nil {
-				return err
-			}
-			store.Delete(stakingtypes.GetValidatorKey(valAddr))
-			store.Delete(stakingtypes.GetValidatorByConsAddrKey(valConsAddr))
-			store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(appCtx), app.StakingKeeper.ValidatorAddressCodec()))
-			store.Delete(stakingtypes.GetLastValidatorPowerKey(valAddr))
-			if v.IsUnbonding() {
-				app.StakingKeeper.DeleteValidatorQueueTimeSlice(appCtx, v.UnbondingTime, v.UnbondingHeight)
-			}
-			if args.replaceValidator {
-				foundTargetValidator = true
-				appCtx.Logger().Info("Found validator to replace", "operator_address", v.GetOperator())
-				break
-			}
+		valConsAddr, err := v.GetConsAddr()
+		if err != nil {
+			return err
+		}
+
+		if args.replaceValidator {
+			appCtx.Logger().Info("Replacing validator",
+				"moniker", v.GetMoniker(),
+				"operator_address", v.GetOperator(),
+				"cons_addr_bech32", sdk.ConsAddress(valConsAddr).String(),
+				"cons_addr_hex", fmt.Sprintf("%X", valConsAddr),
+			)
+		}
+
+		// delete the old validator record
+		valAddr, err := app.StakingKeeper.ValidatorAddressCodec().StringToBytes(v.GetOperator())
+		if err != nil {
+			return err
+		}
+		store.Delete(stakingtypes.GetValidatorKey(valAddr))
+		store.Delete(stakingtypes.GetValidatorByConsAddrKey(valConsAddr))
+		store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(appCtx), app.StakingKeeper.ValidatorAddressCodec()))
+		store.Delete(stakingtypes.GetLastValidatorPowerKey(valAddr))
+		if v.IsUnbonding() {
+			app.StakingKeeper.DeleteValidatorQueueTimeSlice(appCtx, v.UnbondingTime, v.UnbondingHeight)
+		}
+		if args.replaceValidator {
+			foundTargetValidator = true
+			break
 		}
 	}
 	if args.replaceValidator && !foundTargetValidator {
+		if args.autoFindTarget {
+			return fmt.Errorf("validator with consensus address %s not found in application state", args.replacedConsensusAddress)
+		}
 		return fmt.Errorf("validator with operator address %s not found", args.replacedOperatorAddress)
 	}
 
@@ -356,7 +400,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	return nil
 }
 
-func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, appHeight int64, args valArgs) error {
+func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, appHeight int64, args valArgs) (string, error) {
 	// create validator set from the local validator
 	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(args.validatorConsPubKeyByte), valVotingPower)
 	logger.Info("Creating new validator:", "validator", newTmVal)
@@ -364,7 +408,7 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 	// CHANGE STATE CONSENSUS STORE
 	stateDB, err := openDB(args.homeDir, "state", cometdbm.BackendType(server.GetAppDBBackend(appOpts)))
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	stateStore := sm.NewStore(stateDB, sm.StoreOptions{
@@ -374,7 +418,7 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 	// load state in order to change validator set info
 	state, err := stateStore.Load()
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer func() {
 		if derr := stateStore.Close(); derr != nil {
@@ -387,7 +431,7 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 	// and the voting validator address has to be present in the staking module, which is not the case for old validator
 	valInfo, err := loadValidatorsInfo(stateDB, state.LastBlockHeight)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// CHANGE BLOCK CONSENSUS STORE
@@ -395,7 +439,7 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 	// and size of the lastCommit signatures when building the last commit info and they have to match
 	blockStoreDB, err := openDB(args.homeDir, "blockstore", cometdbm.BackendType(server.GetAppDBBackend(appOpts)))
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer func() {
 		if derr := blockStoreDB.Close(); derr != nil {
@@ -408,50 +452,92 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 	lastCommit := blockStore.LoadSeenCommit(state.LastBlockHeight)
 	var vote *tmtypes.Vote
 	currentValidators := state.Validators.Copy()
+	discoveredConsAddr := ""
 	if args.replaceValidator {
-		// Replace the target validator
-		replaced := false
-		for i, v := range currentValidators.Validators {
-			if v.Address.String() == args.replacedConsensusAddress { // oldAddress = old consensus address
-				currentValidators.Validators[i] = newTmVal // newTmVal = new tmtypes.Validator with new pubkey
-				replaced = true
-				break
-			}
-		}
-		if !replaced {
-			return fmt.Errorf("validator to replace not found in consensus set")
-		}
-		currentValidators.Proposer = newTmVal
-
-		var sigIndex int
-		for idx, commitSig := range lastCommit.Signatures {
-			if commitSig.BlockIDFlag == tmtypes.BlockIDFlagAbsent {
-				continue
-			}
-			validatorAddress := commitSig.ValidatorAddress
-			// logger.Info("Commit signature", "idx", idx, "address", fmt.Sprintf("%X", validatorAddress), "commitSig", commitSig)
-			if validatorAddress.String() == args.replacedConsensusAddress {
-				logger.Info("Found validator to replace", "idx", idx, "consensus_address", fmt.Sprintf("%X", validatorAddress))
+		if args.autoFindTarget {
+			// Auto-find: use the first validator with an available vote in the last commit
+			var sigIndex int
+			for idx, commitSig := range lastCommit.Signatures {
+				if commitSig.BlockIDFlag == tmtypes.BlockIDFlagAbsent {
+					continue
+				}
+				discoveredConsAddr = commitSig.ValidatorAddress.String()
+				logger.Info("Auto-selected validator to replace", "idx", idx, "cons_addr_hex", fmt.Sprintf("%X", commitSig.ValidatorAddress))
 				vote = lastCommit.GetVote(int32(idx))
 				sigIndex = idx
 				break
 			}
-		}
-		if vote == nil {
-			return errors.New("cannot get the vote from the last commit")
-		}
+			if vote == nil {
+				return "", errors.New("no validator with an available vote found in the last commit")
+			}
+			// Replace the matching validator in the current consensus validator set
+			replaced := false
+			for i, v := range currentValidators.Validators {
+				if v.Address.String() == discoveredConsAddr {
+					currentValidators.Validators[i] = newTmVal
+					replaced = true
+					break
+				}
+			}
+			if !replaced {
+				return "", fmt.Errorf("auto-selected validator %s not found in consensus validator set", discoveredConsAddr)
+			}
+			currentValidators.Proposer = newTmVal
 
-		voteSignBytes := tmtypes.VoteSignBytes(state.ChainID, vote.ToProto())
-		signatureBytes, err := args.validatorConsPrivKey.Sign(voteSignBytes)
-		if err != nil {
-			return err
-		}
+			voteSignBytes := tmtypes.VoteSignBytes(state.ChainID, vote.ToProto())
+			signatureBytes, err := args.validatorConsPrivKey.Sign(voteSignBytes)
+			if err != nil {
+				return "", err
+			}
+			lastCommit.Signatures[sigIndex] = tmtypes.CommitSig{
+				BlockIDFlag:      tmtypes.BlockIDFlagCommit,
+				ValidatorAddress: newTmVal.Address,
+				Timestamp:        vote.Timestamp,
+				Signature:        []byte(signatureBytes),
+			}
+		} else {
+			// Replace the target validator by explicit consensus address
+			replaced := false
+			for i, v := range currentValidators.Validators {
+				if v.Address.String() == args.replacedConsensusAddress {
+					currentValidators.Validators[i] = newTmVal
+					replaced = true
+					break
+				}
+			}
+			if !replaced {
+				return "", fmt.Errorf("validator to replace not found in consensus set")
+			}
+			currentValidators.Proposer = newTmVal
 
-		lastCommit.Signatures[sigIndex] = tmtypes.CommitSig{
-			BlockIDFlag:      tmtypes.BlockIDFlagCommit,
-			ValidatorAddress: newTmVal.Address,
-			Timestamp:        vote.Timestamp,
-			Signature:        []byte(signatureBytes),
+			var sigIndex int
+			for idx, commitSig := range lastCommit.Signatures {
+				if commitSig.BlockIDFlag == tmtypes.BlockIDFlagAbsent {
+					continue
+				}
+				validatorAddress := commitSig.ValidatorAddress
+				if validatorAddress.String() == args.replacedConsensusAddress {
+					logger.Info("Found validator to replace", "idx", idx, "consensus_address", fmt.Sprintf("%X", validatorAddress))
+					vote = lastCommit.GetVote(int32(idx))
+					sigIndex = idx
+					break
+				}
+			}
+			if vote == nil {
+				return "", errors.New("cannot get the vote from the last commit")
+			}
+
+			voteSignBytes := tmtypes.VoteSignBytes(state.ChainID, vote.ToProto())
+			signatureBytes, err := args.validatorConsPrivKey.Sign(voteSignBytes)
+			if err != nil {
+				return "", err
+			}
+			lastCommit.Signatures[sigIndex] = tmtypes.CommitSig{
+				BlockIDFlag:      tmtypes.BlockIDFlagCommit,
+				ValidatorAddress: newTmVal.Address,
+				Timestamp:        vote.Timestamp,
+				Signature:        []byte(signatureBytes),
+			}
 		}
 	} else {
 		// Clear the validator set
@@ -466,13 +552,13 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 			break
 		}
 		if vote == nil {
-			return errors.New("cannot get the vote from the last commit")
+			return "", errors.New("cannot get the vote from the last commit")
 		}
 
 		voteSignBytes := tmtypes.VoteSignBytes(state.ChainID, vote.ToProto())
 		signatureBytes, err := args.validatorConsPrivKey.Sign(voteSignBytes)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		lastCommit.Signatures = []tmtypes.CommitSig{{
@@ -489,12 +575,12 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 	state.NextValidators = currentValidators
 	// save state store
 	if err = stateStore.Save(state); err != nil {
-		return err
+		return "", err
 	}
 
 	protoValSet, err := currentValidators.ToProto()
 	if err != nil {
-		return err
+		return "", err
 	}
 	valInfo.ValidatorSet = protoValSet
 	valInfo.LastHeightChanged = state.LastBlockHeight
@@ -517,7 +603,7 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 		blockStore.DeleteLatestBlock()
 	}
 
-	return blockStore.SaveSeenCommit(state.LastBlockHeight, lastCommit)
+	return discoveredConsAddr, blockStore.SaveSeenCommit(state.LastBlockHeight, lastCommit)
 }
 
 func loadValidatorsInfo(db cometdbm.DB, height int64) (*cmtstate.ValidatorsInfo, error) {

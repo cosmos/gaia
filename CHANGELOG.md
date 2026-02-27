@@ -49,6 +49,10 @@
 - Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.3 to 0.53.4 ([#3932](https://github.com/cosmos/gaia/pull/3932))
 - Bump [github.com/cosmos/ibc-go/](https://github.com/cosmos/ibc-go) from 10.3.0 to 10.5.0 ([#3932](https://github.com/cosmos/gaia/pull/3932))
 
+### Dependencies
+
+- Bump [golang.org/x/crypto](https://github.com/golang/crypto) from 0.41.0 to 0.45.0 ([#3903](https://github.com/cosmos/gaia/pull/3903))
+
 ## v25.2.0
 
 **November 6, 2025**

@@ -15,6 +15,10 @@
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.2 to 0.60.5 ([#3976](https://github.com/cosmos/gaia/pull/3976))
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.2.4 to v2.3.2 ([#3976](https://github.com/cosmos/gaia/pull/3976))
 
+### Dependencies
+
+- Bump [go.opentelemetry.io/otel/sdk](https://github.com/open-telemetry/opentelemetry-go) from 1.37.0 to 1.40.0 ([#3979](https://github.com/cosmos/gaia/pull/3979))
+
 ## v26.0.0
 
 *February 9, 2026*

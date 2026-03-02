@@ -7,7 +7,7 @@
 - Add stake validation to vote messages from interchain accounts ([#3957](https://github.com/cosmos/gaia/pull/3957))
 - Add provider ante handler to disable the creation of new consumer chains ([#3959](https://github.com/cosmos/gaia/pull/3959))
 - Add a gas surcharge to multi-send messages to mitigate spam ([#3961](https://github.com/cosmos/gaia/pull/3961))
-- Bump golang from 1.24 to 1.25
+- Bump golang from 1.24 to 1.25 ([#3984](https://github.com/cosmos/gaia/pull/3984))
 
 ### BUG-FIXES
 

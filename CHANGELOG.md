@@ -15,6 +15,10 @@
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.2 to 0.60.5 ([#3976](https://github.com/cosmos/gaia/pull/3976))
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.2.4 to v2.3.2 ([#3976](https://github.com/cosmos/gaia/pull/3976))
 
+### Dependencies
+
+- Bump [github.com/spf13/cobra](https://github.com/spf13/cobra) from 1.10.1 to 1.10.2 ([#3981](https://github.com/cosmos/gaia/pull/3981))
+
 ## v26.0.0
 
 *February 9, 2026*

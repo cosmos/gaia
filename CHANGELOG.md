@@ -2,15 +2,12 @@
 
 ## UNRELEASED
 
-<<<<<<< HEAD
-=======
 ### FEATURES
 
 - Bump golang from 1.24 to 1.25 ([#3984](https://github.com/cosmos/gaia/pull/3984))
 
 ### BUG-FIXES
 
->>>>>>> 531b914 (chore: bump golang to v1.25 (#3984))
 ### DEPENDENCIES
 
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.2 to 0.60.5 ([#3976](https://github.com/cosmos/gaia/pull/3976))

@@ -4,6 +4,8 @@
 
 ### FEATURES
 
+- Bump golang from 1.24 to 1.25 ([#3984](https://github.com/cosmos/gaia/pull/3984))
+
 ### BUG-FIXES
 
 ### DEPENDENCIES

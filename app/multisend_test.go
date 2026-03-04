@@ -15,7 +15,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 
-	gaiahelpers "github.com/cosmos/gaia/v27/app/helpers"
+	gaiahelpers "github.com/cosmos/gaia/v28/app/helpers"
 )
 
 func TestMultiSendGas(t *testing.T) {

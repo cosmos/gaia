@@ -31,7 +31,7 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	liquidtypes "github.com/cosmos/gaia/v27/x/liquid/types"
+	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {

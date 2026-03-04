@@ -158,9 +158,9 @@ jobs:
       - name: Install Old Gaiad
         run: |
           curl -LO https://github.com/cosmos/gaia/releases/download/v27.0.0/gaiad-v27.0.0-linux-amd64
-          chmod a+x gaiad-v26.0.0-linux-amd64
+          chmod a+x gaiad-v27.0.0-linux-amd64
           mkdir build
-          mv ./gaiad-v26.0.0-linux-amd64 ./build/gaiadold
+          mv ./gaiad-v27.0.0-linux-amd64 ./build/gaiadold
         if: env.GIT_DIFF
       - name: Install New Gaiad
         run: |

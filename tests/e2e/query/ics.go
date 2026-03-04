@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
-	"github.com/cosmos/gaia/v27/tests/e2e/common"
+	"github.com/cosmos/gaia/v28/tests/e2e/common"
 )
 
 func BlocksPerEpoch(endpoint string) (int64, error) {

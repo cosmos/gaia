@@ -24,10 +24,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
-	"github.com/cosmos/gaia/v27/ante"
-	gaia "github.com/cosmos/gaia/v27/app"
-	"github.com/cosmos/gaia/v27/app/sim"
-	gaiagov "github.com/cosmos/gaia/v27/x/gov"
+	"github.com/cosmos/gaia/v28/ante"
+	gaia "github.com/cosmos/gaia/v28/app"
+	"github.com/cosmos/gaia/v28/app/sim"
+	gaiagov "github.com/cosmos/gaia/v28/x/gov"
 )
 
 // AppChainID hardcoded chainID for simulation

@@ -8,7 +8,7 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaiaerrors "github.com/cosmos/gaia/v27/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v28/types/errors"
 )
 
 var (

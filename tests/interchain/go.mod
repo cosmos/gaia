@@ -1,4 +1,4 @@
-module github.com/cosmos/gaia/v27/tests/interchain
+module github.com/cosmos/gaia/v28/tests/interchain
 
 go 1.25.7
 

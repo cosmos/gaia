@@ -13,6 +13,10 @@
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.2 to 0.60.5 ([#3976](https://github.com/cosmos/gaia/pull/3976))
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.2.4 to v2.3.2 ([#3976](https://github.com/cosmos/gaia/pull/3976))
 
+### Dependencies
+
+- Bump [github.com/docker/cli](https://github.com/docker/cli) from 27.4.1+incompatible to 29.2.0+incompatible ([#3990](https://github.com/cosmos/gaia/pull/3990))
+
 ## v27.0.0
 
 *February 20, 2026*

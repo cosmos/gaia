@@ -1,8 +1,9 @@
-package v28_0_0 //nolint:revive
+package v28_0_0
 
 import (
 	"context"
 	"fmt"
+	"math"
 
 	"github.com/cosmos/gogoproto/proto"
 	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
@@ -49,6 +50,11 @@ func CreateUpgradeHandler(
 		}
 		maxVals := providerParams.MaxProviderConsensusValidators
 		ctx.Logger().Info("Read provider max_provider_consensus_validators", "value", maxVals)
+
+		// Validate maxVals is within uint32 range
+		if maxVals < 0 || maxVals > math.MaxUint32 {
+			return vm, fmt.Errorf("invalid max_provider_consensus_validators value: %d (must be between 0 and %d)", maxVals, uint32(math.MaxUint32))
+		}
 
 		// 2. Set staking max_validators to the former max_provider_consensus_validators,
 		// but only if it is lower than the current value. This ensures the upgrade

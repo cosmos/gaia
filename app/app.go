@@ -72,6 +72,7 @@ import (
 	"github.com/cosmos/gaia/v28/app/keepers"
 	"github.com/cosmos/gaia/v28/app/upgrades"
 	v280 "github.com/cosmos/gaia/v28/app/upgrades/v28_0_0"
+	legacyics "github.com/cosmos/gaia/v28/x/legacy/ics"
 )
 
 var (
@@ -149,6 +150,7 @@ func NewGaiaApp(
 
 	std.RegisterLegacyAminoCodec(legacyAmino)
 	std.RegisterInterfaces(interfaceRegistry)
+	legacyics.RegisterInterfaces(interfaceRegistry)
 
 	bApp := baseapp.NewBaseApp(
 		appName,

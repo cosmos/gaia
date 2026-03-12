@@ -1,4 +1,4 @@
-package v27_0_0 //nolint:revive
+package v27_1_0 //nolint:revive
 
 import (
 	"context"
@@ -27,7 +27,7 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
 
-		ctx.Logger().Info("Upgrade v27 complete")
+		ctx.Logger().Info("Upgrade complete", "name", UpgradeName)
 		return vm, nil
 	}
 }

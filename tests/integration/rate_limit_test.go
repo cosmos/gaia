@@ -29,7 +29,7 @@ func TestRateLimitTestSuite(t *testing.T) {
 }
 
 func (suite *RateLimitTestSuite) SetupTest() {
-	ibctesting.DefaultTestingAppInit = GaiaAppIniter
+	ibctesting.DefaultTestingAppInit = GaiaAppIniterTempDir
 	suite.coordinator = ibctesting.NewCoordinator(suite.T(), 1)
 
 	chain, ok := suite.coordinator.Chains[ibctesting.GetChainID(1)]

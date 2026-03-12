@@ -38,7 +38,7 @@ func TestFeeMarketTestSuite(t *testing.T) {
 
 func (suite *FeeMarketTestSuite) SetupTest() {
 	ante.UseFeeMarketDecorator = true
-	ibctesting.DefaultTestingAppInit = GaiaAppIniter
+	ibctesting.DefaultTestingAppInit = GaiaAppIniterTempDir
 	suite.coordinator = ibctesting.NewCoordinator(suite.T(), 1)
 	OverrideSendMsgs(suite.coordinator.Chains, sdk.NewInt64Coin(sdk.DefaultBondDenom, LargeFeeAmount), LargeGasLimit)
 

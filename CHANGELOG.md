@@ -1,12 +1,12 @@
 # CHANGELOG
 
-## UNRELEASED
+## v27.1.0
+
+*March 13, 2026*
 
 ### FEATURES
 
 - Bump golang from 1.24 to 1.25 ([#3984](https://github.com/cosmos/gaia/pull/3984))
-
-### BUG-FIXES
 
 ### DEPENDENCIES
 

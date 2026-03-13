@@ -1,8 +1,6 @@
 package ics
 
 import (
-	"reflect"
-
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
@@ -16,16 +14,9 @@ type customRegistrar interface {
 	RegisterCustomTypeURL(iface any, typeURL string, impl proto.Message)
 }
 
-// resolve returns the proto.Message to register for the given fully-qualified
-// proto type name. If the type was already registered in the global proto
-// registry (e.g. because the ICS dependency is still in go.mod and its
-// generated init() ran first), we use that registered type so that
-// proto.MessageName continues to work for gRPC reflection. Otherwise we
-// register the stub in the global registry and return the stub.
+// resolve registers the stub in the global proto registry under fqName (so
+// that proto.MessageName works for gRPC reflection) and returns the stub.
 func resolve(fqName string, stub proto.Message) proto.Message {
-	if t := proto.MessageType(fqName); t != nil {
-		return reflect.New(t.Elem()).Interface().(proto.Message)
-	}
 	proto.RegisterType(stub, fqName)
 	return stub
 }

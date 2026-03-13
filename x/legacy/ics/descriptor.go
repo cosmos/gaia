@@ -6,7 +6,10 @@ import (
 	"fmt"
 
 	protov2 "google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protodesc"
+	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/dynamicpb"
 )
 
 // fileDescBytes holds a gzip-compressed FileDescriptorProto for all legacy ICS
@@ -174,4 +177,23 @@ func init() {
 		panic("legacyics: failed to close gzip writer: " + err.Error())
 	}
 	fileDescBytes = buf.Bytes()
+
+	// Register with the protov2 registries so that the aminojson encoder
+	// (used for the proposals query response marshaling) can resolve these
+	// type URLs via protoregistry.GlobalTypes / GlobalFiles.
+	fd, err := protodesc.NewFile(fdp, protoregistry.GlobalFiles)
+	if err != nil {
+		panic("legacyics: failed to build protov2 file descriptor: " + err.Error())
+	}
+	if err := protoregistry.GlobalFiles.RegisterFile(fd); err != nil {
+		// "already registered" is harmless — happens if two init paths run.
+		_ = err
+	}
+	msgs := fd.Messages()
+	for i := 0; i < msgs.Len(); i++ {
+		mt := dynamicpb.NewMessageType(msgs.Get(i))
+		if err := protoregistry.GlobalTypes.RegisterMessage(mt); err != nil {
+			_ = err
+		}
+	}
 }

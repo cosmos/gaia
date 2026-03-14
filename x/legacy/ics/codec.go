@@ -16,8 +16,12 @@ type customRegistrar interface {
 
 // resolve registers the stub in the global proto registry under fqName (so
 // that proto.MessageName works for gRPC reflection) and returns the stub.
+// The check makes this safe to call multiple times (e.g. when NewGaiaApp is
+// instantiated more than once in a process, as in e2e test setup).
 func resolve(fqName string, stub proto.Message) proto.Message {
-	proto.RegisterType(stub, fqName)
+	if proto.MessageType(fqName) == nil {
+		proto.RegisterType(stub, fqName)
+	}
 	return stub
 }
 

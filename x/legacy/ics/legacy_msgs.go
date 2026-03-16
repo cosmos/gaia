@@ -91,42 +91,55 @@ func (m *MsgSetConsumerCommissionRate) String() string  { return "{}" }
 func (m *MsgAssignConsumerKey) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgAssignConsumerKey}
 }
+
 func (m *MsgConsumerAddition) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgConsumerAddition}
 }
+
 func (m *MsgConsumerRemoval) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgConsumerRemoval}
 }
+
 func (m *MsgConsumerModification) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgConsumerModification}
 }
+
 func (m *MsgCreateConsumer) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgCreateConsumer}
 }
+
 func (m *MsgUpdateConsumer) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgUpdateConsumer}
 }
+
 func (m *MsgRemoveConsumer) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgRemoveConsumer}
 }
+
 func (m *MsgChangeRewardDenoms) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgChangeRewardDenoms}
 }
+
 func (m *MsgUpdateParams) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgUpdateParams}
 }
+
 func (m *MsgSubmitConsumerMisbehaviour) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgSubmitConsumerMisbehaviour}
 }
+
 func (m *MsgSubmitConsumerDoubleVoting) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgSubmitConsumerDoubleVoting}
 }
+
 func (m *MsgOptIn) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgOptIn}
 }
+
 func (m *MsgOptOut) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgOptOut}
 }
+
 func (m *MsgSetConsumerCommissionRate) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxMsgSetConsumerCommissionRate}
 }

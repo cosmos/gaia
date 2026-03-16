@@ -10,7 +10,6 @@ import (
 	icahosttypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
-	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
 	storetypes "cosmossdk.io/store/types"
@@ -56,7 +55,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		authzkeeper.StoreKey,
 		routertypes.StoreKey,
 		ratelimittypes.StoreKey,
-		providertypes.StoreKey,
+		"provider", // ICS provider store kept for upgrade handler. Remove after v28.0.0 upgrade.
 		consensusparamtypes.StoreKey,
 		feemarkettypes.StoreKey,
 		wasmtypes.StoreKey,

@@ -21,9 +21,9 @@ import (
 	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10"
 	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/keeper"
 	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
+	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 	ibctm "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 	ibctesting "github.com/cosmos/ibc-go/v10/testing"
-	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
@@ -419,9 +419,6 @@ func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[s
 	// remove module accounts that are ALLOWED to received funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
-	// Remove the ConsumerRewardsPool from the group of blocked recipient addresses in bank
-	delete(modAccAddrs, authtypes.NewModuleAddress(providertypes.ConsumerRewardsPool).String())
-
 	return modAccAddrs
 }
 
@@ -568,6 +565,11 @@ func (app *GaiaApp) AutoCliOpts() autocli.AppOptions {
 }
 
 // TestingApp functions
+
+// GetIBCKeeper implements the TestingApp interface.
+func (app *GaiaApp) GetIBCKeeper() *ibckeeper.Keeper {
+	return app.IBCKeeper
+}
 
 // GetBaseApp implements the TestingApp interface.
 func (app *GaiaApp) GetBaseApp() *baseapp.BaseApp {

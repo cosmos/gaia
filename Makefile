@@ -384,7 +384,7 @@ docker-build-all: docker-build-debug docker-build-hermes
 ###                                Linting                                  ###
 ###############################################################################
 golangci_lint_cmd=golangci-lint
-golangci_version=v2.6.2
+golangci_version=v2.11.1
 
 lint:
 	@echo "--> Running linter"

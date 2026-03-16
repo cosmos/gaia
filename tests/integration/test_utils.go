@@ -28,10 +28,11 @@ import (
 
 var app *gaiaApp.GaiaApp
 
-// Some tests require a random directory to be created when running IBC testing suite with gaia.
-// This is due to how CosmWasmVM initializes the VM - all IBC testing apps must have different dirs so they don't conflict.
-func GaiaAppIniterTempDir() (ibctesting.TestingApp, map[string]json.RawMessage) {
-	tmpDir, err := os.MkdirTemp("", "")
+// GaiaAppIniter implements ibctesting.AppIniter for the gaia app.
+// Each call uses a unique temporary directory so that multiple parallel test
+// instances do not compete for the CosmWasm VM exclusive lock file.
+func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
+	tmpDir, err := os.MkdirTemp("", "gaia-integration-")
 	if err != nil {
 		panic(err)
 	}
@@ -50,21 +51,9 @@ func GaiaAppIniterTempDir() (ibctesting.TestingApp, map[string]json.RawMessage) 
 	return testApp, app.ModuleBasics.DefaultGenesis(app.AppCodec())
 }
 
-// GaiaAppIniter implements ibctesting.AppIniter for the gaia app
-func GaiaAppIniter() (ibctesting.TestingApp, map[string]json.RawMessage) {
-	app = gaiaApp.NewGaiaApp(
-		log.NewNopLogger(),
-		dbm.NewMemDB(),
-		nil,
-		true,
-		map[int64]bool{},
-		gaiaApp.DefaultNodeHome,
-		gaiaApp.EmptyAppOptions{},
-		gaiaApp.EmptyWasmOptions)
-
-	testApp := ibctesting.TestingApp(app)
-
-	return testApp, app.ModuleBasics.DefaultGenesis(app.AppCodec())
+// GaiaAppIniterTempDir is an alias for GaiaAppIniter retained for compatibility.
+func GaiaAppIniterTempDir() (ibctesting.TestingApp, map[string]json.RawMessage) {
+	return GaiaAppIniter()
 }
 
 // SendMsgs() behavior must be changed since the default one uses zero fees

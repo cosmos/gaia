@@ -249,8 +249,8 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		ConsensusPubkey: pubkeyAny,
 		Jailed:          false,
 		Status:          stakingtypes.Bonded,
-		Tokens:          math.NewInt(valTokens),
-		DelegatorShares: math.LegacyMustNewDecFromStr(fmt.Sprintf("%d", valTokens)),
+		Tokens:          math.ZeroInt(),
+		DelegatorShares: math.LegacyZeroDec(),
 		Description: stakingtypes.Description{
 			Moniker: "Testnet Validator",
 		},
@@ -268,6 +268,14 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	if err != nil {
 		return err
 	}
+
+	bondDenom, err := app.StakingKeeper.BondDenom(appCtx)
+	if err != nil {
+		return err
+	}
+
+	bondedTokensToRemove := math.ZeroInt()
+	notBondedTokensToRemove := math.ZeroInt()
 
 	store := appCtx.KVStore(app.GetKey(stakingtypes.ModuleName))
 	validators, err := app.StakingKeeper.GetAllValidators(appCtx)
@@ -312,6 +320,27 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		if err != nil {
 			return err
 		}
+		// Track tokens for pool cleanup; use validator.Tokens as the authoritative total
+		if v.IsBonded() {
+			bondedTokensToRemove = bondedTokensToRemove.Add(v.Tokens)
+		} else {
+			notBondedTokensToRemove = notBondedTokensToRemove.Add(v.Tokens)
+		}
+		appCtx.Logger().Info("Removing validator from pool",
+			"operator_address", v.GetOperator(),
+			"status", v.Status.String(),
+			"tokens", v.Tokens.String(),
+		)
+		// Remove all delegation records so no orphaned entries remain
+		delegations, err := app.StakingKeeper.GetValidatorDelegations(appCtx, valAddr)
+		if err != nil {
+			return err
+		}
+		for _, d := range delegations {
+			if err := app.StakingKeeper.RemoveDelegation(appCtx, d); err != nil {
+				return err
+			}
+		}
 		store.Delete(stakingtypes.GetValidatorKey(valAddr))
 		store.Delete(stakingtypes.GetValidatorByConsAddrKey(valConsAddr))
 		store.Delete(stakingtypes.GetValidatorsByPowerIndexKey(v, app.StakingKeeper.PowerReduction(appCtx), app.StakingKeeper.ValidatorAddressCodec()))
@@ -331,6 +360,20 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		return fmt.Errorf("validator with operator address %s not found", args.replacedOperatorAddress)
 	}
 
+	// Burn removed validator tokens from the staking pools to keep pool balances consistent
+	if bondedTokensToRemove.IsPositive() {
+		if err := app.BankKeeper.BurnCoins(appCtx, stakingtypes.BondedPoolName, sdk.NewCoins(sdk.NewCoin(bondDenom, bondedTokensToRemove))); err != nil {
+			return err
+		}
+		appCtx.Logger().Info("Burned bonded pool tokens", "amount", bondedTokensToRemove.String())
+	}
+	if notBondedTokensToRemove.IsPositive() {
+		if err := app.BankKeeper.BurnCoins(appCtx, stakingtypes.NotBondedPoolName, sdk.NewCoins(sdk.NewCoin(bondDenom, notBondedTokensToRemove))); err != nil {
+			return err
+		}
+		appCtx.Logger().Info("Burned not-bonded pool tokens", "amount", notBondedTokensToRemove.String())
+	}
+
 	// Add our validator to power and last validators store
 	app.StakingKeeper.SetValidator(appCtx, newVal)
 	err = app.StakingKeeper.SetValidatorByConsAddr(appCtx, newVal)
@@ -342,6 +385,29 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(appCtx, newValAddr); err != nil {
 		return err
 	}
+	// Create a self-delegation from the validator's operator account.
+	// Mint tokens and send them to the operator account, then Delegate() transfers
+	// them to the bonded pool and creates the delegation record, keeping all
+	// staking module state (validator tokens, pool balance, delegations) consistent.
+	newValAccAddr := sdk.AccAddress(newValAddr)
+	valTokenCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, valTokens))
+	if err := app.BankKeeper.MintCoins(appCtx, minttypes.ModuleName, valTokenCoins); err != nil {
+		return err
+	}
+	if err := app.BankKeeper.SendCoinsFromModuleToAccount(appCtx, minttypes.ModuleName, newValAccAddr, valTokenCoins); err != nil {
+		return err
+	}
+	latestVal, err := app.StakingKeeper.GetValidator(appCtx, newValAddr)
+	if err != nil {
+		return err
+	}
+	if _, err := app.StakingKeeper.Delegate(appCtx, newValAccAddr, math.NewInt(valTokens), stakingtypes.Unbonded, latestVal, true); err != nil {
+		return err
+	}
+	appCtx.Logger().Info("Created self-delegation for new validator",
+		"operator_address", args.validatorOperatorAddress,
+		"tokens", math.NewInt(valTokens).String(),
+	)
 	// DISTRIBUTION
 	// Initialize records for this validator across all distribution stores
 	app.DistrKeeper.SetValidatorHistoricalRewards(appCtx, newValAddr, 0, distrtypes.NewValidatorHistoricalRewards(sdk.DecCoins{}, 1))
@@ -376,10 +442,6 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	appCtx.Logger().Info("Updated governance voting period", "voting_period", shortVotingPeriod, "expedited_voting_period", expeditedVotingPeriod)
 
 	// BANK
-	bondDenom, err := app.StakingKeeper.BondDenom(appCtx)
-	if err != nil {
-		return err
-	}
 	defaultCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, 1000000000000000))
 
 	// Fund testnet accounts

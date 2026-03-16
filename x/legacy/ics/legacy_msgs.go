@@ -15,7 +15,7 @@ func (s *stubMsg) Reset()                                        {}
 func (s *stubMsg) String() string                                { return "{}" }
 func (s *stubMsg) Marshal() ([]byte, error)                      { return []byte{}, nil }
 func (s *stubMsg) MarshalTo(dAtA []byte) (int, error)            { return 0, nil }
-func (s *stubMsg) MarshalToSizedBuffer(dAtA []byte) (int, error) { return len(dAtA), nil }
+func (s *stubMsg) MarshalToSizedBuffer(dAtA []byte) (int, error) { return 0, nil }
 func (s *stubMsg) Size() int                                     { return 0 }
 func (s *stubMsg) Unmarshal(_ []byte) error                      { return nil }
 func (s *stubMsg) ValidateBasic() error                          { return nil }

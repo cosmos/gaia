@@ -1,10 +1,11 @@
 package ics
 
 import (
+	proto "github.com/cosmos/gogoproto/proto"
+
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	proto "github.com/cosmos/gogoproto/proto"
 )
 
 // customRegistrar is satisfied by the concrete *interfaceRegistry in the SDK.

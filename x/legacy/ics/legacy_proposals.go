@@ -13,11 +13,13 @@ func (s *stubProposal) String() string         { return "{}" }
 
 // ICS provider governance proposal stubs.
 
-type ConsumerAdditionProposal struct{ stubProposal }
-type ConsumerRemovalProposal struct{ stubProposal }
-type ConsumerModificationProposal struct{ stubProposal }
-type ChangeRewardDenomsProposal struct{ stubProposal }
-type EquivocationProposal struct{ stubProposal }
+type (
+	ConsumerAdditionProposal     struct{ stubProposal }
+	ConsumerRemovalProposal      struct{ stubProposal }
+	ConsumerModificationProposal struct{ stubProposal }
+	ChangeRewardDenomsProposal   struct{ stubProposal }
+	EquivocationProposal         struct{ stubProposal }
+)
 
 func (m *ConsumerAdditionProposal) ProtoMessage()            {}
 func (m *ConsumerAdditionProposal) Reset()                   {}
@@ -43,15 +45,19 @@ func (m *EquivocationProposal) ProposalType() string         { return "Equivocat
 func (m *ConsumerAdditionProposal) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxConsumerAdditionProposal}
 }
+
 func (m *ConsumerRemovalProposal) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxConsumerRemovalProposal}
 }
+
 func (m *ConsumerModificationProposal) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxConsumerModificationProposal}
 }
+
 func (m *ChangeRewardDenomsProposal) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxChangeRewardDenomsProposal}
 }
+
 func (m *EquivocationProposal) Descriptor() ([]byte, []int) {
 	return fileDescBytes, []int{idxEquivocationProposal}
 }

@@ -22,20 +22,22 @@ func (s *stubMsg) ValidateBasic() error                          { return nil }
 
 // ICS provider tx message stubs.
 
-type MsgAssignConsumerKey struct{ stubMsg }
-type MsgConsumerAddition struct{ stubMsg }
-type MsgConsumerRemoval struct{ stubMsg }
-type MsgConsumerModification struct{ stubMsg }
-type MsgCreateConsumer struct{ stubMsg }
-type MsgUpdateConsumer struct{ stubMsg }
-type MsgRemoveConsumer struct{ stubMsg }
-type MsgChangeRewardDenoms struct{ stubMsg }
-type MsgUpdateParams struct{ stubMsg }
-type MsgSubmitConsumerMisbehaviour struct{ stubMsg }
-type MsgSubmitConsumerDoubleVoting struct{ stubMsg }
-type MsgOptIn struct{ stubMsg }
-type MsgOptOut struct{ stubMsg }
-type MsgSetConsumerCommissionRate struct{ stubMsg }
+type (
+	MsgAssignConsumerKey          struct{ stubMsg }
+	MsgConsumerAddition           struct{ stubMsg }
+	MsgConsumerRemoval            struct{ stubMsg }
+	MsgConsumerModification       struct{ stubMsg }
+	MsgCreateConsumer             struct{ stubMsg }
+	MsgUpdateConsumer             struct{ stubMsg }
+	MsgRemoveConsumer             struct{ stubMsg }
+	MsgChangeRewardDenoms         struct{ stubMsg }
+	MsgUpdateParams               struct{ stubMsg }
+	MsgSubmitConsumerMisbehaviour struct{ stubMsg }
+	MsgSubmitConsumerDoubleVoting struct{ stubMsg }
+	MsgOptIn                      struct{ stubMsg }
+	MsgOptOut                     struct{ stubMsg }
+	MsgSetConsumerCommissionRate  struct{ stubMsg }
+)
 
 // Each concrete type needs its own ProtoMessage/Reset/String so that
 // proto.RegisterType binds the correct Go type to the ICS type URL.

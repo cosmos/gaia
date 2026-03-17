@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"fmt"
 
+	msgv1 "cosmossdk.io/api/cosmos/msg/v1"
 	protov2 "google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoregistry"
@@ -87,6 +88,17 @@ func fBool(num int32) *descriptorpb.FieldDescriptorProto {
 	return &descriptorpb.FieldDescriptorProto{Name: &name, Number: &num, Type: &typ, Label: &label}
 }
 
+// msgServiceAnnotation returns a *descriptorpb.ServiceOptions with the
+// cosmos.msg.v1.service = true extension set. This annotation is required by
+// the SDK's proto annotation validator which runs at app init and warns/errors
+// if any service named "Msg" in the merged proto registry (GlobalFiles + gogo
+// registry) lacks this option.
+func msgServiceAnnotation() *descriptorpb.ServiceOptions {
+	opts := &descriptorpb.ServiceOptions{}
+	protov2.SetExtension(opts, msgv1.E_Service, true)
+	return opts
+}
+
 func init() {
 	name := func(s string) *string { return &s }
 
@@ -160,6 +172,39 @@ func init() {
 			{Name: name("ConsumerModificationProposal")},
 			{Name: name("ChangeRewardDenomsProposal")},
 			{Name: name("EquivocationProposal")},
+		},
+		// Tx service descriptor: required so that baseapp's MsgServiceRouter can
+		// register stub handlers via RegisterService (which calls
+		// registerHybridHandler → HybridResolver.FindDescriptorByName).
+		// Without the service definition in the file descriptor the hybrid handler
+		// registration panics at startup.
+		//
+		// The cosmos.msg.v1.service = true annotation is required; on app init the
+		// SDK calls msgservice.ValidateProtoAnnotations over the merged registry
+		// (protoregistry.GlobalFiles + gogo registry) and panics/warns if any
+		// service named "Msg" lacks this annotation.
+		Service: []*descriptorpb.ServiceDescriptorProto{
+			{
+				Name:    name("Msg"),
+				Options: msgServiceAnnotation(),
+
+				Method: []*descriptorpb.MethodDescriptorProto{
+					{Name: name("AssignConsumerKey"), InputType: name(".interchain_security.ccv.provider.v1.MsgAssignConsumerKey"), OutputType: name(".interchain_security.ccv.provider.v1.MsgAssignConsumerKey")},
+					{Name: name("ConsumerAddition"), InputType: name(".interchain_security.ccv.provider.v1.MsgConsumerAddition"), OutputType: name(".interchain_security.ccv.provider.v1.MsgConsumerAddition")},
+					{Name: name("ConsumerRemoval"), InputType: name(".interchain_security.ccv.provider.v1.MsgConsumerRemoval"), OutputType: name(".interchain_security.ccv.provider.v1.MsgConsumerRemoval")},
+					{Name: name("ConsumerModification"), InputType: name(".interchain_security.ccv.provider.v1.MsgConsumerModification"), OutputType: name(".interchain_security.ccv.provider.v1.MsgConsumerModification")},
+					{Name: name("CreateConsumer"), InputType: name(".interchain_security.ccv.provider.v1.MsgCreateConsumer"), OutputType: name(".interchain_security.ccv.provider.v1.MsgCreateConsumer")},
+					{Name: name("UpdateConsumer"), InputType: name(".interchain_security.ccv.provider.v1.MsgUpdateConsumer"), OutputType: name(".interchain_security.ccv.provider.v1.MsgUpdateConsumer")},
+					{Name: name("RemoveConsumer"), InputType: name(".interchain_security.ccv.provider.v1.MsgRemoveConsumer"), OutputType: name(".interchain_security.ccv.provider.v1.MsgRemoveConsumer")},
+					{Name: name("ChangeRewardDenoms"), InputType: name(".interchain_security.ccv.provider.v1.MsgChangeRewardDenoms"), OutputType: name(".interchain_security.ccv.provider.v1.MsgChangeRewardDenoms")},
+					{Name: name("UpdateParams"), InputType: name(".interchain_security.ccv.provider.v1.MsgUpdateParams"), OutputType: name(".interchain_security.ccv.provider.v1.MsgUpdateParams")},
+					{Name: name("SubmitConsumerMisbehaviour"), InputType: name(".interchain_security.ccv.provider.v1.MsgSubmitConsumerMisbehaviour"), OutputType: name(".interchain_security.ccv.provider.v1.MsgSubmitConsumerMisbehaviour")},
+					{Name: name("SubmitConsumerDoubleVoting"), InputType: name(".interchain_security.ccv.provider.v1.MsgSubmitConsumerDoubleVoting"), OutputType: name(".interchain_security.ccv.provider.v1.MsgSubmitConsumerDoubleVoting")},
+					{Name: name("OptIn"), InputType: name(".interchain_security.ccv.provider.v1.MsgOptIn"), OutputType: name(".interchain_security.ccv.provider.v1.MsgOptIn")},
+					{Name: name("OptOut"), InputType: name(".interchain_security.ccv.provider.v1.MsgOptOut"), OutputType: name(".interchain_security.ccv.provider.v1.MsgOptOut")},
+					{Name: name("SetConsumerCommissionRate"), InputType: name(".interchain_security.ccv.provider.v1.MsgSetConsumerCommissionRate"), OutputType: name(".interchain_security.ccv.provider.v1.MsgSetConsumerCommissionRate")},
+				},
+			},
 		},
 	}
 

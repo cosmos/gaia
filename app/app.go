@@ -247,6 +247,13 @@ func NewGaiaApp(
 		panic(err)
 	}
 
+	// Register stub message handlers for all legacy ICS provider message types.
+	// The SDK checks for a handler before running the ante chain; without these
+	// stubs the node returns ErrUnknownRequest before RejectLegacyICSDecorator can
+	// fire. Must be called after mm.RegisterServices (and therefore after
+	// RegisterInterfaces) so that sdk.MsgTypeURL resolves during registration.
+	legacyics.RegisterLegacyMsgHandlers(app.MsgServiceRouter())
+
 	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(), runtimeservices.NewAutoCLIQueryService(app.mm.Modules))
 
 	reflectionSvc, err := runtimeservices.NewReflectionService()

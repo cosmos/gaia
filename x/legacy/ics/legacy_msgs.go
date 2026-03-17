@@ -48,51 +48,6 @@ type (
 	MsgSetConsumerCommissionRate  struct{ stubMsg }
 )
 
-// Each concrete type needs its own ProtoMessage/Reset/String so that
-// proto.RegisterType binds the correct Go type to the ICS type URL.
-func (m *MsgAssignConsumerKey) ProtoMessage()           {}
-func (m *MsgAssignConsumerKey) Reset()                  {}
-func (m *MsgAssignConsumerKey) String() string          { return "{}" }
-func (m *MsgConsumerAddition) ProtoMessage()            {}
-func (m *MsgConsumerAddition) Reset()                   {}
-func (m *MsgConsumerAddition) String() string           { return "{}" }
-func (m *MsgConsumerRemoval) ProtoMessage()             {}
-func (m *MsgConsumerRemoval) Reset()                    {}
-func (m *MsgConsumerRemoval) String() string            { return "{}" }
-func (m *MsgConsumerModification) ProtoMessage()        {}
-func (m *MsgConsumerModification) Reset()               {}
-func (m *MsgConsumerModification) String() string       { return "{}" }
-func (m *MsgCreateConsumer) ProtoMessage()              {}
-func (m *MsgCreateConsumer) Reset()                     {}
-func (m *MsgCreateConsumer) String() string             { return "{}" }
-func (m *MsgUpdateConsumer) ProtoMessage()              {}
-func (m *MsgUpdateConsumer) Reset()                     {}
-func (m *MsgUpdateConsumer) String() string             { return "{}" }
-func (m *MsgRemoveConsumer) ProtoMessage()              {}
-func (m *MsgRemoveConsumer) Reset()                     {}
-func (m *MsgRemoveConsumer) String() string             { return "{}" }
-func (m *MsgChangeRewardDenoms) ProtoMessage()          {}
-func (m *MsgChangeRewardDenoms) Reset()                 {}
-func (m *MsgChangeRewardDenoms) String() string         { return "{}" }
-func (m *MsgUpdateParams) ProtoMessage()                {}
-func (m *MsgUpdateParams) Reset()                       {}
-func (m *MsgUpdateParams) String() string               { return "{}" }
-func (m *MsgSubmitConsumerMisbehaviour) ProtoMessage()  {}
-func (m *MsgSubmitConsumerMisbehaviour) Reset()         {}
-func (m *MsgSubmitConsumerMisbehaviour) String() string { return "{}" }
-func (m *MsgSubmitConsumerDoubleVoting) ProtoMessage()  {}
-func (m *MsgSubmitConsumerDoubleVoting) Reset()         {}
-func (m *MsgSubmitConsumerDoubleVoting) String() string { return "{}" }
-func (m *MsgOptIn) ProtoMessage()                       {}
-func (m *MsgOptIn) Reset()                              {}
-func (m *MsgOptIn) String() string                      { return "{}" }
-func (m *MsgOptOut) ProtoMessage()                      {}
-func (m *MsgOptOut) Reset()                             {}
-func (m *MsgOptOut) String() string                     { return "{}" }
-func (m *MsgSetConsumerCommissionRate) ProtoMessage()   {}
-func (m *MsgSetConsumerCommissionRate) Reset()          {}
-func (m *MsgSetConsumerCommissionRate) String() string  { return "{}" }
-
 // Descriptor satisfies the descriptorIface required by the Cosmos SDK's
 // unknownproto package for tx field validation. Returns a minimal gzipped
 // FileDescriptorProto with no fields defined (all bytes treated as unknown

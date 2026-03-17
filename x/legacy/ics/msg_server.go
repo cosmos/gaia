@@ -41,6 +41,31 @@ func deprecated(_ context.Context, msg any) (any, error) {
 		"legacy ICS message type %T is no longer accepted (msg handler)", msg)
 }
 
+// methodDesc builds a grpc.MethodDesc for a single legacy ICS stub method.
+// newReq allocates the concrete stub type so that %T in the error message is
+// informative if the handler is ever reached. In practice it is not — the ante
+// decorator fires first.
+func methodDesc(methodName, fullMethod string, newReq func() any) grpc.MethodDesc {
+	return grpc.MethodDesc{
+		MethodName: methodName,
+		Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
+			req := newReq()
+			if err := dec(req); err != nil {
+				return nil, err
+			}
+			if interceptor == nil {
+				return deprecated(ctx, req)
+			}
+			info := &grpc.UnaryServerInfo{Server: srv, FullMethod: fullMethod}
+			return interceptor(ctx, req, info, func(c context.Context, r any) (any, error) {
+				return deprecated(c, r)
+			})
+		},
+	}
+}
+
+const msgSvcPrefix = "/interchain_security.ccv.provider.v1.Msg/"
+
 // _LegacyICS_Msg_serviceDesc is a hand-crafted gRPC ServiceDesc for the
 // ICS provider Msg service. The Handler for each method calls dec() with the
 // correct stub type so that registerMsgServiceHandler captures the right
@@ -51,188 +76,20 @@ var _LegacyICS_Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "interchain_security.ccv.provider.v1.Msg",
 	HandlerType: (*legacyMsgServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "AssignConsumerKey",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgAssignConsumerKey)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/AssignConsumerKey"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "ConsumerAddition",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgConsumerAddition)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/ConsumerAddition"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "ConsumerRemoval",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgConsumerRemoval)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/ConsumerRemoval"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "ConsumerModification",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgConsumerModification)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/ConsumerModification"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "CreateConsumer",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgCreateConsumer)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/CreateConsumer"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "UpdateConsumer",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgUpdateConsumer)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/UpdateConsumer"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "RemoveConsumer",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgRemoveConsumer)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/RemoveConsumer"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "ChangeRewardDenoms",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgChangeRewardDenoms)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/ChangeRewardDenoms"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "UpdateParams",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgUpdateParams)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/UpdateParams"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "SubmitConsumerMisbehaviour",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgSubmitConsumerMisbehaviour)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/SubmitConsumerMisbehaviour"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "SubmitConsumerDoubleVoting",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgSubmitConsumerDoubleVoting)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/SubmitConsumerDoubleVoting"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "OptIn",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgOptIn)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/OptIn"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "OptOut",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgOptOut)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/OptOut"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
-		{
-			MethodName: "SetConsumerCommissionRate",
-			Handler: func(srv any, ctx context.Context, dec func(any) error, interceptor grpc.UnaryServerInterceptor) (any, error) {
-				req := new(MsgSetConsumerCommissionRate)
-				if err := dec(req); err != nil {
-					return nil, err
-				}
-				if interceptor == nil {
-					return deprecated(ctx, req)
-				}
-				return interceptor(ctx, req, &grpc.UnaryServerInfo{Server: srv, FullMethod: "/interchain_security.ccv.provider.v1.Msg/SetConsumerCommissionRate"}, func(c context.Context, r any) (any, error) { return deprecated(c, r) })
-			},
-		},
+		methodDesc("AssignConsumerKey", msgSvcPrefix+"AssignConsumerKey", func() any { return new(MsgAssignConsumerKey) }),
+		methodDesc("ConsumerAddition", msgSvcPrefix+"ConsumerAddition", func() any { return new(MsgConsumerAddition) }),
+		methodDesc("ConsumerRemoval", msgSvcPrefix+"ConsumerRemoval", func() any { return new(MsgConsumerRemoval) }),
+		methodDesc("ConsumerModification", msgSvcPrefix+"ConsumerModification", func() any { return new(MsgConsumerModification) }),
+		methodDesc("CreateConsumer", msgSvcPrefix+"CreateConsumer", func() any { return new(MsgCreateConsumer) }),
+		methodDesc("UpdateConsumer", msgSvcPrefix+"UpdateConsumer", func() any { return new(MsgUpdateConsumer) }),
+		methodDesc("RemoveConsumer", msgSvcPrefix+"RemoveConsumer", func() any { return new(MsgRemoveConsumer) }),
+		methodDesc("ChangeRewardDenoms", msgSvcPrefix+"ChangeRewardDenoms", func() any { return new(MsgChangeRewardDenoms) }),
+		methodDesc("UpdateParams", msgSvcPrefix+"UpdateParams", func() any { return new(MsgUpdateParams) }),
+		methodDesc("SubmitConsumerMisbehaviour", msgSvcPrefix+"SubmitConsumerMisbehaviour", func() any { return new(MsgSubmitConsumerMisbehaviour) }),
+		methodDesc("SubmitConsumerDoubleVoting", msgSvcPrefix+"SubmitConsumerDoubleVoting", func() any { return new(MsgSubmitConsumerDoubleVoting) }),
+		methodDesc("OptIn", msgSvcPrefix+"OptIn", func() any { return new(MsgOptIn) }),
+		methodDesc("OptOut", msgSvcPrefix+"OptOut", func() any { return new(MsgOptOut) }),
+		methodDesc("SetConsumerCommissionRate", msgSvcPrefix+"SetConsumerCommissionRate", func() any { return new(MsgSetConsumerCommissionRate) }),
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "interchain_security/ccv/provider/v1/legacy_stubs.proto",

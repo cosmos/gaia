@@ -19,9 +19,8 @@ func NewRejectLegacyICSDecorator() RejectLegacyICSDecorator {
 }
 
 // isLegacyICSMsg returns true if msg is one of the ICS provider stub types that
-// were removed from this build. We use a type switch rather than sdk.MsgTypeURL
-// because the stubs are not generated proto types and proto.MessageName may not
-// resolve correctly for them at runtime.
+// were removed from this build. A type switch is used rather than sdk.MsgTypeURL
+// for clarity and to avoid any reliance on the gogo proto registry at call time.
 func isLegacyICSMsg(msg sdk.Msg) bool {
 	switch msg.(type) {
 	case *ics.MsgAssignConsumerKey,
@@ -47,6 +46,8 @@ func (d RejectLegacyICSDecorator) AnteHandle(
 	ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler,
 ) (sdk.Context, error) {
 	if simulate {
+		// Simulation is a read-only dry-run; the decorator does not reject
+		// deprecated messages in this mode. Rejection only occurs on broadcast.
 		return next(ctx, tx, simulate)
 	}
 

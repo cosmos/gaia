@@ -40,7 +40,6 @@ func TestRejectLegacyICSDecorator(t *testing.T) {
 		name      string
 		msgs      []sdk.Msg
 		expectErr bool
-		errCode   uint32
 	}{
 		{
 			name:      "no ICS messages - passes",
@@ -48,34 +47,74 @@ func TestRejectLegacyICSDecorator(t *testing.T) {
 			expectErr: false,
 		},
 		{
-			name:      "MsgUpdateConsumer - rejected",
-			msgs:      []sdk.Msg{&ics.MsgUpdateConsumer{}},
-			expectErr: true,
-			errCode:   gaiaerrors.ErrDeprecatedMessage.ABCICode(),
-		},
-		{
 			name:      "MsgAssignConsumerKey - rejected",
 			msgs:      []sdk.Msg{&ics.MsgAssignConsumerKey{}},
 			expectErr: true,
-			errCode:   gaiaerrors.ErrDeprecatedMessage.ABCICode(),
+		},
+		{
+			name:      "MsgConsumerAddition - rejected",
+			msgs:      []sdk.Msg{&ics.MsgConsumerAddition{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgConsumerRemoval - rejected",
+			msgs:      []sdk.Msg{&ics.MsgConsumerRemoval{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgConsumerModification - rejected",
+			msgs:      []sdk.Msg{&ics.MsgConsumerModification{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgCreateConsumer - rejected",
+			msgs:      []sdk.Msg{&ics.MsgCreateConsumer{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgUpdateConsumer - rejected",
+			msgs:      []sdk.Msg{&ics.MsgUpdateConsumer{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgRemoveConsumer - rejected",
+			msgs:      []sdk.Msg{&ics.MsgRemoveConsumer{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgChangeRewardDenoms - rejected",
+			msgs:      []sdk.Msg{&ics.MsgChangeRewardDenoms{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgUpdateParams - rejected",
+			msgs:      []sdk.Msg{&ics.MsgUpdateParams{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgSubmitConsumerMisbehaviour - rejected",
+			msgs:      []sdk.Msg{&ics.MsgSubmitConsumerMisbehaviour{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgSubmitConsumerDoubleVoting - rejected",
+			msgs:      []sdk.Msg{&ics.MsgSubmitConsumerDoubleVoting{}},
+			expectErr: true,
 		},
 		{
 			name:      "MsgOptIn - rejected",
 			msgs:      []sdk.Msg{&ics.MsgOptIn{}},
 			expectErr: true,
-			errCode:   gaiaerrors.ErrDeprecatedMessage.ABCICode(),
 		},
 		{
 			name:      "MsgOptOut - rejected",
 			msgs:      []sdk.Msg{&ics.MsgOptOut{}},
 			expectErr: true,
-			errCode:   gaiaerrors.ErrDeprecatedMessage.ABCICode(),
 		},
 		{
 			name:      "MsgSetConsumerCommissionRate - rejected",
 			msgs:      []sdk.Msg{&ics.MsgSetConsumerCommissionRate{}},
 			expectErr: true,
-			errCode:   gaiaerrors.ErrDeprecatedMessage.ABCICode(),
 		},
 	}
 
@@ -84,8 +123,7 @@ func TestRejectLegacyICSDecorator(t *testing.T) {
 			tx := mockTx{msgs: tc.msgs}
 			_, err := decorator.AnteHandle(ctx, tx, false, noopNext)
 			if tc.expectErr {
-				require.Error(t, err)
-				require.Equal(t, tc.errCode, gaiaerrors.ErrDeprecatedMessage.ABCICode())
+				require.ErrorIs(t, err, gaiaerrors.ErrDeprecatedMessage)
 			} else {
 				require.NoError(t, err)
 			}

@@ -53,19 +53,15 @@ func appendVarintField(buf []byte, fieldNum uint32, value uint64) []byte {
 //	field 2  validators_power_cap  (uint32)
 //	field 3  validator_set_cap      (uint32)
 //	field 4  allowlist              (repeated string)
-func encodeMsgUpdateConsumerP1014() []byte {
+func encodeMsgUpdateConsumerProposal() []byte {
 	// Build PowerShapingParameters sub-message bytes.
 	var ps []byte
 	ps = appendVarintField(ps, 2, 1) // validators_power_cap = 1
-	ps = appendVarintField(ps, 3, 7) // validator_set_cap = 7
+	ps = appendVarintField(ps, 3, 3) // validator_set_cap = 3
 	for _, addr := range []string{
-		"cosmosvalcons1m7fg8k39k2tyym5hgwrpf5wx9hqsr8vywuyrtm",
-		"cosmosvalcons1c5e86exd7jsyhcfqdejltdsagjfrvv8xv22368",
-		"cosmosvalcons1pdpwglc4fcjdzqvyhvfwxg684trpc6uqck5sxk",
-		"cosmosvalcons1px0zkz2cxvc6lh34uhafveea9jnaagckmrlsye",
-		"cosmosvalcons1vz42ewp04wwepjed7z4qenj925gpakgvap4q2u",
-		"cosmosvalcons1upc05nc9pwhhagnkr3f2dft327qxsxfeyvajsu",
-		"cosmosvalcons1f6cjsfn47ujttypx7gtncglsmjvndugc2zelqx",
+		"cosmosvalcons12m5td27rwwy95drgk53w9pfhlxqqguqmlfph2g",
+		"cosmosvalcons15yprks04304h8wg0x2fef53g50x9w2qa3c0hcd",
+		"cosmosvalcons146zd98kguwau7y3mfrrs9k4fsthv9qct9mdnx0",
 	} {
 		ps = appendLenField(ps, 4, []byte(addr)) // allowlist entry
 	}
@@ -73,7 +69,7 @@ func encodeMsgUpdateConsumerP1014() []byte {
 	var msg []byte
 	msg = appendLenField(msg, 1, []byte("cosmos10d07y265gmmuvt4z0w9aw880jnsr700j6zn9kn")) // owner
 	msg = appendLenField(msg, 2, []byte("1"))                                             // consumer_id
-	msg = appendLenField(msg, 3, []byte("cosmos1fduug6m38gyuqt3wcgc2kcgr9nnte0n7nmnk24")) // new_owner_address
+	msg = appendLenField(msg, 3, []byte("cosmos1arjwkww79m65csulawqngr7ngs4uqu5hx9ak2a")) // new_owner_address
 	msg = appendLenField(msg, 5, ps)                                                      // power_shaping_parameters
 	return msg
 }
@@ -83,7 +79,7 @@ func encodeMsgUpdateConsumerP1014() []byte {
 func msgUpdateConsumerAny() *codectypes.Any {
 	return &codectypes.Any{
 		TypeUrl: "/interchain_security.ccv.provider.v1.MsgUpdateConsumer",
-		Value:   encodeMsgUpdateConsumerP1014(),
+		Value:   encodeMsgUpdateConsumerProposal(),
 	}
 }
 
@@ -91,8 +87,8 @@ func msgUpdateConsumerAny() *codectypes.Any {
 // Test 1 -- round-trip through the SDK tx decoder
 // ---------------------------------------------------------------------------
 
-// TestRoundTripMsgUpdateConsumerTxDecode encodes the MsgUpdateConsumer from
-// mainnet proposal #1014 as the body of a minimal Cosmos SDK transaction, then
+// TestRoundTripMsgUpdateConsumerTxDecode encodes a MsgUpdateConsumer
+// proposal as the body of a minimal Cosmos SDK transaction, then
 // feeds the raw bytes through the SDK TxDecoder -- with only the ICS legacy
 // stubs registered on the interface registry -- and asserts that no error is
 // returned.

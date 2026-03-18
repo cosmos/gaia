@@ -5,9 +5,9 @@ import (
 
 	"google.golang.org/grpc"
 
-	errorsmod "cosmossdk.io/errors"
-
 	gogogrpc "github.com/cosmos/gogoproto/grpc"
+
+	errorsmod "cosmossdk.io/errors"
 
 	gaiaerrors "github.com/cosmos/gaia/v28/types/errors"
 )
@@ -33,7 +33,7 @@ type legacyMsgServer struct{}
 // Must be called after RegisterInterfaces so that sdk.MsgTypeURL resolves
 // correctly for the stubs during handler registration.
 func RegisterLegacyMsgHandlers(s gogogrpc.Server) {
-	s.RegisterService(&_LegacyICS_Msg_serviceDesc, &legacyMsgServer{})
+	s.RegisterService(&_LegacyICSMsgServiceDesc, &legacyMsgServer{})
 }
 
 func deprecated(_ context.Context, msg any) (any, error) {
@@ -57,22 +57,20 @@ func methodDesc(methodName, fullMethod string, newReq func() any) grpc.MethodDes
 				return deprecated(ctx, req)
 			}
 			info := &grpc.UnaryServerInfo{Server: srv, FullMethod: fullMethod}
-			return interceptor(ctx, req, info, func(c context.Context, r any) (any, error) {
-				return deprecated(c, r)
-			})
+			return interceptor(ctx, req, info, deprecated)
 		},
 	}
 }
 
 const msgSvcPrefix = "/interchain_security.ccv.provider.v1.Msg/"
 
-// _LegacyICS_Msg_serviceDesc is a hand-crafted gRPC ServiceDesc for the
+// _LegacyICSMsgServiceDesc is a hand-crafted gRPC ServiceDesc for the
 // ICS provider Msg service. The Handler for each method calls dec() with the
 // correct stub type so that registerMsgServiceHandler captures the right
 // sdk.MsgTypeURL during registration. The actual method body returns
 // ErrDeprecatedMessage, but in practice it is never reached because the ante
 // decorator fires first.
-var _LegacyICS_Msg_serviceDesc = grpc.ServiceDesc{
+var _LegacyICSMsgServiceDesc = grpc.ServiceDesc{
 	ServiceName: "interchain_security.ccv.provider.v1.Msg",
 	HandlerType: (*legacyMsgServer)(nil),
 	Methods: []grpc.MethodDesc{

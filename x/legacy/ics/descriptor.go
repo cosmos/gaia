@@ -5,12 +5,13 @@ import (
 	"compress/gzip"
 	"fmt"
 
-	msgv1 "cosmossdk.io/api/cosmos/msg/v1"
 	protov2 "google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
+
+	msgv1 "cosmossdk.io/api/cosmos/msg/v1"
 )
 
 // fileDescBytes holds a gzip-compressed FileDescriptorProto for all legacy ICS

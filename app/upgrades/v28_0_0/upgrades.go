@@ -18,10 +18,6 @@ import (
 	"github.com/cosmos/gaia/v28/app/keepers"
 )
 
-// providerStoreKey is the store key used by the ICS provider module.
-// Hardcoded to avoid importing providertypes in production app wiring.
-const providerStoreKey = "provider"
-
 // CreateUpgradeHandler returns an upgrade handler for Gaia v28.0.0.
 func CreateUpgradeHandler(
 	mm *module.Manager,

@@ -11,6 +11,10 @@ const (
 	// providerModuleName is the ICS provider module name, used as the IBC port
 	// for ICS channels. Hardcoded to avoid importing the ICS provider package.
 	providerModuleName = "provider"
+
+	// providerStoreKey is the store key used by the ICS provider module.
+	// Hardcoded to avoid importing providertypes in production app wiring.
+	providerStoreKey = "provider"
 )
 
 // providerParametersKey is the KV store key under which the ICS provider

@@ -41,9 +41,9 @@ func appendVarintField(buf []byte, fieldNum uint32, value uint64) []byte {
 	return buf
 }
 
-// encodeMsgUpdateConsumerP1014 returns the proto3 wire encoding for the
-// MsgUpdateConsumer from mainnet proposal #1014 ("Migrate Stride to opt-in
-// PSS"). Field layout follows the ICS provider v1 proto definition:
+// encodeMsgUpdateConsumerProposal returns the proto3 wire encoding for a
+// MsgUpdateConsumer proposal to opt-in to PSS.
+// Field layout follows the ICS provider v1 proto definition:
 //
 // field 1  owner                  (string)
 // field 2  consumer_id            (string)

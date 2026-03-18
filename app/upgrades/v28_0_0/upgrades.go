@@ -7,7 +7,6 @@ import (
 
 	"github.com/cosmos/gogoproto/proto"
 	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
-	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	errorsmod "cosmossdk.io/errors"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
@@ -18,10 +17,6 @@ import (
 
 	"github.com/cosmos/gaia/v28/app/keepers"
 )
-
-// providerStoreKey is the store key used by the ICS provider module.
-// Hardcoded to avoid importing providertypes in production app wiring.
-const providerStoreKey = "provider"
 
 // CreateUpgradeHandler returns an upgrade handler for Gaia v28.0.0.
 func CreateUpgradeHandler(
@@ -40,11 +35,11 @@ func CreateUpgradeHandler(
 			return vm, fmt.Errorf("provider store key not found")
 		}
 		providerStore := ctx.KVStore(providerKey)
-		paramsBz := providerStore.Get(providertypes.ParametersKey())
+		paramsBz := providerStore.Get(providerParametersKey)
 		if paramsBz == nil {
 			return vm, fmt.Errorf("provider params not found in store")
 		}
-		var providerParams providertypes.Params
+		var providerParams icsProviderParams
 		if err := proto.Unmarshal(paramsBz, &providerParams); err != nil {
 			return vm, fmt.Errorf("failed to unmarshal provider params: %w", err)
 		}
@@ -89,7 +84,7 @@ func CreateUpgradeHandler(
 		// 4. Force-close all open IBC channels on the provider port.
 		channels := keepers.IBCKeeper.ChannelKeeper.GetAllChannels(ctx)
 		for _, ch := range channels {
-			if ch.PortId != providertypes.ModuleName {
+			if ch.PortId != providerModuleName {
 				continue
 			}
 			if ch.State == channeltypes.CLOSED {

@@ -1,0 +1,132 @@
+package ante_test
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+	protov2 "google.golang.org/protobuf/proto"
+
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/cosmos/gaia/v28/ante"
+	"github.com/cosmos/gaia/v28/app/helpers"
+	gaiaerrors "github.com/cosmos/gaia/v28/types/errors"
+	"github.com/cosmos/gaia/v28/x/legacy/ics"
+)
+
+// mockTx is a minimal sdk.Tx that holds a fixed slice of messages.
+type mockTx struct{ msgs []sdk.Msg }
+
+func (m mockTx) GetMsgs() []sdk.Msg                    { return m.msgs }
+func (m mockTx) GetMsgsV2() ([]protov2.Message, error) { return nil, nil }
+func (m mockTx) ValidateBasic() error                  { return nil }
+
+// noopNext is the terminal AnteHandler used in tests.
+var noopNext sdk.AnteHandler = func(ctx sdk.Context, tx sdk.Tx, simulate bool) (sdk.Context, error) {
+	return ctx, nil
+}
+
+func TestRejectLegacyICSDecorator(t *testing.T) {
+	gaiaApp := helpers.Setup(t)
+	ctx := gaiaApp.NewUncachedContext(true, tmproto.Header{})
+	decorator := ante.NewRejectLegacyICSDecorator()
+
+	// Register the stubs so sdk.MsgTypeURL can resolve them.
+	ics.RegisterInterfaces(gaiaApp.InterfaceRegistry())
+
+	tests := []struct {
+		name      string
+		msgs      []sdk.Msg
+		expectErr bool
+	}{
+		{
+			name:      "no ICS messages - passes",
+			msgs:      []sdk.Msg{},
+			expectErr: false,
+		},
+		{
+			name:      "MsgAssignConsumerKey - rejected",
+			msgs:      []sdk.Msg{&ics.MsgAssignConsumerKey{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgConsumerAddition - rejected",
+			msgs:      []sdk.Msg{&ics.MsgConsumerAddition{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgConsumerRemoval - rejected",
+			msgs:      []sdk.Msg{&ics.MsgConsumerRemoval{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgConsumerModification - rejected",
+			msgs:      []sdk.Msg{&ics.MsgConsumerModification{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgCreateConsumer - rejected",
+			msgs:      []sdk.Msg{&ics.MsgCreateConsumer{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgUpdateConsumer - rejected",
+			msgs:      []sdk.Msg{&ics.MsgUpdateConsumer{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgRemoveConsumer - rejected",
+			msgs:      []sdk.Msg{&ics.MsgRemoveConsumer{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgChangeRewardDenoms - rejected",
+			msgs:      []sdk.Msg{&ics.MsgChangeRewardDenoms{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgUpdateParams - rejected",
+			msgs:      []sdk.Msg{&ics.MsgUpdateParams{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgSubmitConsumerMisbehaviour - rejected",
+			msgs:      []sdk.Msg{&ics.MsgSubmitConsumerMisbehaviour{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgSubmitConsumerDoubleVoting - rejected",
+			msgs:      []sdk.Msg{&ics.MsgSubmitConsumerDoubleVoting{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgOptIn - rejected",
+			msgs:      []sdk.Msg{&ics.MsgOptIn{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgOptOut - rejected",
+			msgs:      []sdk.Msg{&ics.MsgOptOut{}},
+			expectErr: true,
+		},
+		{
+			name:      "MsgSetConsumerCommissionRate - rejected",
+			msgs:      []sdk.Msg{&ics.MsgSetConsumerCommissionRate{}},
+			expectErr: true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			tx := mockTx{msgs: tc.msgs}
+			_, err := decorator.AnteHandle(ctx, tx, false, noopNext)
+			if tc.expectErr {
+				require.ErrorIs(t, err, gaiaerrors.ErrDeprecatedMessage)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}

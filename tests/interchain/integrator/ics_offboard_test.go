@@ -3,10 +3,14 @@ package integrator
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
 	"path"
 	"testing"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/gaia/v28/tests/interchain/chainsuite"
 	clienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
@@ -14,13 +18,18 @@ import (
 	"github.com/cosmos/interchaintest/v10/ibc"
 	"github.com/cosmos/interchaintest/v10/testutil"
 	"github.com/stretchr/testify/suite"
+	"github.com/tidwall/gjson"
 )
 
-const v26ImageVersion = "v26.0.0"
+const (
+	v26ImageVersion         = "v26.0.0"
+	consumerRewardsPoolAddr = "cosmos1ap0mh6xzfn8943urr84q6ae7zfnar48am2erhd"
+)
 
 type ICSOffboardSuite struct {
 	*chainsuite.Suite
-	consumer *chainsuite.Chain
+	consumer              *chainsuite.Chain
+	rewardsPoolPreUpgrade map[string]string // denom -> integer amount captured before v28 upgrade
 }
 
 func TestICSOffboard(t *testing.T) {
@@ -111,6 +120,25 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		err := s.Chain.Upgrade(ctx, s.Env.UpgradeName, s.Env.NewGaiaImageVersion)
 		s.Require().NoError(err)
 		s.restartRelayer(ctx)
+
+		// Query the applied upgrade plan to get the actual upgrade height.
+		planOut, _, err := s.Chain.Validators[0].ExecQuery(ctx, "upgrade", "applied", s.Env.UpgradeName)
+		s.Require().NoError(err)
+		upgradeHeight := gjson.GetBytes(planOut, "height").Int()
+		s.Require().Positive(upgradeHeight, "upgrade plan height must be positive")
+		s.T().Logf("Upgrade %q applied at height %d", s.Env.UpgradeName, upgradeHeight)
+
+		// Query consumer rewards pool at upgradeHeight-1: this is the exact committed
+		// state that the upgrade handler's BeginBlock read, with no race from late arrivals.
+		out, _, err := s.Chain.Validators[0].ExecQuery(ctx, "bank", "balances", consumerRewardsPoolAddr,
+			"--height", fmt.Sprintf("%d", upgradeHeight-1))
+		s.Require().NoError(err)
+		s.rewardsPoolPreUpgrade = make(map[string]string)
+		gjson.GetBytes(out, "balances").ForEach(func(_, coin gjson.Result) bool {
+			s.rewardsPoolPreUpgrade[coin.Get("denom").String()] = coin.Get("amount").String()
+			return true
+		})
+		s.T().Logf("Consumer rewards pool balance at height %d (pre-upgrade): %v", upgradeHeight-1, s.rewardsPoolPreUpgrade)
 	})
 
 	// Phase 10: Chain liveness after v28
@@ -135,6 +163,65 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 	s.Run("IBCTransfer_v28", func() {
 		err := chainsuite.SendSimpleIBCTx(ctx, s.Chain, s.consumer, s.Relayer)
 		s.Require().NoError(err)
+	})
+
+	// Phase 13: Provider port channels must be closed after offboarding
+	s.Run("ProviderPortChannelsClosed_v28", func() {
+		out, _, err := s.Chain.Validators[0].ExecQuery(ctx, "ibc", "channel", "channels")
+		s.Require().NoError(err)
+		providerChannels := gjson.GetBytes(out, `channels.#(port_id=="provider")#`)
+		s.Require().True(providerChannels.Exists() && len(providerChannels.Array()) > 0,
+			"expected at least one channel on the provider port")
+		for _, ch := range providerChannels.Array() {
+			state := ch.Get("state").String()
+			channelID := ch.Get("channel_id").String()
+			s.Require().Equal("STATE_CLOSED", state,
+				"expected channel %s on provider port to be STATE_CLOSED after upgrade", channelID)
+		}
+	})
+
+	// Phase 14: Verify consumer rewards balances are transferred to community pool after offboarding
+	s.Run("ConsumerRewardsTransferred_v28", func() {
+		if len(s.rewardsPoolPreUpgrade) == 0 {
+			s.T().Skip("consumer rewards pool was empty before upgrade; skipping transfer check")
+		}
+
+		// The community pool must contain every denom that was held in the rewards pool
+		// before the upgrade handler ran, with at least the same integer amount.
+		// uatom is skipped because it accrues continuously from staking rewards.
+		//
+		// Use the REST API rather than ExecQuery: the CLI returns coins as concatenated
+		// "amount+denom" strings, while the API returns structured {denom, amount} objects.
+		apiURL := s.Chain.GetHostAPIAddress() + "/cosmos/distribution/v1beta1/community_pool"
+		resp, err := http.Get(apiURL) //nolint:gosec
+		s.Require().NoError(err)
+		defer resp.Body.Close()
+		cpBody, err := io.ReadAll(resp.Body)
+		s.Require().NoError(err)
+
+		cpAmounts := make(map[string]sdkmath.Int)
+		gjson.GetBytes(cpBody, "pool").ForEach(func(_, entry gjson.Result) bool {
+			denom := entry.Get("denom").String()
+			amt, err := chainsuite.StrToSDKInt(entry.Get("amount").String())
+			if err == nil {
+				cpAmounts[denom] = amt
+			}
+			return true
+		})
+		for denom, preUpgradeAmtStr := range s.rewardsPoolPreUpgrade {
+			if denom == "uatom" {
+				continue
+			}
+			preUpgradeAmt, err := chainsuite.StrToSDKInt(preUpgradeAmtStr)
+			s.Require().NoError(err)
+			cpAmt, ok := cpAmounts[denom]
+			s.Require().True(ok,
+				"community pool should contain denom %s after consumer rewards transfer", denom)
+			s.Require().True(cpAmt.GTE(preUpgradeAmt),
+				"community pool amount for %s (%s) should be >= pre-upgrade rewards pool amount (%s)",
+				denom, cpAmt, preUpgradeAmt)
+			s.T().Logf("Verified transfer of %s %s from consumer rewards pool to community pool", preUpgradeAmt, denom)
+		}
 	})
 }
 

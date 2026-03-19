@@ -13,6 +13,10 @@
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.2 to 0.60.5 ([#3976](https://github.com/cosmos/gaia/pull/3976))
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.2.4 to v2.3.2 ([#3976](https://github.com/cosmos/gaia/pull/3976))
 
+### Dependencies
+
+- Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.75.1 to 1.79.3 ([#4004](https://github.com/cosmos/gaia/pull/4004))
+
 ## v27.0.0
 
 *February 20, 2026*

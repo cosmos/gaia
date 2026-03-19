@@ -63,8 +63,9 @@ const (
 
 // These have to be vars so we can take their address
 var (
-	OneValidator  int = 1
-	SixValidators int = 6
+	OneValidator   int = 1
+	SixValidators  int = 6
+	TenValidators  int = 10
 )
 
 func MergeChainSpecs(spec, other *interchaintest.ChainSpec) *interchaintest.ChainSpec {
@@ -75,6 +76,10 @@ func MergeChainSpecs(spec, other *interchaintest.ChainSpec) *interchaintest.Chai
 		return spec
 	}
 	spec.ChainConfig = spec.MergeChainSpecConfig(other.ChainConfig)
+	// MergeChainSpecConfig doesn't handle ModifyGenesisAmounts; apply it manually.
+	if other.ChainConfig.ModifyGenesisAmounts != nil {
+		spec.ChainConfig.ModifyGenesisAmounts = other.ChainConfig.ModifyGenesisAmounts
+	}
 	if other.Name != "" {
 		spec.Name = other.Name
 	}
@@ -121,6 +126,35 @@ func DefaultGenesisAmounts(denom string) func(i int) (types.Coin, types.Coin) {
 					10_000_000,
 					7_000_000,
 					4_000_000,
+				}[i]),
+			}
+	}
+}
+
+// TenValidatorGenesisAmounts returns genesis amounts for a 10-validator topology:
+// 5 in group A (CometBFT consensus), 3 in group B (bonded, not in CometBFT), 2 in group N (unbonded).
+// Requires max_provider_consensus_validators=5 and max_validators=8 in genesis.
+func TenValidatorGenesisAmounts(denom string) func(i int) (types.Coin, types.Coin) {
+	return func(i int) (types.Coin, types.Coin) {
+		if i >= TenValidators {
+			panic("your chain has too many validators")
+		}
+		return types.Coin{
+				Denom:  denom,
+				Amount: sdkmath.NewInt(ValidatorFunds),
+			}, types.Coin{
+				Denom: denom,
+				Amount: sdkmath.NewInt([]int64{
+					30_000_000, // A: highest
+					29_000_000, // A
+					20_000_000, // A
+					15_000_000, // A
+					12_000_000, // A: lowest in consensus (boundary)
+					9_000_000,  // B: bonded, not in CometBFT
+					7_000_000,  // B
+					5_000_000,  // B: lowest bonded (boundary)
+					3_000_000,  // N: not bonded
+					1_000_000,  // N: lowest
 				}[i]),
 			}
 	}
@@ -185,6 +219,7 @@ func DefaultGenesis() []cosmos.GenesisKV {
 		cosmos.NewGenesisKV("app_state.feemarket.params.fee_denom", Uatom),
 		cosmos.NewGenesisKV("app_state.wasm.params.code_upload_access.permission", "Nobody"),
 		cosmos.NewGenesisKV("app_state.wasm.params.instantiate_default_permission", "AnyOfAddresses"),
+		cosmos.NewGenesisKV("app_state.provider.params.blocks_per_epoch", 1),
 	}
 }
 

@@ -642,13 +642,13 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 		return "", err
 	}
 	valInfo.ValidatorSet = protoValSet
-	valInfo.LastHeightChanged = state.LastBlockHeight
 
-	// when the storeState is saved in consensus it is done for the nextBlock+1,
-	// that is why we need to update 2 future blocks
-	saveValidatorsInfo(stateDB, state.LastBlockHeight, valInfo)
-	saveValidatorsInfo(stateDB, state.LastBlockHeight+1, valInfo)
-	saveValidatorsInfo(stateDB, state.LastBlockHeight+2, valInfo)
+	// Update both past and future heights to overwrite any existing validator set data
+	for i := int64(-10); i <= 10; i++ {
+		if state.LastBlockHeight+i > 0 { // skip non-positive heights
+			saveValidatorsInfo(stateDB, state.LastBlockHeight+i, valInfo)
+		}
+	}
 
 	// if store height is greater than app height and state height, we will remove the last block from the store to avoid
 	// replaying this block to the app. If only the state height is lower, we do not delete the block from the store because

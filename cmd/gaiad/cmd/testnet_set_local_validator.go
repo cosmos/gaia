@@ -44,14 +44,16 @@ import (
 )
 
 const (
-	valVotingPower int64 = 1000000000
-	valTokens      int64 = 1000000000000000
+	defaultValTokens  int64 = 1000000000000000
+	defaultFundAmount int64 = 1000000000000000
 )
 
 var (
 	flagValidatorOperatorAddress = "validator-operator"
 	flagValidatorPubKey          = "validator-pubkey"
 	flagValidatorPrivKey         = "validator-privkey"
+	flagValidatorTokens          = "validator-tokens"
+	flagFundAmount               = "fund-amount"
 	flagAccountsToFund           = "accounts-to-fund"
 	flagReplaceValidator         = "replace-validator"
 	flagAutoFindTarget           = "auto-find-target"
@@ -63,6 +65,8 @@ type valArgs struct {
 	validatorOperatorAddress string           // valoper address
 	validatorConsPubKeyByte  []byte           // validator's consensus public key
 	validatorConsPrivKey     crypto.PrivKey   // validator's consensus private key
+	validatorTokens          int64            // tokens to mint and self-delegate for the new validator
+	fundAmount               int64            // tokens to mint and send to each account in accountsToFund
 	accountsToFund           []sdk.AccAddress // list of accounts to fund and use for testing later on
 	homeDir                  string
 	replaceValidator         bool   // if set, replaces a validator with new keys
@@ -100,6 +104,8 @@ Example:
 	cmd.Flags().Bool(flagAutoFindTarget, false, "Automatically find the first validator with an available vote in the last commit and replace it (implies --replace-validator)")
 	cmd.Flags().String(flagReplacedOperatorAddress, "", "Operator address of the validator to be replaced (not required when --auto-find-target is set)")
 	cmd.Flags().String(flagReplacedConsensusAddress, "", "Consensus address (uppercase hex) of the validator to be replaced (not required when --auto-find-target is set)")
+	cmd.Flags().Int64(flagValidatorTokens, defaultValTokens, "Number of tokens to mint and self-delegate for the new validator (voting power = tokens / 1000000)")
+	cmd.Flags().Int64(flagFundAmount, defaultFundAmount, "Number of tokens to mint and send to each account in --accounts-to-fund")
 
 	return cmd
 }
@@ -179,6 +185,20 @@ func getCommandArgs(appOpts servertypes.AppOptions) (valArgs, error) {
 		}
 		args.replacedConsensusAddress = replacedConsensusAddress
 	}
+
+	// validator tokens
+	validatorTokens := cast.ToInt64(appOpts.Get(flagValidatorTokens))
+	if validatorTokens <= 0 {
+		validatorTokens = defaultValTokens
+	}
+	args.validatorTokens = validatorTokens
+
+	// fund amount
+	fundAmount := cast.ToInt64(appOpts.Get(flagFundAmount))
+	if fundAmount <= 0 {
+		fundAmount = defaultFundAmount
+	}
+	args.fundAmount = fundAmount
 
 	// home dir
 	homeDir := cast.ToString(appOpts.Get(flags.FlagHome))
@@ -405,6 +425,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		return err
 	}
 	app.StakingKeeper.SetValidatorByPowerIndex(appCtx, newVal)
+	valVotingPower := args.validatorTokens / sdk.DefaultPowerReduction.Int64()
 	app.StakingKeeper.SetLastValidatorPower(appCtx, newValAddr, valVotingPower)
 	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(appCtx, newValAddr); err != nil {
 		return err
@@ -414,7 +435,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	// them to the bonded pool and creates the delegation record, keeping all
 	// staking module state (validator tokens, pool balance, delegations) consistent.
 	newValAccAddr := sdk.AccAddress(newValAddr)
-	valTokenCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, valTokens))
+	valTokenCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, args.validatorTokens))
 	if err := app.BankKeeper.MintCoins(appCtx, minttypes.ModuleName, valTokenCoins); err != nil {
 		return err
 	}
@@ -425,12 +446,12 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	if err != nil {
 		return err
 	}
-	if _, err := app.StakingKeeper.Delegate(appCtx, newValAccAddr, math.NewInt(valTokens), stakingtypes.Unbonded, latestVal, true); err != nil {
+	if _, err := app.StakingKeeper.Delegate(appCtx, newValAccAddr, math.NewInt(args.validatorTokens), stakingtypes.Unbonded, latestVal, true); err != nil {
 		return err
 	}
 	appCtx.Logger().Info("Created self-delegation for new validator",
 		"operator_address", args.validatorOperatorAddress,
-		"tokens", math.NewInt(valTokens).String(),
+		"tokens", math.NewInt(args.validatorTokens).String(),
 	)
 	// DISTRIBUTION
 	// Initialize records for this validator across all distribution stores
@@ -466,7 +487,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	appCtx.Logger().Info("Updated governance voting period", "voting_period", shortVotingPeriod, "expedited_voting_period", expeditedVotingPeriod)
 
 	// BANK
-	defaultCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, 1000000000000000))
+	defaultCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, args.fundAmount))
 
 	// Fund testnet accounts
 	for _, account := range args.accountsToFund {
@@ -485,6 +506,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 
 func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, appHeight int64, args valArgs) (string, error) {
 	// create validator set from the local validator
+	valVotingPower := args.validatorTokens / sdk.DefaultPowerReduction.Int64()
 	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(args.validatorConsPubKeyByte), valVotingPower)
 	logger.Info("Creating new validator:", "validator", newTmVal)
 

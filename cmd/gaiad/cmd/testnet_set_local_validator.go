@@ -34,6 +34,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -43,14 +44,16 @@ import (
 )
 
 const (
-	valVotingPower int64 = 1000000000
-	valTokens      int64 = 1000000000000000
+	defaultValTokens  int64 = 1000000000000000
+	defaultFundAmount int64 = 1000000000000000
 )
 
 var (
 	flagValidatorOperatorAddress = "validator-operator"
 	flagValidatorPubKey          = "validator-pubkey"
 	flagValidatorPrivKey         = "validator-privkey"
+	flagValidatorTokens          = "validator-tokens"
+	flagFundAmount               = "fund-amount"
 	flagAccountsToFund           = "accounts-to-fund"
 	flagReplaceValidator         = "replace-validator"
 	flagAutoFindTarget           = "auto-find-target"
@@ -62,6 +65,8 @@ type valArgs struct {
 	validatorOperatorAddress string           // valoper address
 	validatorConsPubKeyByte  []byte           // validator's consensus public key
 	validatorConsPrivKey     crypto.PrivKey   // validator's consensus private key
+	validatorTokens          int64            // tokens to mint and self-delegate for the new validator
+	fundAmount               int64            // tokens to mint and send to each account in accountsToFund
 	accountsToFund           []sdk.AccAddress // list of accounts to fund and use for testing later on
 	homeDir                  string
 	replaceValidator         bool   // if set, replaces a validator with new keys
@@ -99,6 +104,8 @@ Example:
 	cmd.Flags().Bool(flagAutoFindTarget, false, "Automatically find the first validator with an available vote in the last commit and replace it (implies --replace-validator)")
 	cmd.Flags().String(flagReplacedOperatorAddress, "", "Operator address of the validator to be replaced (not required when --auto-find-target is set)")
 	cmd.Flags().String(flagReplacedConsensusAddress, "", "Consensus address (uppercase hex) of the validator to be replaced (not required when --auto-find-target is set)")
+	cmd.Flags().Int64(flagValidatorTokens, defaultValTokens, "Number of tokens to mint and self-delegate for the new validator (voting power = tokens / 1000000)")
+	cmd.Flags().Int64(flagFundAmount, defaultFundAmount, "Number of tokens to mint and send to each account in --accounts-to-fund")
 
 	return cmd
 }
@@ -178,6 +185,20 @@ func getCommandArgs(appOpts servertypes.AppOptions) (valArgs, error) {
 		}
 		args.replacedConsensusAddress = replacedConsensusAddress
 	}
+
+	// validator tokens
+	validatorTokens := cast.ToInt64(appOpts.Get(flagValidatorTokens))
+	if validatorTokens <= 0 {
+		validatorTokens = defaultValTokens
+	}
+	args.validatorTokens = validatorTokens
+
+	// fund amount
+	fundAmount := cast.ToInt64(appOpts.Get(flagFundAmount))
+	if fundAmount <= 0 {
+		fundAmount = defaultFundAmount
+	}
+	args.fundAmount = fundAmount
 
 	// home dir
 	homeDir := cast.ToString(appOpts.Get(flags.FlagHome))
@@ -360,18 +381,41 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		return fmt.Errorf("validator with operator address %s not found", args.replacedOperatorAddress)
 	}
 
-	// Burn removed validator tokens from the staking pools to keep pool balances consistent
+	// Burn removed validator tokens from the staking pools to keep pool balances consistent.
+	// Cap each burn at the actual pool balance: on a re-forked chain the validator token
+	// counter can exceed the pool balance due to unbondings or slashing that occurred
+	// during the previous test run.
 	if bondedTokensToRemove.IsPositive() {
-		if err := app.BankKeeper.BurnCoins(appCtx, stakingtypes.BondedPoolName, sdk.NewCoins(sdk.NewCoin(bondDenom, bondedTokensToRemove))); err != nil {
-			return err
+		bondedPoolBal := app.BankKeeper.GetBalance(appCtx, authtypes.NewModuleAddress(stakingtypes.BondedPoolName), bondDenom)
+		if bondedTokensToRemove.GT(bondedPoolBal.Amount) {
+			appCtx.Logger().Warn("Validator bonded tokens exceed pool balance; capping burn to pool balance",
+				"validator_tokens", bondedTokensToRemove.String(),
+				"pool_balance", bondedPoolBal.Amount.String(),
+			)
+			bondedTokensToRemove = bondedPoolBal.Amount
 		}
-		appCtx.Logger().Info("Burned bonded pool tokens", "amount", bondedTokensToRemove.String())
+		if bondedTokensToRemove.IsPositive() {
+			if err := app.BankKeeper.BurnCoins(appCtx, stakingtypes.BondedPoolName, sdk.NewCoins(sdk.NewCoin(bondDenom, bondedTokensToRemove))); err != nil {
+				return err
+			}
+			appCtx.Logger().Info("Burned bonded pool tokens", "amount", bondedTokensToRemove.String())
+		}
 	}
 	if notBondedTokensToRemove.IsPositive() {
-		if err := app.BankKeeper.BurnCoins(appCtx, stakingtypes.NotBondedPoolName, sdk.NewCoins(sdk.NewCoin(bondDenom, notBondedTokensToRemove))); err != nil {
-			return err
+		notBondedPoolBal := app.BankKeeper.GetBalance(appCtx, authtypes.NewModuleAddress(stakingtypes.NotBondedPoolName), bondDenom)
+		if notBondedTokensToRemove.GT(notBondedPoolBal.Amount) {
+			appCtx.Logger().Warn("Validator not-bonded tokens exceed pool balance; capping burn to pool balance",
+				"validator_tokens", notBondedTokensToRemove.String(),
+				"pool_balance", notBondedPoolBal.Amount.String(),
+			)
+			notBondedTokensToRemove = notBondedPoolBal.Amount
 		}
-		appCtx.Logger().Info("Burned not-bonded pool tokens", "amount", notBondedTokensToRemove.String())
+		if notBondedTokensToRemove.IsPositive() {
+			if err := app.BankKeeper.BurnCoins(appCtx, stakingtypes.NotBondedPoolName, sdk.NewCoins(sdk.NewCoin(bondDenom, notBondedTokensToRemove))); err != nil {
+				return err
+			}
+			appCtx.Logger().Info("Burned not-bonded pool tokens", "amount", notBondedTokensToRemove.String())
+		}
 	}
 
 	// Add our validator to power and last validators store
@@ -381,6 +425,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		return err
 	}
 	app.StakingKeeper.SetValidatorByPowerIndex(appCtx, newVal)
+	valVotingPower := args.validatorTokens / sdk.DefaultPowerReduction.Int64()
 	app.StakingKeeper.SetLastValidatorPower(appCtx, newValAddr, valVotingPower)
 	if err := app.StakingKeeper.Hooks().AfterValidatorCreated(appCtx, newValAddr); err != nil {
 		return err
@@ -390,7 +435,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	// them to the bonded pool and creates the delegation record, keeping all
 	// staking module state (validator tokens, pool balance, delegations) consistent.
 	newValAccAddr := sdk.AccAddress(newValAddr)
-	valTokenCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, valTokens))
+	valTokenCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, args.validatorTokens))
 	if err := app.BankKeeper.MintCoins(appCtx, minttypes.ModuleName, valTokenCoins); err != nil {
 		return err
 	}
@@ -401,12 +446,12 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	if err != nil {
 		return err
 	}
-	if _, err := app.StakingKeeper.Delegate(appCtx, newValAccAddr, math.NewInt(valTokens), stakingtypes.Unbonded, latestVal, true); err != nil {
+	if _, err := app.StakingKeeper.Delegate(appCtx, newValAccAddr, math.NewInt(args.validatorTokens), stakingtypes.Unbonded, latestVal, true); err != nil {
 		return err
 	}
 	appCtx.Logger().Info("Created self-delegation for new validator",
 		"operator_address", args.validatorOperatorAddress,
-		"tokens", math.NewInt(valTokens).String(),
+		"tokens", math.NewInt(args.validatorTokens).String(),
 	)
 	// DISTRIBUTION
 	// Initialize records for this validator across all distribution stores
@@ -442,7 +487,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 	appCtx.Logger().Info("Updated governance voting period", "voting_period", shortVotingPeriod, "expedited_voting_period", expeditedVotingPeriod)
 
 	// BANK
-	defaultCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, 1000000000000000))
+	defaultCoins := sdk.NewCoins(sdk.NewInt64Coin(bondDenom, args.fundAmount))
 
 	// Fund testnet accounts
 	for _, account := range args.accountsToFund {
@@ -461,6 +506,7 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 
 func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, appHeight int64, args valArgs) (string, error) {
 	// create validator set from the local validator
+	valVotingPower := args.validatorTokens / sdk.DefaultPowerReduction.Int64()
 	newTmVal := tmtypes.NewValidator(tmd25519.PubKey(args.validatorConsPubKeyByte), valVotingPower)
 	logger.Info("Creating new validator:", "validator", newTmVal)
 
@@ -632,6 +678,12 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 	state.LastValidators = currentValidators
 	state.Validators = currentValidators
 	state.NextValidators = currentValidators
+	// Reset LastHeightValidatorsChanged to the current block height so that every
+	// subsequent validatorsKey entry CometBFT writes references back into the ±10
+	// window. Without this, the stale value causes CometBFT to follow the
+	// reference to an old height and return the original validator set, which then
+	// mismatches the extended commit signatures from the new validator.
+	state.LastHeightValidatorsChanged = state.LastBlockHeight
 	// save state store
 	if err = stateStore.Save(state); err != nil {
 		return "", err
@@ -642,13 +694,13 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 		return "", err
 	}
 	valInfo.ValidatorSet = protoValSet
-	valInfo.LastHeightChanged = state.LastBlockHeight
 
-	// when the storeState is saved in consensus it is done for the nextBlock+1,
-	// that is why we need to update 2 future blocks
-	saveValidatorsInfo(stateDB, state.LastBlockHeight, valInfo)
-	saveValidatorsInfo(stateDB, state.LastBlockHeight+1, valInfo)
-	saveValidatorsInfo(stateDB, state.LastBlockHeight+2, valInfo)
+	// Update both past and future heights to overwrite any existing validator set data
+	for i := int64(-10); i <= 10; i++ {
+		if state.LastBlockHeight+i > 0 { // skip non-positive heights
+			saveValidatorsInfo(stateDB, state.LastBlockHeight+i, valInfo)
+		}
+	}
 
 	// if store height is greater than app height and state height, we will remove the last block from the store to avoid
 	// replaying this block to the app. If only the state height is lower, we do not delete the block from the store because

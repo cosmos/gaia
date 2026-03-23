@@ -34,6 +34,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -360,18 +361,41 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		return fmt.Errorf("validator with operator address %s not found", args.replacedOperatorAddress)
 	}
 
-	// Burn removed validator tokens from the staking pools to keep pool balances consistent
+	// Burn removed validator tokens from the staking pools to keep pool balances consistent.
+	// Cap each burn at the actual pool balance: on a re-forked chain the validator token
+	// counter can exceed the pool balance due to unbondings or slashing that occurred
+	// during the previous test run.
 	if bondedTokensToRemove.IsPositive() {
-		if err := app.BankKeeper.BurnCoins(appCtx, stakingtypes.BondedPoolName, sdk.NewCoins(sdk.NewCoin(bondDenom, bondedTokensToRemove))); err != nil {
-			return err
+		bondedPoolBal := app.BankKeeper.GetBalance(appCtx, authtypes.NewModuleAddress(stakingtypes.BondedPoolName), bondDenom)
+		if bondedTokensToRemove.GT(bondedPoolBal.Amount) {
+			appCtx.Logger().Warn("Validator bonded tokens exceed pool balance; capping burn to pool balance",
+				"validator_tokens", bondedTokensToRemove.String(),
+				"pool_balance", bondedPoolBal.Amount.String(),
+			)
+			bondedTokensToRemove = bondedPoolBal.Amount
 		}
-		appCtx.Logger().Info("Burned bonded pool tokens", "amount", bondedTokensToRemove.String())
+		if bondedTokensToRemove.IsPositive() {
+			if err := app.BankKeeper.BurnCoins(appCtx, stakingtypes.BondedPoolName, sdk.NewCoins(sdk.NewCoin(bondDenom, bondedTokensToRemove))); err != nil {
+				return err
+			}
+			appCtx.Logger().Info("Burned bonded pool tokens", "amount", bondedTokensToRemove.String())
+		}
 	}
 	if notBondedTokensToRemove.IsPositive() {
-		if err := app.BankKeeper.BurnCoins(appCtx, stakingtypes.NotBondedPoolName, sdk.NewCoins(sdk.NewCoin(bondDenom, notBondedTokensToRemove))); err != nil {
-			return err
+		notBondedPoolBal := app.BankKeeper.GetBalance(appCtx, authtypes.NewModuleAddress(stakingtypes.NotBondedPoolName), bondDenom)
+		if notBondedTokensToRemove.GT(notBondedPoolBal.Amount) {
+			appCtx.Logger().Warn("Validator not-bonded tokens exceed pool balance; capping burn to pool balance",
+				"validator_tokens", notBondedTokensToRemove.String(),
+				"pool_balance", notBondedPoolBal.Amount.String(),
+			)
+			notBondedTokensToRemove = notBondedPoolBal.Amount
 		}
-		appCtx.Logger().Info("Burned not-bonded pool tokens", "amount", notBondedTokensToRemove.String())
+		if notBondedTokensToRemove.IsPositive() {
+			if err := app.BankKeeper.BurnCoins(appCtx, stakingtypes.NotBondedPoolName, sdk.NewCoins(sdk.NewCoin(bondDenom, notBondedTokensToRemove))); err != nil {
+				return err
+			}
+			appCtx.Logger().Info("Burned not-bonded pool tokens", "amount", notBondedTokensToRemove.String())
+		}
 	}
 
 	// Add our validator to power and last validators store
@@ -632,6 +656,12 @@ func updateConsensusState(logger log.Logger, appOpts servertypes.AppOptions, app
 	state.LastValidators = currentValidators
 	state.Validators = currentValidators
 	state.NextValidators = currentValidators
+	// Reset LastHeightValidatorsChanged to the current block height so that every
+	// subsequent validatorsKey entry CometBFT writes references back into the ±10
+	// window. Without this, the stale value causes CometBFT to follow the
+	// reference to an old height and return the original validator set, which then
+	// mismatches the extended commit signatures from the new validator.
+	state.LastHeightValidatorsChanged = state.LastBlockHeight
 	// save state store
 	if err = stateStore.Save(state); err != nil {
 		return "", err

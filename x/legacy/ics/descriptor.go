@@ -189,6 +189,13 @@ func init() {
 				Name:    name("Msg"),
 				Options: msgServiceAnnotation(),
 
+				// OutputType is set to the same type as InputType for every method
+				// because these are stub handlers that unconditionally return an
+				// error (via the RejectLegacyICSDecorator ante handler). A response
+				// message is never constructed, so defining separate MsgXxxResponse
+				// types would be dead weight. Reusing the input type satisfies the
+				// proto registry's requirement that OutputType resolves to a known
+				// message, without adding any additional stubs.
 				Method: []*descriptorpb.MethodDescriptorProto{
 					{Name: name("AssignConsumerKey"), InputType: name(".interchain_security.ccv.provider.v1.MsgAssignConsumerKey"), OutputType: name(".interchain_security.ccv.provider.v1.MsgAssignConsumerKey")},
 					{Name: name("ConsumerAddition"), InputType: name(".interchain_security.ccv.provider.v1.MsgConsumerAddition"), OutputType: name(".interchain_security.ccv.provider.v1.MsgConsumerAddition")},

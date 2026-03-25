@@ -45,12 +45,6 @@ func isLegacyICSMsg(msg sdk.Msg) bool {
 func (d RejectLegacyICSDecorator) AnteHandle(
 	ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler,
 ) (sdk.Context, error) {
-	if simulate {
-		// Simulation is a read-only dry-run; the decorator does not reject
-		// deprecated messages in this mode. Rejection only occurs on broadcast.
-		return next(ctx, tx, simulate)
-	}
-
 	for _, msg := range tx.GetMsgs() {
 		if isLegacyICSMsg(msg) {
 			return ctx, errorsmod.Wrapf(gaiaerrors.ErrDeprecatedMessage,

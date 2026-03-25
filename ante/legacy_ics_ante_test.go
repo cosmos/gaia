@@ -39,10 +39,11 @@ func TestRejectLegacyICSDecorator(t *testing.T) {
 	tests := []struct {
 		name      string
 		msgs      []sdk.Msg
+		simulate  bool
 		expectErr bool
 	}{
 		{
-			name:      "no ICS messages - passes",
+			name:      "no messages - passes",
 			msgs:      []sdk.Msg{},
 			expectErr: false,
 		},
@@ -116,12 +117,18 @@ func TestRejectLegacyICSDecorator(t *testing.T) {
 			msgs:      []sdk.Msg{&ics.MsgSetConsumerCommissionRate{}},
 			expectErr: true,
 		},
+		{
+			name:      "legacy ICS message in simulate mode - rejected",
+			msgs:      []sdk.Msg{&ics.MsgAssignConsumerKey{}},
+			simulate:  true,
+			expectErr: true,
+		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			tx := mockTx{msgs: tc.msgs}
-			_, err := decorator.AnteHandle(ctx, tx, false, noopNext)
+			_, err := decorator.AnteHandle(ctx, tx, tc.simulate, noopNext)
 			if tc.expectErr {
 				require.ErrorIs(t, err, gaiaerrors.ErrDeprecatedMessage)
 			} else {

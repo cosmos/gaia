@@ -42,11 +42,6 @@ const (
 	idxMsgOptIn                      = 11
 	idxMsgOptOut                     = 12
 	idxMsgSetConsumerCommissionRate  = 13
-	idxConsumerAdditionProposal      = 14
-	idxConsumerRemovalProposal       = 15
-	idxConsumerModificationProposal  = 16
-	idxChangeRewardDenomsProposal    = 17
-	idxEquivocationProposal          = 18
 )
 
 // fB returns a BYTES-typed field descriptor (wire type 2 — string, bytes, message).
@@ -167,12 +162,6 @@ func init() {
 			{Name: name("MsgSetConsumerCommissionRate"), Field: []*descriptorpb.FieldDescriptorProto{
 				fB(1), fB(2), fB(3), fB(4), fB(5),
 			}},
-			// 14-18 — governance proposal stubs (field data not required for proposals query)
-			{Name: name("ConsumerAdditionProposal")},
-			{Name: name("ConsumerRemovalProposal")},
-			{Name: name("ConsumerModificationProposal")},
-			{Name: name("ChangeRewardDenomsProposal")},
-			{Name: name("EquivocationProposal")},
 		},
 		// Tx service descriptor: required so that baseapp's MsgServiceRouter can
 		// register stub handlers via RegisterService (which calls

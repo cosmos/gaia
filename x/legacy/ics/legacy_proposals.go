@@ -24,23 +24,3 @@ func (m *ConsumerRemovalProposal) ProposalType() string      { return "ConsumerR
 func (m *ConsumerModificationProposal) ProposalType() string { return "ConsumerModification" }
 func (m *ChangeRewardDenomsProposal) ProposalType() string   { return "ChangeRewardDenoms" }
 func (m *EquivocationProposal) ProposalType() string         { return "Equivocation" }
-
-func (m *ConsumerAdditionProposal) Descriptor() ([]byte, []int) {
-	return fileDescBytes, []int{idxConsumerAdditionProposal}
-}
-
-func (m *ConsumerRemovalProposal) Descriptor() ([]byte, []int) {
-	return fileDescBytes, []int{idxConsumerRemovalProposal}
-}
-
-func (m *ConsumerModificationProposal) Descriptor() ([]byte, []int) {
-	return fileDescBytes, []int{idxConsumerModificationProposal}
-}
-
-func (m *ChangeRewardDenomsProposal) Descriptor() ([]byte, []int) {
-	return fileDescBytes, []int{idxChangeRewardDenomsProposal}
-}
-
-func (m *EquivocationProposal) Descriptor() ([]byte, []int) {
-	return fileDescBytes, []int{idxEquivocationProposal}
-}

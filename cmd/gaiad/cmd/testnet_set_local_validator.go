@@ -35,7 +35,6 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -453,12 +452,6 @@ func updateApplicationState(app *gaia.GaiaApp, args valArgs) error {
 		"operator_address", args.validatorOperatorAddress,
 		"tokens", math.NewInt(args.validatorTokens).String(),
 	)
-	// DISTRIBUTION
-	// Initialize records for this validator across all distribution stores
-	app.DistrKeeper.SetValidatorHistoricalRewards(appCtx, newValAddr, 0, distrtypes.NewValidatorHistoricalRewards(sdk.DecCoins{}, 1))
-	app.DistrKeeper.SetValidatorCurrentRewards(appCtx, newValAddr, distrtypes.NewValidatorCurrentRewards(sdk.DecCoins{}, 1))
-	app.DistrKeeper.SetValidatorAccumulatedCommission(appCtx, newValAddr, distrtypes.InitialValidatorAccumulatedCommission())
-	app.DistrKeeper.SetValidatorOutstandingRewards(appCtx, newValAddr, distrtypes.ValidatorOutstandingRewards{Rewards: sdk.DecCoins{}})
 
 	// SLASHING
 	// Set validator signing info for our new validator.

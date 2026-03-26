@@ -86,36 +86,78 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.requireConsumerListed(ctx)
 	})
 
-	// Phase 4: Upgrade to v27
+	// Phase 4: Add ICS messages to the chain state
+	s.Run("UpdateProviderParams_v26", func() {
+		// Query current provider module params (the response body IS the params object)
+		rawParams, _, err := s.Chain.Validators[0].ExecQuery(ctx, "provider", "params")
+		s.Require().NoError(err)
+
+		// Unmarshal into a map so we can modify a single field
+		var paramsMap map[string]interface{}
+		s.Require().NoError(json.Unmarshal(rawParams, &paramsMap))
+		paramsMap["number_of_epochs_to_start_receiving_rewards"] = "5"
+
+		updatedParamsBytes, err := json.Marshal(paramsMap)
+		s.Require().NoError(err)
+
+		// Get the governance authority address
+		authority, err := s.Chain.GetGovernanceAddress(ctx)
+		s.Require().NoError(err)
+
+		// Build the MsgUpdateParams message
+		msgUpdateParams := fmt.Sprintf(`{
+			"@type": "/interchain_security.ccv.provider.v1.MsgUpdateParams",
+			"authority": "%s",
+			"params": %s
+		}`, authority, string(updatedParamsBytes))
+
+		// Build and submit (but do not pass) the proposal
+		prop, err := s.Chain.BuildProposal(
+			nil,
+			"Update Provider Params",
+			"Proposal to change number_of_epochs_to_start_receiving_rewards to 5",
+			"ipfs://CID",
+			chainsuite.GovDepositAmount,
+			s.Chain.ValidatorWallets[0].Moniker,
+			false,
+		)
+		s.Require().NoError(err)
+		prop.Messages = []json.RawMessage{json.RawMessage(msgUpdateParams)}
+
+		_, err = s.Chain.SubmitProposal(ctx, s.Chain.ValidatorWallets[0].Moniker, prop)
+		s.Require().NoError(err)
+	})
+
+	// Phase 5: Upgrade to v27
 	s.Run("UpgradeToV27", func() {
 		err := s.Chain.Upgrade(ctx, s.Env.OldGaiaImageVersion, s.Env.OldGaiaImageVersion)
 		s.Require().NoError(err)
 		s.restartRelayer(ctx)
 	})
 
-	// Phase 5: Consumer still listed on v27
+	// Phase 6: Consumer still listed on v27
 	s.Run("ConsumerListed_v27", func() {
 		s.requireConsumerListed(ctx)
 	})
 
-	// Phase 6: CCV still works on v27
+	// Phase 7: CCV still works on v27
 	s.Run("VerifyCCV_v27", func() {
 		err := s.Chain.CheckCCV(ctx, s.consumer, s.Relayer, 1_000_000, 0, 1)
 		s.Require().NoError(err)
 	})
 
-	// Phase 7: Creating new consumer should be disabled on v27
+	// Phase 8: Creating new consumer should be disabled on v27
 	s.Run("CreateConsumerDisabled_v27", func() {
 		s.requireCreateConsumerBlocked(ctx)
 	})
 
-	// Phase 8: IBC transfer still works on v27
+	// Phase 9: IBC transfer still works on v27
 	s.Run("IBCTransfer_v27", func() {
 		err := chainsuite.SendSimpleIBCTx(ctx, s.Chain, s.consumer, s.Relayer)
 		s.Require().NoError(err)
 	})
 
-	// Phase 9: Upgrade to v28
+	// Phase 10: Upgrade to v28
 	s.Run("UpgradeToV28", func() {
 		err := s.Chain.Upgrade(ctx, s.Env.UpgradeName, s.Env.NewGaiaImageVersion)
 		s.Require().NoError(err)
@@ -141,14 +183,14 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.T().Logf("Consumer rewards pool balance at height %d (pre-upgrade): %v", upgradeHeight-1, s.rewardsPoolPreUpgrade)
 	})
 
-	// Phase 10: Chain liveness after v28
+	// Phase 11: Chain liveness after v28
 	s.Run("Liveness_v28", func() {
 		timeoutCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 		defer cancel()
 		s.Require().NoError(testutil.WaitForBlocks(timeoutCtx, 5, s.Chain))
 	})
 
-	// Phase 11: Consumer offboarded — provider module removed
+	// Phase 12: Consumer offboarded — provider module removed
 	s.Run("ConsumerOffboarded_v28", func() {
 		_, _, err := s.Chain.Validators[0].ExecQuery(ctx, "provider", "list-consumer-chains")
 		if err != nil {
@@ -159,13 +201,13 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.requireConsumerNotListed(ctx)
 	})
 
-	// Phase 12: IBC transfers still work after offboarding
+	// Phase 13: IBC transfers still work after offboarding
 	s.Run("IBCTransfer_v28", func() {
 		err := chainsuite.SendSimpleIBCTx(ctx, s.Chain, s.consumer, s.Relayer)
 		s.Require().NoError(err)
 	})
 
-	// Phase 13: Provider port channels must be closed after offboarding
+	// Phase 14: Provider port channels must be closed after offboarding
 	s.Run("ProviderPortChannelsClosed_v28", func() {
 		out, _, err := s.Chain.Validators[0].ExecQuery(ctx, "ibc", "channel", "channels")
 		s.Require().NoError(err)
@@ -180,7 +222,7 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		}
 	})
 
-	// Phase 14: Verify consumer rewards balances are transferred to community pool after offboarding
+	// Phase 15: Verify consumer rewards balances are transferred to community pool after offboarding
 	s.Run("ConsumerRewardsTransferred_v28", func() {
 		if len(s.rewardsPoolPreUpgrade) == 0 {
 			s.T().Skip("consumer rewards pool was empty before upgrade; skipping transfer check")
@@ -222,6 +264,14 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 				denom, cpAmt, preUpgradeAmt)
 			s.T().Logf("Verified transfer of %s %s from consumer rewards pool to community pool", preUpgradeAmt, denom)
 		}
+	})
+
+	// Phase 16: Verify proposals query remains operational
+	s.Run("ProposalsQuery_v28", func() {
+		out, _, err := s.Chain.Validators[0].ExecQuery(ctx, "gov", "proposals")
+		s.Require().NoError(err)
+		s.Require().Contains(string(out), s.Env.UpgradeName,
+			"proposals query should return the upgrade proposal after v28 upgrade")
 	})
 }
 

@@ -72,6 +72,7 @@ import (
 	"github.com/cosmos/gaia/v28/app/keepers"
 	"github.com/cosmos/gaia/v28/app/upgrades"
 	v280 "github.com/cosmos/gaia/v28/app/upgrades/v28_0_0"
+	legacyics "github.com/cosmos/gaia/v28/x/legacy/ics"
 )
 
 var (
@@ -149,6 +150,7 @@ func NewGaiaApp(
 
 	std.RegisterLegacyAminoCodec(legacyAmino)
 	std.RegisterInterfaces(interfaceRegistry)
+	legacyics.RegisterInterfaces(interfaceRegistry)
 
 	bApp := baseapp.NewBaseApp(
 		appName,
@@ -244,6 +246,13 @@ func NewGaiaApp(
 	if err != nil {
 		panic(err)
 	}
+
+	// Register stub message handlers for all legacy ICS provider message types.
+	// The SDK checks for a handler before running the ante chain; without these
+	// stubs the node returns ErrUnknownRequest before RejectLegacyICSDecorator can
+	// fire. Must be called after mm.RegisterServices (and therefore after
+	// RegisterInterfaces) so that sdk.MsgTypeURL resolves during registration.
+	legacyics.RegisterLegacyMsgHandlers(app.MsgServiceRouter())
 
 	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(), runtimeservices.NewAutoCLIQueryService(app.mm.Modules))
 

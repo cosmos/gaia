@@ -39,4 +39,8 @@ var (
 	ErrInvalidExpeditedProposal = errorsmod.Register(codespace, 10, "unsupported expedited proposal type")
 
 	ErrNestedMessageLimitExceeded = errorsmod.Register(codespace, 11, "nested message limit exceeded")
+
+	// ErrDeprecatedMessage is returned when a transaction includes a message type
+	// that has been removed and is no longer accepted on the network.
+	ErrDeprecatedMessage = errorsmod.Register(codespace, 12, "deprecated message type")
 )

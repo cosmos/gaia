@@ -5,15 +5,12 @@ import (
 	"strconv"
 	"time"
 
-	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
-
 	"cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
 	"github.com/cosmos/gaia/v28/tests/e2e/common"
 	"github.com/cosmos/gaia/v28/tests/e2e/msg"
@@ -219,57 +216,6 @@ func (s *IntegrationTestSuite) submitGovCommand(chainAAPIEndpoint, sender string
 			5*time.Second,
 		)
 	})
-}
-
-// testSetBlocksPerEpoch tests that we can change `BlocksPerEpoch` through a governance proposal
-func (s *IntegrationTestSuite) testSetBlocksPerEpoch() {
-	chainEndpoint := fmt.Sprintf("http://%s", s.Resources.ValResources[s.Resources.ChainA.ID][0].GetHostPort("1317/tcp"))
-
-	providerParams := providertypes.DefaultParams()
-
-	// assert that initially, the actual blocks per epoch are the default blocks per epoch
-	s.Require().Eventually(
-		func() bool {
-			blocksPerEpoch, err := query.BlocksPerEpoch(chainEndpoint)
-			s.T().Logf("Initial BlocksPerEpoch param: %v", blocksPerEpoch)
-			s.Require().NoError(err)
-
-			s.Require().Equal(blocksPerEpoch, providerParams.BlocksPerEpoch)
-			return true
-		},
-		15*time.Second,
-		5*time.Second,
-	)
-
-	// create a governance proposal to change blocks per epoch to the default blocks per epoch plus one
-	expectedBlocksPerEpoch := providerParams.BlocksPerEpoch + 1
-	providerParams.BlocksPerEpoch = expectedBlocksPerEpoch
-	paramsJSON := common.Cdc.MustMarshalJSON(&providerParams)
-	err := msg.WriteGovParamChangeProposalBlocksPerEpoch(s.Resources.ChainA, string(paramsJSON))
-	s.Require().NoError(err)
-
-	validatorAAddr, _ := s.Resources.ChainA.Validators[0].KeyInfo.GetAddress()
-	s.TestCounters.ProposalCounter++
-	submitGovFlags := []string{configFile(common.ProposalBlocksPerEpochFilename)}
-	depositGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), common.DepositAmount.String()}
-	voteGovFlags := []string{strconv.Itoa(s.TestCounters.ProposalCounter), "yes"}
-
-	s.T().Logf("Proposal number: %d", s.TestCounters.ProposalCounter)
-	s.T().Logf("Submitting, deposit and vote Gov Proposal: Change BlocksPerEpoch parameter")
-	s.submitGovProposal(chainEndpoint, validatorAAddr.String(), s.TestCounters.ProposalCounter, paramtypes.ProposalTypeChange, submitGovFlags, depositGovFlags, voteGovFlags, "vote")
-
-	s.Require().Eventually(
-		func() bool {
-			blocksPerEpoch, err := query.BlocksPerEpoch(chainEndpoint)
-			s.Require().NoError(err)
-
-			s.T().Logf("Newly set blocks per epoch: %d", blocksPerEpoch)
-			s.Require().Equal(expectedBlocksPerEpoch, blocksPerEpoch)
-			return true
-		},
-		15*time.Second,
-		5*time.Second,
-	)
 }
 
 // MsgSoftwareUpgrade can be expedited but it can only be submitted using "tx gov submit-proposal" command.

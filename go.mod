@@ -45,9 +45,15 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
 	github.com/vektra/mockery/v2 v2.53.4
+<<<<<<< HEAD
 	google.golang.org/genproto/googleapis/api v0.0.0-20251022142026-3a174f9686a8
 	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.10
+=======
+	google.golang.org/genproto/googleapis/api v0.0.0-20251222181119-0a764e51fe1b
+	google.golang.org/grpc v1.79.3
+	google.golang.org/protobuf v1.36.11
+>>>>>>> 83d210a (chore(deps): Bump google.golang.org/grpc from 1.79.1 to 1.79.3 (#4005))
 	gopkg.in/yaml.v2 v2.4.0
 )
 

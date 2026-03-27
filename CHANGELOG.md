@@ -13,6 +13,11 @@
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.2 to 0.60.5 ([#3976](https://github.com/cosmos/gaia/pull/3976))
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.2.4 to v2.3.2 ([#3976](https://github.com/cosmos/gaia/pull/3976))
 
+### Dependencies
+
+- Bump yaml from 1.10.2 to 1.10.3 ([#4008](https://github.com/cosmos/gaia/pull/4008))
+- Bump yaml from 2.4.1 to 2.8.3 ([#4008](https://github.com/cosmos/gaia/pull/4008))
+
 ## v27.0.0
 
 *February 20, 2026*

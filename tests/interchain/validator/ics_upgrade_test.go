@@ -152,9 +152,13 @@ func classifyValidator(v chainsuite.ValidatorSnapshot) string {
 
 // assertSnapshotTransitions checks the 9 test report items from the requirements document.
 // Each item runs in its own s.Run subtest for granular pass/fail visibility.
+// preUpgrade is an optional snapshot taken right before completeUpgrade (i.e. at halt height).
+// If provided, Item10 uses it as the jail-status baseline so that pre-upgrade staking txs
+// (e.g. full unbonds that trigger jailing) do not produce false failures.
 func (s *ICSUpgradeSuite) assertSnapshotTransitions(
 	before, after *chainsuite.ChainSnapshot,
 	expectedChanges map[int]GroupTransition,
+	preUpgrade ...*chainsuite.ChainSnapshot,
 ) {
 	s.Run("Item1_MaxValidatorsCollapse", func() {
 		s.Require().Equal(uint32(after.CometSetSize), after.MaxValidators,
@@ -281,6 +285,23 @@ func (s *ICSUpgradeSuite) assertSnapshotTransitions(
 			}
 		}
 	})
+
+	s.Run("Item10_JailStatusPreserved", func() {
+		// Jail status must be preserved by the upgrade handler itself.
+		// Use the pre-upgrade snapshot (state at halt height, after any pre-upgrade
+		// staking txs) as the baseline so that validator jailings caused by those
+		// txs (e.g. full unbonds) do not produce false failures.
+		jailRef := before
+		if len(preUpgrade) > 0 && preUpgrade[0] != nil {
+			jailRef = preUpgrade[0]
+		}
+		for i, vRef := range jailRef.Validators {
+			vAfter := after.Validators[i]
+			s.Require().Equal(vRef.Jailed, vAfter.Jailed,
+				"validator %d (%s) jail status changed across upgrade: before=%v after=%v",
+				i, vRef.OperatorAddr, vRef.Jailed, vAfter.Jailed)
+		}
+	})
 }
 
 // assertLiveness waits for a few blocks after upgrade to prove chain liveness.
@@ -336,9 +357,16 @@ func (s *ICSUpgradeSuite) Test3_1_NoDelegations() {
 
 	// Upgrade collapses max_validators 8→5; all B validators become N
 	expectedChanges := map[int]GroupTransition{
+		0: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		1: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		2: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		3: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		4: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
 		5: {FromGroup: "B", ToGroup: "N", TokenDelta: 0},
 		6: {FromGroup: "B", ToGroup: "N", TokenDelta: 0},
 		7: {FromGroup: "B", ToGroup: "N", TokenDelta: 0},
+		8: {FromGroup: "N", ToGroup: "N", TokenDelta: 0},
+		9: {FromGroup: "N", ToGroup: "N", TokenDelta: 0},
 	}
 	s.assertSnapshotTransitions(before, after, expectedChanges)
 	s.assertTopology(after, 5, 0, 5)
@@ -372,6 +400,7 @@ func (s *ICSUpgradeSuite) Test3_2_DelegationsNoGroupChange() {
 	))
 
 	s.waitForHalt(haltHeight)
+	preUpgrade := s.snapshotState()
 	s.completeUpgrade()
 
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 10, s.Chain))
@@ -379,16 +408,35 @@ func (s *ICSUpgradeSuite) Test3_2_DelegationsNoGroupChange() {
 
 	expectedChanges := map[int]GroupTransition{
 		0: {FromGroup: "A", ToGroup: "A", TokenDelta: 1_000_000},
+		1: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		2: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		3: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		4: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
 		5: {FromGroup: "B", ToGroup: "N", TokenDelta: 1_000_000},
 		6: {FromGroup: "B", ToGroup: "N", TokenDelta: 0},
 		7: {FromGroup: "B", ToGroup: "N", TokenDelta: 0},
+		8: {FromGroup: "N", ToGroup: "N", TokenDelta: 0},
+		9: {FromGroup: "N", ToGroup: "N", TokenDelta: 0},
 	}
-	s.assertSnapshotTransitions(before, after, expectedChanges)
+	s.assertSnapshotTransitions(before, after, expectedChanges, preUpgrade)
 	s.assertTopology(after, 5, 0, 5)
 	s.assertLiveness()
 }
 
-func (s *ICSUpgradeSuite) Test3_3_NAB_ABB_BNN() {
+// Test3_3_NAB_ABN_ANN tests group transitions for three validators across two events:
+// the staking txs landing at haltHeight-1 and the upgrade completing.
+//
+// The name encodes three snapshots of {val[8], val[4], val[7]}:
+//
+//	NAB – initial state:          val[8]=N(3M),  val[4]=A(12M), val[7]=B(5M)
+//	ABN – after staking txs:      val[8]=A(18M), val[4]=B(12M), val[7]=N(0M)
+//	ANN – after upgrade:          val[8]=A(18M), val[4]=N(12M), val[7]=N(0M)
+//
+// val[8] receives +15M and jumps into the top-5 (N→A).
+// val[4] is displaced from the top-5 by val[8] (A→B), then the B group is
+// eliminated by the upgrade (B→N).
+// val[7] is fully unbonded before halt (B→N) and stays N after upgrade.
+func (s *ICSUpgradeSuite) Test3_3_NAB_ABN_ANN() {
 	before := s.snapshotState()
 
 	haltHeight := s.proposeUpgrade()
@@ -413,6 +461,7 @@ func (s *ICSUpgradeSuite) Test3_3_NAB_ABB_BNN() {
 	)
 
 	s.waitForHalt(haltHeight)
+	preUpgrade := s.snapshotState()
 	s.completeUpgrade()
 
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 10, s.Chain))
@@ -422,20 +471,34 @@ func (s *ICSUpgradeSuite) Test3_3_NAB_ABB_BNN() {
 	// val[4]: A→N (12M, bumped from top 5 by val[8]; B group eliminated by upgrade)
 	// val[5]: B→N (9M, B group eliminated by upgrade)
 	// val[6]: B→N (7M, B group eliminated by upgrade)
-	// val[7]: B→N (5M fully unbonded)
+	// val[7]: B→N (5M fully unbonded, jailed before upgrade due to zero tokens)
 	expectedChanges := map[int]GroupTransition{
+		0: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		1: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		2: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		3: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
 		4: {FromGroup: "A", ToGroup: "N", TokenDelta: 0},
 		5: {FromGroup: "B", ToGroup: "N", TokenDelta: 0},
 		6: {FromGroup: "B", ToGroup: "N", TokenDelta: 0},
 		7: {FromGroup: "B", ToGroup: "N", TokenDelta: -5_000_000},
 		8: {FromGroup: "N", ToGroup: "A", TokenDelta: 15_000_000},
+		9: {FromGroup: "N", ToGroup: "N", TokenDelta: 0},
 	}
-	s.assertSnapshotTransitions(before, after, expectedChanges)
+	s.assertSnapshotTransitions(before, after, expectedChanges, preUpgrade)
 	s.assertTopology(after, 5, 0, 5)
 	s.assertLiveness()
 }
 
-func (s *ICSUpgradeSuite) Test3_4_ANN_BAA_NBB() {
+// Test3_4_ANN_BAA_NBN tests group transitions for three validators across two events:
+// the staking txs landing at haltHeight-1 and the upgrade completing.
+//
+// The name encodes per-validator timelines of {val[4], val[5], val[8]}
+// as [initial state][state after txs][state after upgrade]:
+//
+//	ANN – val[4]: A(12M) → unbonds 10M → N(2M, rank 9; drops below staking cap) → N
+//	BAA – val[5]: B(9M)  → delegates 6M → A(15M, enters top 5)                  → A
+//	NBN – val[8]: N(3M)  → delegates 3M → B(6M, enters top 8)                   → N (B group eliminated)
+func (s *ICSUpgradeSuite) Test3_4_ANN_BAA_NBN() {
 	before := s.snapshotState()
 
 	haltHeight := s.proposeUpgrade()
@@ -459,7 +522,7 @@ func (s *ICSUpgradeSuite) Test3_4_ANN_BAA_NBB() {
 		delegate5,
 	)
 
-	// Delegate ~3M to val[8] (N, 3M → 6M) → stays N after upgrade (not in top 5)
+	// Delegate ~3M to val[8] (N, 3M → 6M) → enters top 8 as B, then B group eliminated by upgrade → N
 	delegate8 := fmt.Sprintf("%d%s", 3_000_000, s.Chain.Config().Denom)
 	s.asyncStakingTx(8,
 		"staking", "delegate",
@@ -468,23 +531,36 @@ func (s *ICSUpgradeSuite) Test3_4_ANN_BAA_NBB() {
 	)
 
 	s.waitForHalt(haltHeight)
+	preUpgrade := s.snapshotState()
 	s.completeUpgrade()
 
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 10, s.Chain))
 	after := s.snapshotState()
 
 	expectedChanges := map[int]GroupTransition{
+		0: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		1: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		2: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		3: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
 		4: {FromGroup: "A", ToGroup: "N", TokenDelta: -10_000_000},
 		5: {FromGroup: "B", ToGroup: "A", TokenDelta: 6_000_000},
 		6: {FromGroup: "B", ToGroup: "N", TokenDelta: 0},
 		7: {FromGroup: "B", ToGroup: "N", TokenDelta: 0},
 		8: {FromGroup: "N", ToGroup: "N", TokenDelta: 3_000_000},
+		9: {FromGroup: "N", ToGroup: "N", TokenDelta: 0},
 	}
-	s.assertSnapshotTransitions(before, after, expectedChanges)
+	s.assertSnapshotTransitions(before, after, expectedChanges, preUpgrade)
 	s.assertTopology(after, 5, 0, 5)
 	s.assertLiveness()
 }
 
+// Test3_5_Combined exercises all four interesting transition patterns simultaneously.
+// Each subject validator has a unique [initial state][state after txs][state after upgrade] timeline:
+//
+//	ABN – val[4]: A(12M) → unbonds 1M; val[5] overtakes it → B(11M, rank 6) → N (B group eliminated)
+//	BAA – val[5]: B(9M)  → delegates 6M → A(15M, enters top 5)               → A
+//	BNN – val[7]: B(5M)  → fully unbonds → N(0M)                              → N
+//	NBN – val[8]: N(3M)  → delegates 4M → B(7M, enters top 8)                → N (B group eliminated)
 func (s *ICSUpgradeSuite) Test3_5_Combined() {
 	before := s.snapshotState()
 
@@ -509,7 +585,7 @@ func (s *ICSUpgradeSuite) Test3_5_Combined() {
 		unbond4,
 	)
 
-	// val[8] N→N: delegate 4M (3M → 7M, not in top 5 after upgrade)
+	// val[8] N→B→N: delegate 4M (3M → 7M, enters top 8 as B) → N after upgrade (B group eliminated)
 	delegate8 := fmt.Sprintf("%d%s", 4_000_000, s.Chain.Config().Denom)
 	s.asyncStakingTx(8,
 		"staking", "delegate",
@@ -526,19 +602,25 @@ func (s *ICSUpgradeSuite) Test3_5_Combined() {
 	)
 
 	s.waitForHalt(haltHeight)
+	preUpgrade := s.snapshotState()
 	s.completeUpgrade()
 
 	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 10, s.Chain))
 	after := s.snapshotState()
 
 	expectedChanges := map[int]GroupTransition{
+		0: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		1: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		2: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
+		3: {FromGroup: "A", ToGroup: "A", TokenDelta: 0},
 		4: {FromGroup: "A", ToGroup: "N", TokenDelta: -1_000_000},
 		5: {FromGroup: "B", ToGroup: "A", TokenDelta: 6_000_000},
 		6: {FromGroup: "B", ToGroup: "N", TokenDelta: 0},
 		7: {FromGroup: "B", ToGroup: "N", TokenDelta: -5_000_000},
 		8: {FromGroup: "N", ToGroup: "N", TokenDelta: 4_000_000},
+		9: {FromGroup: "N", ToGroup: "N", TokenDelta: 0},
 	}
-	s.assertSnapshotTransitions(before, after, expectedChanges)
+	s.assertSnapshotTransitions(before, after, expectedChanges, preUpgrade)
 	s.assertLiveness()
 }
 

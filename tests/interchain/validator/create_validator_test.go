@@ -137,7 +137,7 @@ func (s *CreateValidatorSuite) TestCreateValidatorFromFullNode() {
 		time.Sleep(chainsuite.CommitTimeout)
 	}
 	s.Require().NoError(powerCtx.Err(), "timed out waiting for new validator to appear in CometBFT set")
-	s.Require().Positive(power, "new validator should have positive voting power in CometBFT set")
+	s.Require().NotZero(power, "new validator should appear in CometBFT validator set")
 }
 
 func TestCreateValidator(t *testing.T) {

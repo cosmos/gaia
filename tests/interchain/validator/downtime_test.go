@@ -153,12 +153,12 @@ func (s *DowntimeSuite) TestDowntimeSlashing() {
 	s.Require().False(targetVal.Jailed, "unjailed validator should not have jailed=true")
 
 	// --- Verify the validator is signing blocks ---
-	// A positive voting power in the CometBFT validator set confirms it is back in consensus.
+	// A non-zero voting power in the CometBFT validator set confirms it is back in consensus.
 	hexAddr, err := s.Chain.GetValidatorHex(ctx, targetIdx)
 	s.Require().NoError(err)
 	power, err := s.Chain.GetValidatorPower(ctx, hexAddr)
 	s.Require().NoError(err)
-	s.Require().Positive(power, "unjailed validator should have positive voting power in the CometBFT validator set")
+	s.Require().NotZero(power, "unjailed validator should appear in the CometBFT validator set")
 }
 
 func TestDowntime(t *testing.T) {

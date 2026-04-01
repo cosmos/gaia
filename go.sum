@@ -673,8 +673,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c h1:pxW6RcqyfI9/kWtOwnv/G+AzdKuy2ZrqINhenH4HyNs=
 github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
-github.com/CosmWasm/wasmd v0.60.5 h1:70ceYlseadurjcKcSlwPWfE+H4SgWm4JGMosFMcbFWs=
-github.com/CosmWasm/wasmd v0.60.5/go.mod h1:/taccDYUgTMDzjKzndSUodV3AmMuxZKTuOp0m92GdcA=
+github.com/CosmWasm/wasmd v0.60.6 h1:fHv//SyVv/L6SS33fxMC2JGAUxy3ZyUlIOb6U3vkJvo=
+github.com/CosmWasm/wasmd v0.60.6/go.mod h1:2Fs7Y8CEvtgjv5moPdOGLbZ6Vv49bypD5xu3DY0s4Hc=
 github.com/CosmWasm/wasmvm/v2 v2.3.2 h1:LO6+G9iG3Hg6EezxfMWX5TMx6a5DbuKGwZv6BSdtXfA=
 github.com/CosmWasm/wasmvm/v2 v2.3.2/go.mod h1:RzLlMwFRLaTwPM0DdHFA0m/APT5muKjU6t3ZxCrpXJ0=
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
@@ -925,8 +925,8 @@ github.com/cosmos/interchain-security/v7 v7.0.0-20250408210344-06e0dc6bf6d6 h1:S
 github.com/cosmos/interchain-security/v7 v7.0.0-20250408210344-06e0dc6bf6d6/go.mod h1:W7JHsNaZ5XoH88cKT+wuCRsXkx/Fcn2kEwzpeGdJBxI=
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=
 github.com/cosmos/keyring v1.2.0/go.mod h1:fc+wB5KTk9wQ9sDx0kFXB3A0MaeGHM9AwRStKOQ5vOA=
-github.com/cosmos/ledger-cosmos-go v0.16.0 h1:YKlWPG9NnGZIEUb2bEfZ6zhON1CHlNTg0QKRRGcNEd0=
-github.com/cosmos/ledger-cosmos-go v0.16.0/go.mod h1:WrM2xEa8koYoH2DgeIuZXNarF7FGuZl3mrIOnp3Dp0o=
+github.com/cosmos/ledger-cosmos-go v1.0.0 h1:jNKW89nPf0vR0EkjHG8Zz16h6p3zqwYEOxlHArwgYtw=
+github.com/cosmos/ledger-cosmos-go v1.0.0/go.mod h1:mGaw2wDOf+Z6SfRJsMGxU9DIrBa4du0MAiPlpPhLAOE=
 github.com/cosmos/rosetta-sdk-go v0.10.0 h1:E5RhTruuoA7KTIXUcMicL76cffyeoyvNybzUGSKFTcM=
 github.com/cosmos/rosetta-sdk-go v0.10.0/go.mod h1:SImAZkb96YbwvoRkzSMQB6noNJXFgWl/ENIznEoYQI4=
 github.com/cosmos/tokenfactory v0.53.5 h1:WLX8QuZgNo7PDz6V49jPX8hivmAXUYREaPQ16eHqtFk=

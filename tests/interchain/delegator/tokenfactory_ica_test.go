@@ -53,10 +53,6 @@ func (s *ICATokenFactorySuite) SetupSuite() {
 	s.Require().NoError(err)
 	s.Host = hostChain
 
-	// Upgrade host chain to v26.0.0 so it has tokenfactory with proper params
-	err = s.Host.Upgrade(ctx, s.Env.UpgradeName, s.Env.NewGaiaImageVersion)
-	s.Require().NoError(err)
-
 	// Increase relayer max_gas to handle high-gas tokenfactory operations
 	err = s.Relayer.SetMaxGas(ctx, 3000000)
 	s.Require().NoError(err)

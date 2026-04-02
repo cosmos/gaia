@@ -8,6 +8,10 @@
 
 ### DEPENDENCIES
 
+- Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.79.1 to 1.79.3 ([#4005](https://github.com/cosmos/gaia/pull/4005))
+- Bump [ledger-cosmos-go](https://github.com/cosmos/ledger-cosmos-go) from 0.16.0 to 1.0.0 ([#4016](https://github.com/cosmos/gaia/pull/4016))
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.5 to 0.60.6 ([#4016](https://github.com/cosmos/gaia/pull/4016))
+
 ## v27.1.0
 
 *March 13, 2026*

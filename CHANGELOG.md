@@ -1,10 +1,8 @@
 # CHANGELOG
 
-## UNRELEASED
+## v27.2.0
 
-### FEATURES
-
-### BUG-FIXES
+*April 2, 2026*
 
 ### DEPENDENCIES
 

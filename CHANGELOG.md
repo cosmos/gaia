@@ -2,7 +2,7 @@
 
 ## v27.2.0
 
-*April 2, 2026*
+*April 6, 2026*
 
 ### DEPENDENCIES
 

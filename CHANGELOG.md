@@ -12,6 +12,10 @@
 - Bump [ledger-cosmos-go](https://github.com/cosmos/ledger-cosmos-go) from 0.16.0 to 1.0.0 ([#4016](https://github.com/cosmos/gaia/pull/4016))
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.5 to 0.60.6 ([#4016](https://github.com/cosmos/gaia/pull/4016))
 
+### Dependencies
+
+- Bump [github.com/hashicorp/go-getter](https://github.com/hashicorp/go-getter) from 1.7.8 to 1.8.6 ([#4026](https://github.com/cosmos/gaia/pull/4026))
+
 ## v27.1.0
 
 *March 13, 2026*

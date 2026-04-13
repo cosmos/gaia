@@ -108,27 +108,27 @@ func encodeConsumerAdditionProposal() []byte {
 	dur = appendVarintField(dur, 1, 1_728_000)
 
 	var p []byte
-	p = appendLenField(p, 1, []byte("Add consumer chain"))         // title
-	p = appendLenField(p, 2, []byte("Spawn a new consumer chain")) // description
-	p = appendLenField(p, 3, []byte("consumer-1"))                 // chain_id
-	p = appendLenField(p, 4, height)                              // initial_height
-	p = appendLenField(p, 5, []byte("genesis_hash_bytes"))         // genesis_hash
-	p = appendLenField(p, 6, []byte("binary_hash_bytes"))          // binary_hash
-	p = appendLenField(p, 7, spawnTime)                           // spawn_time
-	p = appendLenField(p, 8, dur)                                 // unbonding_period
-	p = appendLenField(p, 9, dur)                                 // ccv_timeout_period
-	p = appendLenField(p, 10, dur)                                // transfer_timeout_period
-	p = appendLenField(p, 11, []byte("0.75"))                      // consumer_redistribution_fraction
-	p = appendVarintField(p, 12, 1000)                            // blocks_per_distribution_transmission (int64)
-	p = appendVarintField(p, 13, 10000)                           // historical_entries (int64)
-	p = appendLenField(p, 14, []byte(""))                          // distribution_transmission_channel
-	p = appendVarintField(p, 15, 67)                              // top_N (uint32)
-	p = appendVarintField(p, 16, 0)                               // validators_power_cap (uint32)
-	p = appendVarintField(p, 17, 0)                               // validator_set_cap (uint32)
+	p = appendLenField(p, 1, []byte("Add consumer chain"))                                    // title
+	p = appendLenField(p, 2, []byte("Spawn a new consumer chain"))                            // description
+	p = appendLenField(p, 3, []byte("consumer-1"))                                            // chain_id
+	p = appendLenField(p, 4, height)                                                          // initial_height
+	p = appendLenField(p, 5, []byte("genesis_hash_bytes"))                                    // genesis_hash
+	p = appendLenField(p, 6, []byte("binary_hash_bytes"))                                     // binary_hash
+	p = appendLenField(p, 7, spawnTime)                                                       // spawn_time
+	p = appendLenField(p, 8, dur)                                                             // unbonding_period
+	p = appendLenField(p, 9, dur)                                                             // ccv_timeout_period
+	p = appendLenField(p, 10, dur)                                                            // transfer_timeout_period
+	p = appendLenField(p, 11, []byte("0.75"))                                                 // consumer_redistribution_fraction
+	p = appendVarintField(p, 12, 1000)                                                        // blocks_per_distribution_transmission (int64)
+	p = appendVarintField(p, 13, 10000)                                                       // historical_entries (int64)
+	p = appendLenField(p, 14, []byte(""))                                                     // distribution_transmission_channel
+	p = appendVarintField(p, 15, 67)                                                          // top_N (uint32)
+	p = appendVarintField(p, 16, 0)                                                           // validators_power_cap (uint32)
+	p = appendVarintField(p, 17, 0)                                                           // validator_set_cap (uint32)
 	p = appendLenField(p, 18, []byte("cosmosvalcons12m5td27rwwy95drgk53w9pfhlxqqguqmlfph2g")) // allowlist
 	p = appendLenField(p, 19, []byte("cosmosvalcons15yprks04304h8wg0x2fef53g50x9w2qa3c0hcd")) // denylist
-	p = appendVarintField(p, 20, 0)                               // min_stake (uint64)
-	p = appendVarintField(p, 21, 0)                               // allow_inactive_vals (bool)
+	p = appendVarintField(p, 20, 0)                                                           // min_stake (uint64)
+	p = appendVarintField(p, 21, 0)                                                           // allow_inactive_vals (bool)
 	return p
 }
 

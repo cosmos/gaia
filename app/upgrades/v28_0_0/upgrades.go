@@ -99,14 +99,14 @@ func CreateUpgradeHandler(
 			}
 
 			// Try the normal close path first.
-			if err := keepers.IBCKeeper.ChannelKeeper.ChanCloseInit(ctx, ch.PortId, ch.ChannelId); err == nil {
+			chanCloseErr := keepers.IBCKeeper.ChannelKeeper.ChanCloseInit(ctx, ch.PortId, ch.ChannelId)
+			if chanCloseErr == nil {
 				ctx.Logger().Info("Closed IBC channel on provider port via ChanCloseInit",
 					"channel", ch.ChannelId)
 				continue
-			} else {
-				ctx.Logger().Info("ChanCloseInit failed on provider port channel; falling back to direct close",
-					"channel", ch.ChannelId, "error", err.Error())
 			}
+			ctx.Logger().Info("ChanCloseInit failed on provider port channel; falling back to direct close",
+				"channel", ch.ChannelId, "error", chanCloseErr.Error())
 
 			// Fallback: direct SetChannel write. No close event is emitted; the
 			// counterparty must be closed manually or allowed to go stale.

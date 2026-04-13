@@ -81,7 +81,14 @@ func CreateUpgradeHandler(
 			ctx.Logger().Info("Transferred consumer rewards pool balance to community pool", "amount", balances)
 		}
 
-		// 4. Force-close all open IBC channels on the provider port.
+		// 4. Close all open IBC channels on the provider port.
+		// Attempt ChanCloseInit first: a channel_close_init event is emitted,
+		// and relayers can propagate ChanCloseConfirm to the counterparty.
+		// Fall back to SetChannel if ChanCloseInit fails: the client or connection
+		// backing the channel is no longer in a valid state for the normal close
+		// handshake (e.g., expired client on a stale consumer chain), in which case
+		// we still need to mark the channel CLOSED on the Gaia side even though the
+		// counterparty will not be notified automatically.
 		channels := keepers.IBCKeeper.ChannelKeeper.GetAllChannels(ctx)
 		for _, ch := range channels {
 			if ch.PortId != providerModuleName {
@@ -90,13 +97,27 @@ func CreateUpgradeHandler(
 			if ch.State == channeltypes.CLOSED {
 				continue
 			}
+
+			// Try the normal close path first.
+			if err := keepers.IBCKeeper.ChannelKeeper.ChanCloseInit(ctx, ch.PortId, ch.ChannelId); err == nil {
+				ctx.Logger().Info("Closed IBC channel on provider port via ChanCloseInit",
+					"channel", ch.ChannelId)
+				continue
+			} else {
+				ctx.Logger().Info("ChanCloseInit failed on provider port channel; falling back to direct close",
+					"channel", ch.ChannelId, "error", err.Error())
+			}
+
+			// Fallback: direct SetChannel write. No close event is emitted; the
+			// counterparty must be closed manually or allowed to go stale.
 			channel, found := keepers.IBCKeeper.ChannelKeeper.GetChannel(ctx, ch.PortId, ch.ChannelId)
 			if !found {
 				continue
 			}
 			channel.State = channeltypes.CLOSED
 			keepers.IBCKeeper.ChannelKeeper.SetChannel(ctx, ch.PortId, ch.ChannelId, channel)
-			ctx.Logger().Info("Force-closed IBC channel on provider port", "channel", ch.ChannelId)
+			ctx.Logger().Info("Force-closed IBC channel on provider port via direct SetChannel",
+				"channel", ch.ChannelId)
 		}
 
 		// 5. Apply validator set updates using the new max_validators parameter.

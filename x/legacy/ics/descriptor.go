@@ -42,6 +42,13 @@ const (
 	idxMsgOptIn                      = 11
 	idxMsgOptOut                     = 12
 	idxMsgSetConsumerCommissionRate  = 13
+
+	// Governance proposal types (legacy gov v1beta1 Content)
+	idxConsumerAdditionProposal     = 14
+	idxConsumerRemovalProposal      = 15
+	idxConsumerModificationProposal = 16
+	idxChangeRewardDenomsProposal   = 17
+	idxEquivocationProposal         = 18
 )
 
 // fB returns a BYTES-typed field descriptor (wire type 2 — string, bytes, message).
@@ -161,6 +168,77 @@ func init() {
 			// 13 — MsgSetConsumerCommissionRate: all string fields (wire type 2)
 			{Name: name("MsgSetConsumerCommissionRate"), Field: []*descriptorpb.FieldDescriptorProto{
 				fB(1), fB(2), fB(3), fB(4), fB(5),
+			}},
+
+			// 14 — ConsumerAdditionProposal (legacy gov v1beta1 Content)
+			// Fields per interchain_security/ccv/provider/v1/provider.proto:
+			//   1  title                             string
+			//   2  description                       string
+			//   3  chain_id                          string
+			//   4  initial_height                    ibc.core.client.v1.Height (message)
+			//   5  genesis_hash                      bytes
+			//   6  binary_hash                       bytes
+			//   7  spawn_time                        google.protobuf.Timestamp (message)
+			//   8  unbonding_period                  google.protobuf.Duration  (message)
+			//   9  ccv_timeout_period                google.protobuf.Duration  (message)
+			//  10  transfer_timeout_period           google.protobuf.Duration  (message)
+			//  11  consumer_redistribution_fraction  string
+			//  12  blocks_per_distribution_transmission int64
+			//  13  historical_entries                int64
+			//  14  distribution_transmission_channel string
+			//  15  top_N                             uint32
+			//  16  validators_power_cap              uint32
+			//  17  validator_set_cap                 uint32
+			//  18  allowlist                         repeated string
+			//  19  denylist                          repeated string
+			//  20  min_stake                         uint64
+			//  21  allow_inactive_vals               bool
+			{Name: name("ConsumerAdditionProposal"), Field: []*descriptorpb.FieldDescriptorProto{
+				fB(1), fB(2), fB(3), fB(4), fB(5), fB(6), fB(7), fB(8), fB(9), fB(10),
+				fB(11), fI(12), fI(13), fB(14), fU32(15), fU32(16), fU32(17),
+				fB(18), fB(19), fU64(20), fBool(21),
+			}},
+
+			// 15 — ConsumerRemovalProposal
+			//   1  title        string
+			//   2  description  string
+			//   3  chain_id     string
+			//   4  stop_time    google.protobuf.Timestamp (message)
+			{Name: name("ConsumerRemovalProposal"), Field: []*descriptorpb.FieldDescriptorProto{
+				fB(1), fB(2), fB(3), fB(4),
+			}},
+
+			// 16 — ConsumerModificationProposal
+			//   1  title                string
+			//   2  description          string
+			//   3  chain_id             string
+			//   4  top_N                uint32
+			//   5  validators_power_cap uint32
+			//   6  validator_set_cap    uint32
+			//   7  allowlist            repeated string
+			//   8  denylist             repeated string
+			//   9  min_stake            uint64
+			//  10  allow_inactive_vals  bool
+			{Name: name("ConsumerModificationProposal"), Field: []*descriptorpb.FieldDescriptorProto{
+				fB(1), fB(2), fB(3), fU32(4), fU32(5), fU32(6),
+				fB(7), fB(8), fU64(9), fBool(10),
+			}},
+
+			// 17 — ChangeRewardDenomsProposal
+			//   1  title            string
+			//   2  description      string
+			//   3  denoms_to_add    repeated string
+			//   4  denoms_to_remove repeated string
+			{Name: name("ChangeRewardDenomsProposal"), Field: []*descriptorpb.FieldDescriptorProto{
+				fB(1), fB(2), fB(3), fB(4),
+			}},
+
+			// 18 — EquivocationProposal
+			//   1  title          string
+			//   2  description    string
+			//   3  equivocations  repeated cosmos.evidence.v1beta1.Equivocation (message)
+			{Name: name("EquivocationProposal"), Field: []*descriptorpb.FieldDescriptorProto{
+				fB(1), fB(2), fB(3),
 			}},
 		},
 		// Tx service descriptor: required so that baseapp's MsgServiceRouter can

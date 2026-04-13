@@ -30,6 +30,7 @@ type ICSOffboardSuite struct {
 	*chainsuite.Suite
 	consumer              *chainsuite.Chain
 	rewardsPoolPreUpgrade map[string]string // denom -> integer amount captured before v28 upgrade
+	txHash                string
 }
 
 func TestICSOffboard(t *testing.T) {
@@ -75,18 +76,54 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.consumer = consumer
 	})
 
-	// Phase 2: Verify CCV works on v26
+	// Phase 2: Create consumer chain without governance on v26
+	s.Run("CreateConsumerWithTx_v26", func() {
+		consumerParams := providertypes.MsgCreateConsumer{
+			ChainId: "test-chain",
+			Metadata: providertypes.ConsumerMetadata{
+				Name:        "consumer chain",
+				Description: "no description",
+				Metadata:    "no metadata",
+			},
+			InitializationParameters: &providertypes.ConsumerInitializationParameters{
+				InitialHeight:                     clienttypes.Height{RevisionNumber: 0, RevisionHeight: 1},
+				GenesisHash:                       []byte("Z2VuX2hhc2g="),
+				BinaryHash:                        []byte("YmluX2hhc2g="),
+				UnbondingPeriod:                   1728000000000000,
+				CcvTimeoutPeriod:                  2419200000000000,
+				TransferTimeoutPeriod:             1800000000000,
+				ConsumerRedistributionFraction:    "0.75",
+				BlocksPerDistributionTransmission: 50,
+				HistoricalEntries:                 10000,
+			},
+			PowerShapingParameters: &providertypes.PowerShapingParameters{
+				Top_N: 0,
+			},
+		}
+		paramsBz, err := json.Marshal(consumerParams)
+		s.Require().NoError(err)
+		err = s.Chain.GetNode().WriteFile(ctx, paramsBz, "consumer-addition.json")
+		s.Require().NoError(err)
+		txHash, err := s.Chain.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName,
+			"provider", "create-consumer",
+			path.Join(s.Chain.GetNode().HomeDir(), "consumer-addition.json"))
+		s.Require().NoError(err)
+		s.T().Logf("create-consumer tx hash: %s", txHash)
+		s.txHash = txHash
+	})
+
+	// Phase 3: Verify CCV works on v26
 	s.Run("VerifyCCV_v26", func() {
 		err := s.Chain.CheckCCV(ctx, s.consumer, s.Relayer, 1_000_000, 0, 1)
 		s.Require().NoError(err)
 	})
 
-	// Phase 3: Verify consumer is listed on v26
+	// Phase 4: Verify consumer is listed on v26
 	s.Run("ConsumerListed_v26", func() {
 		s.requireConsumerListed(ctx)
 	})
 
-	// Phase 4: Add ICS messages to the chain state
+	// Phase 5: Add ICS messages to the chain state
 	s.Run("UpdateProviderParams_v26", func() {
 		// Query current provider module params (the response body IS the params object)
 		rawParams, _, err := s.Chain.Validators[0].ExecQuery(ctx, "provider", "params")
@@ -128,36 +165,36 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.Require().NoError(err)
 	})
 
-	// Phase 5: Upgrade to v27
+	// Phase 6: Upgrade to v27
 	s.Run("UpgradeToV27", func() {
 		err := s.Chain.Upgrade(ctx, s.Env.OldGaiaImageVersion, s.Env.OldGaiaImageVersion)
 		s.Require().NoError(err)
 		s.restartRelayer(ctx)
 	})
 
-	// Phase 6: Consumer still listed on v27
+	// Phase 7: Consumer still listed on v27
 	s.Run("ConsumerListed_v27", func() {
 		s.requireConsumerListed(ctx)
 	})
 
-	// Phase 7: CCV still works on v27
+	// Phase 8: CCV still works on v27
 	s.Run("VerifyCCV_v27", func() {
 		err := s.Chain.CheckCCV(ctx, s.consumer, s.Relayer, 1_000_000, 0, 1)
 		s.Require().NoError(err)
 	})
 
-	// Phase 8: Creating new consumer should be disabled on v27
+	// Phase 9: Creating new consumer should be disabled on v27
 	s.Run("CreateConsumerDisabled_v27", func() {
 		s.requireCreateConsumerBlocked(ctx)
 	})
 
-	// Phase 9: IBC transfer still works on v27
+	// Phase 10: IBC transfer still works on v27
 	s.Run("IBCTransfer_v27", func() {
 		err := chainsuite.SendSimpleIBCTx(ctx, s.Chain, s.consumer, s.Relayer)
 		s.Require().NoError(err)
 	})
 
-	// Phase 10: Upgrade to v28
+	// Phase 11: Upgrade to v28
 	s.Run("UpgradeToV28", func() {
 		err := s.Chain.Upgrade(ctx, s.Env.UpgradeName, s.Env.NewGaiaImageVersion)
 		s.Require().NoError(err)
@@ -183,14 +220,14 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.T().Logf("Consumer rewards pool balance at height %d (pre-upgrade): %v", upgradeHeight-1, s.rewardsPoolPreUpgrade)
 	})
 
-	// Phase 11: Chain liveness after v28
+	// Phase 12: Chain liveness after v28
 	s.Run("Liveness_v28", func() {
 		timeoutCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 		defer cancel()
 		s.Require().NoError(testutil.WaitForBlocks(timeoutCtx, 5, s.Chain))
 	})
 
-	// Phase 12: Consumer offboarded — provider module removed
+	// Phase 13: Consumer offboarded — provider module removed
 	s.Run("ConsumerOffboarded_v28", func() {
 		_, _, err := s.Chain.Validators[0].ExecQuery(ctx, "provider", "list-consumer-chains")
 		if err != nil {
@@ -201,13 +238,13 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.requireConsumerNotListed(ctx)
 	})
 
-	// Phase 13: IBC transfers still work after offboarding
+	// Phase 14: IBC transfers still work after offboarding
 	s.Run("IBCTransfer_v28", func() {
 		err := chainsuite.SendSimpleIBCTx(ctx, s.Chain, s.consumer, s.Relayer)
 		s.Require().NoError(err)
 	})
 
-	// Phase 14: Provider port channels must be closed after offboarding
+	// Phase 15: Provider port channels must be closed after offboarding
 	s.Run("ProviderPortChannelsClosed_v28", func() {
 		out, _, err := s.Chain.Validators[0].ExecQuery(ctx, "ibc", "channel", "channels")
 		s.Require().NoError(err)
@@ -222,7 +259,7 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		}
 	})
 
-	// Phase 15: Verify consumer rewards balances are transferred to community pool after offboarding
+	// Phase 16: Verify consumer rewards balances are transferred to community pool after offboarding
 	s.Run("ConsumerRewardsTransferred_v28", func() {
 		if len(s.rewardsPoolPreUpgrade) == 0 {
 			s.T().Skip("consumer rewards pool was empty before upgrade; skipping transfer check")
@@ -266,12 +303,23 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		}
 	})
 
-	// Phase 16: Verify proposals query remains operational
+	// Phase 17: Verify proposals query remains operational
 	s.Run("ProposalsQuery_v28", func() {
 		out, _, err := s.Chain.Validators[0].ExecQuery(ctx, "gov", "proposals")
+		// Print proposals query output for debugging
+		s.T().Logf("Gov proposals query output: %s", string(out))
+
 		s.Require().NoError(err)
 		s.Require().Contains(string(out), s.Env.UpgradeName,
 			"proposals query should return the upgrade proposal after v28 upgrade")
+	})
+
+	// Phase 18: Verify transaction query remains operational
+	s.Run("TxQuery_v28", func() {
+		out, _, err := s.Chain.Validators[0].ExecQuery(ctx, "tx", s.txHash)
+		// Print transaction query output for debugging
+		s.T().Logf("Transaction query output: %s", string(out))
+		s.Require().NoError(err)
 	})
 }
 

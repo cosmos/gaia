@@ -20,7 +20,6 @@ func (s *stubMsg) MarshalTo(dAtA []byte) (int, error)            { return 0, nil
 func (s *stubMsg) MarshalToSizedBuffer(dAtA []byte) (int, error) { return 0, nil }
 func (s *stubMsg) Size() int                                     { return 0 }
 func (s *stubMsg) Unmarshal(_ []byte) error                      { return nil }
-func (s *stubMsg) ValidateBasic() error                          { return nil }
 
 // UnmarshalJSONPB implements jsonpb.JSONPBUnmarshaler. This is the hook that
 // gogoproto's jsonpb Unmarshaler calls before its reflection-based field

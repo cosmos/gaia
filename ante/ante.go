@@ -75,8 +75,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 	}
 
 	anteDecorators := []sdk.AnteDecorator{
-		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
-		NewRejectLegacyICSDecorator(),
+		ante.NewSetUpContextDecorator(),                                               // outermost AnteDecorator. SetUpContext must be called first
 		wasmkeeper.NewLimitSimulationGasDecorator(opts.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
 		wasmkeeper.NewCountTXDecorator(opts.TXCounterStoreService),
 		ante.NewExtensionOptionsDecorator(opts.ExtensionOptionChecker),

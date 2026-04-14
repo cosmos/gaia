@@ -16,6 +16,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	txtypes "github.com/cosmos/cosmos-sdk/types/tx"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
 	"github.com/cosmos/gaia/v28/app/params"
 	"github.com/cosmos/gaia/v28/x/legacy/ics"
@@ -72,6 +73,63 @@ func encodeMsgUpdateConsumerProposal() []byte {
 	msg = appendLenField(msg, 3, []byte("cosmos1arjwkww79m65csulawqngr7ngs4uqu5hx9ak2a")) // new_owner_address
 	msg = appendLenField(msg, 5, ps)                                                      // power_shaping_parameters
 	return msg
+}
+
+// encodeConsumerAdditionProposal hand-encodes a ConsumerAdditionProposal in
+// proto3 wire format, covering every field type used by the descriptor:
+//
+//	1-3  title/description/chain_id          string  (wire type 2)
+//	4    initial_height                       message (wire type 2)
+//	5-6  genesis_hash/binary_hash             bytes   (wire type 2)
+//	7    spawn_time                           message (wire type 2)
+//	8-10 unbonding/ccv_timeout/transfer durations message (wire type 2)
+//	11   consumer_redistribution_fraction     string  (wire type 2)
+//	12   blocks_per_distribution_transmission int64   (wire type 0)
+//	13   historical_entries                   int64   (wire type 0)
+//	14   distribution_transmission_channel    string  (wire type 2)
+//	15   top_N                                uint32  (wire type 0)
+//	16   validators_power_cap                 uint32  (wire type 0)
+//	17   validator_set_cap                    uint32  (wire type 0)
+//	18-19 allowlist/denylist                 repeated string (wire type 2)
+//	20   min_stake                            uint64  (wire type 0)
+//	21   allow_inactive_vals                  bool    (wire type 0)
+func encodeConsumerAdditionProposal() []byte {
+	// ibc.core.client.v1.Height: revision_number (f1 uint64), revision_height (f2 uint64)
+	var height []byte
+	height = appendVarintField(height, 1, 1)
+	height = appendVarintField(height, 2, 1)
+
+	// google.protobuf.Timestamp: seconds (f1 int64)
+	var spawnTime []byte
+	spawnTime = appendVarintField(spawnTime, 1, 1_700_000_000)
+
+	// google.protobuf.Duration: seconds (f1 int64) — reused for all three duration fields
+	var dur []byte
+	dur = appendVarintField(dur, 1, 1_728_000)
+
+	var p []byte
+	p = appendLenField(p, 1, []byte("Add consumer chain"))                                    // title
+	p = appendLenField(p, 2, []byte("Spawn a new consumer chain"))                            // description
+	p = appendLenField(p, 3, []byte("consumer-1"))                                            // chain_id
+	p = appendLenField(p, 4, height)                                                          // initial_height
+	p = appendLenField(p, 5, []byte("genesis_hash_bytes"))                                    // genesis_hash
+	p = appendLenField(p, 6, []byte("binary_hash_bytes"))                                     // binary_hash
+	p = appendLenField(p, 7, spawnTime)                                                       // spawn_time
+	p = appendLenField(p, 8, dur)                                                             // unbonding_period
+	p = appendLenField(p, 9, dur)                                                             // ccv_timeout_period
+	p = appendLenField(p, 10, dur)                                                            // transfer_timeout_period
+	p = appendLenField(p, 11, []byte("0.75"))                                                 // consumer_redistribution_fraction
+	p = appendVarintField(p, 12, 1000)                                                        // blocks_per_distribution_transmission (int64)
+	p = appendVarintField(p, 13, 10000)                                                       // historical_entries (int64)
+	p = appendLenField(p, 14, []byte(""))                                                     // distribution_transmission_channel
+	p = appendVarintField(p, 15, 67)                                                          // top_N (uint32)
+	p = appendVarintField(p, 16, 0)                                                           // validators_power_cap (uint32)
+	p = appendVarintField(p, 17, 0)                                                           // validator_set_cap (uint32)
+	p = appendLenField(p, 18, []byte("cosmosvalcons12m5td27rwwy95drgk53w9pfhlxqqguqmlfph2g")) // allowlist
+	p = appendLenField(p, 19, []byte("cosmosvalcons15yprks04304h8wg0x2fef53g50x9w2qa3c0hcd")) // denylist
+	p = appendVarintField(p, 20, 0)                                                           // min_stake (uint64)
+	p = appendVarintField(p, 21, 0)                                                           // allow_inactive_vals (bool)
+	return p
 }
 
 // msgUpdateConsumerAny returns a codectypes.Any wrapping the
@@ -135,9 +193,6 @@ func TestRoundTripMsgUpdateConsumerTxDecode(t *testing.T) {
 // UnmarshalJSONPB no-op on stubMsg, the SDK's jsonpb unmarshaler would fail
 // with "unknown field %q in ics.MsgCreateConsumer" because AllowUnknownFields
 // defaults to false and the stub registers no proto-tagged fields.
-//
-// After the fix, TxJSONDecoder must succeed and the ante handler is then able
-// to reject the deprecated type URL with a clear ErrDeprecatedMessage error.
 func TestTxJSONDecoderWithRealICSFields(t *testing.T) {
 	encCfg := params.MakeEncodingConfig()
 	ics.RegisterInterfaces(encCfg.InterfaceRegistry)
@@ -297,4 +352,71 @@ func TestGovGRPCQueryProposalCodecRoundTrip(t *testing.T) {
 	sdkMsg, ok := cached.(sdk.Msg)
 	require.True(t, ok, "the resolved stub must satisfy sdk.Msg")
 	require.NotNil(t, sdkMsg)
+}
+
+// ---------------------------------------------------------------------------
+// Test 4 -- MsgSubmitProposal tx decode (historical proposal-submission tx)
+// ---------------------------------------------------------------------------
+
+// TestSubmitProposalTxWithICSContentTxDecode verifies that TxDecoder can decode
+// a historical MsgSubmitProposal (govv1beta1) transaction whose content Any
+// holds a ConsumerAdditionProposal.
+//
+// This is the exact path that fails when a client queries a legacy ICS
+// proposal-submission tx by hash: the unknownproto field checker walks from
+// TxBody.Messages → MsgSubmitProposal → content Any → proposal value bytes
+// and validates each field against the descriptor of the resolved type.  If
+// ConsumerAdditionProposal has no Descriptor() (or the wrong one), the check
+// returns an error like "unknown field X for message ConsumerAdditionProposal".
+func TestSubmitProposalTxWithICSContentTxDecode(t *testing.T) {
+	encCfg := params.MakeEncodingConfig()
+	// Register MsgSubmitProposal as sdk.Msg and the Content interface.
+	govv1beta1.RegisterInterfaces(encCfg.InterfaceRegistry)
+	// Register ICS proposal stubs as govv1beta1.Content implementations.
+	ics.RegisterInterfaces(encCfg.InterfaceRegistry)
+
+	// Encode a ConsumerAdditionProposal with representative field data for
+	// every wire-type category used by the descriptor.
+	contentAny := &codectypes.Any{
+		TypeUrl: "/interchain_security.ccv.provider.v1.ConsumerAdditionProposal",
+		Value:   encodeConsumerAdditionProposal(),
+	}
+
+	// Build a govv1beta1.MsgSubmitProposal and marshal it to bytes.
+	submitMsg := &govv1beta1.MsgSubmitProposal{
+		Content:  contentAny,
+		Proposer: "cosmos1mrwtsv7p53k90ey2nej4glsv3gphujkh8fr0mx",
+	}
+	submitBytes, err := submitMsg.Marshal()
+	require.NoError(t, err)
+
+	// Wrap as an Any so it can appear in TxBody.Messages.
+	submitAny := &codectypes.Any{
+		TypeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+		Value:   submitBytes,
+	}
+
+	// Assemble TxRaw.
+	body := &txtypes.TxBody{
+		Messages: []*codectypes.Any{submitAny},
+		Memo:     "submit ConsumerAdditionProposal",
+	}
+	bodyBytes, err := body.Marshal()
+	require.NoError(t, err)
+
+	authInfoBytes, err := (&txtypes.AuthInfo{}).Marshal()
+	require.NoError(t, err)
+
+	txRaw := &txtypes.TxRaw{
+		BodyBytes:     bodyBytes,
+		AuthInfoBytes: authInfoBytes,
+		Signatures:    [][]byte{{}},
+	}
+	txBytes, err := txRaw.Marshal()
+	require.NoError(t, err)
+
+	_, err = encCfg.TxConfig.TxDecoder()(txBytes)
+	require.NoError(t, err,
+		"TxDecoder must decode a historical MsgSubmitProposal tx containing a "+
+			"ConsumerAdditionProposal content Any without error")
 }

@@ -241,11 +241,8 @@ func init() {
 				fB(1), fB(2), fB(3),
 			}},
 		},
-		// Tx service descriptor: required so that baseapp's MsgServiceRouter can
-		// register stub handlers via RegisterService (which calls
-		// registerHybridHandler → HybridResolver.FindDescriptorByName).
-		// Without the service definition in the file descriptor the hybrid handler
-		// registration panics at startup.
+		// Tx service descriptor: required for proto registry completeness and
+		// to satisfy the cosmos.msg.v1.service annotation validation.
 		//
 		// The cosmos.msg.v1.service = true annotation is required; on app init the
 		// SDK calls msgservice.ValidateProtoAnnotations over the merged registry
@@ -257,8 +254,7 @@ func init() {
 				Options: msgServiceAnnotation(),
 
 				// OutputType is set to the same type as InputType for every method
-				// because these are stub handlers that unconditionally return an
-				// error (via the RejectLegacyICSDecorator ante handler). A response
+				// because these are stub handlers for legacy ICS messages. A response
 				// message is never constructed, so defining separate MsgXxxResponse
 				// types would be dead weight. Reusing the input type satisfies the
 				// proto registry's requirement that OutputType resolves to a known

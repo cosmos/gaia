@@ -193,9 +193,6 @@ func TestRoundTripMsgUpdateConsumerTxDecode(t *testing.T) {
 // UnmarshalJSONPB no-op on stubMsg, the SDK's jsonpb unmarshaler would fail
 // with "unknown field %q in ics.MsgCreateConsumer" because AllowUnknownFields
 // defaults to false and the stub registers no proto-tagged fields.
-//
-// After the fix, TxJSONDecoder must succeed and the ante handler is then able
-// to reject the deprecated type URL with a clear ErrDeprecatedMessage error.
 func TestTxJSONDecoderWithRealICSFields(t *testing.T) {
 	encCfg := params.MakeEncodingConfig()
 	ics.RegisterInterfaces(encCfg.InterfaceRegistry)

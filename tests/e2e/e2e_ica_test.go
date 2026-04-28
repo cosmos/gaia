@@ -7,15 +7,15 @@ import (
 	"time"
 
 	"github.com/cosmos/gogoproto/proto"
-	icatypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/types"
+	icatypes "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/types"
 
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
-	"github.com/cosmos/gaia/v28/tests/e2e/query"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) testICARegisterAccountAndSendTx() {

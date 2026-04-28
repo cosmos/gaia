@@ -18,11 +18,11 @@ import (
 
 	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/gogoproto/proto"
-	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10"
-	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/keeper"
-	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
-	ibctm "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
-	ibctesting "github.com/cosmos/ibc-go/v10/testing"
+	ibcwasm "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v11"
+	ibcwasmkeeper "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v11/keeper"
+	ibcwasmtypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v11/types"
+	ibctm "github.com/cosmos/ibc-go/v11/modules/light-clients/07-tendermint"
+	ibctesting "github.com/cosmos/ibc-go/v11/testing"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
@@ -30,10 +30,10 @@ import (
 	"cosmossdk.io/client/v2/autocli"
 	"cosmossdk.io/core/appmodule"
 	errorsmod "cosmossdk.io/errors"
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	"cosmossdk.io/math"
-	"cosmossdk.io/x/tx/signing"
-	upgradetypes "cosmossdk.io/x/upgrade/types"
+	"github.com/cosmos/cosmos-sdk/x/tx/signing"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -68,10 +68,10 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaante "github.com/cosmos/gaia/v28/ante"
-	"github.com/cosmos/gaia/v28/app/keepers"
-	"github.com/cosmos/gaia/v28/app/upgrades"
-	v280 "github.com/cosmos/gaia/v28/app/upgrades/v28_0_0"
+	gaiaante "github.com/cosmos/gaia/v29/ante"
+	"github.com/cosmos/gaia/v29/app/keepers"
+	"github.com/cosmos/gaia/v29/app/upgrades"
+	v280 "github.com/cosmos/gaia/v29/app/upgrades/v28_0_0"
 )
 
 var (

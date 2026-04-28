@@ -17,7 +17,7 @@ import (
 
 	dbm "github.com/cosmos/cosmos-db"
 
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	"cosmossdk.io/math"
 	pruningtypes "cosmossdk.io/store/pruning/types"
 
@@ -46,7 +46,7 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaia "github.com/cosmos/gaia/v28/app"
+	gaia "github.com/cosmos/gaia/v29/app"
 )
 
 var (

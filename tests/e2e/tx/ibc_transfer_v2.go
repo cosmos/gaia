@@ -1,13 +1,13 @@
 package tx
 
 import (
-	types2 "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
-	clienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
-	"github.com/cosmos/ibc-go/v10/modules/core/04-channel/v2/types"
+	types2 "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
+	clienttypes "github.com/cosmos/ibc-go/v11/modules/core/02-client/types"
+	"github.com/cosmos/ibc-go/v11/modules/core/04-channel/v2/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
 )
 
 func (h *TestingSuite) CreateIBCV2RecvPacketTx(timeoutTimestamp uint64, amount, submitterAddress, recipientAddress, memo string) ([]byte, error) {

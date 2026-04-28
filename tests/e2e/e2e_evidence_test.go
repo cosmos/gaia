@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	"cosmossdk.io/x/evidence/exported"
-	evidencetypes "cosmossdk.io/x/evidence/types"
+	"github.com/cosmos/cosmos-sdk/x/evidence/exported"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
-	"github.com/cosmos/gaia/v28/tests/e2e/query"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/query"
 )
 
 func (s *IntegrationTestSuite) testEvidence() {

@@ -13,9 +13,9 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 
 	dbm "github.com/cosmos/cosmos-db"
-	ibctesting "github.com/cosmos/ibc-go/v10/testing"
+	ibctesting "github.com/cosmos/ibc-go/v11/testing"
 
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -23,7 +23,7 @@ import (
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	gaiaApp "github.com/cosmos/gaia/v28/app"
+	gaiaApp "github.com/cosmos/gaia/v29/app"
 )
 
 var app *gaiaApp.GaiaApp

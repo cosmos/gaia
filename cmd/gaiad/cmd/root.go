@@ -18,7 +18,7 @@ import (
 	dbm "github.com/cosmos/cosmos-db"
 
 	"cosmossdk.io/client/v2/autocli"
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	"cosmossdk.io/store"
 	"cosmossdk.io/store/snapshots"
 	snapshottypes "cosmossdk.io/store/snapshots/types"
@@ -56,7 +56,7 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaia "github.com/cosmos/gaia/v28/app"
+	gaia "github.com/cosmos/gaia/v29/app"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the

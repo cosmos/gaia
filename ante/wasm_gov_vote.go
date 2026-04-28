@@ -1,7 +1,7 @@
 package ante
 
 import (
-	wasmvmtypes "github.com/CosmWasm/wasmvm/v2/types"
+	wasmvmtypes "github.com/CosmWasm/wasmvm/v3/types"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -9,7 +9,7 @@ import (
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
-	gaiagov "github.com/cosmos/gaia/v28/x/gov"
+	gaiagov "github.com/cosmos/gaia/v29/x/gov"
 )
 
 // govVoteTypeURLs contains the type URLs for governance vote messages

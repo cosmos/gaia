@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
 )
 
 const (

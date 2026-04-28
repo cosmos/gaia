@@ -16,8 +16,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v28/ante"
-	gaiaApp "github.com/cosmos/gaia/v28/app"
+	"github.com/cosmos/gaia/v29/ante"
+	gaiaApp "github.com/cosmos/gaia/v29/app"
 )
 
 var ccvSuite *integration.CCVTestSuite

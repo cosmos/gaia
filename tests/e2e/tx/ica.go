@@ -8,12 +8,12 @@ import (
 	"time"
 
 	"github.com/cosmos/gogoproto/proto"
-	"github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/types"
+	"github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/types"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
 )
 
 func (h *TestingSuite) RegisterICAAccount(c *common.Chain, valIdx int, sender, connectionID, fees string) {

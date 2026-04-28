@@ -3,9 +3,9 @@ package query
 import (
 	"fmt"
 
-	"github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
+	"github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v11/types"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
 )
 
 func IbcWasmChecksums(endpoint string) ([]string, error) {

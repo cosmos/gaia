@@ -8,14 +8,14 @@ import (
 	"strconv"
 
 	dbm "github.com/cosmos/cosmos-db"
-	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
-	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
-	ibcv2types "github.com/cosmos/ibc-go/v10/modules/core/04-channel/v2/types"
+	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v11/types"
+	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v11/types"
+	ibcv2types "github.com/cosmos/ibc-go/v11/modules/core/04-channel/v2/types"
 	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
-	"cosmossdk.io/log"
-	evidencetypes "cosmossdk.io/x/evidence/types"
-	upgradetypes "cosmossdk.io/x/upgrade/types"
+	"cosmossdk.io/log/v2"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -30,10 +30,10 @@ import (
 	paramsproptypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaia "github.com/cosmos/gaia/v28/app"
-	gaiaparams "github.com/cosmos/gaia/v28/app/params"
-	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
-	metaprotocoltypes "github.com/cosmos/gaia/v28/x/metaprotocols/types"
+	gaia "github.com/cosmos/gaia/v29/app"
+	gaiaparams "github.com/cosmos/gaia/v29/app/params"
+	liquidtypes "github.com/cosmos/gaia/v29/x/liquid/types"
+	metaprotocoltypes "github.com/cosmos/gaia/v29/x/metaprotocols/types"
 )
 
 const (

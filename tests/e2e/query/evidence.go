@@ -3,10 +3,10 @@ package query
 import (
 	"fmt"
 
-	"cosmossdk.io/x/evidence/exported"
-	"cosmossdk.io/x/evidence/types"
+	"github.com/cosmos/cosmos-sdk/x/evidence/exported"
+	"github.com/cosmos/cosmos-sdk/x/evidence/types"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
 )
 
 func evidence(endpoint, hash string) (types.QueryEvidenceResponse, error) { //nolint:unused // this is called during e2e tests

@@ -27,7 +27,7 @@ import (
 	rpchttp "github.com/cometbft/cometbft/rpc/client/http"
 
 	"cosmossdk.io/math"
-	evidencetypes "cosmossdk.io/x/evidence/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -41,7 +41,7 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
 )
 
 func TestIntegrationTestSuite(t *testing.T) {

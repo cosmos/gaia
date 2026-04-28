@@ -1,7 +1,7 @@
 package v28_0_0
 
 import (
-	"github.com/cosmos/gaia/v28/app/upgrades"
+	"github.com/cosmos/gaia/v29/app/upgrades"
 )
 
 const (

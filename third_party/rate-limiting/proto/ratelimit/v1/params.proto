@@ -1,0 +1,7 @@
+syntax = "proto3";
+package ratelimit.v1;
+
+option go_package = "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types";
+
+// Params defines the ratelimit module's parameters.
+message Params {}

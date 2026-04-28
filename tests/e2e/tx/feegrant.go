@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"cosmossdk.io/x/feegrant"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
 )
 
 func (h *TestingSuite) ExecFeeGrant(c *common.Chain, valIdx int, granter, grantee, spendLimit string, opt ...common.FlagOption) {

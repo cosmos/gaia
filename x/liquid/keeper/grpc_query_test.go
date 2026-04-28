@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"github.com/cosmos/gaia/v28/x/liquid/types"
+	"github.com/cosmos/gaia/v29/x/liquid/types"
 )
 
 func (s *KeeperTestSuite) TestGRPCQueryLiquidValidator() {

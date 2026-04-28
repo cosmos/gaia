@@ -3,9 +3,9 @@ package query
 import (
 	"fmt"
 
-	"github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
+	"github.com/cosmos/ibc-apps/modules/rate-limiting/v11/types"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
 )
 
 func AllRateLimits(endpoint string) ([]types.RateLimit, error) {

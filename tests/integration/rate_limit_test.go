@@ -6,14 +6,14 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
-	ibctesting "github.com/cosmos/ibc-go/v10/testing"
+	"github.com/cosmos/ibc-apps/modules/rate-limiting/v11/types"
+	ibctesting "github.com/cosmos/ibc-go/v11/testing"
 
 	"cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	gaiaApp "github.com/cosmos/gaia/v28/app"
+	gaiaApp "github.com/cosmos/gaia/v29/app"
 )
 
 type RateLimitTestSuite struct {

@@ -4,13 +4,13 @@ import (
 	feemarketante "github.com/skip-mev/feemarket/x/feemarket/ante"
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 
-	ibcante "github.com/cosmos/ibc-go/v10/modules/core/ante"
-	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
+	ibcante "github.com/cosmos/ibc-go/v11/modules/core/ante"
+	ibckeeper "github.com/cosmos/ibc-go/v11/modules/core/keeper"
 
 	corestoretypes "cosmossdk.io/core/store"
 	errorsmod "cosmossdk.io/errors"
 	storetypes "cosmossdk.io/store/types"
-	txsigning "cosmossdk.io/x/tx/signing"
+	txsigning "github.com/cosmos/cosmos-sdk/x/tx/signing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,7 +23,7 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiaerrors "github.com/cosmos/gaia/v28/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v29/types/errors"
 )
 
 // UseFeeMarketDecorator to make the integration testing easier: we can switch off its ante and post decorators with this flag

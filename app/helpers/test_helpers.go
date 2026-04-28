@@ -14,7 +14,7 @@ import (
 
 	dbm "github.com/cosmos/cosmos-db"
 
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	"cosmossdk.io/math"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -30,7 +30,7 @@ import (
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
-	gaiaapp "github.com/cosmos/gaia/v28/app"
+	gaiaapp "github.com/cosmos/gaia/v29/app"
 )
 
 // SimAppChainID hardcoded chainID for simulation

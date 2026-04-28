@@ -4,12 +4,12 @@ import (
 	"context"
 
 	errorsmod "cosmossdk.io/errors"
-	upgradetypes "cosmossdk.io/x/upgrade/types"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/cosmos/gaia/v28/app/keepers"
+	"github.com/cosmos/gaia/v29/app/keepers"
 )
 
 // CreateUpgradeHandler returns an upgrade handler for Gaia v28.0.0.

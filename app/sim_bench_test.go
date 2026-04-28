@@ -12,8 +12,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
-	gaia "github.com/cosmos/gaia/v28/app"
-	"github.com/cosmos/gaia/v28/app/sim"
+	gaia "github.com/cosmos/gaia/v29/app"
+	"github.com/cosmos/gaia/v29/app/sim"
 )
 
 // Profile with:

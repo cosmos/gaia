@@ -6,7 +6,7 @@ import (
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 	"github.com/stretchr/testify/suite"
 
-	ibctesting "github.com/cosmos/ibc-go/v10/testing"
+	ibctesting "github.com/cosmos/ibc-go/v11/testing"
 
 	"cosmossdk.io/math"
 
@@ -14,8 +14,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/cosmos/gaia/v28/ante"
-	gaiaApp "github.com/cosmos/gaia/v28/app"
+	"github.com/cosmos/gaia/v29/ante"
+	gaiaApp "github.com/cosmos/gaia/v29/app"
 )
 
 const (

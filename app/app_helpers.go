@@ -1,7 +1,7 @@
 package gaia
 
 import (
-	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v11/modules/core/keeper"
 	icstest "github.com/cosmos/interchain-security/v7/testutil/integration"
 	ibcproviderkeeper "github.com/cosmos/interchain-security/v7/x/ccv/provider/keeper"
 )

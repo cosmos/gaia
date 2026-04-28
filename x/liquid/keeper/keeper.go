@@ -4,12 +4,12 @@ import (
 	"context"
 
 	storetypes "cosmossdk.io/core/store"
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/cosmos/gaia/v28/x/liquid/types"
+	"github.com/cosmos/gaia/v29/x/liquid/types"
 )
 
 // Keeper of the x/liquid store

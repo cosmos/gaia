@@ -14,8 +14,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/cosmos/gaia/v28/ante"
-	"github.com/cosmos/gaia/v28/app/helpers"
+	"github.com/cosmos/gaia/v29/ante"
+	"github.com/cosmos/gaia/v29/app/helpers"
 )
 
 func TestProviderDecorator_BlockMsgCreateConsumer(t *testing.T) {

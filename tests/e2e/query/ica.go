@@ -3,9 +3,9 @@ package query
 import (
 	"fmt"
 
-	"github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/types"
+	"github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/controller/types"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
 )
 
 func ICAAccountAddress(endpoint, owner, connectionID string) (string, error) {

@@ -13,7 +13,7 @@ import (
 	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
 	"cosmossdk.io/core/appmodule"
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 
@@ -39,9 +39,9 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/cosmos/gaia/v28/x/liquid"
-	liquidkeeper "github.com/cosmos/gaia/v28/x/liquid/keeper"
-	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
+	"github.com/cosmos/gaia/v29/x/liquid"
+	liquidkeeper "github.com/cosmos/gaia/v29/x/liquid/keeper"
+	liquidtypes "github.com/cosmos/gaia/v29/x/liquid/types"
 )
 
 type fixture struct {

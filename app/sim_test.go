@@ -12,7 +12,7 @@ import (
 
 	dbm "github.com/cosmos/cosmos-db"
 
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	"cosmossdk.io/math"
 	"cosmossdk.io/store"
 
@@ -24,10 +24,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
-	"github.com/cosmos/gaia/v28/ante"
-	gaia "github.com/cosmos/gaia/v28/app"
-	"github.com/cosmos/gaia/v28/app/sim"
-	gaiagov "github.com/cosmos/gaia/v28/x/gov"
+	"github.com/cosmos/gaia/v29/ante"
+	gaia "github.com/cosmos/gaia/v29/app"
+	"github.com/cosmos/gaia/v29/app/sim"
+	gaiagov "github.com/cosmos/gaia/v29/x/gov"
 )
 
 // AppChainID hardcoded chainID for simulation

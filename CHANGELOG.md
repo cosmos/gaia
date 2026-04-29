@@ -8,6 +8,10 @@
 
 ### DEPENDENCIES
 
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) from v10.5.0 to v10.6.0
+- Bump [packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) from v10.1.0 to v10.6.0
+- Bump [08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) from v10.3.0 to v10.5.0
+
 ## v27.2.0
 
 *April 6, 2026*

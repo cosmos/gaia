@@ -25,10 +25,10 @@ require (
 	github.com/cosmos/cosmos-sdk v0.53.6
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.2
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.1.0
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.6.0
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.1.0
-	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.3.0
-	github.com/cosmos/ibc-go/v10 v10.5.0
+	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.5.0
+	github.com/cosmos/ibc-go/v10 v10.6.0
 	github.com/cosmos/interchain-security/v7 v7.0.0-20250408210344-06e0dc6bf6d6
 	github.com/cosmos/tokenfactory v0.53.5
 	github.com/golang/protobuf v1.5.4

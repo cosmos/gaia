@@ -18,7 +18,7 @@ A governance gated upgrade occurs when an upgrade plan goes on chain through a s
 2. Wait for the node to stop at the upgrade height.
   * The log will display something like this:
     ```
-    ERR UPGRADE "v27.2.0" NEEDED at height: <UPGRADE_HEIGHT>: upgrade to v27.2.0 and applying upgrade "v27.2.0" at height:<UPGRADE_HEIGHT>
+    ERR UPGRADE "v27.3.0" NEEDED at height: <UPGRADE_HEIGHT>: upgrade to v27.3.0 and applying upgrade "v27.3.0" at height:<UPGRADE_HEIGHT>
     ```
 * If the node service remains active, you can stop it now.
 3. Replace the binary listed in the unit file with the new release.
@@ -28,17 +28,17 @@ A governance gated upgrade occurs when an upgrade plan goes on chain through a s
 
 1. Build or download the binary for the release you are upgrading to.
 2. Create a folder for the new binary in the relevant Cosmovisor directory.
-  * If the upgrade name is `v27.2.0`, you would place the binary under `<node home>/cosmovisor/upgrades/v27.2.0/bin/gaiad`:
+  * If the upgrade name is `v27.3.0`, you would place the binary under `<node home>/cosmovisor/upgrades/v27.3.0/bin/gaiad`:
     ```
     .
     ├── current -> genesis or upgrades/<name>
     ├── genesis
     │   └── bin
-    │       └── gaiad  # old: v27.1.0
+    │       └── gaiad  # old: v27.2.0
     └── upgrades
-        └── v27.2.0
+        └── v27.3.0
             └── bin
-                └── gaiad  # new: v27.2.0
+                └── gaiad  # new: v27.3.0
     ```
 3. Verify that Cosmovisor will use the binary you have prepared.
   * The Cosmovisor service should have the auto-download feature disabled. A sample Cosmovisor unit file will look like this:

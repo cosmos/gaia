@@ -1,5 +1,20 @@
 # CHANGELOG
 
+<<<<<<< HEAD
+=======
+## UNRELEASED
+
+### FEATURES
+
+### BUG-FIXES
+
+### DEPENDENCIES
+
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) from v10.5.0 to v10.6.0 ([#4034](https://github.com/cosmos/gaia/pull/4034))
+- Bump [packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) from v10.1.0 to v10.6.0 ([#4034](https://github.com/cosmos/gaia/pull/4034))
+- Bump [08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) from v10.3.0 to v10.5.0 ([#4034](https://github.com/cosmos/gaia/pull/4034))
+
+>>>>>>> aa5f96b (!chore: bump ibc-go to v10.6.0 (#4034))
 ## v27.2.0
 
 *April 6, 2026*

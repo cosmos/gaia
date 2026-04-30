@@ -17,7 +17,7 @@ require (
 	cosmossdk.io/math v1.5.3
 	github.com/cometbft/cometbft v0.38.21
 	github.com/cosmos/cosmos-sdk v0.53.4
-	github.com/cosmos/ibc-go/v10 v10.5.0
+	github.com/cosmos/ibc-go/v10 v10.6.0
 	github.com/cosmos/interchain-security/v7 v7.0.1
 	github.com/cosmos/interchaintest/v10 v10.0.1
 	github.com/docker/docker v28.2.2+incompatible

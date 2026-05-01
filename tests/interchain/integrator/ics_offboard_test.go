@@ -194,6 +194,13 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.Require().NoError(err)
 	})
 
+	// Phase 10a: Any account can send tokens to consumer_rewards_pool before the upgrade
+	s.Run("SendToConsumerRewardsPool_PreUpgrade", func() {
+		_, err := s.Chain.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName,
+			"bank", "send", interchaintest.FaucetAccountKeyName, consumerRewardsPoolAddr, "1000"+chainsuite.Uatom)
+		s.Require().NoError(err, "bank send to consumer_rewards_pool must succeed before v28 upgrade")
+	})
+
 	// Phase 11: Upgrade to v28
 	s.Run("UpgradeToV28", func() {
 		err := s.Chain.Upgrade(ctx, s.Env.UpgradeName, s.Env.NewGaiaImageVersion)
@@ -225,6 +232,22 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		timeoutCtx, cancel := context.WithTimeout(ctx, 60*time.Second)
 		defer cancel()
 		s.Require().NoError(testutil.WaitForBlocks(timeoutCtx, 5, s.Chain))
+	})
+
+	// Phase 12a: No account can send tokens to consumer_rewards_pool after the upgrade (audit M-01)
+	s.Run("SendToConsumerRewardsPool_Blocked_v28", func() {
+		_, err := s.Chain.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName,
+			"bank", "send", interchaintest.FaucetAccountKeyName, consumerRewardsPoolAddr, "1000"+chainsuite.Uatom)
+		s.Require().Error(err, "bank send to consumer_rewards_pool must be rejected after v28 upgrade (address is blocked)")
+	})
+
+	// Phase 12b: consumer_rewards_pool must have no balances after the upgrade
+	s.Run("ConsumerRewardsPoolEmpty_v28", func() {
+		out, _, err := s.Chain.Validators[0].ExecQuery(ctx, "bank", "balances", consumerRewardsPoolAddr)
+		s.Require().NoError(err)
+		balances := gjson.GetBytes(out, "balances").Array()
+		s.Require().Empty(balances,
+			"consumer_rewards_pool must have zero balance after v28 upgrade; upgrade handler must have swept all funds")
 	})
 
 	// Phase 13: Consumer offboarded — provider module removed

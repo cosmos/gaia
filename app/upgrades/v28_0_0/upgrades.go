@@ -9,11 +9,13 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
 
 	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/cosmos/gaia/v28/app/keepers"
 )
@@ -26,7 +28,7 @@ func CreateUpgradeHandler(
 ) upgradetypes.UpgradeHandler {
 	return func(c context.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx := sdk.UnwrapSDKContext(c)
-		ctx.Logger().Info("Starting module migrations...")
+		ctx.Logger().Info("Starting upgrade", "name", UpgradeName)
 
 		// 1. Read max_provider_consensus_validators from the provider KV store.
 		// The provider module stores its params at key 0xFF in its own module store.
@@ -46,9 +48,11 @@ func CreateUpgradeHandler(
 		maxVals := providerParams.MaxProviderConsensusValidators
 		ctx.Logger().Info("Read provider max_provider_consensus_validators", "value", maxVals)
 
-		// Validate maxVals is within uint32 range
-		if maxVals < 0 || maxVals > math.MaxUint32 {
-			return vm, fmt.Errorf("invalid max_provider_consensus_validators value: %d (must be between 0 and %d)", maxVals, uint32(math.MaxUint32))
+		// Validate maxVals is a positive value within uint32 range.
+		// Rejecting zero prevents the handler from setting max_validators=0,
+		// which would unbond every validator and halt the chain.
+		if maxVals <= 0 || maxVals > math.MaxUint32 {
+			return vm, fmt.Errorf("invalid max_provider_consensus_validators value: %d (must be between 1 and %d)", maxVals, uint32(math.MaxUint32))
 		}
 
 		// 2. Set staking max_validators to the former max_provider_consensus_validators,
@@ -58,14 +62,16 @@ func CreateUpgradeHandler(
 		if err != nil {
 			return vm, fmt.Errorf("failed to get staking params: %w", err)
 		}
-		updatedMaxValidators := false
 		if uint32(maxVals) < stakingParams.MaxValidators {
 			stakingParams.MaxValidators = uint32(maxVals)
 			if err := keepers.StakingKeeper.SetParams(ctx, stakingParams); err != nil {
 				return vm, fmt.Errorf("failed to set staking params: %w", err)
 			}
-			updatedMaxValidators = true
 			ctx.Logger().Info("Set staking max_validators", "value", maxVals)
+
+			if err := trimBGroupValidators(ctx, keepers, uint32(maxVals)); err != nil {
+				return vm, fmt.Errorf("failed to trim B-group validators: %w", err)
+			}
 		} else {
 			ctx.Logger().Info("Skipping max_validators update: provider value is not lower than current",
 				"provider_value", maxVals, "current_value", stakingParams.MaxValidators)
@@ -120,22 +126,89 @@ func CreateUpgradeHandler(
 				"channel", ch.ChannelId)
 		}
 
-		// 5. Apply validator set updates using the new max_validators parameter.
-		// This bonds the top N validators and begins unbonding those beyond the cutoff.
-		// Only necessary if max_validators was actually lowered.
-		if updatedMaxValidators {
-			if _, err := keepers.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx); err != nil {
-				return vm, fmt.Errorf("failed to apply validator set updates: %w", err)
-			}
-			ctx.Logger().Info("Applied validator set updates with new max_validators")
-		}
-
+		ctx.Logger().Info("Starting module migrations...")
 		vm, err = mm.RunMigrations(ctx, configurator, vm)
 		if err != nil {
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
 
-		ctx.Logger().Info("Upgrade v28.0.0 complete")
+		ctx.Logger().Info("Upgrade complete", "name", UpgradeName)
 		return vm, nil
 	}
+}
+
+// trimBGroupValidators removes LastValidatorPower entries for validators that
+// fall outside the new maxValidators cap (the "B group" — validators bonded in
+// staking but excluded from the CometBFT consensus set by the ICS provider).
+//
+// This is necessary after lowering staking.params.max_validators: without it,
+// GetLastValidators (called by TrackHistoricalInfo in BeginBlocker) panics
+// because it finds more LastValidatorPower entries than maxValidators allows.
+//
+// For each evicted validator that is currently Bonded, BeginUnbondingValidator
+// is called to transition it to Unbonding and queue it for completion. The
+// corresponding token transfer (BondedPool → NotBondedPool) is batched into a
+// single SendCoinsFromModuleToModule call, mirroring what ARVSU does at the end
+// of its loop. The EndBlocker's ApplyAndReturnValidatorSetUpdates will then see
+// a consistent state and handle these validators correctly going forward.
+//
+// Emitting ABCI zero-power updates for these validators is intentionally
+// skipped: B-group validators were already excluded from CometBFT's validator
+// set by the ICS provider, so no consensus-engine update is required.
+func trimBGroupValidators(ctx sdk.Context, keepers *keepers.AppKeepers, maxValidators uint32) error {
+	// Build the set of operator address bytes for the top-N validators by power.
+	topNAddrs := make(map[string]struct{}, maxValidators)
+	powerIter, err := keepers.StakingKeeper.ValidatorsPowerStoreIterator(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get validators power store iterator: %w", err)
+	}
+	powerCount := 0
+	for ; powerIter.Valid() && powerCount < int(maxValidators); powerIter.Next() {
+		topNAddrs[string(powerIter.Value())] = struct{}{}
+		powerCount++
+	}
+	powerIter.Close()
+
+	// Collect validators present in LastValidatorPower that are not in the top-N.
+	var toEvict []sdk.ValAddress
+	if err = keepers.StakingKeeper.IterateLastValidatorPowers(ctx, func(addr sdk.ValAddress, _ int64) bool {
+		if _, ok := topNAddrs[string(addr)]; !ok {
+			toEvict = append(toEvict, addr)
+		}
+		return false
+	}); err != nil {
+		return fmt.Errorf("failed to iterate last validator powers: %w", err)
+	}
+
+	bondDenom, err := keepers.StakingKeeper.BondDenom(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get bond denom: %w", err)
+	}
+	totalToTransfer := sdkmath.ZeroInt()
+	for _, addr := range toEvict {
+		val, err := keepers.StakingKeeper.GetValidator(ctx, addr)
+		if err != nil {
+			return fmt.Errorf("failed to get validator %s: %w", addr, err)
+		}
+		if val.IsBonded() {
+			tokens := val.Tokens
+			if _, err = keepers.StakingKeeper.BeginUnbondingValidator(ctx, val); err != nil {
+				return fmt.Errorf("failed to begin unbonding validator %s: %w", addr, err)
+			}
+			totalToTransfer = totalToTransfer.Add(tokens)
+		}
+		if err = keepers.StakingKeeper.DeleteLastValidatorPower(ctx, addr); err != nil {
+			return fmt.Errorf("failed to delete last validator power for %s: %w", addr, err)
+		}
+	}
+	if totalToTransfer.IsPositive() {
+		coins := sdk.NewCoins(sdk.NewCoin(bondDenom, totalToTransfer))
+		if err = keepers.BankKeeper.SendCoinsFromModuleToModule(ctx,
+			stakingtypes.BondedPoolName, stakingtypes.NotBondedPoolName, coins); err != nil {
+			return fmt.Errorf("failed to transfer tokens from bonded to not-bonded pool: %w", err)
+		}
+	}
+	ctx.Logger().Info("Trimmed B-group validators from LastValidatorPower",
+		"evicted", len(toEvict), "tokens_unbonded", totalToTransfer)
+	return nil
 }

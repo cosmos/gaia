@@ -22,6 +22,12 @@ const (
 // per ICS x/ccv/provider/types/keys.go.
 var providerParametersKey = []byte{0xFF}
 
+// providerPendingVSCsKeyPrefix is the KV store key prefix under which the ICS
+// provider module stores pending VSCPackets, one entry per consumer chain.
+// Mirrors providertypes.PendingVSCsKey prefix — 0x11 as per
+// ICS x/ccv/provider/types/keys.go.
+var providerPendingVSCsKeyPrefix = []byte{0x11}
+
 // icsProviderParams is a minimal proto-compatible struct for decoding only
 // the MaxProviderConsensusValidators field from the ICS provider Params stored
 // in the provider KV store during the v28 upgrade.

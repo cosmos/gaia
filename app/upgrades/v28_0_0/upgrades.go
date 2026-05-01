@@ -10,6 +10,7 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
+	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -37,6 +38,7 @@ func CreateUpgradeHandler(
 			return vm, fmt.Errorf("provider store key not found")
 		}
 		providerStore := ctx.KVStore(providerKey)
+
 		paramsBz := providerStore.Get(providerParametersKey)
 		if paramsBz == nil {
 			return vm, fmt.Errorf("provider params not found in store")
@@ -87,7 +89,13 @@ func CreateUpgradeHandler(
 			ctx.Logger().Info("Transferred consumer rewards pool balance to community pool", "amount", balances)
 		}
 
-		// 4. Close all open IBC channels on the provider port.
+		// 4. Delete all pending VSCPackets from the provider store.
+		// These are keyed by 0x11 + consumerID and will never be sent since
+		// all consumer chains are removed in this upgrade.
+		deleted := deleteProviderPendingVSCs(providerStore)
+		ctx.Logger().Info("Deleted pending VSC entries from provider store", "count", deleted)
+
+		// 5. Close all open IBC channels on the provider port.
 		// Attempt ChanCloseInit first: a channel_close_init event is emitted,
 		// and relayers can propagate ChanCloseConfirm to the counterparty.
 		// Fall back to SetChannel if ChanCloseInit fails: the client or connection
@@ -135,6 +143,25 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("Upgrade complete", "name", UpgradeName)
 		return vm, nil
 	}
+}
+
+// deleteProviderPendingVSCs iterates all pending VSCPacket entries in the
+// provider KV store (prefix 0x11) and deletes them. It returns the number of
+// entries removed. No proto decoding is needed — we delete by key only.
+func deleteProviderPendingVSCs(providerStore storetypes.KVStore) int {
+	prefix := providerPendingVSCsKeyPrefix
+	iter := storetypes.KVStorePrefixIterator(providerStore, prefix)
+	var keys [][]byte
+	for ; iter.Valid(); iter.Next() {
+		key := make([]byte, len(iter.Key()))
+		copy(key, iter.Key())
+		keys = append(keys, key)
+	}
+	iter.Close()
+	for _, k := range keys {
+		providerStore.Delete(k)
+	}
+	return len(keys)
 }
 
 // trimBGroupValidators removes LastValidatorPower entries for validators that

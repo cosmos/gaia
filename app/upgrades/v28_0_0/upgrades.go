@@ -31,14 +31,15 @@ func CreateUpgradeHandler(
 		ctx := sdk.UnwrapSDKContext(c)
 		ctx.Logger().Info("Starting upgrade", "name", UpgradeName)
 
-		// 1. Read max_provider_consensus_validators from the provider KV store.
-		// The provider module stores its params at key 0xFF in its own module store.
+		// 1. Read the provider module store
 		providerKey := keepers.GetKey(providerStoreKey)
 		if providerKey == nil {
 			return vm, fmt.Errorf("provider store key not found")
 		}
 		providerStore := ctx.KVStore(providerKey)
 
+		// 2. Read max_provider_consensus_validators from the provider KV store.
+		// The provider module stores its params at key 0xFF in its own module store.
 		paramsBz := providerStore.Get(providerParametersKey)
 		if paramsBz == nil {
 			return vm, fmt.Errorf("provider params not found in store")
@@ -57,7 +58,7 @@ func CreateUpgradeHandler(
 			return vm, fmt.Errorf("invalid max_provider_consensus_validators value: %d (must be between 1 and %d)", maxVals, uint32(math.MaxUint32))
 		}
 
-		// 2. Set staking max_validators to the former max_provider_consensus_validators,
+		// 3. Set staking max_validators to the former max_provider_consensus_validators,
 		// but only if it is lower than the current value. This ensures the upgrade
 		// reduces (or preserves) the active validator set size and never inflates it.
 		stakingParams, err := keepers.StakingKeeper.GetParams(ctx)
@@ -79,7 +80,7 @@ func CreateUpgradeHandler(
 				"provider_value", maxVals, "current_value", stakingParams.MaxValidators)
 		}
 
-		// 3. Transfer consumer rewards pool balance to community pool.
+		// 4. Transfer consumer rewards pool balance to community pool.
 		rewardsPoolAddr := authtypes.NewModuleAddress("consumer_rewards_pool")
 		balances := keepers.BankKeeper.GetAllBalances(ctx, rewardsPoolAddr)
 		if !balances.IsZero() {
@@ -89,13 +90,13 @@ func CreateUpgradeHandler(
 			ctx.Logger().Info("Transferred consumer rewards pool balance to community pool", "amount", balances)
 		}
 
-		// 4. Delete all pending VSCPackets from the provider store.
+		// 5. Delete all pending VSCPackets from the provider store.
 		// These are keyed by 0x11 + consumerID and will never be sent since
 		// all consumer chains are removed in this upgrade.
 		deleted := deleteProviderPendingVSCs(providerStore)
 		ctx.Logger().Info("Deleted pending VSC entries from provider store", "count", deleted)
 
-		// 5. Close all open IBC channels on the provider port.
+		// 6. Close all open IBC channels on the provider port.
 		// Attempt ChanCloseInit first: a channel_close_init event is emitted,
 		// and relayers can propagate ChanCloseConfirm to the counterparty.
 		// Fall back to SetChannel if ChanCloseInit fails: the client or connection
@@ -223,6 +224,10 @@ func trimBGroupValidators(ctx sdk.Context, keepers *keepers.AppKeepers, maxValid
 				return fmt.Errorf("failed to begin unbonding validator %s: %w", addr, err)
 			}
 			totalToTransfer = totalToTransfer.Add(tokens)
+			ctx.Logger().Info("Began unbonding B-group validator",
+				"operator", val.OperatorAddress,
+				"tokens", tokens,
+				"moniker", val.Description.Moniker)
 		}
 		if err = keepers.StakingKeeper.DeleteLastValidatorPower(ctx, addr); err != nil {
 			return fmt.Errorf("failed to delete last validator power for %s: %w", addr, err)

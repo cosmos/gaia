@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"path"
+	"strings"
 	"testing"
 	"time"
 
@@ -31,6 +32,7 @@ type ICSOffboardSuite struct {
 	consumer              *chainsuite.Chain
 	rewardsPoolPreUpgrade map[string]string // denom -> integer amount captured before v28 upgrade
 	txHash                string
+	signedOptInTx         []byte // MsgOptIn tx signed on v27, broadcast on v28 to verify rejection
 }
 
 func TestICSOffboard(t *testing.T) {
@@ -201,6 +203,61 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.Require().NoError(err, "bank send to consumer_rewards_pool must succeed before v28 upgrade")
 	})
 
+	// Phase 10b: Sign a MsgOptIn tx on v27 — to be broadcast on v28 where it must be rejected
+	s.Run("SignMsgOptInTx_PreUpgrade", func() {
+		node := s.Chain.GetNode()
+		val := s.Chain.ValidatorWallets[0]
+
+		// Get the consensus public key: {"@type":"/cosmos.crypto.ed25519.PubKey","key":"..."}
+		consKeyBz, _, err := s.Chain.Validators[0].ExecBin(ctx, "comet", "show-validator")
+		s.Require().NoError(err)
+		consKey := strings.TrimSpace(string(consKeyBz))
+
+		// json.Marshal produces a JSON-encoded string (with outer quotes and internal escaping)
+		// matching the sample's "consumer_key": "{\"@type\":\"...\"}" format.
+		consKeyJSON, err := json.Marshal(consKey)
+		s.Require().NoError(err)
+
+		unsignedTx := fmt.Sprintf(`{
+			"body": {
+				"messages": [{
+					"@type": "/interchain_security.ccv.provider.v1.MsgOptIn",
+					"chain_id": "",
+					"provider_addr": "%s",
+					"consumer_key": %s,
+					"signer": "%s",
+					"consumer_id": "0"
+				}],
+				"memo": "",
+				"timeout_height": "0",
+				"extension_options": [],
+				"non_critical_extension_options": []
+			},
+			"auth_info": {
+				"signer_infos": [],
+				"fee": {
+					"amount": [],
+					"gas_limit": "200000",
+					"payer": "",
+					"granter": ""
+				}
+			},
+			"signatures": []
+		}`, val.ValoperAddress, string(consKeyJSON), val.Address)
+
+		err = node.WriteFile(ctx, []byte(unsignedTx), "unsigned-optin-tx.json")
+		s.Require().NoError(err)
+
+		signedBz, _, err := node.Exec(ctx, node.TxCommand(
+			val.Moniker,
+			"sign",
+			path.Join(node.HomeDir(), "unsigned-optin-tx.json"),
+		), nil)
+		s.Require().NoError(err, "signing MsgOptIn tx on v27 must succeed")
+		s.signedOptInTx = signedBz
+		s.T().Logf("MsgOptIn tx signed on v27 (%d bytes); will broadcast on v28", len(signedBz))
+	})
+
 	// Phase 11: Upgrade to v28
 	s.Run("UpgradeToV28", func() {
 		err := s.Chain.Upgrade(ctx, s.Env.UpgradeName, s.Env.NewGaiaImageVersion)
@@ -344,6 +401,26 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.T().Logf("Transaction query output: %s", string(out))
 		s.Require().NoError(err)
 	})
+
+	// Phase 19: A MsgOptIn tx signed on v27 is rejected when broadcast on v28 (audit L-01)
+	s.Run("MsgOptInRejected_v28", func() {
+		// The tx was signed in Phase 10b while still on v27 (provider module present).
+		// On v28 the provider module is removed and the legacy stub MsgOptIn.ValidateBasic()
+		// unconditionally returns an error, so the broadcast must fail.
+		s.Require().NotEmpty(s.signedOptInTx, "signed MsgOptIn tx must have been prepared in Phase 10b")
+
+		node := s.Chain.GetNode()
+		err := node.WriteFile(ctx, s.signedOptInTx, "signed-optin-tx.json")
+		s.Require().NoError(err)
+
+		txHash, err := node.ExecTx(ctx, s.Chain.ValidatorWallets[0].Moniker,
+			"broadcast",
+			path.Join(node.HomeDir(), "signed-optin-tx.json"))
+		s.T().Logf("MsgOptIn broadcast tx hash: %s, err: %v", txHash, err)
+		s.Require().Error(err,
+			"MsgOptIn tx signed on v27 must be rejected when broadcast on v28")
+	})
+
 }
 
 // requireConsumerListed asserts that at least one consumer chain is listed.

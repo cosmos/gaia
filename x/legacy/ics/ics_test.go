@@ -105,7 +105,7 @@ func encodeConsumerAdditionProposal() []byte {
 	var spawnTime []byte
 	spawnTime = appendVarintField(spawnTime, 1, 1_700_000_000)
 
-	// google.protobuf.Duration: seconds (f1 int64) — reused for all three duration fields
+	// google.protobuf.Duration: seconds (f1 int64), reused for all three duration fields
 	var dur []byte
 	dur = appendVarintField(dur, 1, 1_728_000)
 
@@ -434,7 +434,7 @@ func TestSubmitProposalTxWithICSContentTxDecode(t *testing.T) {
 // message type is rejected with a clear ErrUnauthorized before it reaches the
 // message router.
 //
-// Without this fix, transactions are still rejected during CheckTx — but at
+// Without this fix, transactions are still rejected during CheckTx, but at
 // the message router with code 6 ErrUnknownRequest ("no message handler
 // found"). The fix moves rejection one step earlier to the ValidateBasic
 // ante decorator and replaces that opaque error with an explicit one.
@@ -540,7 +540,7 @@ func TestLegacyICSProposalSubmitRejected(t *testing.T) {
 		err := submitMsg.UnpackInterfaces(encCfg.InterfaceRegistry)
 		require.NoError(t, err, "%s: UnpackInterfaces must not fail", tc.name)
 
-		// Call content.ValidateBasic() directly — the defence-in-depth path.
+		// Call content.ValidateBasic() directly (the defence-in-depth path).
 		// On-chain, IsValidProposalType fires first and this is never reached.
 		content := submitMsg.GetContent()
 		require.NotNil(t, content, "%s: GetContent must return the resolved stub", tc.name)

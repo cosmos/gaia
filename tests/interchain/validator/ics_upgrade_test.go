@@ -209,7 +209,7 @@ func (s *ICSUpgradeSuite) assertSnapshotTransitions(
 		for _, v := range after.Validators {
 			if v.Status == stakingtypes.Bonded {
 				s.Require().True(v.InCometSet,
-					"validator %d (%s) is bonded but not in CometBFT set — B group should not exist after ICS removal",
+					"validator %d (%s) is bonded but not in CometBFT set, the B group should not exist after ICS removal",
 					v.Index, v.OperatorAddr)
 			}
 		}

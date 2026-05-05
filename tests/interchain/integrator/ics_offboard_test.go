@@ -203,7 +203,7 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.Require().NoError(err, "bank send to consumer_rewards_pool must succeed before v28 upgrade")
 	})
 
-	// Phase 10b: Sign a MsgOptIn tx on v27 — to be broadcast on v28 where it must be rejected
+	// Phase 10b: Sign a MsgOptIn tx on v27, to be broadcast on v28 where it must be rejected
 	s.Run("SignMsgOptInTx_PreUpgrade", func() {
 		node := s.Chain.GetNode()
 		val := s.Chain.ValidatorWallets[0]
@@ -307,11 +307,11 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 			"consumer_rewards_pool must have zero balance after v28 upgrade; upgrade handler must have swept all funds")
 	})
 
-	// Phase 13: Consumer offboarded — provider module removed
+	// Phase 13: provider module removed
 	s.Run("ConsumerOffboarded_v28", func() {
 		_, _, err := s.Chain.Validators[0].ExecQuery(ctx, "provider", "list-consumer-chains")
 		if err != nil {
-			// Provider query command doesn't exist — module removed. This is expected.
+			// Provider query command doesn't exist: module removed. This is expected.
 			return
 		}
 		// If the query somehow succeeds, the consumer should not be listed
@@ -434,7 +434,7 @@ func (s *ICSOffboardSuite) requireConsumerListed(ctx context.Context) {
 func (s *ICSOffboardSuite) requireConsumerNotListed(ctx context.Context) {
 	out, _, err := s.Chain.Validators[0].ExecQuery(ctx, "provider", "list-consumer-chains")
 	if err != nil {
-		// Command doesn't exist — module removed, so no consumers
+		// Command doesn't exist: module removed, so no consumers
 		return
 	}
 	s.Require().NotContains(string(out), s.consumer.Config().ChainID,

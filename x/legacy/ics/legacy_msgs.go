@@ -1,8 +1,8 @@
 // Package ics provides legacy stub types for interchain-security (ICS) provider
 // module messages. These stubs allow historical governance proposals and
 // transactions stored in state to be decoded and returned by queries after the
-// ICS provider module has been removed. They do not preserve field data —
-// Unmarshal is a no-op that discards bytes — but they prevent "unknown type URL"
+// ICS provider module has been removed. They do not preserve field data
+// (Unmarshal is a no-op that discards bytes), but they prevent "unknown type URL"
 // errors from breaking queries.
 package ics
 

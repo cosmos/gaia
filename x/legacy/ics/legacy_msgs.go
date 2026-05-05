@@ -7,9 +7,9 @@
 package ics
 
 import (
-	errorsmod "cosmossdk.io/errors"
-
 	"github.com/cosmos/gogoproto/jsonpb"
+
+	errorsmod "cosmossdk.io/errors"
 
 	gaiaerrors "github.com/cosmos/gaia/v28/types/errors"
 )

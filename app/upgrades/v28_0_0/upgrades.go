@@ -61,6 +61,9 @@ func CreateUpgradeHandler(
 		// 3. Set staking max_validators to the former max_provider_consensus_validators,
 		// but only if it is lower than the current value. This ensures the upgrade
 		// reduces (or preserves) the active validator set size and never inflates it.
+		// Trim the B-group validator set if max_validators is lowered, so the number of
+		// validators in LastValidatorPower is consistent with the new max_validators cap
+		// and does not cause panics in GetLastValidators.
 		stakingParams, err := keepers.StakingKeeper.GetParams(ctx)
 		if err != nil {
 			return vm, fmt.Errorf("failed to get staking params: %w", err)
@@ -91,8 +94,6 @@ func CreateUpgradeHandler(
 		}
 
 		// 5. Delete all pending VSCPackets from the provider store.
-		// These are keyed by 0x11 + consumerID and will never be sent since
-		// all consumer chains are removed in this upgrade.
 		deleted := deleteProviderPendingVSCs(providerStore)
 		ctx.Logger().Info("Deleted pending VSC entries from provider store", "count", deleted)
 
@@ -104,11 +105,8 @@ func CreateUpgradeHandler(
 		// handshake (e.g., expired client on a stale consumer chain), in which case
 		// we still need to mark the channel CLOSED on the Gaia side even though the
 		// counterparty will not be notified automatically.
-		channels := keepers.IBCKeeper.ChannelKeeper.GetAllChannels(ctx)
+		channels := keepers.IBCKeeper.ChannelKeeper.GetAllChannelsWithPortPrefix(ctx, providerModuleName)
 		for _, ch := range channels {
-			if ch.PortId != providerModuleName {
-				continue
-			}
 			if ch.State == channeltypes.CLOSED {
 				continue
 			}
@@ -148,7 +146,7 @@ func CreateUpgradeHandler(
 
 // deleteProviderPendingVSCs iterates all pending VSCPacket entries in the
 // provider KV store (prefix 0x11) and deletes them. It returns the number of
-// entries removed. No proto decoding is needed — we delete by key only.
+// entries removed. No proto decoding is needed, we delete by key only.
 func deleteProviderPendingVSCs(providerStore storetypes.KVStore) int {
 	prefix := providerPendingVSCsKeyPrefix
 	iter := storetypes.KVStorePrefixIterator(providerStore, prefix)
@@ -166,8 +164,9 @@ func deleteProviderPendingVSCs(providerStore storetypes.KVStore) int {
 }
 
 // trimBGroupValidators removes LastValidatorPower entries for validators that
-// fall outside the new maxValidators cap (the "B group" — validators bonded in
-// staking but excluded from the CometBFT consensus set by the ICS provider).
+// fall outside the new maxValidators cap (the "B group" is the set of validators
+// bonded in staking but excluded from the CometBFT consensus set by the provider
+// module).
 //
 // This is necessary after lowering staking.params.max_validators: without it,
 // GetLastValidators (called by TrackHistoricalInfo in BeginBlocker) panics
@@ -175,14 +174,10 @@ func deleteProviderPendingVSCs(providerStore storetypes.KVStore) int {
 //
 // For each evicted validator that is currently Bonded, BeginUnbondingValidator
 // is called to transition it to Unbonding and queue it for completion. The
-// corresponding token transfer (BondedPool → NotBondedPool) is batched into a
-// single SendCoinsFromModuleToModule call, mirroring what ARVSU does at the end
-// of its loop. The EndBlocker's ApplyAndReturnValidatorSetUpdates will then see
+// corresponding token transfer (BondedPool to NotBondedPool) is batched into a
+// single SendCoinsFromModuleToModule call.
+// The EndBlocker's ApplyAndReturnValidatorSetUpdates will then see
 // a consistent state and handle these validators correctly going forward.
-//
-// Emitting ABCI zero-power updates for these validators is intentionally
-// skipped: B-group validators were already excluded from CometBFT's validator
-// set by the ICS provider, so no consensus-engine update is required.
 func trimBGroupValidators(ctx sdk.Context, keepers *keepers.AppKeepers, maxValidators uint32) error {
 	// Build the set of operator address bytes for the top-N validators by power.
 	topNAddrs := make(map[string]struct{}, maxValidators)

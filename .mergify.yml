@@ -6,7 +6,7 @@ defaults:
 
 queue_rules:
   - name: default
-    conditions:
+    merge_conditions:
       - "#approved-reviews-by>1"
 
 pull_request_rules:

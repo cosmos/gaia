@@ -51,7 +51,7 @@ const (
 	idxEquivocationProposal         = 18
 )
 
-// fB returns a BYTES-typed field descriptor (wire type 2 — string, bytes, message).
+// fB returns a BYTES-typed field descriptor (wire type 2: string, bytes, message).
 func fB(num int32) *descriptorpb.FieldDescriptorProto {
 	name := fmt.Sprintf("f%d", num)
 	typ := descriptorpb.FieldDescriptorProto_TYPE_BYTES
@@ -59,7 +59,7 @@ func fB(num int32) *descriptorpb.FieldDescriptorProto {
 	return &descriptorpb.FieldDescriptorProto{Name: &name, Number: &num, Type: &typ, Label: &label}
 }
 
-// fI returns an INT64-typed field descriptor (wire type 0 — varint).
+// fI returns an INT64-typed field descriptor (wire type 0: varint).
 func fI(num int32) *descriptorpb.FieldDescriptorProto {
 	name := fmt.Sprintf("f%d", num)
 	typ := descriptorpb.FieldDescriptorProto_TYPE_INT64
@@ -67,7 +67,7 @@ func fI(num int32) *descriptorpb.FieldDescriptorProto {
 	return &descriptorpb.FieldDescriptorProto{Name: &name, Number: &num, Type: &typ, Label: &label}
 }
 
-// fU32 returns a UINT32-typed field descriptor (wire type 0 — varint).
+// fU32 returns a UINT32-typed field descriptor (wire type 0: varint).
 func fU32(num int32) *descriptorpb.FieldDescriptorProto {
 	name := fmt.Sprintf("f%d", num)
 	typ := descriptorpb.FieldDescriptorProto_TYPE_UINT32
@@ -75,7 +75,7 @@ func fU32(num int32) *descriptorpb.FieldDescriptorProto {
 	return &descriptorpb.FieldDescriptorProto{Name: &name, Number: &num, Type: &typ, Label: &label}
 }
 
-// fU64 returns a UINT64-typed field descriptor (wire type 0 — varint).
+// fU64 returns a UINT64-typed field descriptor (wire type 0: varint).
 func fU64(num int32) *descriptorpb.FieldDescriptorProto {
 	name := fmt.Sprintf("f%d", num)
 	typ := descriptorpb.FieldDescriptorProto_TYPE_UINT64
@@ -83,7 +83,7 @@ func fU64(num int32) *descriptorpb.FieldDescriptorProto {
 	return &descriptorpb.FieldDescriptorProto{Name: &name, Number: &num, Type: &typ, Label: &label}
 }
 
-// fBool returns a BOOL-typed field descriptor (wire type 0 — varint).
+// fBool returns a BOOL-typed field descriptor (wire type 0: varint).
 func fBool(num int32) *descriptorpb.FieldDescriptorProto {
 	name := fmt.Sprintf("f%d", num)
 	typ := descriptorpb.FieldDescriptorProto_TYPE_BOOL
@@ -302,7 +302,7 @@ func init() {
 		panic("legacyics: failed to build protov2 file descriptor: " + err.Error())
 	}
 	if err := protoregistry.GlobalFiles.RegisterFile(fd); err != nil {
-		// "already registered" is harmless — happens if two init paths run.
+		// "already registered" is harmless, happens if two init paths run.
 		_ = err
 	}
 	msgs := fd.Messages()

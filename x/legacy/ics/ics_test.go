@@ -11,6 +11,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"cosmossdk.io/math"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -103,7 +105,7 @@ func encodeConsumerAdditionProposal() []byte {
 	var spawnTime []byte
 	spawnTime = appendVarintField(spawnTime, 1, 1_700_000_000)
 
-	// google.protobuf.Duration: seconds (f1 int64) — reused for all three duration fields
+	// google.protobuf.Duration: seconds (f1 int64), reused for all three duration fields
 	var dur []byte
 	dur = appendVarintField(dur, 1, 1_728_000)
 
@@ -419,4 +421,134 @@ func TestSubmitProposalTxWithICSContentTxDecode(t *testing.T) {
 	require.NoError(t, err,
 		"TxDecoder must decode a historical MsgSubmitProposal tx containing a "+
 			"ConsumerAdditionProposal content Any without error")
+}
+
+// ---------------------------------------------------------------------------
+// Test 5 -- Legacy ICS message transaction is rejected
+// ---------------------------------------------------------------------------
+
+// TestLegacyICSMsgValidateBasicRejects verifies that a stub ICS provider
+// message returns an error from ValidateBasic. The SDK's
+// ante.NewValidateBasicDecorator calls ValidateBasic on every message in a
+// transaction, so this ensures any new transaction carrying a legacy ICS
+// message type is rejected with a clear ErrUnauthorized before it reaches the
+// message router.
+//
+// Without this fix, transactions are still rejected during CheckTx, but at
+// the message router with code 6 ErrUnknownRequest ("no message handler
+// found"). The fix moves rejection one step earlier to the ValidateBasic
+// ante decorator and replaces that opaque error with an explicit one.
+//
+// Historical decoding paths (TxDecoder, query handlers) never invoke
+// ValidateBasic, so existing state queries are unaffected.
+func TestLegacyICSMsgValidateBasicRejects(t *testing.T) {
+	stubMsgs := []struct {
+		name string
+		msg  interface{ ValidateBasic() error }
+	}{
+		{"MsgAssignConsumerKey", &ics.MsgAssignConsumerKey{}},
+		{"MsgConsumerAddition", &ics.MsgConsumerAddition{}},
+		{"MsgConsumerRemoval", &ics.MsgConsumerRemoval{}},
+		{"MsgConsumerModification", &ics.MsgConsumerModification{}},
+		{"MsgCreateConsumer", &ics.MsgCreateConsumer{}},
+		{"MsgUpdateConsumer", &ics.MsgUpdateConsumer{}},
+		{"MsgRemoveConsumer", &ics.MsgRemoveConsumer{}},
+		{"MsgChangeRewardDenoms", &ics.MsgChangeRewardDenoms{}},
+		{"MsgUpdateParams", &ics.MsgUpdateParams{}},
+		{"MsgSubmitConsumerMisbehaviour", &ics.MsgSubmitConsumerMisbehaviour{}},
+		{"MsgSubmitConsumerDoubleVoting", &ics.MsgSubmitConsumerDoubleVoting{}},
+		{"MsgOptIn", &ics.MsgOptIn{}},
+		{"MsgOptOut", &ics.MsgOptOut{}},
+		{"MsgSetConsumerCommissionRate", &ics.MsgSetConsumerCommissionRate{}},
+	}
+
+	for _, tc := range stubMsgs {
+		err := tc.msg.ValidateBasic()
+		require.Error(t, err,
+			"%s: ValidateBasic must return an error so new transactions are rejected with a ErrUnauthorized",
+			tc.name,
+		)
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Test 6 -- Legacy ICS proposal rejected without going through governance
+// ---------------------------------------------------------------------------
+
+// TestLegacyICSProposalSubmitRejected verifies that stubProposal.ValidateBasic
+// returns an error for all legacy ICS content types. On the standard on-chain
+// path, legacyMsgServer.SubmitProposal (cosmos-sdk/x/gov/keeper/msg_server.go)
+// calls IsValidProposalType first and rejects these proposals there, because
+// the ICS types were never passed to RegisterProposalType on v28. ValidateBasic
+// is therefore unreachable via normal flow; this test exercises it directly as
+// a defence-in-depth check in case the type is ever registered in the future.
+//
+// The test unpacks the content Any and calls content.ValidateBasic(), mirroring
+// the second half of legacyMsgServer.SubmitProposal after the proposal type
+// check.
+func TestLegacyICSProposalSubmitRejected(t *testing.T) {
+	encCfg := params.MakeEncodingConfig()
+	govv1beta1.RegisterInterfaces(encCfg.InterfaceRegistry)
+	ics.RegisterInterfaces(encCfg.InterfaceRegistry)
+
+	proposalTypes := []struct {
+		name    string
+		typeURL string
+		value   []byte
+	}{
+		{
+			"ConsumerAdditionProposal",
+			"/interchain_security.ccv.provider.v1.ConsumerAdditionProposal",
+			encodeConsumerAdditionProposal(),
+		},
+		{
+			"ConsumerRemovalProposal",
+			"/interchain_security.ccv.provider.v1.ConsumerRemovalProposal",
+			[]byte{},
+		},
+		{
+			"ConsumerModificationProposal",
+			"/interchain_security.ccv.provider.v1.ConsumerModificationProposal",
+			[]byte{},
+		},
+		{
+			"ChangeRewardDenomsProposal",
+			"/interchain_security.ccv.provider.v1.ChangeRewardDenomsProposal",
+			[]byte{},
+		},
+		{
+			"EquivocationProposal",
+			"/interchain_security.ccv.provider.v1.EquivocationProposal",
+			[]byte{},
+		},
+	}
+
+	for _, tc := range proposalTypes {
+		contentAny := &codectypes.Any{
+			TypeUrl: tc.typeURL,
+			Value:   tc.value,
+		}
+
+		submitMsg := &govv1beta1.MsgSubmitProposal{
+			Content:        contentAny,
+			InitialDeposit: sdk.NewCoins(sdk.NewCoin("uatom", math.NewInt(1000))),
+			Proposer:       "cosmos1mrwtsv7p53k90ey2nej4glsv3gphujkh8fr0mx",
+		}
+
+		// Unpack interfaces so GetContent returns the resolved stub type.
+		// This mirrors what the SDK does on message receipt.
+		err := submitMsg.UnpackInterfaces(encCfg.InterfaceRegistry)
+		require.NoError(t, err, "%s: UnpackInterfaces must not fail", tc.name)
+
+		// Call content.ValidateBasic() directly (the defence-in-depth path).
+		// On-chain, IsValidProposalType fires first and this is never reached.
+		content := submitMsg.GetContent()
+		require.NotNil(t, content, "%s: GetContent must return the resolved stub", tc.name)
+
+		err = content.ValidateBasic()
+		require.Error(t, err,
+			"%s: content.ValidateBasic must return an error (defence-in-depth)",
+			tc.name,
+		)
+	}
 }

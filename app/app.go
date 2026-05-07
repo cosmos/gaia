@@ -421,6 +421,12 @@ func (app *GaiaApp) BlockedModuleAccountAddrs(modAccAddrs map[string]bool) map[s
 	// remove module accounts that are ALLOWED to received funds
 	delete(modAccAddrs, authtypes.NewModuleAddress(govtypes.ModuleName).String())
 
+	// consumer_rewards_pool was removed from maccPerms in v28 (the module is
+	// retired), but its deterministic address must remain permanently blocked so
+	// that any stale MsgSend, IBC transfer, or relayer flow after the upgrade
+	// cannot deposit funds at an address with no key and no sweep logic.
+	modAccAddrs[authtypes.NewModuleAddress("consumer_rewards_pool").String()] = true
+
 	return modAccAddrs
 }
 

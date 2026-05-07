@@ -1,5 +1,11 @@
 package ics
 
+import (
+	errorsmod "cosmossdk.io/errors"
+
+	gaiaerrors "github.com/cosmos/gaia/v28/types/errors"
+)
+
 // stubProposal satisfies both proto.Message and the govv1beta1.Content
 // interface with stub/no-op implementations.
 type stubProposal struct{ stubMsg }
@@ -8,7 +14,17 @@ func (s *stubProposal) GetTitle() string       { return "Legacy ICS Proposal" }
 func (s *stubProposal) GetDescription() string { return "" }
 func (s *stubProposal) ProposalRoute() string  { return "provider" }
 func (s *stubProposal) ProposalType() string   { return "LegacyICS" }
-func (s *stubProposal) ValidateBasic() error   { return nil }
+
+// ValidateBasic provides defence-in-depth against new governance proposals
+// carrying legacy ICS content types. On the standard on-chain path,
+// legacyMsgServer.SubmitProposal rejects these proposals earlier, at
+// IsValidProposalType, because the ICS types were never registered via
+// RegisterProposalType on v28. ValidateBasic is therefore unreachable via
+// normal flow, but returns an explicit error in case the type is ever
+// registered in the future.
+func (s *stubProposal) ValidateBasic() error {
+	return errorsmod.Wrap(gaiaerrors.ErrUnauthorized, "legacy ICS proposal: cannot submit new governance proposal with removed ICS provider content type")
+}
 
 // ICS provider governance proposal stubs.
 

@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"path"
+	"strings"
 	"testing"
 	"time"
 
@@ -31,6 +32,7 @@ type ICSOffboardSuite struct {
 	consumer              *chainsuite.Chain
 	rewardsPoolPreUpgrade map[string]string // denom -> integer amount captured before v28 upgrade
 	txHash                string
+	signedOptInTx         []byte // MsgOptIn tx signed on v27, broadcast on v28 to verify rejection
 }
 
 func TestICSOffboard(t *testing.T) {
@@ -194,6 +196,68 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.Require().NoError(err)
 	})
 
+	// Phase 10a: Any account can send tokens to consumer_rewards_pool before the upgrade
+	s.Run("SendToConsumerRewardsPool_PreUpgrade", func() {
+		_, err := s.Chain.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName,
+			"bank", "send", interchaintest.FaucetAccountKeyName, consumerRewardsPoolAddr, "1000"+chainsuite.Uatom)
+		s.Require().NoError(err, "bank send to consumer_rewards_pool must succeed before v28 upgrade")
+	})
+
+	// Phase 10b: Sign a MsgOptIn tx on v27, to be broadcast on v28 where it must be rejected
+	s.Run("SignMsgOptInTx_PreUpgrade", func() {
+		node := s.Chain.GetNode()
+		val := s.Chain.ValidatorWallets[0]
+
+		// Get the consensus public key: {"@type":"/cosmos.crypto.ed25519.PubKey","key":"..."}
+		consKeyBz, _, err := s.Chain.Validators[0].ExecBin(ctx, "comet", "show-validator")
+		s.Require().NoError(err)
+		consKey := strings.TrimSpace(string(consKeyBz))
+
+		// json.Marshal produces a JSON-encoded string (with outer quotes and internal escaping)
+		// matching the sample's "consumer_key": "{\"@type\":\"...\"}" format.
+		consKeyJSON, err := json.Marshal(consKey)
+		s.Require().NoError(err)
+
+		unsignedTx := fmt.Sprintf(`{
+			"body": {
+				"messages": [{
+					"@type": "/interchain_security.ccv.provider.v1.MsgOptIn",
+					"chain_id": "",
+					"provider_addr": "%s",
+					"consumer_key": %s,
+					"signer": "%s",
+					"consumer_id": "0"
+				}],
+				"memo": "",
+				"timeout_height": "0",
+				"extension_options": [],
+				"non_critical_extension_options": []
+			},
+			"auth_info": {
+				"signer_infos": [],
+				"fee": {
+					"amount": [],
+					"gas_limit": "200000",
+					"payer": "",
+					"granter": ""
+				}
+			},
+			"signatures": []
+		}`, val.ValoperAddress, string(consKeyJSON), val.Address)
+
+		err = node.WriteFile(ctx, []byte(unsignedTx), "unsigned-optin-tx.json")
+		s.Require().NoError(err)
+
+		signedBz, _, err := node.Exec(ctx, node.TxCommand(
+			val.Moniker,
+			"sign",
+			path.Join(node.HomeDir(), "unsigned-optin-tx.json"),
+		), nil)
+		s.Require().NoError(err, "signing MsgOptIn tx on v27 must succeed")
+		s.signedOptInTx = signedBz
+		s.T().Logf("MsgOptIn tx signed on v27 (%d bytes); will broadcast on v28", len(signedBz))
+	})
+
 	// Phase 11: Upgrade to v28
 	s.Run("UpgradeToV28", func() {
 		err := s.Chain.Upgrade(ctx, s.Env.UpgradeName, s.Env.NewGaiaImageVersion)
@@ -227,11 +291,27 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.Require().NoError(testutil.WaitForBlocks(timeoutCtx, 5, s.Chain))
 	})
 
-	// Phase 13: Consumer offboarded — provider module removed
+	// Phase 12a: No account can send tokens to consumer_rewards_pool after the upgrade (audit M-01)
+	s.Run("SendToConsumerRewardsPool_Blocked_v28", func() {
+		_, err := s.Chain.GetNode().ExecTx(ctx, interchaintest.FaucetAccountKeyName,
+			"bank", "send", interchaintest.FaucetAccountKeyName, consumerRewardsPoolAddr, "1000"+chainsuite.Uatom)
+		s.Require().Error(err, "bank send to consumer_rewards_pool must be rejected after v28 upgrade (address is blocked)")
+	})
+
+	// Phase 12b: consumer_rewards_pool must have no balances after the upgrade
+	s.Run("ConsumerRewardsPoolEmpty_v28", func() {
+		out, _, err := s.Chain.Validators[0].ExecQuery(ctx, "bank", "balances", consumerRewardsPoolAddr)
+		s.Require().NoError(err)
+		balances := gjson.GetBytes(out, "balances").Array()
+		s.Require().Empty(balances,
+			"consumer_rewards_pool must have zero balance after v28 upgrade; upgrade handler must have swept all funds")
+	})
+
+	// Phase 13: provider module removed
 	s.Run("ConsumerOffboarded_v28", func() {
 		_, _, err := s.Chain.Validators[0].ExecQuery(ctx, "provider", "list-consumer-chains")
 		if err != nil {
-			// Provider query command doesn't exist — module removed. This is expected.
+			// Provider query command doesn't exist: module removed. This is expected.
 			return
 		}
 		// If the query somehow succeeds, the consumer should not be listed
@@ -321,6 +401,26 @@ func (s *ICSOffboardSuite) TestICSOffboardFlow() {
 		s.T().Logf("Transaction query output: %s", string(out))
 		s.Require().NoError(err)
 	})
+
+	// Phase 19: A MsgOptIn tx signed on v27 is rejected when broadcast on v28 (audit L-01)
+	s.Run("MsgOptInRejected_v28", func() {
+		// The tx was signed in Phase 10b while still on v27 (provider module present).
+		// On v28 the provider module is removed and the legacy stub MsgOptIn.ValidateBasic()
+		// unconditionally returns an error, so the broadcast must fail.
+		s.Require().NotEmpty(s.signedOptInTx, "signed MsgOptIn tx must have been prepared in Phase 10b")
+
+		node := s.Chain.GetNode()
+		err := node.WriteFile(ctx, s.signedOptInTx, "signed-optin-tx.json")
+		s.Require().NoError(err)
+
+		txHash, err := node.ExecTx(ctx, s.Chain.ValidatorWallets[0].Moniker,
+			"broadcast",
+			path.Join(node.HomeDir(), "signed-optin-tx.json"))
+		s.T().Logf("MsgOptIn broadcast tx hash: %s, err: %v", txHash, err)
+		s.Require().Error(err,
+			"MsgOptIn tx signed on v27 must be rejected when broadcast on v28")
+	})
+
 }
 
 // requireConsumerListed asserts that at least one consumer chain is listed.
@@ -334,7 +434,7 @@ func (s *ICSOffboardSuite) requireConsumerListed(ctx context.Context) {
 func (s *ICSOffboardSuite) requireConsumerNotListed(ctx context.Context) {
 	out, _, err := s.Chain.Validators[0].ExecQuery(ctx, "provider", "list-consumer-chains")
 	if err != nil {
-		// Command doesn't exist — module removed, so no consumers
+		// Command doesn't exist: module removed, so no consumers
 		return
 	}
 	s.Require().NotContains(string(out), s.consumer.Config().ChainID,

@@ -1,12 +1,18 @@
 // Package ics provides legacy stub types for interchain-security (ICS) provider
 // module messages. These stubs allow historical governance proposals and
 // transactions stored in state to be decoded and returned by queries after the
-// ICS provider module has been removed. They do not preserve field data —
-// Unmarshal is a no-op that discards bytes — but they prevent "unknown type URL"
+// ICS provider module has been removed. They do not preserve field data
+// (Unmarshal is a no-op that discards bytes), but they prevent "unknown type URL"
 // errors from breaking queries.
 package ics
 
-import "github.com/cosmos/gogoproto/jsonpb"
+import (
+	"github.com/cosmos/gogoproto/jsonpb"
+
+	errorsmod "cosmossdk.io/errors"
+
+	gaiaerrors "github.com/cosmos/gaia/v28/types/errors"
+)
 
 // stubMsg implements proto.Message and codec.ProtoMarshaler with no-op
 // marshal/unmarshal behaviour.
@@ -20,6 +26,13 @@ func (s *stubMsg) MarshalTo(dAtA []byte) (int, error)            { return 0, nil
 func (s *stubMsg) MarshalToSizedBuffer(dAtA []byte) (int, error) { return 0, nil }
 func (s *stubMsg) Size() int                                     { return 0 }
 func (s *stubMsg) Unmarshal(_ []byte) error                      { return nil }
+
+// ValidateBasic rejects new transactions containing legacy ICS stub messages.
+// Historical decoding paths never call ValidateBasic, so existing state
+// queries are unaffected.
+func (s *stubMsg) ValidateBasic() error {
+	return errorsmod.Wrap(gaiaerrors.ErrUnauthorized, "legacy ICS message: cannot submit new transaction with removed ICS provider message type")
+}
 
 // UnmarshalJSONPB implements jsonpb.JSONPBUnmarshaler. This is the hook that
 // gogoproto's jsonpb Unmarshaler calls before its reflection-based field

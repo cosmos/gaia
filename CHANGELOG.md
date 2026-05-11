@@ -8,6 +8,8 @@
 
 ### DEPENDENCIES
 
+- Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.21 to 0.38.23
+
 ## v27.3.0
 
 *April 30, 2026*

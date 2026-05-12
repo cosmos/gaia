@@ -8,7 +8,7 @@
 
 ### DEPENDENCIES
 
-- Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.21 to 0.38.23
+- Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.21 to 0.38.23 ([#4045](https://github.com/cosmos/gaia/pull/4045))
 
 ## v27.3.0
 

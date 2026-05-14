@@ -673,10 +673,10 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c h1:pxW6RcqyfI9/kWtOwnv/G+AzdKuy2ZrqINhenH4HyNs=
 github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c/go.mod h1:ukJfTF/6rtPPRCnwkur4qwRxa8vTRFBF0uk2lLoLwho=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
-github.com/CosmWasm/wasmd v0.60.6 h1:fHv//SyVv/L6SS33fxMC2JGAUxy3ZyUlIOb6U3vkJvo=
-github.com/CosmWasm/wasmd v0.60.6/go.mod h1:2Fs7Y8CEvtgjv5moPdOGLbZ6Vv49bypD5xu3DY0s4Hc=
-github.com/CosmWasm/wasmvm/v2 v2.3.2 h1:LO6+G9iG3Hg6EezxfMWX5TMx6a5DbuKGwZv6BSdtXfA=
-github.com/CosmWasm/wasmvm/v2 v2.3.2/go.mod h1:RzLlMwFRLaTwPM0DdHFA0m/APT5muKjU6t3ZxCrpXJ0=
+github.com/CosmWasm/wasmd v0.60.7 h1:5IiiQ3TxML2VMkDonmA6lulnQf0LzgHJufBgCtj0GBw=
+github.com/CosmWasm/wasmd v0.60.7/go.mod h1:2E4IVOBlmYeFYJdCP0ei3sVQROFVH8CFip4HRA1lxc8=
+github.com/CosmWasm/wasmvm/v2 v2.3.3 h1:ORnGkOFUURB8QKHRP9rLTI/nG9ov2vgZdhAlUkajPcs=
+github.com/CosmWasm/wasmvm/v2 v2.3.3/go.mod h1:RzLlMwFRLaTwPM0DdHFA0m/APT5muKjU6t3ZxCrpXJ0=
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/DataDog/datadog-go v4.8.3+incompatible h1:fNGaYSuObuQb5nzeTQqowRAd9bpDIRRV4/gUtIBjh8Q=

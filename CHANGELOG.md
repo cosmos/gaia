@@ -9,6 +9,8 @@
 ### DEPENDENCIES
 
 - Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.21 to 0.38.23 ([#4045](https://github.com/cosmos/gaia/pull/4045))
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.6 to 0.60.7 ([#4048](https://github.com/cosmos/gaia/pull/4048))
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.3.2 to v2.3.3 ([#4048](https://github.com/cosmos/gaia/pull/4048))
 
 ## v27.3.0
 

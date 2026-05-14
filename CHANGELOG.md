@@ -22,6 +22,10 @@
 - Bump [packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) from v10.1.0 to v10.6.0 ([#4034](https://github.com/cosmos/gaia/pull/4034))
 - Bump [08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) from v10.3.0 to v10.5.0 ([#4034](https://github.com/cosmos/gaia/pull/4034))
 
+### Dependencies
+
+- Bump [fast-uri](https://github.com/fastify/fast-uri) from 3.0.6 to 3.1.2 ([#4041](https://github.com/cosmos/gaia/pull/4041))
+
 ## v27.2.0
 
 *April 6, 2026*

@@ -31,7 +31,6 @@ links for each one.
 - [transfer](https://ibc.cosmos.network/main/apps/transfer/overview)
 - [interchain accounts - host](https://ibc.cosmos.network/v8/apps/interchain-accounts/client#host)
 - [interchain accounts - controller](https://ibc.cosmos.network/v8/apps/interchain-accounts/client#controller)
-- [interchain-security/provider](https://github.com/cosmos/interchain-security/tree/main/x/ccv/provider)
 - [packetforward](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware)
 - [ibcfee](https://ibc.cosmos.network/v8/middleware/ics29-fee/overview)
 - [ibc-rate-limiting](https://github.com/Stride-Labs/ibc-rate-limiting)

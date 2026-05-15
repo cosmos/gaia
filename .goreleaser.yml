@@ -7,41 +7,41 @@ env:
   - CGO_ENABLED=1
 
 builds:
-  - id: "gaiad-darwin-arm64"
-    main: ./cmd/gaiad
-    binary: gaiad
-    goos:
-      - darwin
-    goarch:
-      - arm64
-    mod_timestamp: "{{ .CommitTimestamp }}"
-    hooks:
-      pre:
-        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
-    env:
-      - CC=oa64-clang
-      - CGO_CFLAGS=-D__BLST_PORTABLE__
-      - CGO_LDFLAGS=-L/lib
-    tags:
-      - netgo
-      - ledger
-      - static_wasm
-    flags:
-      - -trimpath
-      - -mod=readonly
-
-    ldflags:
-      # .Env.TM_VERSION is provided in the workflow runner environment -> see .github/workflows/release.yml
-      - -s -w
-      - -linkmode=external
-      - -X main.commit={{.Commit}}
-      - -X main.date={{ .CommitDate }}
-      - -X github.com/cosmos/cosmos-sdk/version.Name=gaia
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=gaiad
-      - -X github.com/cosmos/cosmos-sdk/version.Version=v{{ .Version }}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,static_wasm
-      - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.TM_VERSION }}
+  # arm64 is not supported by the wasm modules
+  # - id: "gaiad-darwin-arm64"
+  #   main: ./cmd/gaiad
+  #   binary: gaiad
+  #   goos:
+  #     - darwin
+  #   goarch:
+  #     - arm64
+  #   mod_timestamp: "{{ .CommitTimestamp }}"
+  #   hooks:
+  #     pre:
+  #       - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
+  #   env:
+  #     - CC=oa64-clang
+  #     - CGO_CFLAGS=-D__BLST_PORTABLE__
+  #     - CGO_LDFLAGS=-L/lib
+  #   tags:
+  #     - netgo
+  #     - ledger
+  #     - static_wasm
+  #   flags:
+  #     - -trimpath
+  #     - -mod=readonly
+  #   ldflags:
+  #     # .Env.TM_VERSION is provided in the workflow runner environment -> see .github/workflows/release.yml
+  #     - -s -w
+  #     - -linkmode=external
+  #     - -X main.commit={{.Commit}}
+  #     - -X main.date={{ .CommitDate }}
+  #     - -X github.com/cosmos/cosmos-sdk/version.Name=gaia
+  #     - -X github.com/cosmos/cosmos-sdk/version.AppName=gaiad
+  #     - -X github.com/cosmos/cosmos-sdk/version.Version=v{{ .Version }}
+  #     - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
+  #     - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,static_wasm
+  #     - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.TM_VERSION }}
 
   - id: "gaiad-darwin-amd64"
     main: ./cmd/gaiad
@@ -118,11 +118,12 @@ builds:
   # - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.TM_VERSION }}
 
 universal_binaries:
-  - id: gaiad-darwin-universal
-    ids:
-      - gaiad-darwin-arm64
-      - gaiad-darwin-amd64
-    replace: false
+  # arm64 is not supported by the wasm modules
+  # - id: gaiad-darwin-universal
+  #   ids:
+  #     - gaiad-darwin-arm64
+  #     - gaiad-darwin-amd64
+  #   replace: false
   # - id: gaiad-linux-universal
   # ids:
   # - gaiad-linux-amd64
@@ -144,9 +145,9 @@ archives:
   - format: binary
     name_template: "{{ .Binary }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     builds:
-      - gaiad-darwin-arm64
+      # - gaiad-darwin-arm64 # arm64 is not supported by the wasm modules
       - gaiad-darwin-amd64
-      # - gaiad-linux-amd64
+      # - gaiad-linux-amd64 # muslc build is not available through GitHub Actions
     wrap_in_directory: false
     files:
       - none*

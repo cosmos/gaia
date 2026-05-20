@@ -29,4 +29,4 @@ make install
 
 ## ⚡️ Download binaries
 
-Binaries for linux, darwin, and windows are available below.
+Binaries for linux and darwin are available below.

@@ -36,7 +36,7 @@ jobs:
         if: "${{ env.GITHUB_EVENT_NAME != 'schedule' }}"
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v3.5.0
+        uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -44,13 +44,13 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v5.8.0
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           flavor: "latest=false"
 
       - name: Build and push docker image
-        uses: docker/build-push-action@v6.18.0
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: Dockerfile
@@ -60,7 +60,7 @@ jobs:
         if: ${{ env.NEW_COMMIT_COUNT > 0 }}
 
       - name: Dispatch Interchain test
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           event-type: image-pushed
           client-payload: |

@@ -12,6 +12,11 @@
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.6 to 0.60.7 ([#4048](https://github.com/cosmos/gaia/pull/4048))
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.3.2 to v2.3.3 ([#4048](https://github.com/cosmos/gaia/pull/4048))
 
+### Dependencies
+
+- Bump qs from 6.13.0 to 6.15.2 ([#4057](https://github.com/cosmos/gaia/pull/4057))
+- Bump express from 4.21.2 to 4.22.2 ([#4057](https://github.com/cosmos/gaia/pull/4057))
+
 ## v27.3.0
 
 *April 30, 2026*

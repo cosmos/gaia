@@ -79,11 +79,13 @@ jobs:
           ref: ${{ steps.get-metadata.outputs.ref_name }}
 
       - name: Setup go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.25.7"
 
       - name: Post pending status
         if: steps.get-metadata.outputs.pr_head_sha != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             await github.rest.repos.createCommitStatus({
@@ -133,9 +135,9 @@ jobs:
           ref: ${{ needs.prepare-matrix.outputs.ref_name }}
 
       - name: Setup go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
-          go-version: 1.25.7
+          go-version: "1.25.7"
       - name: Run test
         env:
           TEST_DOCKER_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
@@ -150,7 +152,7 @@ jobs:
           go test -v ./... -failfast -p 1 -timeout 5h -run="^${{ matrix.test_name }}$" -json | tee "../../output-${{ matrix.previous_version }}-${{ matrix.test_name }}.json" | tparse -follow -all
 
       - name: Upload output
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: output-${{ matrix.previous_version }}-${{ matrix.test_name }}
@@ -162,13 +164,14 @@ jobs:
     runs-on: depot-ubuntu-22.04-4
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           path: ./outputs
 
       - name: Setup go
-        uses: actions/setup-go@v5
-
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.25.7"
       - name: Prep report
         env:
           TEST_MATRIX: ${{ needs.prepare-matrix.outputs.matrix }}
@@ -189,7 +192,7 @@ jobs:
           cat test-report.md > "$GITHUB_STEP_SUMMARY"
 
       - name: Upload output
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: test-report
           path: test-report.md
@@ -200,7 +203,7 @@ jobs:
     runs-on: depot-ubuntu-22.04-4
     steps:
       - name: Set commit status
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const testJob = context.payload.workflow_run ||

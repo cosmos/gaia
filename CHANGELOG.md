@@ -8,6 +8,26 @@
 
 ### DEPENDENCIES
 
+- Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.21 to 0.38.23 ([#4045](https://github.com/cosmos/gaia/pull/4045))
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.6 to 0.60.7 ([#4048](https://github.com/cosmos/gaia/pull/4048))
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.3.2 to v2.3.3 ([#4048](https://github.com/cosmos/gaia/pull/4048))
+
+## v27.3.0
+
+*April 30, 2026*
+
+### DEPENDENCIES
+
+- Bump [ibc-go](https://github.com/cosmos/ibc-go) from v10.5.0 to v10.6.0 ([#4034](https://github.com/cosmos/gaia/pull/4034))
+- Bump [packet-forward-middleware](https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware) from v10.1.0 to v10.6.0 ([#4034](https://github.com/cosmos/gaia/pull/4034))
+- Bump [08-wasm](https://github.com/cosmos/ibc-go/tree/main/modules/light-clients/08-wasm) from v10.3.0 to v10.5.0 ([#4034](https://github.com/cosmos/gaia/pull/4034))
+
+## v27.2.0
+
+*April 6, 2026*
+
+### DEPENDENCIES
+
 - Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.79.1 to 1.79.3 ([#4005](https://github.com/cosmos/gaia/pull/4005))
 - Bump [ledger-cosmos-go](https://github.com/cosmos/ledger-cosmos-go) from 0.16.0 to 1.0.0 ([#4016](https://github.com/cosmos/gaia/pull/4016))
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.5 to 0.60.6 ([#4016](https://github.com/cosmos/gaia/pull/4016))

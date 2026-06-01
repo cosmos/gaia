@@ -8,6 +8,8 @@
 
 ### DEPENDENCIES
 
+- Bump [github.com/cosmos/ibc-go/v10](https://github.com/cosmos/ibc-go) from 10.6.0 to 10.7.0 ([#4058](https://github.com/cosmos/gaia/pull/4058))
+
 ## v27.4.0
 
 *May 21, 2026*
@@ -17,10 +19,6 @@
 - Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.21 to 0.38.23 ([#4045](https://github.com/cosmos/gaia/pull/4045))
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.6 to 0.60.7 ([#4048](https://github.com/cosmos/gaia/pull/4048))
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from 2.3.2 to v2.3.3 ([#4048](https://github.com/cosmos/gaia/pull/4048))
-
-### Dependencies
-
-- Bump [github.com/cosmos/ibc-go/v10](https://github.com/cosmos/ibc-go) from 10.6.0 to 10.7.0 ([#4058](https://github.com/cosmos/gaia/pull/4058))
 
 ## v27.3.0
 

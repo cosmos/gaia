@@ -28,7 +28,7 @@ require (
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.6.0
 	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.1.0
 	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.5.0
-	github.com/cosmos/ibc-go/v10 v10.6.0
+	github.com/cosmos/ibc-go/v10 v10.7.0
 	github.com/cosmos/tokenfactory v0.53.5
 	github.com/golang/protobuf v1.5.4
 	github.com/google/gofuzz v1.2.0

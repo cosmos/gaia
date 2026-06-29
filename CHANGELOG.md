@@ -10,6 +10,10 @@
 
 - Bump [github.com/cosmos/ibc-go/v10](https://github.com/cosmos/ibc-go) from 10.6.0 to 10.7.0 ([#4058](https://github.com/cosmos/gaia/pull/4058))
 
+### Dependencies
+
+- Bump [github.com/opencontainers/runc](https://github.com/opencontainers/runc) from 1.2.8 to 1.3.6 ([#4071](https://github.com/cosmos/gaia/pull/4071))
+
 ## v27.4.0
 
 *May 21, 2026*

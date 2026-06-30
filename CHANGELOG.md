@@ -16,6 +16,10 @@
 
 - Bump [github.com/cosmos/ibc-go/v10](https://github.com/cosmos/ibc-go) from 10.6.0 to 10.7.0 ([#4058](https://github.com/cosmos/gaia/pull/4058))
 
+### Dependencies
+
+- Bump [shell-quote](https://github.com/ljharb/shell-quote) from 1.8.1 to 1.8.4 ([#4065](https://github.com/cosmos/gaia/pull/4065))
+
 ## v27.4.0
 
 *May 21, 2026*

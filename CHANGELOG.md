@@ -46,6 +46,10 @@
 - Bump [ledger-cosmos-go](https://github.com/cosmos/ledger-cosmos-go) from 0.16.0 to 1.0.0 ([#4016](https://github.com/cosmos/gaia/pull/4016))
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.5 to 0.60.6 ([#4016](https://github.com/cosmos/gaia/pull/4016))
 
+### Dependencies
+
+- Bump [go.opentelemetry.io/otel](https://github.com/open-telemetry/opentelemetry-go) from 1.39.0 to 1.41.0 ([#4031](https://github.com/cosmos/gaia/pull/4031))
+
 ## v27.1.0
 
 *March 13, 2026*

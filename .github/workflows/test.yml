@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   tests:
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v6
@@ -54,7 +54,7 @@ jobs:
           path: ./profile.out
 
   test-e2e:
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
     timeout-minutes: 45
     steps:
       - uses: actions/setup-go@v6
@@ -83,7 +83,7 @@ jobs:
         run: make test-e2e
 
   repo-analysis:
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
     needs: [tests]
     steps:
       - uses: actions/checkout@v5
@@ -102,7 +102,7 @@ jobs:
           name: "${{ github.sha }}-coverage"
 
   liveness-test:
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
@@ -134,7 +134,7 @@ jobs:
         if: env.GIT_DIFF
 
   upgrade-test:
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5

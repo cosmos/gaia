@@ -5,7 +5,7 @@ on:
 
 jobs:
   stale:
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/stale@v10
         with:

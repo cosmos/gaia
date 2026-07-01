@@ -25,7 +25,7 @@ permissions:
 
 jobs:
   prepare-matrix:
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
     steps:
       - name: Get metadata
         id: get-metadata
@@ -121,7 +121,7 @@ jobs:
 
   test:
     needs: prepare-matrix
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
     name: "${{ matrix.previous_version }} -> ${{ matrix.test_version }} test ${{ matrix.test_name }}"
     strategy:
       matrix:
@@ -161,7 +161,7 @@ jobs:
   test-report:
     needs: [test, prepare-matrix]
     if: always()
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v8
@@ -200,7 +200,7 @@ jobs:
   post-commit-status:
     needs: [test, prepare-matrix]
     if: always() && needs.prepare-matrix.outputs.pr_head_sha != ''
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
     steps:
       - name: Set commit status
         uses: actions/github-script@v8

@@ -37,6 +37,16 @@ jobs:
   test-sim-nondeterminism:
     runs-on: ubuntu-22.04
     needs: build
+    # TestAppStateDeterminism is CPU-bound, single-threaded, and re-runs the
+    # full simulation numSeeds*numTimesToRunPerSeed (3*5=15) times. Passing a
+    # fixed -Seed forces numSeeds=1, so each matrix job runs a single seed (5
+    # runs) in parallel instead of all 15 sequentially in one job. This cuts
+    # wall-clock ~3x while preserving total coverage. Seeds must be != 42
+    # (simcli DefaultSeedValue), which would re-enable the internal 3-seed loop.
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: [1, 2, 3]
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
@@ -60,7 +70,7 @@ jobs:
         if: "env.GIT_DIFF != ''"
       - name: test nondeterminism
         run: |
-          make test-sim-nondeterminism
+          make test-sim-nondeterminism SIM_SEED=${{ matrix.seed }}
         if: "env.GIT_DIFF != ''"
 
 

@@ -50,6 +50,7 @@ func (s *ExportSuite) TestExportAndImportValidators() {
 	zero := 0
 	newSpec := &interchaintest.ChainSpec{
 		Name:          "gaia",
+		ChainName:     "gaia-reimport",
 		Version:       s.Env.NewGaiaImageVersion,
 		NumValidators: &chainsuite.SixValidators,
 		NumFullNodes:  &zero,
@@ -65,15 +66,22 @@ func (s *ExportSuite) TestExportAndImportValidators() {
 		s.Require().NoError(err)
 		validators = append(validators, validator)
 	}
-	for i := 0; i < maxValidators; i++ {
+
+	// The max_validators param will be set to the max_provider_consensus_validators value during the v28.0.0 upgrade,
+	// so we check that the correct number of validators are bonded and that the next validator is unbonded (i.e. not in the active set).
+	maxValidatorsJSON, err := newChain.QueryJSON(s.GetContext(), "params.max_validators", "staking", "params")
+	s.Require().NoError(err)
+	maxValidatorsParam := int(maxValidatorsJSON.Int())
+
+	for i := range maxValidatorsParam {
 		s.Require().Equal(stakingtypes.Bonded, validators[i].Status)
 	}
-	s.Require().Equal(stakingtypes.Unbonded, validators[maxValidators].Status)
+	s.Require().NotEqual(stakingtypes.Bonded, validators[maxValidatorsParam].Status)
 
 	vals, err := newChain.QueryJSON(s.GetContext(), "validators", "tendermint-validator-set")
 	s.Require().NoError(err)
-	s.Require().Equal(maxConsensusValidators, len(vals.Array()), vals)
-	for i := 0; i < maxConsensusValidators; i++ {
+	s.Require().Equal(maxValidatorsParam, len(vals.Array()), vals)
+	for i := range maxValidatorsParam {
 		valCons := vals.Array()[i].Get("address").String()
 		s.Require().NoError(err)
 		s.Require().Equal(s.Chain.ValidatorWallets[i].ValConsAddress, valCons)

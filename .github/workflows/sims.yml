@@ -7,8 +7,12 @@ on:
     branches:
       - main
 
+# Static group (not github.workflow) so it stays stable whether this workflow
+# runs directly or is called via workflow_call from nightly-tests.yml — in a
+# reusable call github.workflow resolves to the caller, which would otherwise
+# collide with the caller's own concurrency group.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: sims-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:

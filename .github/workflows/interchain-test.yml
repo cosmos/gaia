@@ -137,7 +137,7 @@ jobs:
     runs-on: ubuntu-22.04
     # go test uses -timeout 5h; keep the job cap just above it so the test's own
     # timeout (with a stack dump) fires before the job is force-killed.
-    timeout-minutes: 300
+    timeout-minutes: 330
     name: "${{ matrix.previous_version }} -> ${{ matrix.test_version }} test ${{ matrix.test_name }}"
     strategy:
       matrix:

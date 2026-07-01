@@ -82,6 +82,8 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.25.7"
+          cache: true
+          cache-dependency-path: tests/interchain/go.sum
 
       - name: Post pending status
         if: steps.get-metadata.outputs.pr_head_sha != ''
@@ -138,6 +140,8 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.25.7"
+          cache: true
+          cache-dependency-path: tests/interchain/go.sum
       - name: Run test
         env:
           TEST_DOCKER_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
@@ -172,6 +176,8 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.25.7"
+          cache: true
+          cache-dependency-path: tests/interchain/go.sum
       - name: Prep report
         env:
           TEST_MATRIX: ${{ needs.prepare-matrix.outputs.matrix }}

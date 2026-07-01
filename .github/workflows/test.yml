@@ -35,14 +35,6 @@ jobs:
             **/go.sum
             **/Makefile
             Makefile
-      - uses: actions/cache@v5
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
       - name: test & coverage report creation
         if: env.GIT_DIFF
         run: |
@@ -57,10 +49,12 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 45
     steps:
+      - uses: actions/checkout@v5
       - uses: actions/setup-go@v6
         with:
           go-version: 1.25.7
-      - uses: actions/checkout@v5
+          cache: true
+          cache-dependency-path: go.sum
       - uses: technote-space/get-diff-action@v6.1.2
         id: git_diff
         with:
@@ -109,6 +103,8 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: 1.25.7
+          cache: true
+          cache-dependency-path: go.sum
       - uses: technote-space/get-diff-action@v6.1.2
         id: git_diff
         with:
@@ -154,6 +150,8 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: 1.25.7
+          cache: true
+          cache-dependency-path: go.sum
       # the old gaiad binary version is hardcoded, need to be updated each major release.
       - name: Install Old Gaiad
         run: |
@@ -169,7 +167,6 @@ jobs:
           sudo cp "./libwasmvm.x86_64.so" /usr/lib/
           make build
           cp ./build/gaiad ./build/gaiadnew
-          go clean -modcache
         if: env.GIT_DIFF
       - name: Install Cosmovisor
         run: |

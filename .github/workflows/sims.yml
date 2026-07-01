@@ -6,10 +6,15 @@ on:
   push:
     branches:
       - main
-      
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   cleanup-runs:
     runs-on: ubuntu-22.04
+    timeout-minutes: 5
     steps:
       - uses: rokroskar/workflow-run-cleanup-action@master
         env:
@@ -18,6 +23,7 @@ jobs:
 
   build:
     runs-on: ubuntu-22.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v6

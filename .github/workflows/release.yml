@@ -9,12 +9,17 @@ on:
       - "v[0-9]+\\.[0-9]+\\.[0-9]+"
       - "v[0-9]+\\.[0-9]+\\.[0-9]+-rc[0-9]+"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   release:
     permissions:
       packages: write
       contents: write
     runs-on: ubuntu-22.04
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v5

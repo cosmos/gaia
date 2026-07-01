@@ -6,6 +6,10 @@ on:
     # run every day at 03:00 UTC
     - cron: "0 3 * * *"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
 
   run-tests:
@@ -33,6 +37,7 @@ jobs:
     if: failure()
     needs: [ run-tests, run-vulncheck, run-simulations]
     runs-on: ubuntu-22.04
+    timeout-minutes: 10
     steps:
       - name: Notify Slack on failure
         uses: slackapi/slack-github-action@v2.1.1

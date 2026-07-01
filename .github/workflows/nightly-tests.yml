@@ -6,6 +6,10 @@ on:
     # run every day at 03:00 UTC
     - cron: "0 3 * * *"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
 
   run-tests:
@@ -15,7 +19,7 @@ jobs:
     uses: cosmos/gaia/.github/workflows/sims.yml@main
 
   run-vulncheck:
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
@@ -23,6 +27,8 @@ jobs:
         with:
           go-version: "1.25.7"
           check-latest: true
+          cache: true
+          cache-dependency-path: go.sum
       - name: run-vulncheck
         id: vulncheck
         run: make vulncheck
@@ -30,7 +36,8 @@ jobs:
   warn-if-failure:
     if: failure()
     needs: [ run-tests, run-vulncheck, run-simulations]
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
     steps:
       - name: Notify Slack on failure
         uses: slackapi/slack-github-action@v2.1.1

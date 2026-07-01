@@ -6,10 +6,19 @@ on:
   push:
     branches:
       - main
-      
+
+# Static group (not github.workflow) so it stays stable whether this workflow
+# runs directly or is called via workflow_call from nightly-tests.yml — in a
+# reusable call github.workflow resolves to the caller, which would otherwise
+# collide with the caller's own concurrency group.
+concurrency:
+  group: sims-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   cleanup-runs:
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
     steps:
       - uses: rokroskar/workflow-run-cleanup-action@master
         env:
@@ -17,31 +26,44 @@ jobs:
     if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/main'"
 
   build:
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v6
         with:
           go-version: 1.25.7
-      - name: Install runsim
-        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
+          cache: true
+          cache-dependency-path: go.sum
       - uses: actions/cache@v5
         with:
           path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-runsim-binary-
+          key: ${{ runner.os }}-go-runsim-binary-v1.0.0
+      - name: Install runsim
+        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
 
   test-sim-nondeterminism:
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
     needs: build
+    # TestAppStateDeterminism is CPU-bound, single-threaded, and re-runs the
+    # full simulation numSeeds*numTimesToRunPerSeed (3*5=15) times. Passing a
+    # fixed -Seed forces numSeeds=1, so each matrix job runs a single seed (5
+    # runs) in parallel instead of all 15 sequentially in one job. This cuts
+    # wall-clock ~3x while preserving total coverage. Seeds must be != 42
+    # (simcli DefaultSeedValue), which would re-enable the internal 3-seed loop.
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: [1, 2, 3]
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v6
         with:
           go-version: 1.25.7
-      - uses: technote-space/get-diff-action@v6.0.1
+          cache: true
+          cache-dependency-path: go.sum
+      - uses: technote-space/get-diff-action@v6.1.2
         with:
           PATTERNS: |
             **/**.go
@@ -50,11 +72,11 @@ jobs:
       - uses: actions/cache@v5
         with:
           path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
+          key: ${{ runner.os }}-go-runsim-binary-v1.0.0
         if: "env.GIT_DIFF != ''"
       - name: test nondeterminism
         run: |
-          make test-sim-nondeterminism
+          make test-sim-nondeterminism SIM_SEED=${{ matrix.seed }}
         if: "env.GIT_DIFF != ''"
 
 

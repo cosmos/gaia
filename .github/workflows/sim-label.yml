@@ -15,29 +15,42 @@ jobs:
   newbuild:
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v5
       - uses: actions/setup-go@v6
         with:
           go-version: 1.25.7
-      - name: Install runsim
-        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
+          cache: true
+          cache-dependency-path: go.sum
       - uses: actions/cache@v5
         with:
           path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
+          key: ${{ runner.os }}-go-runsim-binary-v1.0.0
+      - name: Install runsim
+        run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
 
   test-sim-nondeterminism-labeled:
     if: ${{ github.event.label.name == 'sim' }}
     runs-on: ubuntu-22.04
     needs: newbuild
+    # See sims.yml: a fixed -Seed forces numSeeds=1 so each matrix job runs a
+    # single seed in parallel (~3x faster) with the same total coverage.
+    # Seeds must be != 42 (simcli DefaultSeedValue).
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: [1, 2, 3]
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v6
         with:
           go-version: 1.25.7
+          cache: true
+          cache-dependency-path: go.sum
       - uses: actions/cache@v5
         with:
           path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary
+          key: ${{ runner.os }}-go-runsim-binary-v1.0.0
       - name: test nondeterminism
         run: |
-          make test-sim-nondeterminism
+          make test-sim-nondeterminism SIM_SEED=${{ matrix.seed }}

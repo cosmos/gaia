@@ -61,7 +61,11 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # mode=min caches only the final image layers. mode=max would cache
+          # all intermediate layers too, but the GHA cache is a shared 10GB
+          # repo-wide pool with LRU eviction — a large image cache would evict
+          # the Go module/build caches the lint/test/sims jobs rely on.
+          cache-to: type=gha,mode=min
         if: ${{ env.NEW_COMMIT_COUNT > 0 }}
 
       - name: Dispatch Interchain test

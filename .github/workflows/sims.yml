@@ -28,9 +28,7 @@ jobs:
       - uses: actions/cache@v5
         with:
           path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-runsim-binary-
+          key: ${{ runner.os }}-go-runsim-binary-v1.0.0
       - name: Install runsim
         run: go install github.com/cosmos/tools/cmd/runsim@v1.0.0
 
@@ -64,9 +62,7 @@ jobs:
       - uses: actions/cache@v5
         with:
           path: ~/go/bin
-          key: ${{ runner.os }}-go-runsim-binary-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-runsim-binary-
+          key: ${{ runner.os }}-go-runsim-binary-v1.0.0
         if: "env.GIT_DIFF != ''"
       - name: test nondeterminism
         run: |

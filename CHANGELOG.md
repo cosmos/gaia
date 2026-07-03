@@ -8,6 +8,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [golang.org/x/net](https://github.com/golang/net) from 0.47.0 to 0.55.0 ([#4075](https://github.com/cosmos/gaia/pull/4075))
+
 ## v27.5.0
 
 *June 19, 2026*

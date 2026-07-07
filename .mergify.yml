@@ -20,10 +20,9 @@ pull_request_rules:
         name: default
       merge:
         method: squash
-        commit_message_template: |
-          {{ title }} (#{{ number }})
-          {{ body }}
-
+        commit_message_format:
+          title: pr-title
+          body: pr-body
   - name: Backport patches to the release/v27.x branch
     conditions:
       - base=main

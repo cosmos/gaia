@@ -10,6 +10,12 @@
 
 ### DEPENDENCIES
 
+## v27.5.0
+
+*June 19, 2026*
+
+### DEPENDENCIES
+
 - Bump [github.com/cosmos/ibc-go/v10](https://github.com/cosmos/ibc-go) from 10.6.0 to 10.7.0 ([#4058](https://github.com/cosmos/gaia/pull/4058))
 
 ## v27.4.0

@@ -4,6 +4,8 @@
 
 ### FEATURES
 
+- Raise the max Wasm contract size from 800KB to 1.6MiB.
+
 ### BUG-FIXES
 
 ### DEPENDENCIES

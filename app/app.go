@@ -115,6 +115,9 @@ func init() {
 	}
 
 	DefaultNodeHome = filepath.Join(userHomeDir, ".gaia")
+
+	// Override wasmd's default 800KB with 1.6 MiB.
+	wasmtypes.MaxWasmSize = 1_677_722
 }
 
 // NewGaiaApp returns a reference to an initialized Gaia.

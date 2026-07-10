@@ -8,6 +8,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [golang.org/x/crypto](https://github.com/golang/crypto) from 0.45.0 to 0.52.0 ([#4079](https://github.com/cosmos/gaia/pull/4079))
+
 ## v27.5.0
 
 *June 19, 2026*

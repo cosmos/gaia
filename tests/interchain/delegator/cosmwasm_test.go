@@ -172,7 +172,6 @@ func TestCosmWasm(t *testing.T) {
 	)
 	chainSpec := chainsuite.DefaultChainSpec(chainsuite.GetEnvironment())
 	chainSpec.ChainConfig.ModifyGenesis = cosmos.ModifyGenesis(wasmGenesis)
-	chainSpec.NumValidators = &chainsuite.SixValidators
 
 	s := &CosmWasmSuite{
 		Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{

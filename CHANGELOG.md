@@ -4,6 +4,8 @@
 
 ### FEATURES
 
+- Remove [Interchain Security](https://github.com/cosmos/interchain-security) provider module
+
 ### BUG-FIXES
 
 ### DEPENDENCIES

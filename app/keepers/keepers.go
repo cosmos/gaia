@@ -10,6 +10,7 @@ import (
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
+	"github.com/cosmos/gogoproto/proto"
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward"
 	pfmrouterkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/keeper"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/types"
@@ -89,7 +90,6 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/cosmos/gogoproto/proto"
 
 	"github.com/cosmos/gaia/v28/ante"
 	gaiaparams "github.com/cosmos/gaia/v28/app/params"

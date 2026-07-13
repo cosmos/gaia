@@ -5,6 +5,7 @@
 ### FEATURES
 
 - Raise the max Wasm contract size from 800KB to 1.6MiB.
+- Allow CosmWasm contracts read-only gRPC query access to validator info (`Query/Validator`) and governance proposals (`Query/Proposal`).
 
 ### BUG-FIXES
 

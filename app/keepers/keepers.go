@@ -89,6 +89,7 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	"github.com/cosmos/gogoproto/proto"
 
 	"github.com/cosmos/gaia/v28/ante"
 	gaiaparams "github.com/cosmos/gaia/v28/app/params"
@@ -506,6 +507,16 @@ func NewAppKeeper(
 		ante.NewGovVoteMessageDecorator(appKeepers.StakingKeeper),
 	)
 	wasmOpts = append(wasmOpts, govVoteDecorator)
+
+	// Allow contracts read-only access to validator info and governance proposal
+	// state via the wasm Grpc query plugin.
+	grpcAcceptList := wasmkeeper.AcceptedQueries{
+		"/cosmos.staking.v1beta1.Query/Validator": func() proto.Message { return &stakingtypes.QueryValidatorResponse{} },
+		"/cosmos.gov.v1.Query/Proposal":           func() proto.Message { return &govv1.QueryProposalResponse{} },
+	}
+	wasmOpts = append(wasmOpts, wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
+		Grpc: wasmkeeper.AcceptListGrpcQuerier(grpcAcceptList, bApp.GRPCQueryRouter(), appCodec),
+	}))
 
 	appKeepers.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,

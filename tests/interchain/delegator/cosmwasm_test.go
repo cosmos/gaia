@@ -1,6 +1,7 @@
 package delegator_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/cosmos/gaia/v28/tests/interchain/chainsuite"
@@ -23,6 +24,9 @@ const (
 	contractFile          = "testdata/contract.wasm"
 	inRangeContractFile   = "testdata/contract_in_range.wasm"
 	oversizedContractFile = "testdata/contract_oversized.wasm"
+
+	proposalQueryContractFile  = "testdata/proposal_query.wasm"
+	validatorQueryContractFile = "testdata/validator_query.wasm"
 )
 
 func (s *CosmWasmSuite) SetupSuite() {
@@ -70,6 +74,33 @@ func (s *CosmWasmSuite) TestWasmSizeCapRaised() {
 func (s *CosmWasmSuite) TestWasmSizeCapStillEnforced() {
 	// A contract above the new 1.6MiB cap must still be rejected post-upgrade.
 	s.assertStoreRejected(oversizedContractFile)
+}
+
+func (s *CosmWasmSuite) TestContractCanQueryProposal() {
+	// Submit a proposal with a deposit above the minimum so it enters voting period
+	// immediately, giving us a known proposal ID for the contract to query.
+	prop, err := s.Chain.BuildProposal(nil, "Query Plugin Test Proposal", "Exercises the wasm Grpc query plugin",
+		"ipfs://CID", chainsuite.GovDepositAmount, s.DelegatorWallet.FormattedAddress(), false)
+	s.Require().NoError(err)
+	result, err := s.Chain.SubmitProposal(s.GetContext(), s.DelegatorWallet.KeyName(), prop)
+	s.Require().NoError(err)
+
+	_, contractAddr := s.storeAndInstantiate(proposalQueryContractFile, "{}")
+
+	queryMsg := fmt.Sprintf(`{"proposal":{"proposal_id":%s}}`, result.ProposalID)
+	title, err := s.Chain.QueryJSON(s.GetContext(), "data.title", "wasm", "contract-state", "smart", contractAddr, queryMsg)
+	s.Require().NoError(err)
+	s.Require().Equal("Query Plugin Test Proposal", title.String())
+}
+
+func (s *CosmWasmSuite) TestContractCanQueryValidator() {
+	_, contractAddr := s.storeAndInstantiate(validatorQueryContractFile, "{}")
+
+	valoperAddr := s.Chain.ValidatorWallets[0].ValoperAddress
+	queryMsg := fmt.Sprintf(`{"validator":{"validator_addr":"%s"}}`, valoperAddr)
+	operatorAddr, err := s.Chain.QueryJSON(s.GetContext(), "data.operator_address", "wasm", "contract-state", "smart", contractAddr, queryMsg)
+	s.Require().NoError(err)
+	s.Require().Equal(valoperAddr, operatorAddr.String())
 }
 
 func (s *CosmWasmSuite) TestCreateNewContract() {
@@ -141,6 +172,7 @@ func TestCosmWasm(t *testing.T) {
 	)
 	chainSpec := chainsuite.DefaultChainSpec(chainsuite.GetEnvironment())
 	chainSpec.ChainConfig.ModifyGenesis = cosmos.ModifyGenesis(wasmGenesis)
+	chainSpec.NumValidators = &chainsuite.SixValidators
 
 	s := &CosmWasmSuite{
 		Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{

@@ -164,7 +164,7 @@ jobs:
         if: env.GIT_DIFF
       - name: Install New Gaiad
         run: |
-          curl -LO https://github.com/CosmWasm/wasmvm/releases/download/v2.3.3/libwasmvm.x86_64.so
+          curl -LO https://github.com/CosmWasm/wasmvm/releases/download/v2.3.4/libwasmvm.x86_64.so
           uname -m
           sudo cp "./libwasmvm.x86_64.so" /usr/lib/
           make build

@@ -4,14 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-<<<<<<< HEAD
 	"github.com/cosmos/gaia/v27/tests/interchain/chainsuite"
 	"github.com/cosmos/gaia/v27/tests/interchain/delegator"
-=======
-	"github.com/cosmos/gaia/v28/tests/interchain/chainsuite"
-	"github.com/cosmos/gaia/v28/tests/interchain/delegator"
 	"github.com/cosmos/interchaintest/v10/chain/cosmos"
->>>>>>> ad3637a (!feat: Update wasm configuration (#4082))
 	"github.com/stretchr/testify/suite"
 )
 

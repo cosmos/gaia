@@ -10,6 +10,7 @@ import (
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
+	"github.com/cosmos/gogoproto/proto"
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward"
 	pfmrouterkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/keeper"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/types"
@@ -506,6 +507,16 @@ func NewAppKeeper(
 		ante.NewGovVoteMessageDecorator(appKeepers.StakingKeeper),
 	)
 	wasmOpts = append(wasmOpts, govVoteDecorator)
+
+	// Allow contracts read-only access to validator info and governance proposal
+	// state via the wasm Grpc query plugin.
+	grpcAcceptList := wasmkeeper.AcceptedQueries{
+		"/cosmos.staking.v1beta1.Query/Validator": func() proto.Message { return &stakingtypes.QueryValidatorResponse{} },
+		"/cosmos.gov.v1.Query/Proposal":           func() proto.Message { return &govv1.QueryProposalResponse{} },
+	}
+	wasmOpts = append(wasmOpts, wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
+		Grpc: wasmkeeper.AcceptListGrpcQuerier(grpcAcceptList, bApp.GRPCQueryRouter(), appCodec),
+	}))
 
 	appKeepers.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,

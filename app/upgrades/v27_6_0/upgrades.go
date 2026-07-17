@@ -1,4 +1,4 @@
-package v27_5_0 //nolint:revive
+package v27_6_0 //nolint:revive
 
 import (
 	"context"

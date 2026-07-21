@@ -49,6 +49,11 @@ func TestIntegrationTestSuite(t *testing.T) {
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
+	// initialize logger
+	s.Logger = NewTestLogger(s.T(), true)
+	s.Logger.LogSection("E2E INTEGRATION TEST SETUP")
+	s.Logger.LogStep("Starting test suite initialization")
+
 	s.T().Log("setting up e2e integration test suite...")
 
 	var err error
@@ -79,17 +84,47 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// 3. Start both networks.
 	// 4. Create and run IBC relayer (Hermes) containers.
 
-	s.T().Logf("starting e2e infrastructure for chain A; chain-id: %s; datadir: %s", s.Resources.ChainA.ID, s.Resources.ChainA.DataDir)
-	s.initNodes(s.Resources.ChainA)
-	s.initGenesis(s.Resources.ChainA, vestingMnemonic, jailedValMnemonic)
-	s.initValidatorConfigs(s.Resources.ChainA)
-	s.runValidators(s.Resources.ChainA, 0)
+	// chain "A" setup with logging
+	s.Logger.LogStep("Starting chain A infrastructure")
+	s.Logger.LogInfo("Chain ID: %s", s.Resources.ChainA.ID)
+	s.Logger.LogInfo("Data Dir: %s", s.Resources.ChainA.DataDir)
 
-	s.T().Logf("starting e2e infrastructure for chain B; chain-id: %s; datadir: %s", s.Resources.ChainB.ID, s.Resources.ChainB.DataDir)
+	s.Logger.LogSubTest("Initializing chain A nodes")
+	s.initNodes(s.Resources.ChainA)
+	s.Logger.LogSuccess("Chain A nodes initialized")
+
+	s.Logger.LogSubTest("Initializing chain A genesis")
+	s.initGenesis(s.Resources.ChainA, vestingMnemonic, jailedValMnemonic)
+	s.Logger.LogSuccess("Chain A genesis initialized")
+
+	s.Logger.LogSubTest("Configuring chain A validators")
+	s.initValidatorConfigs(s.Resources.ChainA)
+	s.Logger.LogSuccess("Chain A validators configured")
+
+	s.Logger.LogSubTest("Starting chain A validators")
+	s.runValidators(s.Resources.ChainA, 0)
+	s.Logger.LogSuccess("Chain A validators running")
+
+	// chain "B" setup with logging
+	s.Logger.LogStep("Starting chain B infrastructure")
+	s.Logger.LogInfo("Chain ID: %s", s.Resources.ChainB.ID)
+	s.Logger.LogInfo("Data Dir: %s", s.Resources.ChainB.DataDir)
+
+	s.Logger.LogSubTest("Initializing chain B nodes")
 	s.initNodes(s.Resources.ChainB)
+	s.Logger.LogSuccess("Chain B nodes initialized")
+
+	s.Logger.LogSubTest("Initializing chain B genesis")
 	s.initGenesis(s.Resources.ChainB, vestingMnemonic, jailedValMnemonic)
+	s.Logger.LogSuccess("Chain B genesis initialized")
+
+	s.Logger.LogSubTest("Configuring chain B validators")
 	s.initValidatorConfigs(s.Resources.ChainB)
+	s.Logger.LogSuccess("Chain B validators configured")
+
+	s.Logger.LogSubTest("Starting chain B validators")
 	s.runValidators(s.Resources.ChainB, 10)
+	s.Logger.LogSuccess("Chain B validators running")
 
 	s.TestCounters = common.TestCounters{
 		ProposalCounter:           0,
@@ -98,11 +133,19 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		ContractsCounterPerSender: map[string]uint64{},
 	}
 
+	s.Logger.LogStep("Waiting for validators to be ready")
 	time.Sleep(10 * time.Second)
+	s.Logger.LogStep("Setting up IBC relayer")
 	s.runIBCRelayer()
+	s.Logger.LogSuccess("IBC relayer initialized")
+	s.Logger.LogInfo("Test suite setup complete!")
+	s.Logger.LogSection("SETUP COMPLETE - READY FOR TESTS")
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
+	s.Logger.LogSection("E2E INTEGRATION TEST TEARDOWN")
+	s.Logger.LogStep("Starting cleanup operations")
+
 	if str := os.Getenv("GAIA_E2E_SKIP_CLEANUP"); len(str) > 0 {
 		skipCleanup, err := strconv.ParseBool(str)
 		s.Require().NoError(err)
@@ -114,22 +157,32 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 	s.T().Log("tearing down e2e integration test suite...")
 
+	s.Logger.LogStep("Stopping Hermes relayer")
 	s.Require().NoError(s.Resources.DkrPool.Purge(s.Resources.HermesResource))
+	s.Logger.LogSuccess("Hermes relayer stopped")
 
+	s.Logger.LogStep("Stopping validator containers")
 	for _, vr := range s.Resources.ValResources {
 		for _, r := range vr {
 			s.Require().NoError(s.Resources.DkrPool.Purge(r))
 		}
 	}
+	s.Logger.LogSuccess("All validators stopped")
 
+	s.Logger.LogStep("Cleaning up Docker network")
 	s.Require().NoError(s.Resources.DkrPool.RemoveNetwork(s.Resources.DkrNet))
+	s.Logger.LogSuccess("Docker network removed")
 
+	s.Logger.LogStep("Cleaning up data directories")
 	os.RemoveAll(s.Resources.ChainA.DataDir)
 	os.RemoveAll(s.Resources.ChainB.DataDir)
 
 	for _, td := range s.Resources.TmpDirs {
 		os.RemoveAll(td)
 	}
+	s.Logger.LogSuccess("Data directories cleaned")
+
+	s.Logger.LogInfo("Teardown complete!")
 }
 
 func (s *IntegrationTestSuite) initNodes(c *common.Chain) {
@@ -472,10 +525,14 @@ func (s *IntegrationTestSuite) initValidatorConfigs(c *common.Chain) {
 
 // runValidators runs the validators in the Chain
 func (s *IntegrationTestSuite) runValidators(c *common.Chain, portOffset int) {
-	s.T().Logf("starting Gaia %s validator containers...", c.ID)
+	s.Logger.LogStep("Starting Gaia validators for %s", c.ID)
+	s.Logger.LogInfo("Number of validators: %d", len(c.Validators))
+	s.Logger.LogInfo("Port offset: %d", portOffset)
 
 	s.Resources.ValResources[c.ID] = make([]*dockertest.Resource, len(c.Validators))
 	for i, val := range c.Validators {
+		s.Logger.LogSubTest(fmt.Sprintf("Starting validator %d: %s", i, val.InstanceName()))
+		
 		runOpts := &dockertest.RunOptions{
 			Name:      val.InstanceName(),
 			NetworkID: s.Resources.DkrNet.Network.ID,
@@ -507,9 +564,10 @@ func (s *IntegrationTestSuite) runValidators(c *common.Chain, portOffset int) {
 		s.Require().NoError(err)
 
 		s.Resources.ValResources[c.ID][i] = resource
-		s.T().Logf("started Gaia %s validator container: %s", c.ID, resource.Container.ID)
+		s.Logger.LogSuccess(fmt.Sprintf("Validator %d container running: %s", i, resource.Container.ID))
 	}
 
+	s.Logger.LogStep("Checking validator health status")
 	rpcClient, err := rpchttp.New("tcp://localhost:26657", "/websocket")
 	s.Require().NoError(err)
 
@@ -533,6 +591,7 @@ func (s *IntegrationTestSuite) runValidators(c *common.Chain, portOffset int) {
 		time.Second,
 		"Gaia node failed to produce blocks",
 	)
+	s.Logger.LogSuccess("All validators healthy and producing blocks")
 }
 
 func noRestart(config *docker.HostConfig) {
@@ -545,7 +604,7 @@ func noRestart(config *docker.HostConfig) {
 // runIBCRelayer bootstraps an IBC Hermes relayer by creating an IBC connection and
 // a transfer channel between ChainA and ChainB.
 func (s *IntegrationTestSuite) runIBCRelayer() {
-	s.T().Log("starting Hermes relayer container")
+	s.Logger.LogStep("Initializing Hermes IBC relayer")
 
 	tmpDir, err := os.MkdirTemp("", "gaia-e2e-testnet-hermes-")
 	s.Require().NoError(err)
@@ -599,15 +658,17 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	)
 	s.Require().NoError(err)
 
-	s.T().Logf("started Hermes relayer container: %s", s.Resources.HermesResource.Container.ID)
+	s.Logger.LogSuccess(fmt.Sprintf("Hermes relayer running: %s", s.Resources.HermesResource.Container.ID))
 
 	// XXX: Give time to both networks to start, otherwise we might see gRPC
 	// transport errors.
 	time.Sleep(10 * time.Second)
 
+	s.Logger.LogStep("Creating IBC connection and channel")
 	// create the client, connection and channel between the two Gaia chains
 	s.CreateConnection()
 	s.CreateChannel()
+	s.Logger.LogSuccess("IBC connection and channel created")
 }
 
 func configFile(filename string) string {

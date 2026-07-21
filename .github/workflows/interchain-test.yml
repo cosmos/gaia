@@ -23,9 +23,20 @@ permissions:
   pull-requests: write
   statuses: write
 
+# Supersede an in-flight run for the same PR (e.g. a newer image push), but keep
+# runs for different PRs / dispatches independent by keying on the head SHA.
+# cancel-in-progress is unconditionally true here (unlike the main-branch-exempt
+# policy elsewhere): repository_dispatch always reports github.ref=refs/heads/main,
+# so the ref-based exemption would disable superseding entirely. The SHA-based
+# group already prevents cross-PR cancellation.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.client_payload.pr_head_sha || github.event.client_payload.ref_name || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   prepare-matrix:
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
     steps:
       - name: Get metadata
         id: get-metadata
@@ -81,7 +92,9 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.25.7"
+          go-version-file: tests/interchain/go.mod
+          cache: true
+          cache-dependency-path: tests/interchain/go.sum
 
       - name: Post pending status
         if: steps.get-metadata.outputs.pr_head_sha != ''
@@ -121,7 +134,10 @@ jobs:
 
   test:
     needs: prepare-matrix
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
+    # go test uses -timeout 5h; keep the job cap just above it so the test's own
+    # timeout (with a stack dump) fires before the job is force-killed.
+    timeout-minutes: 330
     name: "${{ matrix.previous_version }} -> ${{ matrix.test_version }} test ${{ matrix.test_name }}"
     strategy:
       matrix:
@@ -137,7 +153,9 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.25.7"
+          go-version-file: tests/interchain/go.mod
+          cache: true
+          cache-dependency-path: tests/interchain/go.sum
       - name: Run test
         env:
           TEST_DOCKER_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
@@ -161,7 +179,8 @@ jobs:
   test-report:
     needs: [test, prepare-matrix]
     if: always()
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v8
@@ -171,7 +190,9 @@ jobs:
       - name: Setup go
         uses: actions/setup-go@v6
         with:
-          go-version: "1.25.7"
+          go-version-file: tests/interchain/go.mod
+          cache: true
+          cache-dependency-path: tests/interchain/go.sum
       - name: Prep report
         env:
           TEST_MATRIX: ${{ needs.prepare-matrix.outputs.matrix }}
@@ -200,7 +221,8 @@ jobs:
   post-commit-status:
     needs: [test, prepare-matrix]
     if: always() && needs.prepare-matrix.outputs.pr_head_sha != ''
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
     steps:
       - name: Set commit status
         uses: actions/github-script@v8

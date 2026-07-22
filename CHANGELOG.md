@@ -22,6 +22,10 @@
 
 - Bump [github.com/cosmos/ibc-go/v10](https://github.com/cosmos/ibc-go) from 10.6.0 to 10.7.0 ([#4058](https://github.com/cosmos/gaia/pull/4058))
 
+### Dependencies
+
+- Bump [launch-editor](https://github.com/vitejs/launch-editor) from 2.10.0 to 2.14.1 ([#4066](https://github.com/cosmos/gaia/pull/4066))
+
 ## v27.4.0
 
 *May 21, 2026*

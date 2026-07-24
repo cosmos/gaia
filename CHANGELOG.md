@@ -14,6 +14,10 @@
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.7 to 0.60.8 ([#4078](https://github.com/cosmos/gaia/pull/4078))
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from v2.3.3 to v2.3.4 ([#4078](https://github.com/cosmos/gaia/pull/4078))
 
+### Dependencies
+
+- Bump [svgo](https://github.com/svg/svgo) from 3.3.2 to 3.3.4 ([#4087](https://github.com/cosmos/gaia/pull/4087))
+
 ## v27.5.0
 
 *June 19, 2026*

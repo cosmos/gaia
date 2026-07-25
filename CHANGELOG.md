@@ -6,6 +6,9 @@
 
 ### BUG-FIXES
 
+- Recover the expired IBC client `07-tendermint-582` on `cosmoshub-4`, used for the
+  connection with the `gravity-bridge-3` chain.
+
 ## v27.6.0
 
 *July 17, 2026*

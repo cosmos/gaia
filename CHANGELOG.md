@@ -8,6 +8,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [actions/github-script](https://github.com/actions/github-script) from 8 to 9 ([#4101](https://github.com/cosmos/gaia/pull/4101))
+
 ## v27.6.0
 
 *July 17, 2026*

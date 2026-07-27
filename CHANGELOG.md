@@ -8,6 +8,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [actions/setup-go](https://github.com/actions/setup-go) from 6 to 7 ([#4099](https://github.com/cosmos/gaia/pull/4099))
+
 ## v27.6.0
 
 *July 17, 2026*

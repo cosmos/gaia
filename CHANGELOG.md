@@ -8,6 +8,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [cosmossdk.io/tools/rosetta](https://github.com/cosmos/cosmos-sdk) from 0.2.1-0.20230613133644-0a778132a60f to 0.2.1 ([#4103](https://github.com/cosmos/gaia/pull/4103))
+
 ## v27.6.0
 
 *July 17, 2026*

@@ -14,6 +14,17 @@
 
 ### DEPENDENCIES
 
+## v27.6.0
+
+*July 17, 2026*
+
+### FEATURES
+
+- Raise the max Wasm contract size from 800KB to 1.6MiB.
+- Allow CosmWasm contracts read-only gRPC query access to validator info (`Query/Validator`) and governance proposals (`Query/Proposal`).
+
+### DEPENDENCIES
+
 - Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.7 to 0.60.8 ([#4078](https://github.com/cosmos/gaia/pull/4078))
 - Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from v2.3.3 to v2.3.4 ([#4078](https://github.com/cosmos/gaia/pull/4078))
 

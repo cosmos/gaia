@@ -98,7 +98,7 @@ jobs:
 
       - name: Post pending status
         if: steps.get-metadata.outputs.pr_head_sha != ''
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             await github.rest.repos.createCommitStatus({
@@ -225,7 +225,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Set commit status
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const testJob = context.payload.workflow_run ||

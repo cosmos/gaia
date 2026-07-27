@@ -90,7 +90,7 @@ jobs:
           ref: ${{ steps.get-metadata.outputs.ref_name }}
 
       - name: Setup go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: tests/interchain/go.mod
           cache: true
@@ -151,7 +151,7 @@ jobs:
           ref: ${{ needs.prepare-matrix.outputs.ref_name }}
 
       - name: Setup go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: tests/interchain/go.mod
           cache: true
@@ -188,7 +188,7 @@ jobs:
           path: ./outputs
 
       - name: Setup go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version-file: tests/interchain/go.mod
           cache: true

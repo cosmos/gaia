@@ -8,6 +8,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [github.com/cosmos/ibc-apps/modules/rate-limiting/v10](https://github.com/cosmos/ibc-apps) from 10.1.0 to 10.7.0 ([#4104](https://github.com/cosmos/gaia/pull/4104))
+
 ## v27.6.0
 
 *July 17, 2026*

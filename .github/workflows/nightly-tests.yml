@@ -40,7 +40,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Notify Slack on failure
-        uses: slackapi/slack-github-action@v2.1.1
+        uses: slackapi/slack-github-action@v4.0.0
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.NIGHTLY_E2E_SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

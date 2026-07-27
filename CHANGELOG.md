@@ -8,6 +8,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [actions/checkout](https://github.com/actions/checkout) from 5 to 7 ([#4095](https://github.com/cosmos/gaia/pull/4095))
+
 ## v27.6.0
 
 *July 17, 2026*

@@ -3,7 +3,6 @@ package v28_0_0
 import (
 	"context"
 	"fmt"
-	"math"
 
 	"github.com/cosmos/gogoproto/proto"
 	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
@@ -54,8 +53,8 @@ func CreateUpgradeHandler(
 		// Validate maxVals is a positive value within uint32 range.
 		// Rejecting zero prevents the handler from setting max_validators=0,
 		// which would unbond every validator and halt the chain.
-		if maxVals <= 0 || maxVals > math.MaxUint32 {
-			return vm, fmt.Errorf("invalid max_provider_consensus_validators value: %d (must be between 1 and %d)", maxVals, uint32(math.MaxUint32))
+		if maxVals <= 3 || maxVals > 225 {
+			return vm, fmt.Errorf("invalid max_provider_consensus_validators value: %d (must be between 4 and 225)", maxVals)
 		}
 
 		// 3. Set staking max_validators to the former max_provider_consensus_validators,

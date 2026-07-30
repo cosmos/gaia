@@ -8,6 +8,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [slackapi/slack-github-action](https://github.com/slackapi/slack-github-action) from 2.1.1 to 4.0.0 ([#4097](https://github.com/cosmos/gaia/pull/4097))
+
 ## v27.6.0
 
 *July 17, 2026*

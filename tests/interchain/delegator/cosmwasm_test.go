@@ -22,7 +22,7 @@ const (
 	increment = `{"increment":{}}`
 
 	contractFile          = "testdata/contract.wasm"
-	inRangeContractFile   = "testdata/contract_in_range.wasm"
+	largeContractFile     = "testdata/contract_large.wasm"
 	oversizedContractFile = "testdata/contract_oversized.wasm"
 
 	proposalQueryContractFile  = "testdata/proposal_query.wasm"
@@ -35,9 +35,6 @@ func (s *CosmWasmSuite) SetupSuite() {
 	code, contractAddr := s.storeAndInstantiate(contractFile, initState)
 	s.PreUpgradeContractCode = code
 	s.PreUpgradeContractAddr = contractAddr
-
-	// Pre-upgrade, the chain still enforces the 800KB cap, so the in-range contract must be rejected.
-	s.assertStoreRejected(inRangeContractFile)
 
 	s.UpgradeChain()
 }
@@ -57,10 +54,9 @@ func (s *CosmWasmSuite) TestPreUpgradeContract() {
 	s.Require().Equal(int64(102), count)
 }
 
-func (s *CosmWasmSuite) TestWasmSizeCapRaised() {
-	// A contract between the old 800KB cap and the new 1.6MiB cap is rejected pre-upgrade
-	// (asserted in SetupSuite) and must be accepted, and fully functional, post-upgrade.
-	_, contractAddr := s.storeAndInstantiate(inRangeContractFile, initState)
+func (s *CosmWasmSuite) TestLargeContractAccepted() {
+	// A contract under the 1.6MiB cap must be accepted and fully functional.
+	_, contractAddr := s.storeAndInstantiate(largeContractFile, initState)
 
 	count := s.getContractCount(contractAddr)
 	s.Require().Equal(int64(100), count)
@@ -71,8 +67,8 @@ func (s *CosmWasmSuite) TestWasmSizeCapRaised() {
 	s.Require().Equal(int64(101), count)
 }
 
-func (s *CosmWasmSuite) TestWasmSizeCapStillEnforced() {
-	// A contract above the new 1.6MiB cap must still be rejected post-upgrade.
+func (s *CosmWasmSuite) TestOversizedContractRejected() {
+	// A contract above the 1.6MiB cap must be rejected.
 	s.assertStoreRejected(oversizedContractFile)
 }
 

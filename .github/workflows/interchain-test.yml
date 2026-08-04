@@ -182,6 +182,11 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 20
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.prepare-matrix.outputs.ref_name }}
+
       - name: Download all artifacts
         uses: actions/download-artifact@v8
         with:

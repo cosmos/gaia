@@ -70,9 +70,6 @@ jobs:
       - name: Build Gaia Docker Image
         if: env.GIT_DIFF
         run: make docker-build-debug
-      - name: Build Hermes Docker Image
-        if: env.GIT_DIFF
-        run: make docker-build-hermes
       - name: Test E2E
         if: env.GIT_DIFF
         run: make test-e2e

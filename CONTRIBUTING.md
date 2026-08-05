@@ -145,7 +145,7 @@ before each commit is available in the `contrib/githooks/` directory.
 ### Testing
 
 Tests can be executed by running `make run-tests` at the top level of the Gaia repository.
-For running the e2e tests, make sure to build the docker images by running `make docker-build-all`.
+For running the e2e tests, make sure to build the docker image by running `make docker-build-debug`.
 
 When testing a function under a variety of different inputs, we prefer to use
 [table driven tests](https://github.com/golang/go/wiki/TableDrivenTests).

@@ -569,8 +569,8 @@ func (s *IntegrationTestSuite) runIBCRelayer() {
 	s.Resources.HermesResource, err = s.Resources.DkrPool.RunWithOptions(
 		&dockertest.RunOptions{
 			Name:       fmt.Sprintf("%s-%s-relayer", s.Resources.ChainA.ID, s.Resources.ChainB.ID),
-			Repository: "ghcr.io/cosmos/hermes-e2e",
-			Tag:        "1.0.0",
+			Repository: "ghcr.io/informalsystems/hermes",
+			Tag:        "1.13.1",
 			NetworkID:  s.Resources.DkrNet.Network.ID,
 			Mounts: []string{
 				fmt.Sprintf("%s/:/root/hermes", hermesCfgPath),

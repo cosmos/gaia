@@ -601,6 +601,7 @@ func (p *Chain) CheckCCV(ctx context.Context, consumer *Chain, relayer *Relayer,
 	tCtx, tCancel := context.WithTimeout(ctx, 15*time.Minute)
 	defer tCancel()
 	var retErr error
+	lastClear := time.Now()
 	for tCtx.Err() == nil {
 		retErr = nil
 		providerPower, err := p.GetValidatorPower(ctx, providerHex)
@@ -618,6 +619,10 @@ func (p *Chain) CheckCCV(ctx context.Context, consumer *Chain, relayer *Relayer,
 		}
 		if retErr == nil {
 			break
+		}
+		if time.Since(lastClear) > 30*time.Second {
+			_ = relayer.ClearCCVChannel(ctx, p, consumer)
+			lastClear = time.Now()
 		}
 		time.Sleep(CommitTimeout)
 	}

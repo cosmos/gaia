@@ -20,6 +20,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 // This moniker is hardcoded into interchaintest
@@ -287,6 +288,28 @@ func (c *Chain) QueryJSON(ctx context.Context, jsonPath string, query ...string)
 	return retval, nil
 }
 
+// CometValidator represents a validator in the CometBFT validator set.
+type CometValidator struct {
+	Address     string
+	VotingPower int64
+}
+
+// GetCometValidatorSet queries the CometBFT validator set and returns a parsed slice.
+func (c *Chain) GetCometValidatorSet(ctx context.Context) ([]CometValidator, error) {
+	vals, err := c.QueryJSON(ctx, "validators", "tendermint-validator-set")
+	if err != nil {
+		return nil, err
+	}
+	var result []CometValidator
+	for _, v := range vals.Array() {
+		result = append(result, CometValidator{
+			Address:     v.Get("address").String(),
+			VotingPower: v.Get("voting_power").Int(),
+		})
+	}
+	return result, nil
+}
+
 // GetProposalID parses the proposal ID from the tx; necessary when the proposal type isn't accessible to interchaintest yet
 func (c *Chain) GetProposalID(ctx context.Context, txhash string) (string, error) {
 	stdout, _, err := c.GetNode().ExecQuery(ctx, "tx", txhash)
@@ -488,4 +511,112 @@ func (c *Chain) ModifyConfig(ctx context.Context, testName interchaintest.TestNa
 	}
 	time.Sleep(30 * time.Second)
 	return nil
+}
+
+// ValidatorSnapshot captures the state of a single validator at a point in time.
+type ValidatorSnapshot struct {
+	Index        int
+	Moniker      string
+	OperatorAddr string
+	ConsAddress  string
+	Tokens       int64
+	Status       stakingtypes.BondStatus
+	Jailed       bool
+	InCometSet   bool
+	CometPower   int64
+}
+
+// ChainSnapshot captures the full chain validator state at a point in time.
+type ChainSnapshot struct {
+	Height            int64
+	Validators        []ValidatorSnapshot
+	CometSetSize      int
+	MaxValidators     uint32
+	TotalBondedTokens int64
+	StakingPoolBonded int64
+}
+
+// GetStakingPool queries the staking pool and returns the bonded tokens.
+func (c *Chain) GetStakingPool(ctx context.Context) (int64, error) {
+	result, err := c.QueryJSON(ctx, "pool.bonded_tokens", "staking", "pool")
+	if err != nil {
+		return 0, err
+	}
+	bonded, err := strconv.ParseInt(result.String(), 10, 64)
+	if err != nil {
+		return 0, fmt.Errorf("failed to parse bonded_tokens: %w", err)
+	}
+	return bonded, nil
+}
+
+// SnapshotValidatorState captures comprehensive validator state by correlating
+// staking module state with the CometBFT validator set.
+func (c *Chain) SnapshotValidatorState(ctx context.Context, wallets []ValidatorWallet) (*ChainSnapshot, error) {
+	height, err := c.Height(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get height: %w", err)
+	}
+
+	cometVals, err := c.GetCometValidatorSet(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get CometBFT validator set: %w", err)
+	}
+
+	// Build a map of cons address -> CometValidator for lookup
+	cometMap := make(map[string]CometValidator, len(cometVals))
+	for _, cv := range cometVals {
+		cometMap[cv.Address] = cv
+	}
+
+	poolBonded, err := c.GetStakingPool(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get staking pool: %w", err)
+	}
+
+	// Query max_validators from staking params
+	maxValsResult, err := c.QueryJSON(ctx, "params.max_validators", "staking", "params")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get staking params: %w", err)
+	}
+	maxValidators := uint32(maxValsResult.Uint())
+
+	snap := &ChainSnapshot{
+		Height:            height,
+		CometSetSize:      len(cometVals),
+		MaxValidators:     maxValidators,
+		StakingPoolBonded: poolBonded,
+	}
+
+	var totalBonded int64
+	for i, w := range wallets {
+		val, err := c.StakingQueryValidator(ctx, w.ValoperAddress)
+		if err != nil {
+			return nil, fmt.Errorf("failed to query validator %d (%s): %w", i, w.ValoperAddress, err)
+		}
+
+		vs := ValidatorSnapshot{
+			Index:        i,
+			Moniker:      w.Moniker,
+			OperatorAddr: w.ValoperAddress,
+			ConsAddress:  w.ValConsAddress,
+			Tokens:       val.Tokens.Int64(),
+			Status:       val.Status,
+			Jailed:       val.Jailed,
+		}
+
+		// Check if this validator is in the CometBFT set
+		if cv, ok := cometMap[w.ValConsAddress]; ok {
+			vs.InCometSet = true
+			vs.CometPower = cv.VotingPower
+		}
+
+		if val.Status == stakingtypes.Bonded {
+			totalBonded += val.Tokens.Int64()
+		}
+
+		snap.Validators = append(snap.Validators, vs)
+	}
+	snap.TotalBondedTokens = totalBonded
+
+	return snap, nil
 }

@@ -4,6 +4,12 @@
 
 ### FEATURES
 
+- Remove [Interchain Security](https://github.com/cosmos/interchain-security) provider module
+
+### API-BREAKING
+
+- Queries for Interchain Security messages (e.g. `MsgAssignConsumerKey`, `MsgCreateConsumer`, `ConsumerAdditionProposal`) now return an empty stub instead of historical data.
+
 ### BUG-FIXES
 
 ### DEPENDENCIES

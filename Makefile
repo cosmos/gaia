@@ -377,7 +377,7 @@ docker-build-debug:
 ###                                Linting                                  ###
 ###############################################################################
 golangci_lint_cmd=golangci-lint
-golangci_version=v2.6.2
+golangci_version=v2.11.1
 
 lint:
 	@echo "--> Running linter"

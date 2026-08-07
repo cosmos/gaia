@@ -50,11 +50,6 @@ func (app *GaiaApp) ExportAppStateAndValidators(
 	sort.SliceStable(validators, func(i, j int) bool {
 		return validators[i].Power > validators[j].Power
 	})
-	// we have to trim this to only active consensus validators
-	maxVals := app.ProviderKeeper.GetMaxProviderConsensusValidators(ctx)
-	if len(validators) > int(maxVals) {
-		validators = validators[:maxVals]
-	}
 
 	return servertypes.ExportedApp{
 		AppState:        appState,

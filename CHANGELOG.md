@@ -14,6 +14,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [js-yaml](https://github.com/nodeca/js-yaml) from 3.14.1 to 3.15.1 ([#4112](https://github.com/cosmos/gaia/pull/4112))
+
 ## v27.6.0
 
 *July 17, 2026*

@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## UNRELEASED
+## v28.0.0
+
+*August 7, 2026*
 
 ### FEATURES
 
@@ -9,10 +11,6 @@
 ### API-BREAKING
 
 - Queries for Interchain Security messages (e.g. `MsgAssignConsumerKey`, `MsgCreateConsumer`, `ConsumerAdditionProposal`) now return an empty stub instead of historical data.
-
-### BUG-FIXES
-
-### DEPENDENCIES
 
 ## v27.6.0
 

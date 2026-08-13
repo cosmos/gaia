@@ -4,6 +4,8 @@
 
 ### FEATURES
 
+* Delete the contents of the deprecated `provider` kv store.
+
 ### API-BREAKING
 
 ### BUG-FIXES

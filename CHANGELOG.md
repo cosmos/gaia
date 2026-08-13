@@ -4,6 +4,18 @@
 
 ### FEATURES
 
+### API-BREAKING
+
+### BUG-FIXES
+
+### DEPENDENCIES
+
+## v28.0.0
+
+*August 7, 2026*
+
+### FEATURES
+
 - Remove [Interchain Security](https://github.com/cosmos/interchain-security) provider module
 
 ### API-BREAKING

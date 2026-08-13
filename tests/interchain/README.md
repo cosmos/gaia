@@ -91,48 +91,13 @@ func TestTransactions(t *testing.T) {
 ```
 
 Of course, we can also parameterize the test suites themselves. This enables us
-to write tests once and run them a bunch of times on different configurations:
-
-```go
-type ConsumerLaunchSuite struct {
-	*chainsuite.Suite
-	OtherChain            string
-	OtherChainVersion     string
-	ShouldCopyProviderKey [chainsuite.ValidatorCount]bool
-}
-
-func TestICS40ChainLaunch(t *testing.T) {
-	s := &ConsumerLaunchSuite{
-		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{}),
-		OtherChain:            "ics-consumer",
-		OtherChainVersion:     "v4.0.0",
-		ShouldCopyProviderKey: noProviderKeysCopied(),
-	}
-	suite.Run(t, s)
-}
-
-func TestICS33ConsumerAllKeysChainLaunch(t *testing.T) {
-	s := &ConsumerLaunchSuite{
-		Suite:                 chainsuite.NewSuite(chainsuite.SuiteConfig{}),
-		OtherChain:            "ics-consumer",
-		OtherChainVersion:     "v3.3.0",
-		ShouldCopyProviderKey: allProviderKeysCopied(),
-	}
-	suite.Run(t, s)
-}
-```
-
-Notice also how `UpgradeOnSetup` isn't set here: the ConsumerLaunchSuite needs
-to be handed a pre-upgrade chain so it can make sure that a consumer chain that
-launched before the upgrade keeps working after the upgrade.
-
+to write tests once and run them a bunch of times on different configurations.
 
 ## Writing new tests
 
 All you need to start writing new tests is a test suite as described above.
 The suite will have an `s.Chain` that you can test. Check out utilities in
-[`chainsuite/chain.go`](./chainsuite/chain.go) and
-[`chain_ics.go`](./chainsuite/chain_ics.go) for some convenience methods.
+[`chainsuite/chain.go`](./chainsuite/chain.go) for some convenience methods.
 
 In addition, the s.Chain object extends the `interchaintest` chain object, so
 check out [the docs](https://pkg.go.dev/github.com/strangelove-ventures/interchaintest/v7) to

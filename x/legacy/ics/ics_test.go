@@ -20,8 +20,8 @@ import (
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
-	"github.com/cosmos/gaia/v28/app/params"
-	"github.com/cosmos/gaia/v28/x/legacy/ics"
+	"github.com/cosmos/gaia/v29/app/params"
+	"github.com/cosmos/gaia/v29/x/legacy/ics"
 )
 
 // ---------------------------------------------------------------------------

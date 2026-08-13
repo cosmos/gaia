@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"sort"
-	"time"
 
 	"github.com/cosmos/interchaintest/v10"
 	"github.com/cosmos/interchaintest/v10/ibc"
@@ -116,22 +114,6 @@ func (r *Relayer) GetChannelWithPort(ctx context.Context, chain, counterparty *C
 	return nil, fmt.Errorf("no channel found for port %s", portID)
 }
 
-func (r *Relayer) ClearCCVChannel(ctx context.Context, provider, consumer *Chain) error {
-	var channel *ibc.ChannelOutput
-	channel, err := r.GetChannelWithPort(ctx, consumer, provider, "consumer")
-	if err != nil {
-		return err
-	}
-	rs := r.Exec(ctx, GetRelayerExecReporter(ctx), []string{
-		"hermes", "clear", "packets", "--port", "consumer", "--channel", channel.ChannelID,
-		"--chain", consumer.Config().ChainID,
-	}, nil)
-	if rs.Err != nil {
-		return fmt.Errorf("error clearing packets: %w", rs.Err)
-	}
-	return nil
-}
-
 func (r *Relayer) ClearTransferChannel(ctx context.Context, chainA, chainB *Chain) error {
 	channel, err := r.GetTransferChannel(ctx, chainA, chainB)
 	if err != nil {
@@ -145,93 +127,6 @@ func (r *Relayer) ClearTransferChannel(ctx context.Context, chainA, chainB *Chai
 		return fmt.Errorf("error clearing packets: %w", rs.Err)
 	}
 	return nil
-}
-
-func (r *Relayer) ConnectProviderConsumer(ctx context.Context, provider *Chain, consumer *Chain) error {
-	icsPath := relayerICSPathFor(provider, consumer)
-	rep := GetRelayerExecReporter(ctx)
-	if err := r.GeneratePath(ctx, rep, consumer.Config().ChainID, provider.Config().ChainID, icsPath); err != nil {
-		return err
-	}
-
-	consumerClients, err := r.GetClients(ctx, rep, consumer.Config().ChainID)
-	if err != nil {
-		return err
-	}
-	sort.Slice(consumerClients, func(i, j int) bool {
-		return consumerClients[i].ClientID > consumerClients[j].ClientID
-	})
-	var consumerClient *ibc.ClientOutput
-	for _, client := range consumerClients {
-		if client.ClientState.ChainID == provider.Config().ChainID {
-			consumerClient = client
-			break
-		}
-	}
-	if consumerClient == nil {
-		return fmt.Errorf("consumer chain %s does not have a client tracking the provider chain %s", consumer.Config().ChainID, provider.Config().ChainID)
-	}
-	consumerClientID := consumerClient.ClientID
-
-	providerClients, err := r.GetClients(ctx, rep, provider.Config().ChainID)
-	if err != nil {
-		return err
-	}
-	sort.Slice(providerClients, func(i, j int) bool {
-		return providerClients[i].ClientID > providerClients[j].ClientID
-	})
-
-	var providerClient *ibc.ClientOutput
-	for _, client := range providerClients {
-		if client.ClientState.ChainID == consumer.Config().ChainID {
-			providerClient = client
-			break
-		}
-	}
-	if providerClient == nil {
-		return fmt.Errorf("provider chain %s does not have a client tracking the consumer chain %s for path %s on relayer %s",
-			provider.Config().ChainID, consumer.Config().ChainID, icsPath, r)
-	}
-	providerClientID := providerClient.ClientID
-
-	if err := r.UpdatePath(ctx, rep, icsPath, ibc.PathUpdateOptions{
-		SrcClientID: &consumerClientID,
-		DstClientID: &providerClientID,
-	}); err != nil {
-		return err
-	}
-
-	if err := r.CreateConnections(ctx, rep, icsPath); err != nil {
-		return err
-	}
-
-	if err := r.CreateChannel(ctx, rep, icsPath, ibc.CreateChannelOptions{
-		SourcePortName: "consumer",
-		DestPortName:   "provider",
-		Order:          ibc.Ordered,
-		Version:        "1",
-	}); err != nil {
-		return err
-	}
-
-	tCtx, tCancel := context.WithTimeout(ctx, 30*CommitTimeout)
-	defer tCancel()
-	for tCtx.Err() == nil {
-		var ch *ibc.ChannelOutput
-		ch, err = r.GetTransferChannel(ctx, provider, consumer)
-		if err == nil {
-			if ch.State == "STATE_OPEN" {
-				break
-			}
-			err = fmt.Errorf("channel found but not open yet (state: %s)", ch.State)
-		}
-		time.Sleep(CommitTimeout)
-	}
-	return err
-}
-
-func relayerICSPathFor(chainA, chainB *Chain) string {
-	return fmt.Sprintf("ics-%s-%s", chainA.Config().ChainID, chainB.Config().ChainID)
 }
 
 func relayerTransferPathFor(chainA, chainB *Chain) string {

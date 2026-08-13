@@ -1,4 +1,4 @@
-module github.com/cosmos/gaia/v28/tests/interchain
+module github.com/cosmos/gaia/v29/tests/interchain
 
 go 1.25.7
 
@@ -18,7 +18,6 @@ require (
 	github.com/cometbft/cometbft v0.38.21
 	github.com/cosmos/cosmos-sdk v0.53.4
 	github.com/cosmos/ibc-go/v10 v10.6.0
-	github.com/cosmos/interchain-security/v7 v7.0.1
 	github.com/cosmos/interchaintest/v10 v10.0.1
 	github.com/docker/docker v28.2.2+incompatible
 	github.com/google/go-github/v62 v62.0.0
@@ -30,7 +29,6 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/tidwall/gjson v1.18.0
 	github.com/tidwall/sjson v1.2.5
-	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/mod v0.29.0
 	golang.org/x/sync v0.18.0
@@ -103,6 +101,7 @@ require (
 	github.com/cosmos/gogoproto v1.7.0 // indirect
 	github.com/cosmos/iavl v1.3.0 // indirect
 	github.com/cosmos/ics23/go v0.11.0 // indirect
+	github.com/cosmos/interchain-security/v7 v7.0.1 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.14.0 // indirect
 	github.com/crate-crypto/go-eth-kzg v1.3.0 // indirect
 	github.com/crate-crypto/go-ipa v0.0.0-20240724233137-53bbb0ceb27a // indirect
@@ -249,6 +248,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.37.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.5.0 // indirect
 	go.uber.org/mock v0.5.2 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
 	golang.org/x/arch v0.17.0 // indirect
 	golang.org/x/crypto v0.45.0 // indirect

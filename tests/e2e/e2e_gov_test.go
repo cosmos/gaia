@@ -12,9 +12,9 @@ import (
 	govtypesv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
-	"github.com/cosmos/gaia/v28/tests/e2e/msg"
-	"github.com/cosmos/gaia/v28/tests/e2e/query"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/msg"
+	"github.com/cosmos/gaia/v29/tests/e2e/query"
 )
 
 /*

@@ -30,7 +30,7 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
+	liquidtypes "github.com/cosmos/gaia/v29/x/liquid/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {
@@ -55,7 +55,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		authzkeeper.StoreKey,
 		routertypes.StoreKey,
 		ratelimittypes.StoreKey,
-		"provider", // ICS provider store kept for upgrade handler. Remove after v28.0.0 upgrade.
+		"provider", // ICS provider key kept for store deletion. Remove after v29.0.0 upgrade.
 		consensusparamtypes.StoreKey,
 		feemarkettypes.StoreKey,
 		wasmtypes.StoreKey,

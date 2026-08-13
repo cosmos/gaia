@@ -1,4 +1,4 @@
-module github.com/cosmos/gaia/v28
+module github.com/cosmos/gaia/v29
 
 go 1.25.7
 
@@ -294,4 +294,3 @@ replace (
 	// following versions might cause unexpected behavior
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
-

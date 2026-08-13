@@ -238,6 +238,19 @@ func (c *Chain) GetValidatorHex(ctx context.Context, val int) (string, error) {
 	return providerHex, nil
 }
 
+// IsValoperJailed reports whether the given validator operator address is
+// currently jailed.
+func (c *Chain) IsValoperJailed(ctx context.Context, valoper string) (bool, error) {
+	out, _, err := c.Validators[0].ExecQuery(ctx, "staking", "validator", valoper)
+	if err != nil {
+		return false, err
+	}
+	if gjson.GetBytes(out, "jailed").Exists() {
+		return gjson.GetBytes(out, "jailed").Bool(), nil
+	}
+	return gjson.GetBytes(out, "validator.jailed").Bool(), nil
+}
+
 func getValidatorWallets(ctx context.Context, chain *Chain) ([]ValidatorWallet, error) {
 	wallets := make([]ValidatorWallet, len(chain.Validators))
 	lock := new(sync.Mutex)

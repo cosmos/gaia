@@ -31,30 +31,26 @@ type SuiteConfig struct {
 }
 
 const (
-	CommitTimeout          = 4 * time.Second
-	Uatom                  = "uatom"
-	Ucon                   = "ucon"
-	NeutronDenom           = "untn"
-	StrideDenom            = "ustr"
-	GovMinDepositAmount    = 1000
-	GovDepositAmount       = "5000000" + Uatom
-	GovDepositPeriod       = 60 * time.Second
-	GovVotingPeriod        = 80 * time.Second
-	DowntimeJailDuration   = 10 * time.Second
-	ProviderSlashingWindow = 10
-	GasPrices              = "0.005" + Uatom
+	CommitTimeout        = 4 * time.Second
+	Uatom                = "uatom"
+	Ucon                 = "ucon"
+	NeutronDenom         = "untn"
+	StrideDenom          = "ustr"
+	GovMinDepositAmount  = 1000
+	GovDepositAmount     = "5000000" + Uatom
+	GovDepositPeriod     = 60 * time.Second
+	GovVotingPeriod      = 80 * time.Second
+	DowntimeJailDuration = 10 * time.Second
+	SlashingWindow       = 10
+	GasPrices            = "0.005" + Uatom
 	// ValidatorCount         = 1
-	UpgradeDelta           = 30
-	ValidatorFunds         = 11_000_000_000
-	ChainSpawnWait         = 155 * time.Second
-	SlashingWindowConsumer = 20
-	BlocksPerDistribution  = 10
-	StrideVersion          = "v24.0.0"
-	NeutronVersion         = "v3.0.2"
-	TransferPortID         = "transfer"
-	// This is needed because not every ics image is in the default heighliner registry
-	HyphaICSRepo = "ghcr.io/hyphacoop/ics"
-	ICSUidGuid   = "1025:1025"
+	UpgradeDelta          = 30
+	ValidatorFunds        = 11_000_000_000
+	ChainSpawnWait        = 155 * time.Second
+	BlocksPerDistribution = 10
+	StrideVersion         = "v24.0.0"
+	NeutronVersion        = "v3.0.2"
+	TransferPortID        = "transfer"
 	// Osmosis chain constants
 	OsmosisDenom   = "uosmo"
 	OsmosisVersion = "30.0.5"
@@ -63,9 +59,8 @@ const (
 
 // These have to be vars so we can take their address
 var (
-	OneValidator   int = 1
-	SixValidators  int = 6
-	TenValidators  int = 10
+	OneValidator  int = 1
+	SixValidators int = 6
 )
 
 func MergeChainSpecs(spec, other *interchaintest.ChainSpec) *interchaintest.ChainSpec {
@@ -131,35 +126,6 @@ func DefaultGenesisAmounts(denom string) func(i int) (types.Coin, types.Coin) {
 	}
 }
 
-// TenValidatorGenesisAmounts returns genesis amounts for a 10-validator topology:
-// 5 in group A (CometBFT consensus), 3 in group B (bonded, not in CometBFT), 2 in group N (unbonded).
-// Requires max_provider_consensus_validators=5 and max_validators=8 in genesis.
-func TenValidatorGenesisAmounts(denom string) func(i int) (types.Coin, types.Coin) {
-	return func(i int) (types.Coin, types.Coin) {
-		if i >= TenValidators {
-			panic("your chain has too many validators")
-		}
-		return types.Coin{
-				Denom:  denom,
-				Amount: sdkmath.NewInt(ValidatorFunds),
-			}, types.Coin{
-				Denom: denom,
-				Amount: sdkmath.NewInt([]int64{
-					30_000_000, // A: highest
-					29_000_000, // A
-					20_000_000, // A
-					15_000_000, // A
-					12_000_000, // A: lowest in consensus (boundary)
-					9_000_000,  // B: bonded, not in CometBFT
-					7_000_000,  // B
-					5_000_000,  // B: lowest bonded (boundary)
-					3_000_000,  // N: not bonded
-					1_000_000,  // N: lowest
-				}[i]),
-			}
-	}
-}
-
 func DefaultChainSpec(env Environment) *interchaintest.ChainSpec {
 	fullNodes := 0
 	var repository string
@@ -212,14 +178,13 @@ func DefaultGenesis() []cosmos.GenesisKV {
 		cosmos.NewGenesisKV("app_state.gov.params.max_deposit_period", GovDepositPeriod.String()),
 		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.denom", Uatom),
 		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.amount", strconv.Itoa(GovMinDepositAmount)),
-		cosmos.NewGenesisKV("app_state.slashing.params.signed_blocks_window", strconv.Itoa(ProviderSlashingWindow)),
+		cosmos.NewGenesisKV("app_state.slashing.params.signed_blocks_window", strconv.Itoa(SlashingWindow)),
 		cosmos.NewGenesisKV("app_state.slashing.params.downtime_jail_duration", DowntimeJailDuration.String()),
 		cosmos.NewGenesisKV("app_state.feemarket.params.min_base_gas_price", strings.TrimSuffix(GasPrices, Uatom)),
 		cosmos.NewGenesisKV("app_state.feemarket.state.base_gas_price", strings.TrimSuffix(GasPrices, Uatom)),
 		cosmos.NewGenesisKV("app_state.feemarket.params.fee_denom", Uatom),
 		cosmos.NewGenesisKV("app_state.wasm.params.code_upload_access.permission", "Nobody"),
 		cosmos.NewGenesisKV("app_state.wasm.params.instantiate_default_permission", "AnyOfAddresses"),
-		cosmos.NewGenesisKV("app_state.provider.params.blocks_per_epoch", 1),
 	}
 }
 
@@ -230,7 +195,7 @@ func OsmosisGenesis() []cosmos.GenesisKV {
 		cosmos.NewGenesisKV("app_state.gov.params.max_deposit_period", GovDepositPeriod.String()),
 		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.denom", OsmosisDenom),
 		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.amount", strconv.Itoa(GovMinDepositAmount)),
-		cosmos.NewGenesisKV("app_state.slashing.params.signed_blocks_window", strconv.Itoa(ProviderSlashingWindow)),
+		cosmos.NewGenesisKV("app_state.slashing.params.signed_blocks_window", strconv.Itoa(SlashingWindow)),
 		cosmos.NewGenesisKV("app_state.slashing.params.downtime_jail_duration", DowntimeJailDuration.String()),
 	}
 }

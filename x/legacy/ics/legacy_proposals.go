@@ -3,7 +3,7 @@ package ics
 import (
 	errorsmod "cosmossdk.io/errors"
 
-	gaiaerrors "github.com/cosmos/gaia/v28/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v29/types/errors"
 )
 
 // stubProposal satisfies both proto.Message and the govv1beta1.Content

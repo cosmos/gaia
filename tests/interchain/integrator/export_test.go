@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/cosmos/gaia/v28/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v29/tests/interchain/chainsuite"
 	"github.com/cosmos/interchaintest/v10"
 	"github.com/cosmos/interchaintest/v10/chain/cosmos"
 	"github.com/cosmos/interchaintest/v10/ibc"
@@ -13,8 +13,7 @@ import (
 )
 
 const (
-	maxValidators          = 5
-	maxConsensusValidators = 4
+	maxValidators = 5
 )
 
 type ExportSuite struct {
@@ -67,8 +66,7 @@ func (s *ExportSuite) TestExportAndImportValidators() {
 		validators = append(validators, validator)
 	}
 
-	// The max_validators param will be set to the max_provider_consensus_validators value during the v28.0.0 upgrade,
-	// so we check that the correct number of validators are bonded and that the next validator is unbonded (i.e. not in the active set).
+	// Check that the correct number of validators are bonded and that the next validator is unbonded (i.e. not in the active set).
 	maxValidatorsJSON, err := newChain.QueryJSON(s.GetContext(), "params.max_validators", "staking", "params")
 	s.Require().NoError(err)
 	maxValidatorsParam := int(maxValidatorsJSON.Int())
@@ -92,7 +90,6 @@ func TestExport(t *testing.T) {
 	genesis := chainsuite.DefaultGenesis()
 	genesis = append(genesis,
 		cosmos.NewGenesisKV("app_state.staking.params.max_validators", maxValidators),
-		cosmos.NewGenesisKV("app_state.provider.params.max_provider_consensus_validators", maxConsensusValidators),
 	)
 	s := &ExportSuite{
 		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{

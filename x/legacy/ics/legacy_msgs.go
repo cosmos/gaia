@@ -11,7 +11,7 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 
-	gaiaerrors "github.com/cosmos/gaia/v28/types/errors"
+	gaiaerrors "github.com/cosmos/gaia/v29/types/errors"
 )
 
 // stubMsg implements proto.Message and codec.ProtoMarshaler with no-op

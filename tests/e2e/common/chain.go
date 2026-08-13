@@ -29,10 +29,10 @@ import (
 	paramsproptypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaia "github.com/cosmos/gaia/v28/app"
-	gaiaparams "github.com/cosmos/gaia/v28/app/params"
-	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
-	metaprotocoltypes "github.com/cosmos/gaia/v28/x/metaprotocols/types"
+	gaia "github.com/cosmos/gaia/v29/app"
+	gaiaparams "github.com/cosmos/gaia/v29/app/params"
+	liquidtypes "github.com/cosmos/gaia/v29/x/liquid/types"
+	metaprotocoltypes "github.com/cosmos/gaia/v29/x/metaprotocols/types"
 )
 
 const (

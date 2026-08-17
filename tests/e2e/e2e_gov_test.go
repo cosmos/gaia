@@ -137,7 +137,7 @@ func (s *IntegrationTestSuite) GovCommunityPoolSpend() {
 			afterRecipientBalance, err := query.SpecificBalance(chainAAPIEndpoint, recipient, common.UAtomDenom)
 			s.Require().NoError(err)
 
-			return afterRecipientBalance.Sub(sendAmount).IsEqual(beforeRecipientBalance)
+			return afterRecipientBalance.Sub(sendAmount).IsEqual(beforeRecipientBalance) //nolint:staticcheck
 		},
 		10*time.Second,
 		5*time.Second,

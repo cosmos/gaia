@@ -23,7 +23,7 @@ const consensusVersion uint64 = 1
 var (
 	_ module.AppModuleBasic   = AppModuleBasic{}
 	_ module.AppModuleGenesis = AppModule{}
-	_ module.AppModule        = AppModule{}
+	_ module.AppModule        = AppModule{} //nolint:staticcheck
 )
 
 type AppModuleBasic struct{}

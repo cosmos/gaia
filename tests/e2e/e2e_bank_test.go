@@ -68,8 +68,8 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 				afterBobUAtomBalance, err = query.SpecificBalance(chainEndpoint, bob.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				decremented := beforeAliceUAtomBalance.Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterAliceUAtomBalance)
-				incremented := beforeBobUAtomBalance.Add(common.TokenAmount).IsEqual(afterBobUAtomBalance)
+				decremented := beforeAliceUAtomBalance.Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterAliceUAtomBalance) //nolint:staticcheck
+				incremented := beforeBobUAtomBalance.Add(common.TokenAmount).IsEqual(afterBobUAtomBalance)                              //nolint:staticcheck
 
 				return decremented && incremented
 			},
@@ -94,9 +94,9 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 				afterCharlieUAtomBalance, err = query.SpecificBalance(chainEndpoint, charlie.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				decremented := beforeAliceUAtomBalance.Sub(common.TokenAmount).Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterAliceUAtomBalance)
-				incremented := beforeBobUAtomBalance.Add(common.TokenAmount).IsEqual(afterBobUAtomBalance) &&
-					beforeCharlieUAtomBalance.Add(common.TokenAmount).IsEqual(afterCharlieUAtomBalance)
+				decremented := beforeAliceUAtomBalance.Sub(common.TokenAmount).Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterAliceUAtomBalance) //nolint:staticcheck
+				incremented := beforeBobUAtomBalance.Add(common.TokenAmount).IsEqual(afterBobUAtomBalance) &&                                                   //nolint:staticcheck
+					beforeCharlieUAtomBalance.Add(common.TokenAmount).IsEqual(afterCharlieUAtomBalance) //nolint:staticcheck
 
 				return decremented && incremented
 			},

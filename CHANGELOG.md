@@ -13,6 +13,8 @@
 
 ### DEPENDENCIES
 
+- Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.4 to 0.53.8 ([#XXXX](https://github.com/cosmos/gaia/pull/XXXX))
+
 ## v28.0.0
 
 *August 7, 2026*

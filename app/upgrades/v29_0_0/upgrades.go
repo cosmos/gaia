@@ -22,6 +22,11 @@ func CreateUpgradeHandler(
 		ctx := sdk.UnwrapSDKContext(c)
 		ctx.Logger().Info("Starting upgrade", "name", UpgradeName)
 
+		ctx.Logger().Info("Deleting contents of the deprecated provider kv-store...")
+		if err := deleteProviderStoreContents(ctx, keepers); err != nil {
+			return vm, errorsmod.Wrapf(err, "deleting provider store contents")
+		}
+
 		ctx.Logger().Info("Starting module migrations...")
 		vm, err := mm.RunMigrations(ctx, configurator, vm)
 		if err != nil {
@@ -31,4 +36,29 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info("Upgrade complete", "name", UpgradeName)
 		return vm, nil
 	}
+}
+
+// deleteProviderStoreContents empties every key/value in the deprecated ICS
+// "provider" kv-store — the same operation as rootmulti's deleteKVStore
+// helper (collect keys via an iterator, since a KVStore can't be written to
+// while iterating, then Delete each one), run as an ordinary state mutation
+// instead of via StoreUpgrades.Deleted. See providerStoreKey's doc comment
+// in constants.go for why.
+func deleteProviderStoreContents(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+	store := ctx.KVStore(keepers.GetKey(providerStoreKey))
+
+	var keys [][]byte
+	itr := store.Iterator(nil, nil)
+	for ; itr.Valid(); itr.Next() {
+		keys = append(keys, itr.Key())
+	}
+	if err := itr.Close(); err != nil {
+		return err
+	}
+	for _, key := range keys {
+		store.Delete(key)
+	}
+
+	ctx.Logger().Info("Deleted provider store contents", "keys_deleted", len(keys))
+	return nil
 }

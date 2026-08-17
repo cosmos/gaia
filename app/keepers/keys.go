@@ -55,7 +55,10 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		authzkeeper.StoreKey,
 		routertypes.StoreKey,
 		ratelimittypes.StoreKey,
-		"provider", // ICS provider key kept for store deletion. Remove after v29.0.0 upgrade.
+		// Deprecated ICS provider key. Contents are wiped by the v29.0.0
+		// upgrade handler; the mount itself can be dropped in any future
+		// release.
+		"provider",
 		consensusparamtypes.StoreKey,
 		feemarkettypes.StoreKey,
 		wasmtypes.StoreKey,

@@ -5,6 +5,7 @@
 ### FEATURES
 
 * Delete the contents of the deprecated `provider` kv store.
+* Remove dead `x/crisis` module-ordering references.
 
 ### API-BREAKING
 

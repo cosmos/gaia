@@ -26,7 +26,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.2
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.6.0
-	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.1.0
+	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.7.0
 	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.5.0
 	github.com/cosmos/ibc-go/v10 v10.7.0
 	github.com/cosmos/tokenfactory v0.53.5
@@ -81,8 +81,8 @@ require (
 	github.com/bgentry/speakeasy v0.2.0 // indirect
 	github.com/bits-and-blooms/bitset v1.24.3 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
-	github.com/bytedance/sonic v1.14.2 // indirect
-	github.com/bytedance/sonic/loader v0.4.0 // indirect
+	github.com/bytedance/sonic v1.15.2 // indirect
+	github.com/bytedance/sonic/loader v0.5.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chigopher/pathlib v0.19.1 // indirect

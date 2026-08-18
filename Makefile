@@ -373,18 +373,11 @@ endif
 docker-build-debug:
 	@docker build -t cosmos/gaiad-e2e -f Dockerfile .
 
-# TODO: Push this to the Cosmos Dockerhub so we don't have to keep building it
-# in CI.
-docker-build-hermes:
-	@cd tests/e2e/docker; docker build -t ghcr.io/cosmos/hermes-e2e:1.0.0 -f hermes.Dockerfile .
-
-docker-build-all: docker-build-debug docker-build-hermes
-
 ###############################################################################
 ###                                Linting                                  ###
 ###############################################################################
 golangci_lint_cmd=golangci-lint
-golangci_version=v2.6.2
+golangci_version=v2.11.1
 
 lint:
 	@echo "--> Running linter"
@@ -436,7 +429,7 @@ test-docker-push: test-docker
 	@docker push ${TEST_DOCKER_REPO}:latest
 
 .PHONY: all build-linux install format lint draw-deps clean build \
-	docker-build-debug docker-build-hermes docker-build-all
+	docker-build-debug
 
 
 ###############################################################################

@@ -11,7 +11,6 @@ import (
 	ratelimittypes "github.com/cosmos/ibc-apps/modules/rate-limiting/v10/types"
 	wasmclienttypes "github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10/types"
 	ibcv2types "github.com/cosmos/ibc-go/v10/modules/core/04-channel/v2/types"
-	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 
 	"cosmossdk.io/log"
 	evidencetypes "cosmossdk.io/x/evidence/types"
@@ -30,10 +29,10 @@ import (
 	paramsproptypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	gaia "github.com/cosmos/gaia/v28/app"
-	gaiaparams "github.com/cosmos/gaia/v28/app/params"
-	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
-	metaprotocoltypes "github.com/cosmos/gaia/v28/x/metaprotocols/types"
+	gaia "github.com/cosmos/gaia/v29/app"
+	gaiaparams "github.com/cosmos/gaia/v29/app/params"
+	liquidtypes "github.com/cosmos/gaia/v29/x/liquid/types"
+	metaprotocoltypes "github.com/cosmos/gaia/v29/x/metaprotocols/types"
 )
 
 const (
@@ -63,7 +62,7 @@ func init() {
 
 	upgradetypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 	distribtypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
-	providertypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
+
 	metaprotocoltypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 	ratelimittypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 	wasmclienttypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)

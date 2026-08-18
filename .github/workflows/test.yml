@@ -70,9 +70,6 @@ jobs:
       - name: Build Gaia Docker Image
         if: env.GIT_DIFF
         run: make docker-build-debug
-      - name: Build Hermes Docker Image
-        if: env.GIT_DIFF
-        run: make docker-build-hermes
       - name: Test E2E
         if: env.GIT_DIFF
         run: make test-e2e
@@ -157,10 +154,10 @@ jobs:
       # the old gaiad binary version is hardcoded, need to be updated each major release.
       - name: Install Old Gaiad
         run: |
-          curl -LO https://github.com/cosmos/gaia/releases/download/v27.0.0/gaiad-v27.0.0-linux-amd64
-          chmod a+x gaiad-v27.0.0-linux-amd64
+          curl -LO https://github.com/cosmos/gaia/releases/download/v28.0.0-rc0/gaiad-v28.0.0-rc0-linux-amd64
+          chmod a+x gaiad-v28.0.0-rc0-linux-amd64
           mkdir build
-          mv ./gaiad-v27.0.0-linux-amd64 ./build/gaiadold
+          mv ./gaiad-v28.0.0-rc0-linux-amd64 ./build/gaiadold
         if: env.GIT_DIFF
       - name: Install New Gaiad
         run: |

@@ -13,9 +13,6 @@ import (
 	ibc "github.com/cosmos/ibc-go/v10/modules/core"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 	tendermint "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
-	no_valupdates_genutil "github.com/cosmos/interchain-security/v7/x/ccv/no_valupdates_genutil"
-	no_valupdates_staking "github.com/cosmos/interchain-security/v7/x/ccv/no_valupdates_staking"
-	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 	"github.com/cosmos/tokenfactory/x/tokenfactory"
 	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
@@ -40,7 +37,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
@@ -61,29 +57,27 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiabank "github.com/cosmos/gaia/v28/x/bank"
-	gaiagov "github.com/cosmos/gaia/v28/x/gov"
-	"github.com/cosmos/gaia/v28/x/liquid"
-	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
-	"github.com/cosmos/gaia/v28/x/metaprotocols"
-	metaprotocolstypes "github.com/cosmos/gaia/v28/x/metaprotocols/types"
+	gaiabank "github.com/cosmos/gaia/v29/x/bank"
+	gaiagov "github.com/cosmos/gaia/v29/x/gov"
+	"github.com/cosmos/gaia/v29/x/liquid"
+	liquidtypes "github.com/cosmos/gaia/v29/x/liquid/types"
+	"github.com/cosmos/gaia/v29/x/metaprotocols"
+	metaprotocolstypes "github.com/cosmos/gaia/v29/x/metaprotocols/types"
 )
 
 var maccPerms = map[string][]string{
-	authtypes.FeeCollectorName:     nil,
-	distrtypes.ModuleName:          nil,
-	icatypes.ModuleName:            nil,
-	minttypes.ModuleName:           {authtypes.Minter},
-	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-	govtypes.ModuleName:            {authtypes.Burner},
-	// liquiditytypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
-	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
-	providertypes.ConsumerRewardsPool: nil,
-	wasmtypes.ModuleName:              {authtypes.Burner},
-	feemarkettypes.ModuleName:         nil,
-	feemarkettypes.FeeCollectorName:   nil,
-	tokenfactorytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
+	authtypes.FeeCollectorName:      nil,
+	distrtypes.ModuleName:           nil,
+	icatypes.ModuleName:             nil,
+	minttypes.ModuleName:            {authtypes.Minter},
+	stakingtypes.BondedPoolName:     {authtypes.Burner, authtypes.Staking},
+	stakingtypes.NotBondedPoolName:  {authtypes.Burner, authtypes.Staking},
+	govtypes.ModuleName:             {authtypes.Burner},
+	ibctransfertypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
+	wasmtypes.ModuleName:            {authtypes.Burner},
+	feemarkettypes.ModuleName:       nil,
+	feemarkettypes.FeeCollectorName: nil,
+	tokenfactorytypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 }
 
 func appModules(
@@ -93,7 +87,7 @@ func appModules(
 	tmLightClientModule tendermint.LightClientModule,
 ) []module.AppModule {
 	return []module.AppModule{
-		no_valupdates_genutil.NewAppModule(
+		genutil.NewAppModule(
 			app.AccountKeeper,
 			app.StakingKeeper,
 			app,
@@ -106,7 +100,7 @@ func appModules(
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
 		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		no_valupdates_staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
 		upgrade.NewAppModule(app.UpgradeKeeper, app.AccountKeeper.AddressCodec()),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
@@ -120,7 +114,6 @@ func appModules(
 		app.ICAModule,
 		app.PFMRouterModule,
 		app.RateLimitModule,
-		app.ProviderModule,
 		metaprotocols.NewAppModule(),
 		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
 		tendermint.NewAppModule(tmLightClientModule),
@@ -193,7 +186,6 @@ func orderBeginBlockers() []string {
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		govtypes.ModuleName,
-		crisistypes.ModuleName,
 		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
@@ -205,7 +197,6 @@ func orderBeginBlockers() []string {
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		feemarkettypes.ModuleName,
-		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		liquidtypes.ModuleName,
@@ -215,17 +206,8 @@ func orderBeginBlockers() []string {
 	}
 }
 
-/*
-Interchain Security Requirements:
-- provider.EndBlock gets validator updates from the staking module;
-thus, staking.EndBlock must be executed before provider.EndBlock;
-- creating a new consumer chain requires the following order,
-CreateChildClient(), staking.EndBlock, provider.EndBlock;
-thus, gov.EndBlock must be executed before staking.EndBlock
-*/
 func orderEndBlockers() []string {
 	return []string{
-		crisistypes.ModuleName,
 		govtypes.ModuleName,
 		stakingtypes.ModuleName,
 		ibcexported.ModuleName,
@@ -246,7 +228,6 @@ func orderEndBlockers() []string {
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		feemarkettypes.ModuleName,
-		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		tokenfactorytypes.ModuleName,
@@ -290,15 +271,11 @@ func orderInitBlockers() []string {
 		// A similar issue existed for the 'globalfee' module, which was previously used instead of 'feemarket'.
 		// For more details, please refer to the following link: https://github.com/cosmos/gaia/issues/2489
 		feemarkettypes.ModuleName,
-		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		wasmtypes.ModuleName,
 		ibcwasmtypes.ModuleName,
 		liquidtypes.ModuleName,
 		tokenfactorytypes.ModuleName,
-		// crisis needs to be last so that the genesis state is consistent
-		// when it checks invariants
-		crisistypes.ModuleName,
 	}
 }

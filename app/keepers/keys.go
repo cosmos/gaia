@@ -10,7 +10,6 @@ import (
 	icahosttypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/host/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
-	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
 	storetypes "cosmossdk.io/store/types"
@@ -31,7 +30,7 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
+	liquidtypes "github.com/cosmos/gaia/v29/x/liquid/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {
@@ -56,7 +55,10 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		authzkeeper.StoreKey,
 		routertypes.StoreKey,
 		ratelimittypes.StoreKey,
-		providertypes.StoreKey,
+		// Deprecated ICS provider key. Contents are wiped by the v29.0.0
+		// upgrade handler; the mount itself can be dropped in any future
+		// release.
+		"provider",
 		consensusparamtypes.StoreKey,
 		feemarkettypes.StoreKey,
 		wasmtypes.StoreKey,

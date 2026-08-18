@@ -9,6 +9,8 @@
 
 ### API-BREAKING
 
+* Remove the `x/params` module; parameters are managed via each module's own store. The legacy `ParameterChangeProposal` governance route and `cosmos.params.v1beta1.Query` service are no longer available. The upgrade handler deletes the now-unused per-module data left behind in the `params` kv-store (the store itself stays mounted, since the ratelimit module still depends on it).
+
 ### BUG-FIXES
 
 ### DEPENDENCIES

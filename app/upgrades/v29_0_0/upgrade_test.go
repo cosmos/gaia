@@ -20,6 +20,8 @@ import (
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
@@ -163,4 +165,66 @@ func TestProviderStoreSurvivesRestartAfterUpgrade(t *testing.T) {
 
 	finalStore := app3.CommitMultiStore().GetKVStore(app3.GetKey(providerStoreKey))
 	require.Nil(t, finalStore.Get(testKey), "provider store should remain empty and readable across further restarts")
+}
+
+// TestLegacyParamSubspacesWipedByUpgradeHandler proves the x/params
+// subspace cleanup added alongside the x/params module removal: it seeds
+// keys under both a legacy (now-unused) subspace prefix and the still-live
+// "ratelimit" prefix, directly in the shared params kv-store, then asserts
+// the handler deletes only the legacy one.
+func TestLegacyParamSubspacesWipedByUpgradeHandler(t *testing.T) {
+	db := dbm.NewMemDB()
+	app := newTestApp(t.TempDir(), db)
+
+	paramsStore := app.CommitMultiStore().GetKVStore(app.GetKey(paramstypes.StoreKey))
+
+	legacyKey, legacyVal := []byte("auth/MaxMemoCharacters"), []byte("leftover-auth-param")
+	paramsStore.Set(legacyKey, legacyVal)
+	require.Equal(t, legacyVal, paramsStore.Get(legacyKey))
+
+	ratelimitKey, ratelimitVal := []byte("ratelimit/SomeParam"), []byte("still-live-ratelimit-param")
+	paramsStore.Set(ratelimitKey, ratelimitVal)
+	require.Equal(t, ratelimitVal, paramsStore.Get(ratelimitKey))
+
+	mm := module.NewManager()
+	configurator := module.NewConfigurator(app.AppCodec(), app.MsgServiceRouter(), app.GRPCQueryRouter())
+	handler := v290.CreateUpgradeHandler(mm, configurator, &app.AppKeepers)
+
+	ctx := sdk.NewContext(app.CommitMultiStore(), tmproto.Header{Height: 1}, false, log.NewNopLogger())
+	_, err := handler(ctx, upgradetypes.Plan{Name: v290.UpgradeName, Height: 1}, module.VersionMap{})
+	require.NoError(t, err)
+
+	require.Nil(t, paramsStore.Get(legacyKey), "legacy auth param should be deleted by the handler")
+	require.Equal(t, ratelimitVal, paramsStore.Get(ratelimitKey), "ratelimit param should survive the handler untouched")
+}
+
+// TestStakingParamsSurviveUpgradeHandler proves that deleteLegacyParamSubspaces
+// wiping the stale "staking/..." keys out of the shared params kv-store has
+// no effect on the staking module's own, live parameters: those live in a
+// completely separate store (stakingtypes.StoreKey), not the params store,
+// so this is really a structural guarantee — this test just makes it
+// concrete by round-tripping a non-default value through the real handler.
+func TestStakingParamsSurviveUpgradeHandler(t *testing.T) {
+	db := dbm.NewMemDB()
+	app := newTestApp(t.TempDir(), db)
+
+	ctx := sdk.NewContext(app.CommitMultiStore(), tmproto.Header{Height: 1}, false, log.NewNopLogger())
+
+	wantParams := stakingtypes.DefaultParams()
+	wantParams.MaxValidators = 42 // a non-default value, so this couldn't pass by coincidence
+	require.NoError(t, app.StakingKeeper.SetParams(ctx, wantParams))
+
+	gotParams, err := app.StakingKeeper.GetParams(ctx)
+	require.NoError(t, err)
+	require.Equal(t, wantParams, gotParams, "sanity check: params should read back before the handler even runs")
+
+	mm := module.NewManager()
+	configurator := module.NewConfigurator(app.AppCodec(), app.MsgServiceRouter(), app.GRPCQueryRouter())
+	handler := v290.CreateUpgradeHandler(mm, configurator, &app.AppKeepers)
+	_, err = handler(ctx, upgradetypes.Plan{Name: v290.UpgradeName, Height: 1}, module.VersionMap{})
+	require.NoError(t, err)
+
+	gotParams, err = app.StakingKeeper.GetParams(ctx)
+	require.NoError(t, err)
+	require.Equal(t, wantParams, gotParams, "staking params should be unchanged after the v29.0.0 upgrade handler runs")
 }

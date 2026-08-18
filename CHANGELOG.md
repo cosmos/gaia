@@ -14,6 +14,7 @@
 ### DEPENDENCIES
 
 - Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.23 to 0.38.25 ([#4123](https://github.com/cosmos/gaia/pull/4123))
+- Bump [github.com/cosmos/ibc-apps/modules/rate-limiting/v10](https://github.com/cosmos/ibc-apps) from 10.1.0 to 10.7.0 ([#4104](https://github.com/cosmos/gaia/pull/4104))
 
 ## v28.0.0
 
@@ -30,10 +31,6 @@
 ### BUG-FIXES
 
 ### DEPENDENCIES
-
-### Dependencies
-
-- Bump [github.com/cosmos/ibc-apps/modules/rate-limiting/v10](https://github.com/cosmos/ibc-apps) from 10.1.0 to 10.7.0 ([#4104](https://github.com/cosmos/gaia/pull/4104))
 
 ## v27.6.0
 

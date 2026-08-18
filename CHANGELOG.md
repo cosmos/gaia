@@ -4,14 +4,16 @@
 
 ### FEATURES
 
-* Delete the contents of the deprecated `provider` kv store.
-* Remove dead `x/crisis` module-ordering references.
+* Delete the contents of the deprecated `provider` kv store ([#4117](https://github.com/cosmos/gaia/pull/4117))
+* Remove dead `x/crisis` module-ordering references ([#4121](https://github.com/cosmos/gaia/pull/4121))
 
 ### API-BREAKING
 
 ### BUG-FIXES
 
 ### DEPENDENCIES
+
+- Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.23 to 0.38.25 ([#4123](https://github.com/cosmos/gaia/pull/4123))
 
 ## v28.0.0
 

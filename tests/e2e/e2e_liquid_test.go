@@ -147,7 +147,7 @@ func (s *IntegrationTestSuite) testLiquid() {
 			s.Require().NoError(err)
 
 			decremented := afterSenderShareDenomBalance.IsNil() || afterSenderShareDenomBalance.IsZero()
-			incremented := afterRecipientShareDenomBalance.IsEqual(sendAmount) //nolint:staticcheck
+			incremented := afterRecipientShareDenomBalance.Equal(sendAmount)
 
 			return decremented && incremented
 		},
@@ -181,7 +181,8 @@ func (s *IntegrationTestSuite) testLiquid() {
 			afterSenderShareBalance, err := query.SpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
 			s.Require().NoError(err)
 
-			decremented := afterSenderShareBalance.Add(ibcTransferAmount).IsEqual(sendAmount) //nolint:staticcheck
+			afterSenderSharePlusTransfer := afterSenderShareBalance.Add(ibcTransferAmount)
+			decremented := afterSenderSharePlusTransfer.Equal(sendAmount)
 			return decremented
 		},
 		1*time.Minute,

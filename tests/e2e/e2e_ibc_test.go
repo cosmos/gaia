@@ -168,8 +168,10 @@ func (s *IntegrationTestSuite) testMultihopIBCTokenTransfer() {
 				afterRecipientUAtomBalance, err := query.SpecificBalance(chainAAPIEndpoint, recipient, common.UAtomDenom)
 				s.Require().NoError(err)
 
-				decremented := beforeSenderUAtomBalance.Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterSenderUAtomBalance) //nolint:staticcheck
-				incremented := beforeRecipientUAtomBalance.Add(common.TokenAmount).IsEqual(afterRecipientUAtomBalance)                    //nolint:staticcheck
+				expectedSenderUAtomBalance := beforeSenderUAtomBalance.Sub(common.TokenAmount).Sub(common.StandardFees)
+				decremented := expectedSenderUAtomBalance.Equal(afterSenderUAtomBalance)
+				expectedRecipientUAtomBalance := beforeRecipientUAtomBalance.Add(common.TokenAmount)
+				incremented := expectedRecipientUAtomBalance.Equal(afterRecipientUAtomBalance)
 
 				return decremented && incremented
 			},
@@ -238,7 +240,8 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 				afterSenderUAtomBalance, err := query.SpecificBalance(chainAAPIEndpoint, sender, common.UAtomDenom)
 				s.Require().NoError(err)
 
-				returned := beforeSenderUAtomBalance.Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterSenderUAtomBalance) //nolint:staticcheck
+				expectedSenderUAtomBalance := beforeSenderUAtomBalance.Sub(common.TokenAmount).Sub(common.StandardFees)
+				returned := expectedSenderUAtomBalance.Equal(afterSenderUAtomBalance)
 
 				return returned
 			},
@@ -254,7 +257,8 @@ func (s *IntegrationTestSuite) testFailedMultihopIBCTokenTransfer() {
 
 				afterSenderUAtomBalance, err := query.SpecificBalance(chainAAPIEndpoint, sender, common.UAtomDenom)
 				s.Require().NoError(err)
-				returned := beforeSenderUAtomBalance.Sub(common.StandardFees).IsEqual(afterSenderUAtomBalance) //nolint:staticcheck
+				expectedSenderUAtomBalance := beforeSenderUAtomBalance.Sub(common.StandardFees)
+				returned := expectedSenderUAtomBalance.Equal(afterSenderUAtomBalance)
 				return returned
 			},
 			5*time.Minute,

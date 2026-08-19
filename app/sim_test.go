@@ -122,8 +122,8 @@ func TestAppStateDeterminism(t *testing.T) {
 				os.Stdout,
 				app.BaseApp,
 				simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.ModuleBasics.DefaultGenesis(app.AppCodec())),
-				simulation2.RandomAccounts,                                    // Replace with own random account function if using keys other than secp256k1
-				simtestutil.SimulationOperations(app, app.AppCodec(), config), //nolint:staticcheck
+				simulation2.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
+				simtestutil.BuildSimulationOperations(app, app.AppCodec(), config, app.GetTxConfig()),
 				blockedAddresses,
 				config,
 				app.AppCodec(),

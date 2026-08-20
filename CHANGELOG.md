@@ -9,6 +9,8 @@
 
 ### API-BREAKING
 
+- As of cosmos-sdk v0.53.8, `--gas auto` gas simulation is broken for multisig senders. Multisig transactions must specify a fixed `--gas` value until this is fixed upstream.
+
 ### BUG-FIXES
 
 ### DEPENDENCIES

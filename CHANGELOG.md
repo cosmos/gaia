@@ -6,7 +6,7 @@
 
 * Delete the contents of the deprecated `provider` kv store ([#4117](https://github.com/cosmos/gaia/pull/4117))
 * Remove dead `x/crisis` module-ordering references ([#4121](https://github.com/cosmos/gaia/pull/4121))
-* Remove the `x/params` module
+* Remove the `x/params` module ([#4125](https://github.com/cosmos/gaia/pull/4125))
 
 ### API-BREAKING
 

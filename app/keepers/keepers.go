@@ -73,7 +73,6 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -388,23 +387,12 @@ func NewAppKeeper(
 
 	govAuthority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
 
-	// Minimal params keeper used solely to satisfy the ratelimit module's
-	// legacy paramstore. ratelimit v10.7.0 still depends on x/params
-	// internally; this local keeper is not exposed on AppKeepers and is
-	// never registered as an app module.
-	ratelimitParamsKeeper := paramskeeper.NewKeeper( //nolint:staticcheck // SA1019: ratelimit v10.7.0 still requires a legacy params.Subspace
-		appCodec, legacyAmino,
-		appKeepers.keys[paramstypes.StoreKey], appKeepers.tkeys[paramstypes.TStoreKey],
-	)
-	ratelimitParamsKeeper.Subspace(ratelimittypes.ModuleName).WithKeyTable(ratelimittypes.ParamKeyTable())
-	ratelimitSubspace, _ := ratelimitParamsKeeper.GetSubspace(ratelimittypes.ModuleName)
-
 	// Create RateLimit keeper
 	appKeepers.RatelimitKeeper = *ratelimitkeeper.NewKeeper(
 		appCodec, // BinaryCodec
 		runtime.NewKVStoreService(appKeepers.keys[ratelimittypes.StoreKey]), // StoreKey
-		ratelimitSubspace, // param Subspace
-		govAuthority,      // authority
+		paramstypes.Subspace{}, // unused: ratelimit's Params message is empty; SetParams/GetParams never touch this subspace
+		govAuthority,           // authority
 		appKeepers.BankKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper, // ChannelKeeper
 		appKeepers.IBCKeeper.ClientKeeper,

@@ -167,24 +167,33 @@ func TestProviderStoreSurvivesRestartAfterUpgrade(t *testing.T) {
 	require.Nil(t, finalStore.Get(testKey), "provider store should remain empty and readable across further restarts")
 }
 
-// TestLegacyParamSubspacesWipedByUpgradeHandler proves the x/params
-// subspace cleanup added alongside the x/params module removal: it seeds
-// keys under both a legacy (now-unused) subspace prefix and the still-live
-// "ratelimit" prefix, directly in the shared params kv-store, then asserts
-// the handler deletes only the legacy one.
-func TestLegacyParamSubspacesWipedByUpgradeHandler(t *testing.T) {
+// TestLegacyParamsStoreWipedByUpgradeHandler proves the x/params store
+// cleanup added alongside the x/params module removal: it seeds keys under
+// several former subspace prefixes — including "ratelimit", which is no
+// longer a live consumer now that the ratelimit keeper is constructed with a
+// zero-value Subspace (see app/keepers/keepers.go) — directly in the shared
+// params kv-store, then asserts the handler wipes the store entirely, while
+// a value held in a genuinely different store (staking's own, live params)
+// survives untouched.
+func TestLegacyParamsStoreWipedByUpgradeHandler(t *testing.T) {
 	db := dbm.NewMemDB()
 	app := newTestApp(t.TempDir(), db)
 
 	paramsStore := app.CommitMultiStore().GetKVStore(app.GetKey(paramstypes.StoreKey))
 
-	legacyKey, legacyVal := []byte("auth/MaxMemoCharacters"), []byte("leftover-auth-param")
-	paramsStore.Set(legacyKey, legacyVal)
-	require.Equal(t, legacyVal, paramsStore.Get(legacyKey))
+	seeded := map[string]string{
+		"auth/MaxMemoCharacters": "leftover-auth-param",
+		"ratelimit/SomeParam":    "leftover-ratelimit-param",
+		"tokenfactory/SomeParam": "leftover-tokenfactory-param",
+	}
+	for key, val := range seeded {
+		paramsStore.Set([]byte(key), []byte(val))
+		require.Equal(t, []byte(val), paramsStore.Get([]byte(key)))
+	}
 
-	ratelimitKey, ratelimitVal := []byte("ratelimit/SomeParam"), []byte("still-live-ratelimit-param")
-	paramsStore.Set(ratelimitKey, ratelimitVal)
-	require.Equal(t, ratelimitVal, paramsStore.Get(ratelimitKey))
+	stakingStore := app.CommitMultiStore().GetKVStore(app.GetKey(stakingtypes.StoreKey))
+	liveKey, liveVal := []byte("some-live-staking-key"), []byte("should-survive")
+	stakingStore.Set(liveKey, liveVal)
 
 	mm := module.NewManager()
 	configurator := module.NewConfigurator(app.AppCodec(), app.MsgServiceRouter(), app.GRPCQueryRouter())
@@ -194,8 +203,10 @@ func TestLegacyParamSubspacesWipedByUpgradeHandler(t *testing.T) {
 	_, err := handler(ctx, upgradetypes.Plan{Name: v290.UpgradeName, Height: 1}, module.VersionMap{})
 	require.NoError(t, err)
 
-	require.Nil(t, paramsStore.Get(legacyKey), "legacy auth param should be deleted by the handler")
-	require.Equal(t, ratelimitVal, paramsStore.Get(ratelimitKey), "ratelimit param should survive the handler untouched")
+	for key := range seeded {
+		require.Nil(t, paramsStore.Get([]byte(key)), "legacy params store key %q should be deleted by the handler", key)
+	}
+	require.Equal(t, liveVal, stakingStore.Get(liveKey), "keys in an unrelated, live store should survive the handler untouched")
 }
 
 // TestStakingParamsSurviveUpgradeHandler proves that deleteLegacyParamSubspaces

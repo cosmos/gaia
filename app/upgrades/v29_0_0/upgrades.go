@@ -4,7 +4,7 @@ import (
 	"context"
 
 	errorsmod "cosmossdk.io/errors"
-	"cosmossdk.io/store/prefix"
+	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -29,9 +29,9 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "deleting provider store contents")
 		}
 
-		ctx.Logger().Info("Deleting contents of the now-unused x/params subspaces...")
-		if err := deleteLegacyParamSubspaces(ctx, keepers); err != nil {
-			return vm, errorsmod.Wrapf(err, "deleting legacy params subspaces")
+		ctx.Logger().Info("Deleting contents of the now-unused x/params kv-store...")
+		if err := deleteLegacyParamsStoreContents(ctx, keepers); err != nil {
+			return vm, errorsmod.Wrapf(err, "deleting legacy params store contents")
 		}
 
 		ctx.Logger().Info("Starting module migrations...")
@@ -45,87 +45,61 @@ func CreateUpgradeHandler(
 	}
 }
 
-// deleteProviderStoreContents empties every key/value in the deprecated ICS
-// "provider" kv-store — the same operation as rootmulti's deleteKVStore
-// helper (collect keys via an iterator, since a KVStore can't be written to
-// while iterating, then Delete each one), run as an ordinary state mutation
-// instead of via StoreUpgrades.Deleted. See providerStoreKey's doc comment
-// in constants.go for why.
-func deleteProviderStoreContents(ctx sdk.Context, keepers *keepers.AppKeepers) error {
-	store := ctx.KVStore(keepers.GetKey(providerStoreKey))
-
+// deleteAllStoreKeys empties every key/value in store — the same operation
+// as rootmulti's deleteKVStore helper (collect keys via an iterator, since a
+// KVStore can't be written to while iterating, then Delete each one) — and
+// returns how many keys were removed.
+func deleteAllStoreKeys(store storetypes.KVStore) (int, error) {
 	var keys [][]byte
 	itr := store.Iterator(nil, nil)
 	for ; itr.Valid(); itr.Next() {
 		keys = append(keys, itr.Key())
 	}
 	if err := itr.Close(); err != nil {
-		return err
+		return 0, err
 	}
 	for _, key := range keys {
 		store.Delete(key)
 	}
+	return len(keys), nil
+}
 
-	ctx.Logger().Info("Deleted provider store contents", "keys_deleted", len(keys))
+// deleteProviderStoreContents empties every key/value in the deprecated ICS
+// "provider" kv-store, run as an ordinary state mutation instead of via
+// StoreUpgrades.Deleted. See providerStoreKey's doc comment in constants.go
+// for why.
+func deleteProviderStoreContents(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+	store := ctx.KVStore(keepers.GetKey(providerStoreKey))
+	deleted, err := deleteAllStoreKeys(store)
+	if err != nil {
+		return err
+	}
+
+	ctx.Logger().Info("Deleted provider store contents", "keys_deleted", deleted)
 	return nil
 }
 
-// legacyParamSubspaces lists the x/params subspace names that were
-// registered by the now-removed initParamsKeeper (part of the
-// "chore/remove-params-module" work) and are no longer read by any module;
-// each of these names has migrated its own params out of x/params into its own
-// store in a prior upgrade, so this data has been dead weight ever since.
+// deleteLegacyParamsStoreContents empties the entire x/params kv-store.
+// Every subspace ever registered there has long since migrated its
+// params out of x/params into its own store, and as of this same release the
+// ratelimit module keeper — the last holdout, see app/keepers/keepers.go —
+// is also constructed with a zero-value Subspace rather than one backed by
+// this store. So nothing reads any part of this store live any more, and a
+// full wipe (rather than deleting known subspace prefixes one by one) can't
+// miss a name.
 //
-// "ratelimit" is deliberately excluded: the ratelimit module keeper still
-// depends on a live x/params Subspace at runtime (see
-// app/keepers/keepers.go), so its data must be preserved.
-//
-// "packetfowardmiddleware" is not a typo introduced here. It's genuinely
-// misspelled (missing the "r" in "forward") in the vendored
-// github.com/cosmos/ibc-apps/middleware/packet-forward-middleware module's
-// own types.ModuleName constant, which is exactly the string that was
-// passed to paramsKeeper.Subspace(...) when this subspace was registered.
-// Since we're matching a real historical key prefix, it must be kept
-// byte-for-byte identical to that constant, misspelling and all.
-var legacyParamSubspaces = []string{
-	"auth", "staking", "bank", "mint", "distribution", "slashing", "gov",
-	"ibc", "transfer", "icacontroller", "icahost", "packetfowardmiddleware",
-	"wasm", "tokenfactory",
-}
-
-// deleteLegacyParamSubspaces empties the stale per-module key ranges left
-// behind in the x/params kv-store by legacyParamSubspaces. The params
-// kv-store itself is not deleted via StoreUpgrades.Deleted, it stays
-// mounted (see app/keepers/keys.go) because the ratelimit module keeper
-// still needs a live Subspace backed by it. Wiping the stale key ranges as
-// an ordinary state mutation, rather than deleting the whole store, avoids
-// the same "version mismatch" LoadVersion risk described in
+// The store itself is not deleted via StoreUpgrades.Deleted; it stays
+// mounted (see app/keepers/keys.go) and its contents are wiped as an
+// ordinary state mutation, rather than the store being deleted outright, to
+// avoid the same "version mismatch" LoadVersion risk described in
 // providerStoreKey's doc comment in constants.go (the store itself must survive).
-//
-// Each subspace's keys are prefixed with "<name>/" (see x/params's own
-// Subspace.kvStore in cosmos-sdk), so prefix.NewStore reproduces exactly the
-// view each subspace itself used to see.
-func deleteLegacyParamSubspaces(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+func deleteLegacyParamsStoreContents(ctx sdk.Context, keepers *keepers.AppKeepers) error {
 	store := ctx.KVStore(keepers.GetKey(paramstypes.StoreKey))
-
-	var deleted int
-	for _, name := range legacyParamSubspaces {
-		subStore := prefix.NewStore(store, append([]byte(name), '/'))
-
-		var keys [][]byte
-		itr := subStore.Iterator(nil, nil)
-		for ; itr.Valid(); itr.Next() {
-			keys = append(keys, itr.Key())
-		}
-		if err := itr.Close(); err != nil {
-			return err
-		}
-		for _, key := range keys {
-			subStore.Delete(key)
-		}
-		deleted += len(keys)
+	deleted, err := deleteAllStoreKeys(store)
+	if err != nil {
+		return err
 	}
 
-	ctx.Logger().Info("Deleted legacy params subspace contents", "keys_deleted", deleted)
+	ctx.Logger().Info("Deleted legacy params store contents", "keys_deleted", deleted)
 	return nil
 }

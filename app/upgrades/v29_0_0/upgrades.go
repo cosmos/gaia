@@ -72,13 +72,21 @@ func deleteProviderStoreContents(ctx sdk.Context, keepers *keepers.AppKeepers) e
 
 // legacyParamSubspaces lists the x/params subspace names that were
 // registered by the now-removed initParamsKeeper (part of the
-// "chore/remove-params-module" work) and are no longer read by any module —
-// each of these already migrated its own params out of x/params into its own
+// "chore/remove-params-module" work) and are no longer read by any module;
+// each of these names has migrated its own params out of x/params into its own
 // store in a prior upgrade, so this data has been dead weight ever since.
 //
 // "ratelimit" is deliberately excluded: the ratelimit module keeper still
 // depends on a live x/params Subspace at runtime (see
 // app/keepers/keepers.go), so its data must be preserved.
+//
+// "packetfowardmiddleware" is not a typo introduced here. It's genuinely
+// misspelled (missing the "r" in "forward") in the vendored
+// github.com/cosmos/ibc-apps/middleware/packet-forward-middleware module's
+// own types.ModuleName constant, which is exactly the string that was
+// passed to paramsKeeper.Subspace(...) when this subspace was registered.
+// Since we're matching a real historical key prefix, it must be kept
+// byte-for-byte identical to that constant, misspelling and all.
 var legacyParamSubspaces = []string{
 	"auth", "staking", "bank", "mint", "distribution", "slashing", "gov",
 	"ibc", "transfer", "icacontroller", "icahost", "packetfowardmiddleware",
@@ -87,13 +95,12 @@ var legacyParamSubspaces = []string{
 
 // deleteLegacyParamSubspaces empties the stale per-module key ranges left
 // behind in the x/params kv-store by legacyParamSubspaces. The params
-// kv-store itself is NOT deleted via StoreUpgrades.Deleted — it stays
+// kv-store itself is not deleted via StoreUpgrades.Deleted, it stays
 // mounted (see app/keepers/keys.go) because the ratelimit module keeper
 // still needs a live Subspace backed by it. Wiping the stale key ranges as
 // an ordinary state mutation, rather than deleting the whole store, avoids
 // the same "version mismatch" LoadVersion risk described in
-// providerStoreKey's doc comment in constants.go — just scoped per-subspace
-// instead of per-store, since the store as a whole must survive.
+// providerStoreKey's doc comment in constants.go (the store itself must survive).
 //
 // Each subspace's keys are prefixed with "<name>/" (see x/params's own
 // Subspace.kvStore in cosmos-sdk), so prefix.NewStore reproduces exactly the

@@ -246,7 +246,7 @@ func (s *RateLimitUpgradeSuite) TestRateLimitEnforcedAfterUpgrade() {
 	s.assertTransferBlockedByQuota(ctx, 10, "over-quota transfer should still be blocked after upgrade")
 }
 
-func TestRateLimitUpgrade(t *testing.T) {
+func TestRateLimit(t *testing.T) {
 	s := &RateLimitUpgradeSuite{
 		Suite: &delegator.Suite{
 			Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{

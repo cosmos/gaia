@@ -539,7 +539,12 @@ func NewAppKeeper(
 	transferStackV2 = transferv2.NewIBCModule(appKeepers.TransferKeeper)
 	transferStackV2 = ibccallbacksv2.NewIBCMiddleware(transferStackV2, appKeepers.IBCKeeper.ChannelKeeperV2,
 		wasmStackIBCHandler, appKeepers.IBCKeeper.ChannelKeeperV2, gaiaparams.MaxIBCCallbackGas)
-	transferStackV2 = ratelimitv2.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStackV2)
+	transferStackV2 = ratelimitv2.NewIBCMiddlewareWithAsyncAcknowledgements(
+		appKeepers.RatelimitKeeper,
+		transferStackV2,
+		appKeepers.IBCKeeper.ChannelKeeperV2,
+		appKeepers.IBCKeeper.ChannelKeeperV2,
+	)
 
 	// Create IBC Router & seal
 	ibcRouter := porttypes.NewRouter().

@@ -4,16 +4,21 @@
 
 ### FEATURES
 
-* Delete the contents of the deprecated `provider` kv store.
-* Remove dead `x/crisis` module-ordering references.
+* Delete the contents of the deprecated `provider` kv store ([#4117](https://github.com/cosmos/gaia/pull/4117))
+* Remove dead `x/crisis` module-ordering references ([#4121](https://github.com/cosmos/gaia/pull/4121))
 
 ### API-BREAKING
 
+- As of cosmos-sdk v0.53.8, `--gas auto` gas simulation is broken for multisig senders. Multisig transactions must specify a fixed `--gas` value until this is fixed upstream.
 * Remove the `x/params` module; parameters are managed via each module's own store. The legacy `ParameterChangeProposal` governance route and `cosmos.params.v1beta1.Query` service are no longer available. The upgrade handler deletes the now-unused per-module data left behind in the `params` kv-store (the store itself stays mounted, since the ratelimit module still depends on it).
 
 ### BUG-FIXES
 
 ### DEPENDENCIES
+
+- Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.23 to 0.38.25 ([#4123](https://github.com/cosmos/gaia/pull/4123))
+- Bump [github.com/cosmos/ibc-apps/modules/rate-limiting/v10](https://github.com/cosmos/ibc-apps) from 10.1.0 to 10.7.0 ([#4104](https://github.com/cosmos/gaia/pull/4104))
+- Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.4 to 0.53.8 ([#4124](https://github.com/cosmos/gaia/pull/4124))
 
 ## v28.0.0
 

@@ -35,6 +35,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [actions/setup-node](https://github.com/actions/setup-node) from 4 to 7 ([#4098](https://github.com/cosmos/gaia/pull/4098))
+
 ## v27.6.0
 
 *July 17, 2026*

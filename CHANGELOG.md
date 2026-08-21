@@ -35,6 +35,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [github.com/prometheus/client_golang](https://github.com/prometheus/client_golang) from 1.23.2 to 1.24.1 ([#4096](https://github.com/cosmos/gaia/pull/4096))
+
 ## v27.6.0
 
 *July 17, 2026*

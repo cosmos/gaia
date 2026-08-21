@@ -35,6 +35,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.79.3 to 1.82.1 ([#4091](https://github.com/cosmos/gaia/pull/4091))
+
 ## v27.6.0
 
 *July 17, 2026*

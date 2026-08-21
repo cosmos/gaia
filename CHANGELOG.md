@@ -35,6 +35,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [actions/stale](https://github.com/actions/stale) from 10 to 11 ([#4109](https://github.com/cosmos/gaia/pull/4109))
+
 ## v27.6.0
 
 *July 17, 2026*

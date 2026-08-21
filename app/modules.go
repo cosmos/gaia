@@ -42,13 +42,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
-	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	sdkparams "github.com/cosmos/cosmos-sdk/x/params"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
@@ -93,23 +89,22 @@ func appModules(
 			app,
 			txConfig,
 		),
-		auth.NewAppModule(appCodec, app.AccountKeeper, nil, app.GetSubspace(authtypes.ModuleName)),
+		auth.NewAppModule(appCodec, app.AccountKeeper, nil, nil),
 		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
-		gaiabank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
-		gaiagov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(govtypes.ModuleName)),
-		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
-		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
+		gaiabank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, nil),
+		gaiagov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, nil),
+		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, nil),
+		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, nil, app.interfaceRegistry),
+		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, nil),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, nil),
 		upgrade.NewAppModule(app.UpgradeKeeper, app.AccountKeeper.AddressCodec()),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
 		ibcwasm.NewAppModule(app.WasmClientKeeper),
-		sdkparams.NewAppModule(app.ParamsKeeper), //nolint:staticcheck
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
-		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), nil),
 		app.TransferModule,
 		app.ICAModule,
 		app.PFMRouterModule,
@@ -118,7 +113,7 @@ func appModules(
 		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
 		tendermint.NewAppModule(tmLightClientModule),
 		liquid.NewAppModule(appCodec, app.LiquidKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(tokenfactorytypes.ModuleName)),
+		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, nil),
 	}
 }
 
@@ -130,11 +125,7 @@ func newBasicManagerFromManager(app *GaiaApp) module.BasicManager {
 		app.mm,
 		map[string]module.AppModuleBasic{
 			genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-			govtypes.ModuleName: gov.NewAppModuleBasic(
-				[]govclient.ProposalHandler{
-					paramsclient.ProposalHandler,
-				},
-			),
+			govtypes.ModuleName:     gov.NewAppModuleBasic(nil),
 		})
 	basicManager.RegisterLegacyAminoCodec(app.legacyAmino)
 	basicManager.RegisterInterfaces(app.interfaceRegistry)
@@ -148,17 +139,17 @@ func simulationModules(
 	appCodec codec.Codec,
 ) []module.AppModuleSimulation {
 	return []module.AppModuleSimulation{
-		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
-		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
+		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, nil),
+		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, nil),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
-		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
-		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
+		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, nil),
+		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, nil),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, nil),
+		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, nil),
+		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, nil, app.interfaceRegistry),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), nil),
 		ibc.NewAppModule(app.IBCKeeper),
 		app.TransferModule,
 		app.ICAModule,
@@ -194,7 +185,6 @@ func orderBeginBlockers() []string {
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		feemarkettypes.ModuleName,
 		consensusparamtypes.ModuleName,
@@ -224,7 +214,6 @@ func orderEndBlockers() []string {
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		feemarkettypes.ModuleName,
@@ -260,7 +249,6 @@ func orderInitBlockers() []string {
 		feegrant.ModuleName,
 		pfmroutertypes.ModuleName,
 		ratelimittypes.ModuleName,
-		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		// The feemarket module should ideally be initialized before the genutil module in theory:

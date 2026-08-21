@@ -26,7 +26,6 @@ import (
 	distribtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govv1beta1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
-	paramsproptypes "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	gaia "github.com/cosmos/gaia/v29/app"
@@ -57,8 +56,6 @@ func init() {
 	cryptocodec.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 	govv1types.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 	govv1beta1types.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
-	paramsproptypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
-	paramsproptypes.RegisterLegacyAminoCodec(EncodingConfig.Amino)
 
 	upgradetypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)
 	distribtypes.RegisterInterfaces(EncodingConfig.InterfaceRegistry)

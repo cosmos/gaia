@@ -35,6 +35,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [actions/cache](https://github.com/actions/cache) from 5 to 6 ([#4100](https://github.com/cosmos/gaia/pull/4100))
+
 ## v27.6.0
 
 *July 17, 2026*

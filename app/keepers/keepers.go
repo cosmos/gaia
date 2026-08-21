@@ -389,10 +389,10 @@ func NewAppKeeper(
 	govAuthority := authtypes.NewModuleAddress(govtypes.ModuleName).String()
 
 	// Minimal params keeper used solely to satisfy the ratelimit module's
-	// legacy paramstore. ratelimit v10.1.0 still depends on x/params
+	// legacy paramstore. ratelimit v10.7.0 still depends on x/params
 	// internally; this local keeper is not exposed on AppKeepers and is
 	// never registered as an app module.
-	ratelimitParamsKeeper := paramskeeper.NewKeeper(
+	ratelimitParamsKeeper := paramskeeper.NewKeeper( //nolint:staticcheck // SA1019: ratelimit v10.7.0 still requires a legacy params.Subspace
 		appCodec, legacyAmino,
 		appKeepers.keys[paramstypes.StoreKey], appKeepers.tkeys[paramstypes.TStoreKey],
 	)

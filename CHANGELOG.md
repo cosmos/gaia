@@ -35,6 +35,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [JamesIves/github-pages-deploy-action](https://github.com/jamesives/github-pages-deploy-action) from 4.7.3 to 4.8.0 ([#4094](https://github.com/cosmos/gaia/pull/4094))
+
 ## v27.6.0
 
 *July 17, 2026*

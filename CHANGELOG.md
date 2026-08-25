@@ -6,10 +6,12 @@
 
 * Delete the contents of the deprecated `provider` kv store ([#4117](https://github.com/cosmos/gaia/pull/4117))
 * Remove dead `x/crisis` module-ordering references ([#4121](https://github.com/cosmos/gaia/pull/4121))
+* Remove the `x/params` module ([#4125](https://github.com/cosmos/gaia/pull/4125))
 
 ### API-BREAKING
 
 - As of cosmos-sdk v0.53.8, `--gas auto` gas simulation is broken for multisig senders. Multisig transactions must specify a fixed `--gas` value until this is fixed upstream.
+* The legacy `ParameterChangeProposal` governance route and `cosmos.params.v1beta1.Query` service are no longer available.
 
 ### BUG-FIXES
 

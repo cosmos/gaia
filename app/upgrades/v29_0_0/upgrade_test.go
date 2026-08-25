@@ -20,6 +20,8 @@ import (
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
@@ -163,4 +165,77 @@ func TestProviderStoreSurvivesRestartAfterUpgrade(t *testing.T) {
 
 	finalStore := app3.CommitMultiStore().GetKVStore(app3.GetKey(providerStoreKey))
 	require.Nil(t, finalStore.Get(testKey), "provider store should remain empty and readable across further restarts")
+}
+
+// TestLegacyParamsStoreWipedByUpgradeHandler proves the x/params store
+// cleanup added alongside the x/params module removal: it seeds keys under
+// several former subspace prefixes — including "ratelimit", which is no
+// longer a live consumer now that the ratelimit keeper is constructed with a
+// zero-value Subspace (see app/keepers/keepers.go) — directly in the shared
+// params kv-store, then asserts the handler wipes the store entirely, while
+// a value held in a genuinely different store (staking's own, live params)
+// survives untouched.
+func TestLegacyParamsStoreWipedByUpgradeHandler(t *testing.T) {
+	db := dbm.NewMemDB()
+	app := newTestApp(t.TempDir(), db)
+
+	paramsStore := app.CommitMultiStore().GetKVStore(app.GetKey(paramstypes.StoreKey))
+
+	seeded := map[string]string{
+		"auth/MaxMemoCharacters": "leftover-auth-param",
+		"ratelimit/SomeParam":    "leftover-ratelimit-param",
+		"tokenfactory/SomeParam": "leftover-tokenfactory-param",
+	}
+	for key, val := range seeded {
+		paramsStore.Set([]byte(key), []byte(val))
+		require.Equal(t, []byte(val), paramsStore.Get([]byte(key)))
+	}
+
+	stakingStore := app.CommitMultiStore().GetKVStore(app.GetKey(stakingtypes.StoreKey))
+	liveKey, liveVal := []byte("some-live-staking-key"), []byte("should-survive")
+	stakingStore.Set(liveKey, liveVal)
+
+	mm := module.NewManager()
+	configurator := module.NewConfigurator(app.AppCodec(), app.MsgServiceRouter(), app.GRPCQueryRouter())
+	handler := v290.CreateUpgradeHandler(mm, configurator, &app.AppKeepers)
+
+	ctx := sdk.NewContext(app.CommitMultiStore(), tmproto.Header{Height: 1}, false, log.NewNopLogger())
+	_, err := handler(ctx, upgradetypes.Plan{Name: v290.UpgradeName, Height: 1}, module.VersionMap{})
+	require.NoError(t, err)
+
+	for key := range seeded {
+		require.Nil(t, paramsStore.Get([]byte(key)), "legacy params store key %q should be deleted by the handler", key)
+	}
+	require.Equal(t, liveVal, stakingStore.Get(liveKey), "keys in an unrelated, live store should survive the handler untouched")
+}
+
+// TestStakingParamsSurviveUpgradeHandler proves that deleteLegacyParamSubspaces
+// wiping the stale "staking/..." keys out of the shared params kv-store has
+// no effect on the staking module's own, live parameters: those live in a
+// completely separate store (stakingtypes.StoreKey), not the params store,
+// so this is really a structural guarantee — this test just makes it
+// concrete by round-tripping a non-default value through the real handler.
+func TestStakingParamsSurviveUpgradeHandler(t *testing.T) {
+	db := dbm.NewMemDB()
+	app := newTestApp(t.TempDir(), db)
+
+	ctx := sdk.NewContext(app.CommitMultiStore(), tmproto.Header{Height: 1}, false, log.NewNopLogger())
+
+	wantParams := stakingtypes.DefaultParams()
+	wantParams.MaxValidators = 42 // a non-default value, so this couldn't pass by coincidence
+	require.NoError(t, app.StakingKeeper.SetParams(ctx, wantParams))
+
+	gotParams, err := app.StakingKeeper.GetParams(ctx)
+	require.NoError(t, err)
+	require.Equal(t, wantParams, gotParams, "sanity check: params should read back before the handler even runs")
+
+	mm := module.NewManager()
+	configurator := module.NewConfigurator(app.AppCodec(), app.MsgServiceRouter(), app.GRPCQueryRouter())
+	handler := v290.CreateUpgradeHandler(mm, configurator, &app.AppKeepers)
+	_, err = handler(ctx, upgradetypes.Plan{Name: v290.UpgradeName, Height: 1}, module.VersionMap{})
+	require.NoError(t, err)
+
+	gotParams, err = app.StakingKeeper.GetParams(ctx)
+	require.NoError(t, err)
+	require.Equal(t, wantParams, gotParams, "staking params should be unchanged after the v29.0.0 upgrade handler runs")
 }

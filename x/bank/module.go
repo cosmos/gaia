@@ -9,9 +9,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	bankexported "github.com/cosmos/cosmos-sdk/x/bank/exported"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // AppModule wraps the standard bank module to intercept RegisterServices
@@ -21,7 +21,7 @@ type AppModule struct {
 	config MultiSendConfig
 
 	// legacySubspace is used solely for migration of x/params managed parameters
-	legacySubspace paramstypes.Subspace
+	legacySubspace bankexported.Subspace
 }
 
 // NewAppModule creates a new AppModule object that wraps the SDK bank module
@@ -30,7 +30,7 @@ func NewAppModule(
 	cdc codec.Codec,
 	keeper bankkeeper.Keeper,
 	ak banktypes.AccountKeeper,
-	ss paramstypes.Subspace,
+	ss bankexported.Subspace,
 ) AppModule {
 	return AppModule{
 		AppModule:      bank.NewAppModule(cdc, keeper, ak, ss),

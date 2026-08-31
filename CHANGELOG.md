@@ -4,9 +4,10 @@
 
 ### FEATURES
 
-* Delete the contents of the deprecated `provider` kv store ([#4117](https://github.com/cosmos/gaia/pull/4117))
-* Remove dead `x/crisis` module-ordering references ([#4121](https://github.com/cosmos/gaia/pull/4121))
-* Remove the `x/params` module ([#4125](https://github.com/cosmos/gaia/pull/4125))
+- Delete the contents of the deprecated `provider` kv store ([#4117](https://github.com/cosmos/gaia/pull/4117))
+- Remove dead `x/crisis` module-ordering references ([#4121](https://github.com/cosmos/gaia/pull/4121))
+- Remove the `x/params` module ([#4125](https://github.com/cosmos/gaia/pull/4125))
+- Bump golang from 1.25 to 1.26 ([#XXXX](https://github.com/cosmos/gaia/pull/XXXX))
 
 ### API-BREAKING
 

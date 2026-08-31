@@ -15,7 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/cosmos/gaia/v28/x/metaprotocols/types"
+	"github.com/cosmos/gaia/v29/x/metaprotocols/types"
 )
 
 const consensusVersion uint64 = 1
@@ -23,7 +23,7 @@ const consensusVersion uint64 = 1
 var (
 	_ module.AppModuleBasic   = AppModuleBasic{}
 	_ module.AppModuleGenesis = AppModule{}
-	_ module.AppModule        = AppModule{}
+	_ module.AppModule        = AppModule{} //nolint:staticcheck
 )
 
 type AppModuleBasic struct{}

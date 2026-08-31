@@ -4,7 +4,56 @@
 
 ### FEATURES
 
+* Delete the contents of the deprecated `provider` kv store ([#4117](https://github.com/cosmos/gaia/pull/4117))
+* Remove dead `x/crisis` module-ordering references ([#4121](https://github.com/cosmos/gaia/pull/4121))
+* Remove the `x/params` module ([#4125](https://github.com/cosmos/gaia/pull/4125))
+
+### API-BREAKING
+
+- As of cosmos-sdk v0.53.8, `--gas auto` gas simulation is broken for multisig senders. Multisig transactions must specify a fixed `--gas` value until this is fixed upstream.
+* The legacy `ParameterChangeProposal` governance route and `cosmos.params.v1beta1.Query` service are no longer available.
+
 ### BUG-FIXES
+
+### DEPENDENCIES
+
+- Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.23 to 0.38.25 ([#4123](https://github.com/cosmos/gaia/pull/4123))
+- Bump [github.com/cosmos/ibc-apps/modules/rate-limiting/v10](https://github.com/cosmos/ibc-apps) from 10.1.0 to 10.7.0 ([#4104](https://github.com/cosmos/gaia/pull/4104))
+- Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.4 to 0.53.8 ([#4124](https://github.com/cosmos/gaia/pull/4124))
+
+## v28.0.0
+
+*August 7, 2026*
+
+### FEATURES
+
+- Remove [Interchain Security](https://github.com/cosmos/interchain-security) provider module
+
+### API-BREAKING
+
+- Queries for Interchain Security messages (e.g. `MsgAssignConsumerKey`, `MsgCreateConsumer`, `ConsumerAdditionProposal`) now return an empty stub instead of historical data.
+
+### BUG-FIXES
+
+### DEPENDENCIES
+
+## v27.6.0
+
+*July 17, 2026*
+
+### FEATURES
+
+- Raise the max Wasm contract size from 800KB to 1.6MiB.
+- Allow CosmWasm contracts read-only gRPC query access to validator info (`Query/Validator`) and governance proposals (`Query/Proposal`).
+
+### DEPENDENCIES
+
+- Bump [wasmd](https://github.com/CosmWasm/wasmd) from 0.60.7 to 0.60.8 ([#4078](https://github.com/cosmos/gaia/pull/4078))
+- Bump [wasmvm](https://github.com/CosmWasm/wasmvm) from v2.3.3 to v2.3.4 ([#4078](https://github.com/cosmos/gaia/pull/4078))
+
+## v27.5.0
+
+*June 19, 2026*
 
 ### DEPENDENCIES
 

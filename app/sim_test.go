@@ -24,10 +24,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
-	"github.com/cosmos/gaia/v28/ante"
-	gaia "github.com/cosmos/gaia/v28/app"
-	"github.com/cosmos/gaia/v28/app/sim"
-	gaiagov "github.com/cosmos/gaia/v28/x/gov"
+	"github.com/cosmos/gaia/v29/ante"
+	gaia "github.com/cosmos/gaia/v29/app"
+	"github.com/cosmos/gaia/v29/app/sim"
+	gaiagov "github.com/cosmos/gaia/v29/x/gov"
 )
 
 // AppChainID hardcoded chainID for simulation
@@ -123,7 +123,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				app.BaseApp,
 				simtestutil.AppStateFn(app.AppCodec(), app.SimulationManager(), app.ModuleBasics.DefaultGenesis(app.AppCodec())),
 				simulation2.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-				simtestutil.SimulationOperations(app, app.AppCodec(), config),
+				simtestutil.BuildSimulationOperations(app, app.AppCodec(), config, app.GetTxConfig()),
 				blockedAddresses,
 				config,
 				app.AppCodec(),

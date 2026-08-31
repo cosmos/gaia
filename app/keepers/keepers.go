@@ -10,6 +10,7 @@ import (
 	feemarketkeeper "github.com/skip-mev/feemarket/x/feemarket/keeper"
 	feemarkettypes "github.com/skip-mev/feemarket/x/feemarket/types"
 
+	"github.com/cosmos/gogoproto/proto"
 	pfmrouter "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward"
 	pfmrouterkeeper "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/keeper"
 	pfmroutertypes "github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10/packetforward/types"
@@ -33,15 +34,10 @@ import (
 	ibctransferkeeper "github.com/cosmos/ibc-go/v10/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	transferv2 "github.com/cosmos/ibc-go/v10/modules/apps/transfer/v2"
-	ibcclienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
-	ibcconnectiontypes "github.com/cosmos/ibc-go/v10/modules/core/03-connection/types"
 	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
 	ibcapi "github.com/cosmos/ibc-go/v10/modules/core/api"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
-	icsprovider "github.com/cosmos/interchain-security/v7/x/ccv/provider"
-	icsproviderkeeper "github.com/cosmos/interchain-security/v7/x/ccv/provider/keeper"
-	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 	tokenfactorybindings "github.com/cosmos/tokenfactory/x/tokenfactory/bindings"
 	tokenfactorykeeper "github.com/cosmos/tokenfactory/x/tokenfactory/keeper"
 	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
@@ -77,10 +73,7 @@ import (
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
-	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
@@ -90,10 +83,10 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	"github.com/cosmos/gaia/v28/ante"
-	gaiaparams "github.com/cosmos/gaia/v28/app/params"
-	liquidkeeper "github.com/cosmos/gaia/v28/x/liquid/keeper"
-	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
+	"github.com/cosmos/gaia/v29/ante"
+	gaiaparams "github.com/cosmos/gaia/v29/app/params"
+	liquidkeeper "github.com/cosmos/gaia/v29/x/liquid/keeper"
+	liquidtypes "github.com/cosmos/gaia/v29/x/liquid/types"
 )
 
 type AppKeepers struct {
@@ -112,7 +105,6 @@ type AppKeepers struct {
 	LiquidKeeper       *liquidkeeper.Keeper
 	GovKeeper          *govkeeper.Keeper
 	UpgradeKeeper      *upgradekeeper.Keeper
-	ParamsKeeper       paramskeeper.Keeper //nolint:staticcheck
 	WasmKeeper         wasmkeeper.Keeper
 	TokenFactoryKeeper tokenfactorykeeper.Keeper
 	// IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
@@ -127,9 +119,6 @@ type AppKeepers struct {
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
 	FeeMarketKeeper       *feemarketkeeper.Keeper
 
-	// ICS
-	ProviderKeeper icsproviderkeeper.Keeper
-
 	PFMRouterKeeper *pfmrouterkeeper.Keeper
 	RatelimitKeeper ratelimitkeeper.Keeper
 
@@ -138,7 +127,6 @@ type AppKeepers struct {
 	TransferModule  transfer.AppModule
 	PFMRouterModule pfmrouter.AppModule
 	RateLimitModule ratelimit.AppModule
-	ProviderModule  icsprovider.AppModule
 }
 
 func NewAppKeeper(
@@ -169,13 +157,6 @@ func NewAppKeeper(
 		logger.Error("failed to load state streaming", "err", err)
 		os.Exit(1)
 	}
-
-	appKeepers.ParamsKeeper = initParamsKeeper(
-		appCodec,
-		legacyAmino,
-		appKeepers.keys[paramstypes.StoreKey],
-		appKeepers.tkeys[paramstypes.TStoreKey],
-	)
 
 	// set the BaseApp's parameter store
 	appKeepers.ConsensusParamsKeeper = consensusparamkeeper.NewKeeper(
@@ -277,7 +258,6 @@ func NewAppKeeper(
 		stakingtypes.NewMultiStakingHooks(
 			appKeepers.DistrKeeper.Hooks(),
 			appKeepers.SlashingKeeper.Hooks(),
-			appKeepers.ProviderKeeper.Hooks(),
 			appKeepers.LiquidKeeper.Hooks(),
 		),
 	)
@@ -304,7 +284,7 @@ func NewAppKeeper(
 	appKeepers.IBCKeeper = ibckeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[ibcexported.StoreKey]),
-		appKeepers.GetSubspace(ibcexported.ModuleName),
+		nil, // legacy params Subspace: unused since x/params was removed
 		appKeepers.UpgradeKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
@@ -341,26 +321,6 @@ func NewAppKeeper(
 		ibcwasmkeeper.WithQueryPlugins(&wasmLightClientQuerier),
 	)
 
-	appKeepers.ProviderKeeper = icsproviderkeeper.NewKeeper(
-		appCodec,
-		appKeepers.keys[providertypes.StoreKey],
-		appKeepers.GetSubspace(providertypes.ModuleName),
-		appKeepers.IBCKeeper.ChannelKeeper,
-		appKeepers.IBCKeeper.ConnectionKeeper,
-		appKeepers.IBCKeeper.ClientKeeper,
-		appKeepers.StakingKeeper,
-		appKeepers.SlashingKeeper,
-		appKeepers.AccountKeeper,
-		appKeepers.DistrKeeper,
-		appKeepers.BankKeeper,
-		govkeeper.Keeper{}, // cyclic dependency between provider and governance, will be set later
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
-		authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
-		authtypes.FeeCollectorName,
-	)
-
-	// gov depends on provider, so needs to be set after
 	govConfig := govtypes.DefaultConfig()
 	// set the MaxMetadataLen for proposals to the same value as it was pre-sdk v0.47.x
 	govConfig.MaxMetadataLen = 10200
@@ -369,32 +329,21 @@ func NewAppKeeper(
 		runtime.NewKVStoreService(appKeepers.keys[govtypes.StoreKey]),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
-		// use the ProviderKeeper as StakingKeeper for gov
-		// because governance should be based on the consensus-active validators
-		appKeepers.ProviderKeeper,
+		appKeepers.StakingKeeper,
 		appKeepers.DistrKeeper,
 		bApp.MsgServiceRouter(),
 		govConfig,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
-	// mint keeper must be created after provider keeper
 	appKeepers.MintKeeper = mintkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[minttypes.StoreKey]),
-		appKeepers.ProviderKeeper,
+		appKeepers.StakingKeeper,
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		authtypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-	)
-
-	appKeepers.ProviderKeeper.SetGovKeeper(*appKeepers.GovKeeper)
-
-	appKeepers.ProviderModule = icsprovider.NewAppModule(
-		&appKeepers.ProviderKeeper,
-		appKeepers.GetSubspace(providertypes.ModuleName),
-		appKeepers.keys[providertypes.StoreKey],
 	)
 
 	// Register the proposal types
@@ -403,16 +352,13 @@ func NewAppKeeper(
 	// See: https://docs.cosmos.network/main/modules/gov#proposal-messages
 	govRouter := govv1beta1.NewRouter()
 	govRouter.
-		AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
-		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(appKeepers.ParamsKeeper))
+		AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler)
 
 	// Set legacy router for backwards compatibility with gov v1beta1
 	appKeepers.GovKeeper.SetLegacyRouter(govRouter)
 
 	appKeepers.GovKeeper = appKeepers.GovKeeper.SetHooks(
-		govtypes.NewMultiGovHooks(
-			appKeepers.ProviderKeeper.Hooks(),
-		),
+		govtypes.NewMultiGovHooks(),
 	)
 
 	evidenceKeeper := evidencekeeper.NewKeeper(
@@ -430,7 +376,7 @@ func NewAppKeeper(
 	appKeepers.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[icahosttypes.StoreKey]),
-		appKeepers.GetSubspace(icahosttypes.SubModuleName),
+		nil,                                // legacy params Subspace: unused since x/params was removed
 		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.AccountKeeper,
@@ -445,8 +391,8 @@ func NewAppKeeper(
 	appKeepers.RatelimitKeeper = *ratelimitkeeper.NewKeeper(
 		appCodec, // BinaryCodec
 		runtime.NewKVStoreService(appKeepers.keys[ratelimittypes.StoreKey]), // StoreKey
-		appKeepers.GetSubspace(ratelimittypes.ModuleName),                   // param Subspace
-		govAuthority, // authority
+		paramstypes.Subspace{}, // unused: ratelimit's Params message is empty; SetParams/GetParams never touch this subspace
+		govAuthority,           // authority
 		appKeepers.BankKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper, // ChannelKeeper
 		appKeepers.IBCKeeper.ClientKeeper,
@@ -457,7 +403,7 @@ func NewAppKeeper(
 	appKeepers.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[icacontrollertypes.StoreKey]),
-		appKeepers.GetSubspace(icacontrollertypes.SubModuleName),
+		nil,                                // legacy params Subspace: unused since x/params was removed
 		appKeepers.IBCKeeper.ChannelKeeper, // ICS4Wrapper
 		appKeepers.IBCKeeper.ChannelKeeper,
 		bApp.MsgServiceRouter(),
@@ -478,7 +424,7 @@ func NewAppKeeper(
 	appKeepers.TransferKeeper = ibctransferkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[ibctransfertypes.StoreKey]),
-		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
+		nil,                                // legacy params Subspace: unused since x/params was removed
 		appKeepers.IBCKeeper.ChannelKeeper, // ISC4 Wrapper: This is overridden later
 		appKeepers.IBCKeeper.ChannelKeeper,
 		bApp.MsgServiceRouter(),
@@ -506,6 +452,16 @@ func NewAppKeeper(
 		ante.NewGovVoteMessageDecorator(appKeepers.StakingKeeper),
 	)
 	wasmOpts = append(wasmOpts, govVoteDecorator)
+
+	// Allow contracts read-only access to validator info and governance proposal
+	// state via the wasm Grpc query plugin.
+	grpcAcceptList := wasmkeeper.AcceptedQueries{
+		"/cosmos.staking.v1beta1.Query/Validator": func() proto.Message { return &stakingtypes.QueryValidatorResponse{} },
+		"/cosmos.gov.v1.Query/Proposal":           func() proto.Message { return &govv1.QueryProposalResponse{} },
+	}
+	wasmOpts = append(wasmOpts, wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
+		Grpc: wasmkeeper.AcceptListGrpcQuerier(grpcAcceptList, bApp.GRPCQueryRouter(), appCodec),
+	}))
 
 	appKeepers.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
@@ -535,21 +491,19 @@ func NewAppKeeper(
 	// - core IBC
 	// - ratelimit
 	// - pfm
-	// - provider
 	// - callbacks
 	// - transfer
 	//
 	// This is how transfer stack will work in the end:
-	// * RecvPacket -> IBC core -> RateLimit -> PFM -> Provider -> Callbacks -> Transfer (AddRoute)
+	// * RecvPacket -> IBC core -> RateLimit -> PFM -> Callbacks -> Transfer (AddRoute)
 	// * SendPacket -> Transfer -> Callbacks -> PFM -> RateLimit -> IBC core (ICS4Wrapper)
 
 	var transferStack porttypes.IBCModule
 	transferStack = transfer.NewIBCModule(appKeepers.TransferKeeper)
 	cbStack := ibccallbacks.NewIBCMiddleware(transferStack, appKeepers.PFMRouterKeeper, wasmStackIBCHandler,
 		gaiaparams.MaxIBCCallbackGas)
-	transferStack = icsprovider.NewIBCMiddleware(cbStack, appKeepers.ProviderKeeper)
 	transferStack = pfmrouter.NewIBCMiddleware(
-		transferStack,
+		cbStack,
 		appKeepers.PFMRouterKeeper,
 		0, // retries on timeout
 		pfmrouterkeeper.DefaultForwardTransferPacketTimeoutTimestamp,
@@ -573,14 +527,18 @@ func NewAppKeeper(
 	transferStackV2 = transferv2.NewIBCModule(appKeepers.TransferKeeper)
 	transferStackV2 = ibccallbacksv2.NewIBCMiddleware(transferStackV2, appKeepers.IBCKeeper.ChannelKeeperV2,
 		wasmStackIBCHandler, appKeepers.IBCKeeper.ChannelKeeperV2, gaiaparams.MaxIBCCallbackGas)
-	transferStackV2 = ratelimitv2.NewIBCMiddleware(appKeepers.RatelimitKeeper, transferStackV2)
+	transferStackV2 = ratelimitv2.NewIBCMiddlewareWithAsyncAcknowledgements(
+		appKeepers.RatelimitKeeper,
+		transferStackV2,
+		appKeepers.IBCKeeper.ChannelKeeperV2,
+		appKeepers.IBCKeeper.ChannelKeeperV2,
+	)
 
 	// Create IBC Router & seal
 	ibcRouter := porttypes.NewRouter().
 		AddRoute(icahosttypes.SubModuleName, icaHostStack).
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
-		AddRoute(providertypes.ModuleName, appKeepers.ProviderModule).
 		AddRoute(wasmtypes.ModuleName, wasmStack)
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
@@ -593,48 +551,10 @@ func NewAppKeeper(
 	// Middleware Stacks
 	appKeepers.ICAModule = ica.NewAppModule(&appKeepers.ICAControllerKeeper, &appKeepers.ICAHostKeeper)
 	appKeepers.TransferModule = transfer.NewAppModule(appKeepers.TransferKeeper)
-	appKeepers.PFMRouterModule = pfmrouter.NewAppModule(appKeepers.PFMRouterKeeper, appKeepers.GetSubspace(pfmroutertypes.ModuleName))
+	appKeepers.PFMRouterModule = pfmrouter.NewAppModule(appKeepers.PFMRouterKeeper, nil)
 	appKeepers.RateLimitModule = ratelimit.NewAppModule(appCodec, appKeepers.RatelimitKeeper)
 
 	return appKeepers
-}
-
-// GetSubspace returns a param subspace for a given module name.
-func (appKeepers *AppKeepers) GetSubspace(moduleName string) paramstypes.Subspace {
-	subspace, ok := appKeepers.ParamsKeeper.GetSubspace(moduleName)
-	if !ok {
-		panic("couldn't load subspace for module: " + moduleName)
-	}
-	return subspace
-}
-
-// initParamsKeeper init params keeper and its subspaces
-func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key,
-	tkey storetypes.StoreKey,
-) paramskeeper.Keeper { //nolint:staticcheck
-	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey) //nolint:staticcheck
-
-	// register the key tables for legacy param subspaces
-	keyTable := ibcclienttypes.ParamKeyTable()
-	keyTable.RegisterParamSet(&ibcconnectiontypes.Params{})
-	paramsKeeper.Subspace(authtypes.ModuleName).WithKeyTable(authtypes.ParamKeyTable())         //nolint:staticcheck
-	paramsKeeper.Subspace(stakingtypes.ModuleName).WithKeyTable(stakingtypes.ParamKeyTable())   //nolint:staticcheck
-	paramsKeeper.Subspace(banktypes.ModuleName).WithKeyTable(banktypes.ParamKeyTable())         //nolint:staticcheck
-	paramsKeeper.Subspace(minttypes.ModuleName).WithKeyTable(minttypes.ParamKeyTable())         //nolint:staticcheck
-	paramsKeeper.Subspace(distrtypes.ModuleName).WithKeyTable(distrtypes.ParamKeyTable())       //nolint:staticcheck
-	paramsKeeper.Subspace(slashingtypes.ModuleName).WithKeyTable(slashingtypes.ParamKeyTable()) //nolint: staticcheck // SA1019
-	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable())              //nolint: staticcheck // SA1019
-	paramsKeeper.Subspace(ibcexported.ModuleName).WithKeyTable(keyTable)
-	paramsKeeper.Subspace(ibctransfertypes.ModuleName).WithKeyTable(ibctransfertypes.ParamKeyTable())
-	paramsKeeper.Subspace(icacontrollertypes.SubModuleName).WithKeyTable(icacontrollertypes.ParamKeyTable())
-	paramsKeeper.Subspace(icahosttypes.SubModuleName).WithKeyTable(icahosttypes.ParamKeyTable())
-	paramsKeeper.Subspace(pfmroutertypes.ModuleName)
-	paramsKeeper.Subspace(ratelimittypes.ModuleName).WithKeyTable(ratelimittypes.ParamKeyTable())
-	paramsKeeper.Subspace(providertypes.ModuleName).WithKeyTable(providertypes.ParamKeyTable())
-	paramsKeeper.Subspace(wasmtypes.ModuleName)
-	paramsKeeper.Subspace(tokenfactorytypes.ModuleName)
-
-	return paramsKeeper
 }
 
 type DefaultFeemarketDenomResolver struct{}

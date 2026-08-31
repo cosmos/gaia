@@ -20,10 +20,17 @@ pull_request_rules:
         name: default
       merge:
         method: squash
-        commit_message_template: |
-          {{ title }} (#{{ number }})
-          {{ body }}
-
+        commit_message_format:
+          title: pr-title
+          body: pr-body
+  - name: Backport patches to the release/v28.x branch
+    conditions:
+      - base=main
+      - label=A:backport/v28.x
+    actions:
+      backport:
+        branches:
+          - release/v28.x
   - name: Backport patches to the release/v27.x branch
     conditions:
       - base=main
@@ -32,12 +39,3 @@ pull_request_rules:
       backport:
         branches:
           - release/v27.x
-
-  - name: Backport patches to the release/v26.x branch
-    conditions:
-      - base=main
-      - label=A:backport/v26.x
-    actions:
-      backport:
-        branches:
-          - release/v26.x

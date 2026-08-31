@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/gaia/v28/tests/interchain/chainsuite"
-	"github.com/cosmos/gaia/v28/tests/interchain/delegator"
+	"github.com/cosmos/gaia/v29/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v29/tests/interchain/delegator"
 	"github.com/cosmos/interchaintest/v10"
 	"github.com/cosmos/interchaintest/v10/ibc"
 	"github.com/stretchr/testify/suite"
@@ -41,9 +41,15 @@ func (s *MultisigTest) TestMultisig() {
 	balanceBefore, err := s.Chain.GetBalance(s.GetContext(), s.DelegatorWallet3.FormattedAddress(), chainsuite.Uatom)
 	s.Require().NoError(err)
 
+	// NOTE: --gas auto cannot be used here. Cosmos SDK's gas simulation for
+	// multisig senders (Factory.getSimSignatureData) builds a dummy
+	// MultiSignatureData without a BitArray, and as of SDK v0.53.8 the ante
+	// handler's ConsumeMultisignatureVerificationGas rejects that with
+	// "bit array size is incorrect, expecting: N". Use a fixed gas limit
+	// instead until upstream fixes the simulation path.
 	txjson, err := s.Chain.GenerateTx(
 		s.GetContext(), 0, "bank", "send", multisigName, s.DelegatorWallet3.FormattedAddress(), txAmountUatom(),
-		"--gas", "auto", "--gas-adjustment", fmt.Sprint(s.Chain.Config().GasAdjustment), "--gas-prices", s.Chain.Config().GasPrices,
+		"--gas", "300000", "--gas-prices", s.Chain.Config().GasPrices,
 	)
 	s.Require().NoError(err)
 

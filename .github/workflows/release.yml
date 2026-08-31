@@ -9,12 +9,17 @@ on:
       - "v[0-9]+\\.[0-9]+\\.[0-9]+"
       - "v[0-9]+\\.[0-9]+\\.[0-9]+-rc[0-9]+"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   release:
     permissions:
       packages: write
       contents: write
-    runs-on: depot-ubuntu-22.04-4
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -24,7 +29,7 @@ jobs:
 
       - uses: actions/setup-go@v6
         with:
-          go-version: "1.25.7"
+          go-version-file: go.mod
 
       - name: Set Env
         run: echo "TM_VERSION=$(go list -m github.com/cometbft/cometbft | sed 's:.* ::')" >> $GITHUB_ENV

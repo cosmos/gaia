@@ -6,8 +6,8 @@ import (
 	"time"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/gaia/v28/tests/interchain/chainsuite"
-	"github.com/cosmos/gaia/v28/tests/interchain/delegator"
+	"github.com/cosmos/gaia/v29/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v29/tests/interchain/delegator"
 	"github.com/cosmos/interchaintest/v10"
 	"github.com/cosmos/interchaintest/v10/ibc"
 	"github.com/stretchr/testify/assert"

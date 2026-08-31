@@ -56,7 +56,7 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaia "github.com/cosmos/gaia/v28/app"
+	gaia "github.com/cosmos/gaia/v29/app"
 )
 
 // NewRootCmd creates a new root command for simd. It is called once in the
@@ -233,7 +233,7 @@ func addModuleInitFlags(startCmd *cobra.Command) {
 
 // genesisCommand builds genesis-related `simd genesis` command. Users may provide application specific commands as a parameter
 func genesisCommand(txConfig client.TxConfig, basicManager module.BasicManager, cmds ...*cobra.Command) *cobra.Command {
-	cmd := genutilcli.GenesisCoreCommand(txConfig, basicManager, gaia.DefaultNodeHome)
+	cmd := genutilcli.Commands(txConfig, basicManager, gaia.DefaultNodeHome)
 
 	for _, subCmd := range cmds {
 		cmd.AddCommand(subCmd)

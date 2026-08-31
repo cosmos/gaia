@@ -1,4 +1,4 @@
-module github.com/cosmos/gaia/v28
+module github.com/cosmos/gaia/v29
 
 go 1.25.7
 
@@ -16,20 +16,19 @@ require (
 	cosmossdk.io/x/feegrant v0.2.0
 	cosmossdk.io/x/tx v0.14.0
 	cosmossdk.io/x/upgrade v0.2.0
-	github.com/CosmWasm/wasmd v0.60.7
-	github.com/CosmWasm/wasmvm/v2 v2.3.3
-	github.com/cometbft/cometbft v0.38.23
+	github.com/CosmWasm/wasmd v0.60.8
+	github.com/CosmWasm/wasmvm/v2 v2.3.4
+	github.com/cometbft/cometbft v0.38.25
 	github.com/cometbft/cometbft-db v1.0.4
 	github.com/cosmos/cosmos-db v1.1.3
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
-	github.com/cosmos/cosmos-sdk v0.53.6
+	github.com/cosmos/cosmos-sdk v0.53.8
 	github.com/cosmos/go-bip39 v1.0.0
 	github.com/cosmos/gogoproto v1.7.2
 	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v10 v10.6.0
-	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.1.0
+	github.com/cosmos/ibc-apps/modules/rate-limiting/v10 v10.7.0
 	github.com/cosmos/ibc-go/modules/light-clients/08-wasm/v10 v10.5.0
 	github.com/cosmos/ibc-go/v10 v10.7.0
-	github.com/cosmos/interchain-security/v7 v7.0.0-20250408210344-06e0dc6bf6d6
 	github.com/cosmos/tokenfactory v0.53.5
 	github.com/golang/protobuf v1.5.4
 	github.com/google/gofuzz v1.2.0
@@ -82,8 +81,8 @@ require (
 	github.com/bgentry/speakeasy v0.2.0 // indirect
 	github.com/bits-and-blooms/bitset v1.24.3 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
-	github.com/bytedance/sonic v1.14.2 // indirect
-	github.com/bytedance/sonic/loader v0.4.0 // indirect
+	github.com/bytedance/sonic v1.15.2 // indirect
+	github.com/bytedance/sonic/loader v0.5.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chigopher/pathlib v0.19.1 // indirect
@@ -140,7 +139,6 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/gogo/status v1.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
-	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/flatbuffers v25.1.24+incompatible // indirect
@@ -284,9 +282,6 @@ require (
 replace (
 	// Use cosmos keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-
-	// wasmd calls in sdk v0.53.6: this is required until Gaia upgrades to v0.53.6 or higher
-	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.53.4
 
 	// TODO: remove it: https://github.com/cosmos/cosmos-sdk/issues/13134
 	github.com/dgrijalva/jwt-go => github.com/golang-jwt/jwt/v4 v4.4.2

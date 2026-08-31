@@ -31,30 +31,26 @@ type SuiteConfig struct {
 }
 
 const (
-	CommitTimeout          = 4 * time.Second
-	Uatom                  = "uatom"
-	Ucon                   = "ucon"
-	NeutronDenom           = "untn"
-	StrideDenom            = "ustr"
-	GovMinDepositAmount    = 1000
-	GovDepositAmount       = "5000000" + Uatom
-	GovDepositPeriod       = 60 * time.Second
-	GovVotingPeriod        = 80 * time.Second
-	DowntimeJailDuration   = 10 * time.Second
-	ProviderSlashingWindow = 10
-	GasPrices              = "0.005" + Uatom
+	CommitTimeout        = 4 * time.Second
+	Uatom                = "uatom"
+	Ucon                 = "ucon"
+	NeutronDenom         = "untn"
+	StrideDenom          = "ustr"
+	GovMinDepositAmount  = 1000
+	GovDepositAmount     = "5000000" + Uatom
+	GovDepositPeriod     = 60 * time.Second
+	GovVotingPeriod      = 80 * time.Second
+	DowntimeJailDuration = 10 * time.Second
+	SlashingWindow       = 10
+	GasPrices            = "0.005" + Uatom
 	// ValidatorCount         = 1
-	UpgradeDelta           = 30
-	ValidatorFunds         = 11_000_000_000
-	ChainSpawnWait         = 155 * time.Second
-	SlashingWindowConsumer = 20
-	BlocksPerDistribution  = 10
-	StrideVersion          = "v24.0.0"
-	NeutronVersion         = "v3.0.2"
-	TransferPortID         = "transfer"
-	// This is needed because not every ics image is in the default heighliner registry
-	HyphaICSRepo = "ghcr.io/hyphacoop/ics"
-	ICSUidGuid   = "1025:1025"
+	UpgradeDelta          = 30
+	ValidatorFunds        = 11_000_000_000
+	ChainSpawnWait        = 155 * time.Second
+	BlocksPerDistribution = 10
+	StrideVersion         = "v24.0.0"
+	NeutronVersion        = "v3.0.2"
+	TransferPortID        = "transfer"
 	// Osmosis chain constants
 	OsmosisDenom   = "uosmo"
 	OsmosisVersion = "30.0.5"
@@ -75,6 +71,10 @@ func MergeChainSpecs(spec, other *interchaintest.ChainSpec) *interchaintest.Chai
 		return spec
 	}
 	spec.ChainConfig = spec.MergeChainSpecConfig(other.ChainConfig)
+	// MergeChainSpecConfig doesn't handle ModifyGenesisAmounts; apply it manually.
+	if other.ChainConfig.ModifyGenesisAmounts != nil {
+		spec.ChainConfig.ModifyGenesisAmounts = other.ChainConfig.ModifyGenesisAmounts
+	}
 	if other.Name != "" {
 		spec.Name = other.Name
 	}
@@ -178,11 +178,8 @@ func DefaultGenesis() []cosmos.GenesisKV {
 		cosmos.NewGenesisKV("app_state.gov.params.max_deposit_period", GovDepositPeriod.String()),
 		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.denom", Uatom),
 		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.amount", strconv.Itoa(GovMinDepositAmount)),
-		cosmos.NewGenesisKV("app_state.slashing.params.signed_blocks_window", strconv.Itoa(ProviderSlashingWindow)),
+		cosmos.NewGenesisKV("app_state.slashing.params.signed_blocks_window", strconv.Itoa(SlashingWindow)),
 		cosmos.NewGenesisKV("app_state.slashing.params.downtime_jail_duration", DowntimeJailDuration.String()),
-		cosmos.NewGenesisKV("app_state.provider.params.slash_meter_replenish_period", "2s"),
-		cosmos.NewGenesisKV("app_state.provider.params.slash_meter_replenish_fraction", "1.00"),
-		cosmos.NewGenesisKV("app_state.provider.params.blocks_per_epoch", "1"),
 		cosmos.NewGenesisKV("app_state.feemarket.params.min_base_gas_price", strings.TrimSuffix(GasPrices, Uatom)),
 		cosmos.NewGenesisKV("app_state.feemarket.state.base_gas_price", strings.TrimSuffix(GasPrices, Uatom)),
 		cosmos.NewGenesisKV("app_state.feemarket.params.fee_denom", Uatom),
@@ -198,7 +195,7 @@ func OsmosisGenesis() []cosmos.GenesisKV {
 		cosmos.NewGenesisKV("app_state.gov.params.max_deposit_period", GovDepositPeriod.String()),
 		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.denom", OsmosisDenom),
 		cosmos.NewGenesisKV("app_state.gov.params.min_deposit.0.amount", strconv.Itoa(GovMinDepositAmount)),
-		cosmos.NewGenesisKV("app_state.slashing.params.signed_blocks_window", strconv.Itoa(ProviderSlashingWindow)),
+		cosmos.NewGenesisKV("app_state.slashing.params.signed_blocks_window", strconv.Itoa(SlashingWindow)),
 		cosmos.NewGenesisKV("app_state.slashing.params.downtime_jail_duration", DowntimeJailDuration.String()),
 	}
 }

@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cosmos/gaia/v28/tests/interchain/chainsuite"
-	"github.com/cosmos/gaia/v28/tests/interchain/delegator"
+	"github.com/cosmos/gaia/v29/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v29/tests/interchain/delegator"
 	"github.com/stretchr/testify/suite"
 )
 

@@ -12,9 +12,9 @@ import (
 	authTx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
-	"github.com/cosmos/gaia/v28/tests/e2e/query"
-	extensiontypes "github.com/cosmos/gaia/v28/x/metaprotocols/types"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/query"
+	extensiontypes "github.com/cosmos/gaia/v29/x/metaprotocols/types"
 )
 
 func (s *IntegrationTestSuite) testBankTokenTransfer() {
@@ -68,8 +68,10 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 				afterBobUAtomBalance, err = query.SpecificBalance(chainEndpoint, bob.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				decremented := beforeAliceUAtomBalance.Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterAliceUAtomBalance)
-				incremented := beforeBobUAtomBalance.Add(common.TokenAmount).IsEqual(afterBobUAtomBalance)
+				expectedAliceUAtomBalance := beforeAliceUAtomBalance.Sub(common.TokenAmount).Sub(common.StandardFees)
+				decremented := expectedAliceUAtomBalance.Equal(afterAliceUAtomBalance)
+				expectedBobUAtomBalance := beforeBobUAtomBalance.Add(common.TokenAmount)
+				incremented := expectedBobUAtomBalance.Equal(afterBobUAtomBalance)
 
 				return decremented && incremented
 			},
@@ -94,9 +96,12 @@ func (s *IntegrationTestSuite) testBankTokenTransfer() {
 				afterCharlieUAtomBalance, err = query.SpecificBalance(chainEndpoint, charlie.String(), common.UAtomDenom)
 				s.Require().NoError(err)
 
-				decremented := beforeAliceUAtomBalance.Sub(common.TokenAmount).Sub(common.TokenAmount).Sub(common.StandardFees).IsEqual(afterAliceUAtomBalance)
-				incremented := beforeBobUAtomBalance.Add(common.TokenAmount).IsEqual(afterBobUAtomBalance) &&
-					beforeCharlieUAtomBalance.Add(common.TokenAmount).IsEqual(afterCharlieUAtomBalance)
+				expectedAliceUAtomBalance := beforeAliceUAtomBalance.Sub(common.TokenAmount).Sub(common.TokenAmount).Sub(common.StandardFees)
+				decremented := expectedAliceUAtomBalance.Equal(afterAliceUAtomBalance)
+				expectedBobUAtomBalance := beforeBobUAtomBalance.Add(common.TokenAmount)
+				expectedCharlieUAtomBalance := beforeCharlieUAtomBalance.Add(common.TokenAmount)
+				incremented := expectedBobUAtomBalance.Equal(afterBobUAtomBalance) &&
+					expectedCharlieUAtomBalance.Equal(afterCharlieUAtomBalance)
 
 				return decremented && incremented
 			},

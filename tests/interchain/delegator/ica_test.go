@@ -8,8 +8,8 @@ import (
 	"time"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/cosmos/gaia/v28/tests/interchain/chainsuite"
-	"github.com/cosmos/gaia/v28/tests/interchain/delegator"
+	"github.com/cosmos/gaia/v29/tests/interchain/chainsuite"
+	"github.com/cosmos/gaia/v29/tests/interchain/delegator"
 	"github.com/cosmos/interchaintest/v10"
 	"github.com/cosmos/interchaintest/v10/chain/cosmos"
 	"github.com/cosmos/interchaintest/v10/ibc"
@@ -30,8 +30,12 @@ const icaAcctFunds = int64(3_300_000_000)
 
 func (s *ICAControllerSuite) SetupSuite() {
 	s.Suite.SetupSuite()
+	// Disable after v27 upgrade:
 	// Use upgraded chain spec for Host so it has the custom gov module with stake validation
-	hostSpec := upgradedChainSpec(s.Env)
+	// hostSpec := upgradedChainSpec(s.Env)
+
+	// Use default chain spec
+	hostSpec := chainsuite.DefaultChainSpec(s.Env)
 	host, err := s.Chain.AddLinkedChain(s.GetContext(), s.T(), s.Relayer, hostSpec)
 	s.Require().NoError(err)
 	s.Host = host

@@ -13,9 +13,6 @@ import (
 	ibc "github.com/cosmos/ibc-go/v10/modules/core"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 	tendermint "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
-	no_valupdates_genutil "github.com/cosmos/interchain-security/v7/x/ccv/no_valupdates_genutil"
-	no_valupdates_staking "github.com/cosmos/interchain-security/v7/x/ccv/no_valupdates_staking"
-	providertypes "github.com/cosmos/interchain-security/v7/x/ccv/provider/types"
 	"github.com/cosmos/tokenfactory/x/tokenfactory"
 	tokenfactorytypes "github.com/cosmos/tokenfactory/x/tokenfactory/types"
 
@@ -40,19 +37,14 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
-	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	sdkparams "github.com/cosmos/cosmos-sdk/x/params"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
@@ -61,29 +53,27 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	gaiabank "github.com/cosmos/gaia/v28/x/bank"
-	gaiagov "github.com/cosmos/gaia/v28/x/gov"
-	"github.com/cosmos/gaia/v28/x/liquid"
-	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
-	"github.com/cosmos/gaia/v28/x/metaprotocols"
-	metaprotocolstypes "github.com/cosmos/gaia/v28/x/metaprotocols/types"
+	gaiabank "github.com/cosmos/gaia/v29/x/bank"
+	gaiagov "github.com/cosmos/gaia/v29/x/gov"
+	"github.com/cosmos/gaia/v29/x/liquid"
+	liquidtypes "github.com/cosmos/gaia/v29/x/liquid/types"
+	"github.com/cosmos/gaia/v29/x/metaprotocols"
+	metaprotocolstypes "github.com/cosmos/gaia/v29/x/metaprotocols/types"
 )
 
 var maccPerms = map[string][]string{
-	authtypes.FeeCollectorName:     nil,
-	distrtypes.ModuleName:          nil,
-	icatypes.ModuleName:            nil,
-	minttypes.ModuleName:           {authtypes.Minter},
-	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-	govtypes.ModuleName:            {authtypes.Burner},
-	// liquiditytypes.ModuleName:         {authtypes.Minter, authtypes.Burner},
-	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
-	providertypes.ConsumerRewardsPool: nil,
-	wasmtypes.ModuleName:              {authtypes.Burner},
-	feemarkettypes.ModuleName:         nil,
-	feemarkettypes.FeeCollectorName:   nil,
-	tokenfactorytypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
+	authtypes.FeeCollectorName:      nil,
+	distrtypes.ModuleName:           nil,
+	icatypes.ModuleName:             nil,
+	minttypes.ModuleName:            {authtypes.Minter},
+	stakingtypes.BondedPoolName:     {authtypes.Burner, authtypes.Staking},
+	stakingtypes.NotBondedPoolName:  {authtypes.Burner, authtypes.Staking},
+	govtypes.ModuleName:             {authtypes.Burner},
+	ibctransfertypes.ModuleName:     {authtypes.Minter, authtypes.Burner},
+	wasmtypes.ModuleName:            {authtypes.Burner},
+	feemarkettypes.ModuleName:       nil,
+	feemarkettypes.FeeCollectorName: nil,
+	tokenfactorytypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 }
 
 func appModules(
@@ -91,41 +81,39 @@ func appModules(
 	appCodec codec.Codec,
 	txConfig client.TxEncodingConfig,
 	tmLightClientModule tendermint.LightClientModule,
-) []module.AppModule {
-	return []module.AppModule{
-		no_valupdates_genutil.NewAppModule(
+) []module.AppModule { //nolint:staticcheck
+	return []module.AppModule{ //nolint:staticcheck
+		genutil.NewAppModule(
 			app.AccountKeeper,
 			app.StakingKeeper,
 			app,
 			txConfig,
 		),
-		auth.NewAppModule(appCodec, app.AccountKeeper, nil, app.GetSubspace(authtypes.ModuleName)),
+		auth.NewAppModule(appCodec, app.AccountKeeper, nil, nil),
 		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
-		gaiabank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
-		gaiagov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(govtypes.ModuleName)),
-		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
-		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		no_valupdates_staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
+		gaiabank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, nil),
+		gaiagov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, nil),
+		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, nil),
+		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, nil, app.interfaceRegistry),
+		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, nil),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, nil),
 		upgrade.NewAppModule(app.UpgradeKeeper, app.AccountKeeper.AddressCodec()),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
 		ibcwasm.NewAppModule(app.WasmClientKeeper),
-		sdkparams.NewAppModule(app.ParamsKeeper), //nolint:staticcheck
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
-		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), nil),
 		app.TransferModule,
 		app.ICAModule,
 		app.PFMRouterModule,
 		app.RateLimitModule,
-		app.ProviderModule,
 		metaprotocols.NewAppModule(),
 		feemarket.NewAppModule(appCodec, *app.FeeMarketKeeper),
 		tendermint.NewAppModule(tmLightClientModule),
 		liquid.NewAppModule(appCodec, app.LiquidKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(tokenfactorytypes.ModuleName)),
+		tokenfactory.NewAppModule(app.TokenFactoryKeeper, app.AccountKeeper, app.BankKeeper, nil),
 	}
 }
 
@@ -137,11 +125,7 @@ func newBasicManagerFromManager(app *GaiaApp) module.BasicManager {
 		app.mm,
 		map[string]module.AppModuleBasic{
 			genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-			govtypes.ModuleName: gov.NewAppModuleBasic(
-				[]govclient.ProposalHandler{
-					paramsclient.ProposalHandler,
-				},
-			),
+			govtypes.ModuleName:     gov.NewAppModuleBasic(nil),
 		})
 	basicManager.RegisterLegacyAminoCodec(app.legacyAmino)
 	basicManager.RegisterInterfaces(app.interfaceRegistry)
@@ -155,17 +139,17 @@ func simulationModules(
 	appCodec codec.Codec,
 ) []module.AppModuleSimulation {
 	return []module.AppModuleSimulation{
-		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
-		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
+		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, nil),
+		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, nil),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
-		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
-		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
+		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, nil),
+		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, nil),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, nil),
+		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, nil),
+		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, nil, app.interfaceRegistry),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), nil),
 		ibc.NewAppModule(app.IBCKeeper),
 		app.TransferModule,
 		app.ICAModule,
@@ -193,7 +177,6 @@ func orderBeginBlockers() []string {
 		authtypes.ModuleName,
 		banktypes.ModuleName,
 		govtypes.ModuleName,
-		crisistypes.ModuleName,
 		ibcexported.ModuleName,
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
@@ -202,10 +185,8 @@ func orderBeginBlockers() []string {
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		feemarkettypes.ModuleName,
-		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		liquidtypes.ModuleName,
@@ -215,17 +196,8 @@ func orderBeginBlockers() []string {
 	}
 }
 
-/*
-Interchain Security Requirements:
-- provider.EndBlock gets validator updates from the staking module;
-thus, staking.EndBlock must be executed before provider.EndBlock;
-- creating a new consumer chain requires the following order,
-CreateChildClient(), staking.EndBlock, provider.EndBlock;
-thus, gov.EndBlock must be executed before staking.EndBlock
-*/
 func orderEndBlockers() []string {
 	return []string{
-		crisistypes.ModuleName,
 		govtypes.ModuleName,
 		stakingtypes.ModuleName,
 		ibcexported.ModuleName,
@@ -242,11 +214,9 @@ func orderEndBlockers() []string {
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		feemarkettypes.ModuleName,
-		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		tokenfactorytypes.ModuleName,
@@ -279,7 +249,6 @@ func orderInitBlockers() []string {
 		feegrant.ModuleName,
 		pfmroutertypes.ModuleName,
 		ratelimittypes.ModuleName,
-		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		// The feemarket module should ideally be initialized before the genutil module in theory:
@@ -290,15 +259,11 @@ func orderInitBlockers() []string {
 		// A similar issue existed for the 'globalfee' module, which was previously used instead of 'feemarket'.
 		// For more details, please refer to the following link: https://github.com/cosmos/gaia/issues/2489
 		feemarkettypes.ModuleName,
-		providertypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		metaprotocolstypes.ModuleName,
 		wasmtypes.ModuleName,
 		ibcwasmtypes.ModuleName,
 		liquidtypes.ModuleName,
 		tokenfactorytypes.ModuleName,
-		// crisis needs to be last so that the genesis state is consistent
-		// when it checks invariants
-		crisistypes.ModuleName,
 	}
 }

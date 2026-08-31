@@ -13,10 +13,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 
-	"github.com/cosmos/gaia/v28/tests/e2e/common"
-	"github.com/cosmos/gaia/v28/tests/e2e/msg"
-	"github.com/cosmos/gaia/v28/tests/e2e/query"
-	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
+	"github.com/cosmos/gaia/v29/tests/e2e/common"
+	"github.com/cosmos/gaia/v29/tests/e2e/msg"
+	"github.com/cosmos/gaia/v29/tests/e2e/query"
+	liquidtypes "github.com/cosmos/gaia/v29/x/liquid/types"
 )
 
 // underBuffer is the number of tokens under the limit to tokenize
@@ -147,7 +147,7 @@ func (s *IntegrationTestSuite) testLiquid() {
 			s.Require().NoError(err)
 
 			decremented := afterSenderShareDenomBalance.IsNil() || afterSenderShareDenomBalance.IsZero()
-			incremented := afterRecipientShareDenomBalance.IsEqual(sendAmount)
+			incremented := afterRecipientShareDenomBalance.Equal(sendAmount)
 
 			return decremented && incremented
 		},
@@ -181,7 +181,8 @@ func (s *IntegrationTestSuite) testLiquid() {
 			afterSenderShareBalance, err := query.SpecificBalance(chainEndpoint, validatorAAddr.String(), shareDenom)
 			s.Require().NoError(err)
 
-			decremented := afterSenderShareBalance.Add(ibcTransferAmount).IsEqual(sendAmount)
+			afterSenderSharePlusTransfer := afterSenderShareBalance.Add(ibcTransferAmount)
+			decremented := afterSenderSharePlusTransfer.Equal(sendAmount)
 			return decremented
 		},
 		1*time.Minute,

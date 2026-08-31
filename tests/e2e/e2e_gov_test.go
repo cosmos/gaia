@@ -80,7 +80,11 @@ func (s *IntegrationTestSuite) GovCancelSoftwareUpgrade() {
 	sender := senderAddress.String()
 	height, err := query.GetLatestBlockHeight(chainAAPIEndpoint)
 	s.Require().NoError(err)
-	proposalHeight := height + 50
+	// this test runs two full gov proposal cycles (submit/deposit/vote) sequentially
+	// before the chain reaches proposalHeight, so it needs a larger buffer than a
+	// single-proposal test to avoid a race where the chain halts at proposalHeight
+	// before the cancellation vote lands.
+	proposalHeight := height + 2*common.GovProposalBlockBuffer
 	err = msg.WriteSoftwareUpgradeProposal(s.Resources.ChainA, int64(proposalHeight), "upgrade-v1")
 	s.Require().NoError(err)
 
@@ -198,7 +202,7 @@ func (s *IntegrationTestSuite) verifyChainPassesUpgradeHeight(endpoint string, u
 
 			return currentHeight > upgradeHeight
 		},
-		30*time.Second,
+		60*time.Second,
 		5*time.Second,
 	)
 }

@@ -20,6 +20,7 @@
 - Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.23 to 0.38.25 ([#4123](https://github.com/cosmos/gaia/pull/4123))
 - Bump [github.com/cosmos/ibc-apps/modules/rate-limiting/v10](https://github.com/cosmos/ibc-apps) from 10.1.0 to 10.7.0 ([#4104](https://github.com/cosmos/gaia/pull/4104))
 - Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.4 to 0.53.8 ([#4124](https://github.com/cosmos/gaia/pull/4124))
+- Bump [github.com/opencontainers/runc](https://github.com/opencontainers/runc) from 1.2.8 to 1.3.6 ([#4071](https://github.com/cosmos/gaia/pull/4071))
 
 ## v28.0.0
 

@@ -32,6 +32,8 @@ There are four main technologies to consider to connect to the Cosmos Hub:
 - REST API: Use available endpoints for the REST Server.
 - GRPC: Connect to the Cosmos Hub using gRPC.
 
+For independent live latency measurements of public Cosmos Hub RPC endpoints across providers (Lava Network, Polkachu, Imperator, LavenderFive and others), see the [OpenChainBench Cosmos Hub RPC benchmark](https://openchainbench.com/benchmarks/cosmos-hub-rpc), probed every minute from three regions under a CC BY 4.0 license.
+
 ## Running a Full Node
 
 ### What is a Full Node?

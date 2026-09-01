@@ -39,6 +39,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [brace-expansion](https://github.com/juliangruber/brace-expansion) from 1.1.11 to 1.1.18 ([#4110](https://github.com/cosmos/gaia/pull/4110))
+
 ## v27.6.0
 
 *July 17, 2026*

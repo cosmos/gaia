@@ -36,7 +36,7 @@ sed -i'' 's/trust_hash = ""/trust_hash = "<BLOCK_HASH>"/' $HOME/.gaia/config/con
 sed -i'' 's/rpc_servers = ""/rpc_servers = "https:\/\/cosmos-rpc.polkachu.com:443,https:\/\/rpc.cosmoshub-main.ccvalidators.com:443"/' $HOME/.gaia/config/config.toml
 
 #Start Gaia
-gaiad start --x-crisis-skip-assert-invariants
+gaiad start
 ```
 
 #### Quick Sync 
@@ -135,6 +135,6 @@ curl https://quicksync.io/addrbook.cosmos.json > $HOME/.gaia/config/addrbook.jso
 ##### Start Gaia
 
 ```bash
-gaiad start --x-crisis-skip-assert-invariants
+gaiad start
 
 ```

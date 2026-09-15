@@ -103,6 +103,16 @@ endif
 include contrib/devtools/Makefile
 
 ###############################################################################
+###                                 Help                                    ###
+###############################################################################
+
+#? help: List available make targets
+help: Makefile
+	@echo " Choose a command to run in gaia:"
+	@sed -n 's/^#?//p' $< | column -t -s ':' | sort | sed -e 's/^/ /'
+.PHONY: help
+
+###############################################################################
 ###                              Build                                      ###
 ###############################################################################
 
@@ -112,10 +122,13 @@ ifneq ($(shell [ "$(GO_SYSTEM_VERSION)" \< "$(REQUIRE_GO_VERSION)" ] && echo tru
 	exit 1
 endif
 
+#? all: Run install, lint, unit tests, e2e tests and vulncheck
 all: install lint run-tests test-e2e vulncheck
 
 BUILD_TARGETS := build install
 
+#? build: Build the gaiad binary into ./build
+#? install: Build and install gaiad into GOBIN
 build: BUILD_ARGS=-o $(BUILDDIR)/
 
 $(BUILD_TARGETS): check_version go.sum $(BUILDDIR)/
@@ -124,6 +137,7 @@ $(BUILD_TARGETS): check_version go.sum $(BUILDDIR)/
 $(BUILDDIR)/:
 	mkdir -p $(BUILDDIR)/
 
+#? vulncheck: Run govulncheck against all packages
 vulncheck: $(BUILDDIR)/
 	GOBIN=$(BUILDDIR) go install golang.org/x/vuln/cmd/govulncheck@latest
 	$(BUILDDIR)/govulncheck ./...
@@ -138,14 +152,17 @@ endif
 	@echo "--> Download go modules to local cache"
 	go mod download
 
+#? draw-deps: Render a dependency graph to dependency-graph.png (requires graphviz)
 draw-deps:
 	@# requires brew install graphviz or apt-get install graphviz
 	go install github.com/RobotsAndPencils/goviz
 	@goviz -i ./cmd/gaiad -d 2 | dot -Tpng -o dependency-graph.png
 
+#? clean: Remove build artifacts
 clean:
 	rm -rf $(BUILDDIR)/ artifacts/
 
+#? distclean: Remove build artifacts and vendor/
 distclean: clean
 	rm -rf vendor/
 
@@ -155,6 +172,7 @@ distclean: clean
 
 # Bump the major version number in go.mod and all import paths
 # Usage: make bump-version OLD_VERSION=v25.2.0 NEW_VERSION=v26.0.0
+#? bump-version: Bump the major version in go.mod and import paths (OLD_VERSION=... NEW_VERSION=...)
 bump-version:
 ifndef OLD_VERSION
 	$(error OLD_VERSION is required. Usage: make bump-version OLD_VERSION=v25.2.0 NEW_VERSION=v26.0.0)
@@ -200,6 +218,7 @@ COSMWASM_VERSION := $(shell go list -m github.com/CosmWasm/wasmvm/v2 | sed 's/.*
 # create tag and run goreleaser without publishing
 # errors are possible while running goreleaser - the process can run for >30 min
 # if the build is failing due to timeouts use goreleaser-build-local instead
+#? create-release-dry-run: Run goreleaser for TAG without publishing
 create-release-dry-run:
 ifneq ($(strip $(TAG)),)
 	@echo "--> Dry running release for tag: $(TAG)"
@@ -231,6 +250,7 @@ endif
 
 # Build static binaries for linux/amd64 using docker buildx
 # Pulled from neutron-org/neutron: https://github.com/neutron-org/neutron/blob/v4.2.2/Makefile#L107
+#? build-static-linux-amd64: Build a static linux/amd64 binary with docker buildx
 build-static-linux-amd64: go.sum $(BUILDDIR)/
 	$(DOCKER) buildx create --name gaiabuilder || true
 	$(DOCKER) buildx use gaiabuilder
@@ -251,6 +271,7 @@ build-static-linux-amd64: go.sum $(BUILDDIR)/
 
 # Build static binaries for linux/arm64 using docker buildx
 # Pulled from neutron-org/neutron: https://github.com/neutron-org/neutron/blob/v4.2.2/Makefile#L107
+#? build-static-linux-arm64: Build a static linux/arm64 binary with docker buildx
 build-static-linux-arm64: go.sum $(BUILDDIR)/
 	$(DOCKER) buildx create --name gaiabuilder || true
 	$(DOCKER) buildx use gaiabuilder
@@ -271,6 +292,7 @@ build-static-linux-arm64: go.sum $(BUILDDIR)/
 
 
 # uses goreleaser to create static binaries for darwin on local machine
+#? goreleaser-build-local: Build static darwin/linux binaries locally with goreleaser
 goreleaser-build-local:
 	docker run \
 		--rm \
@@ -310,6 +332,7 @@ ci-release:
 endif
 
 # create tag and publish it
+#? create-release: Create and push a signed release tag (TAG=vX.Y.Z)
 create-release:
 ifneq ($(strip $(TAG)),)
 	@echo "--> Running release for tag: $(TAG)"
@@ -325,6 +348,7 @@ endif
 ###                              Documentation                              ###
 ###############################################################################
 
+#? build-docs: Build the documentation site
 build-docs:
 	@cd docs && ./build.sh
 
@@ -342,6 +366,7 @@ PACKAGES_E2E=$(shell cd tests/e2e && go list ./... | grep '/e2e')
 TEST_PACKAGES=./...
 TEST_TARGETS := test-unit test-unit-cover test-race test-e2e
 
+#? mocks: Regenerate test mocks and format the result
 mocks: gen-mocks format
 
 gen-mocks:
@@ -349,12 +374,16 @@ gen-mocks:
 	@go install github.com/vektra/mockery/v2
 	@go run github.com/vektra/mockery/v2
 
+#? test-unit: Run unit tests
 test-unit: ARGS=-timeout=5m -tags='norace'
 test-unit: TEST_PACKAGES=$(PACKAGES_UNIT)
+#? test-unit-cover: Run unit tests with coverage (coverage.txt)
 test-unit-cover: ARGS=-timeout=5m -tags='norace' -coverprofile=coverage.txt -covermode=atomic
 test-unit-cover: TEST_PACKAGES=$(PACKAGES_UNIT)
+#? test-race: Run unit tests with the race detector
 test-race: ARGS=-timeout=5m -race
 test-race: TEST_PACKAGES=$(PACKAGES_UNIT)
+#? test-e2e: Run end-to-end tests (requires docker)
 test-e2e: ARGS=-timeout=35m -v
 test-e2e: TEST_PACKAGES=$(PACKAGES_E2E)
 $(TEST_TARGETS): run-tests
@@ -370,6 +399,7 @@ endif
 
 .PHONY: run-tests $(TEST_TARGETS)
 
+#? docker-build-debug: Build the cosmos/gaiad-e2e docker image
 docker-build-debug:
 	@docker build -t cosmos/gaiad-e2e -f Dockerfile .
 
@@ -379,16 +409,19 @@ docker-build-debug:
 golangci_lint_cmd=golangci-lint
 golangci_version=v2.11.1
 
+#? lint: Run golangci-lint
 lint:
 	@echo "--> Running linter"
 	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(golangci_version)
 	@$(golangci_lint_cmd) run --timeout=10m
 
+#? lint-fix: Run golangci-lint and auto-fix issues
 lint-fix:
 	@echo "--> Running linter"
 	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(golangci_version)
 	@$(golangci_lint_cmd) run --fix --issues-exit-code=0
 
+#? format: Format Go sources with gofumpt and golangci-lint
 format:
 	@go install mvdan.cc/gofumpt@latest
 	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(golangci_version)
@@ -400,6 +433,7 @@ format:
 ###                                Localnet                                 ###
 ###############################################################################
 
+#? start-localnet-ci: Build gaiad and start a single-node local chain
 start-localnet-ci: build
 	rm -rf ~/.gaiad-liveness
 	./build/gaiad init liveness --chain-id liveness --home ~/.gaiad-liveness
@@ -418,11 +452,13 @@ start-localnet-ci: build
 ###                                Docker                                   ###
 ###############################################################################
 
+#? test-docker: Build the test docker image
 test-docker:
 	@docker build -f contrib/Dockerfile.test -t ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) .
 	@docker tag ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
 	@docker tag ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD) ${TEST_DOCKER_REPO}:latest
 
+#? test-docker-push: Build and push the test docker image
 test-docker-push: test-docker
 	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --short HEAD)
 	@docker push ${TEST_DOCKER_REPO}:$(shell git rev-parse --abbrev-ref HEAD | sed 's#/#_#g')
@@ -439,25 +475,32 @@ protoVer=0.15.2
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=$(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
 
+#? proto-all: Format, lint and generate protobuf files
 proto-all: proto-format proto-lint proto-gen
 
+#? proto-gen: Generate Go code from protobuf definitions
 proto-gen:
 	@echo "Generating Protobuf files"
 	@$(protoImage) sh ./proto/scripts/protocgen.sh
 
+#? proto-swagger-gen: Generate swagger docs from protobuf definitions
 proto-swagger-gen:
 	@echo "Generating Protobuf Swagger"
 	@$(protoImage) sh ./proto/scripts/protoc-swagger-gen.sh
 
+#? proto-format: Format protobuf files with clang-format
 proto-format:
 	@$(protoImage) find ./ -name "*.proto" -exec clang-format -i {} \;
 
+#? proto-lint: Lint protobuf files with buf
 proto-lint:
 	@$(protoImage) buf lint --error-format=json
 
+#? proto-check-breaking: Check protobuf files for breaking changes against main
 proto-check-breaking:
 	@$(protoImage) buf breaking --against $(HTTPS_GIT)#branch=main
 
+#? proto-update-deps: Update protobuf dependencies with buf
 proto-update-deps:
 	@echo "Updating Protobuf dependencies"
 	$(DOCKER) run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
@@ -476,11 +519,13 @@ localnet-build-nodes:
 			  testnet init-files --v 4 -o /data --starting-ip-address 192.168.10.2 --keyring-backend=test --chain-id=localchain --use-docker=true
 	docker compose up -d
 
+#? localnet-stop: Stop the docker localnet
 localnet-stop:
 	docker compose down
 
 # localnet-start will run a 4-node testnet locally. The nodes are
 # based off the docker images in: ./contrib/images/simd-env
+#? localnet-start: Start a 4-node docker localnet
 localnet-start: localnet-stop localnet-build-env localnet-build-nodes
 
 

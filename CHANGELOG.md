@@ -23,6 +23,10 @@
 - Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.4 to 0.53.8 ([#4124](https://github.com/cosmos/gaia/pull/4124))
 - Bump [github.com/opencontainers/runc](https://github.com/opencontainers/runc) from 1.2.8 to 1.3.6 ([#4071](https://github.com/cosmos/gaia/pull/4071))
 
+### Dependencies
+
+- Bump [go.opentelemetry.io/otel/sdk](https://github.com/open-telemetry/opentelemetry-go) from 1.44.0 to 1.45.0 ([#4139](https://github.com/cosmos/gaia/pull/4139))
+
 ## v28.0.0
 
 *August 7, 2026*

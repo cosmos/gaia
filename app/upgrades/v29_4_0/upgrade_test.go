@@ -2,6 +2,7 @@ package v29_4_0_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -33,29 +34,34 @@ const denom = "uatom"
 
 func TestRefundFromCommunityPool(t *testing.T) {
 	recipient := sdk.MustAccAddressFromBech32(v294.RefundRecipient)
+	enough := int64(v294.RefundAmount + 5)
 
 	tests := []struct {
 		name string
-		pool int64
+		// pool is the community pool accounting, coins is what the distribution module actually holds.
+		pool, coins int64
 		// existing is the recipient's pre-upgrade balance. Zero means no account.
 		existing int64
 		// setupAcc overrides the recipient's pre-upgrade account.
-		setupAcc func(app *gaiaapp.GaiaApp, ctx sdk.Context)
-		wantErr  bool
+		setupAcc  func(app *gaiaapp.GaiaApp, ctx sdk.Context)
+		blockTime time.Time
+		wantErr   error
 	}{
-		{name: "new account", pool: v294.RefundAmount + 5},
-		{name: "existing account keeps spendable balance", pool: v294.RefundAmount + 5, existing: 7},
-		{name: "pool too small", pool: v294.RefundAmount - 1, wantErr: true},
+		{name: "existing account keeps spendable balance", pool: enough, coins: enough, existing: 7},
+		{name: "no account", pool: enough, coins: enough, wantErr: v294.ErrRecipientNotFound},
+		{name: "pool too small", pool: v294.RefundAmount - 1, coins: enough, existing: 7, wantErr: v294.ErrInsufficientPool},
+		{name: "pool accounting not backed by coins", pool: enough, coins: v294.RefundAmount - 1, existing: 7, wantErr: v294.ErrInsufficientPool},
+		{name: "unlock time already passed", pool: enough, coins: enough, existing: 7, blockTime: time.Unix(v294.RefundUnlockTime, 0), wantErr: v294.ErrUnlockInPast},
 		{
 			name: "recipient already vesting",
-			pool: v294.RefundAmount + 5,
+			pool: enough, coins: enough,
 			setupAcc: func(app *gaiaapp.GaiaApp, ctx sdk.Context) {
 				base := app.AccountKeeper.NewAccountWithAddress(ctx, recipient).(*authtypes.BaseAccount)
 				acc, err := vestingtypes.NewDelayedVestingAccount(base, sdk.NewCoins(sdk.NewInt64Coin(denom, 1)), v294.RefundUnlockTime)
 				require.NoError(t, err)
 				app.AccountKeeper.SetAccount(ctx, acc)
 			},
-			wantErr: true,
+			wantErr: v294.ErrRecipientNotBase,
 		},
 	}
 
@@ -64,17 +70,18 @@ func TestRefundFromCommunityPool(t *testing.T) {
 			appOpts := make(simtestutil.AppOptionsMap)
 			appOpts[server.FlagInvCheckPeriod] = 5
 			app := gaiaapp.NewGaiaApp(log.NewNopLogger(), dbm.NewMemDB(), nil, true, map[int64]bool{}, t.TempDir(), appOpts, []wasmkeeper.Option{})
-			ctx := sdk.NewContext(app.CommitMultiStore(), tmproto.Header{Height: 1}, false, log.NewNopLogger())
+			ctx := sdk.NewContext(app.CommitMultiStore(), tmproto.Header{Height: 1, Time: tc.blockTime}, false, log.NewNopLogger())
 
 			stakingParams := stakingtypes.DefaultParams()
 			stakingParams.BondDenom = denom
 			require.NoError(t, app.StakingKeeper.SetParams(ctx, stakingParams))
 
 			// Seed the community pool.
-			pool := sdk.NewCoins(sdk.NewInt64Coin(denom, tc.pool))
-			require.NoError(t, app.BankKeeper.MintCoins(ctx, minttypes.ModuleName, pool))
-			require.NoError(t, app.BankKeeper.SendCoinsFromModuleToModule(ctx, minttypes.ModuleName, distrtypes.ModuleName, pool))
-			require.NoError(t, app.DistrKeeper.FeePool.Set(ctx, distrtypes.FeePool{CommunityPool: sdk.NewDecCoinsFromCoins(pool...)}))
+			coins := sdk.NewCoins(sdk.NewInt64Coin(denom, tc.coins))
+			require.NoError(t, app.BankKeeper.MintCoins(ctx, minttypes.ModuleName, coins))
+			require.NoError(t, app.BankKeeper.SendCoinsFromModuleToModule(ctx, minttypes.ModuleName, distrtypes.ModuleName, coins))
+			pool := sdk.NewDecCoinsFromCoins(sdk.NewInt64Coin(denom, tc.pool))
+			require.NoError(t, app.DistrKeeper.FeePool.Set(ctx, distrtypes.FeePool{CommunityPool: pool}))
 
 			if tc.existing > 0 {
 				existing := sdk.NewCoins(sdk.NewInt64Coin(denom, tc.existing))
@@ -90,8 +97,8 @@ func TestRefundFromCommunityPool(t *testing.T) {
 			handler := v294.CreateUpgradeHandler(mm, configurator, &app.AppKeepers)
 
 			_, err := handler(ctx, upgradetypes.Plan{Name: v294.UpgradeName, Height: 1}, module.VersionMap{})
-			if tc.wantErr {
-				require.Error(t, err)
+			if tc.wantErr != nil {
+				require.ErrorIs(t, err, tc.wantErr)
 				return
 			}
 			require.NoError(t, err)

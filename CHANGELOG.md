@@ -23,6 +23,14 @@
 - Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.4 to 0.53.8 ([#4124](https://github.com/cosmos/gaia/pull/4124))
 - Bump [github.com/opencontainers/runc](https://github.com/opencontainers/runc) from 1.2.8 to 1.3.6 ([#4071](https://github.com/cosmos/gaia/pull/4071))
 
+### Dependencies
+
+- Bump image-size from 1.2.1 to 2.0.4 ([#4144](https://github.com/cosmos/gaia/pull/4144))
+- Bump @docusaurus/core from 3.7.0 to 3.10.2 ([#4144](https://github.com/cosmos/gaia/pull/4144))
+- Bump @docusaurus/plugin-client-redirects from 3.7.0 to 3.10.2 ([#4144](https://github.com/cosmos/gaia/pull/4144))
+- Bump @docusaurus/plugin-google-analytics from 3.7.0 to 3.10.2 ([#4144](https://github.com/cosmos/gaia/pull/4144))
+- Bump @docusaurus/plugin-google-gtag from 3.7.0 to 3.10.2 ([#4144](https://github.com/cosmos/gaia/pull/4144))
+
 ## v28.0.0
 
 *August 7, 2026*

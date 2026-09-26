@@ -1,4 +1,4 @@
-package v29_4_0
+package v28_4_0
 
 import (
 	"context"
@@ -18,7 +18,7 @@ import (
 	"github.com/cosmos/gaia/v29/app/keepers"
 )
 
-// CreateUpgradeHandler returns an upgrade handler for Gaia v29.4.0.
+// CreateUpgradeHandler returns an upgrade handler for Gaia v28.4.0.
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,

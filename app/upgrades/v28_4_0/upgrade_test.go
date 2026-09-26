@@ -1,4 +1,4 @@
-package v29_4_0_test
+package v28_4_0_test
 
 import (
 	"testing"
@@ -27,14 +27,14 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
 	gaiaapp "github.com/cosmos/gaia/v29/app"
-	v294 "github.com/cosmos/gaia/v29/app/upgrades/v29_4_0"
+	v284 "github.com/cosmos/gaia/v29/app/upgrades/v28_4_0"
 )
 
 const denom = "uatom"
 
 func TestRefundFromCommunityPool(t *testing.T) {
-	recipient := sdk.MustAccAddressFromBech32(v294.RefundRecipient)
-	enough := int64(v294.RefundAmount + 5)
+	recipient := sdk.MustAccAddressFromBech32(v284.RefundRecipient)
+	enough := int64(v284.RefundAmount + 5)
 
 	tests := []struct {
 		name string
@@ -48,20 +48,20 @@ func TestRefundFromCommunityPool(t *testing.T) {
 		wantErr   error
 	}{
 		{name: "existing account keeps spendable balance", pool: enough, coins: enough, existing: 7},
-		{name: "no account", pool: enough, coins: enough, wantErr: v294.ErrRecipientNotFound},
-		{name: "pool too small", pool: v294.RefundAmount - 1, coins: enough, existing: 7, wantErr: v294.ErrInsufficientPool},
-		{name: "pool accounting not backed by coins", pool: enough, coins: v294.RefundAmount - 1, existing: 7, wantErr: v294.ErrInsufficientPool},
-		{name: "unlock time already passed", pool: enough, coins: enough, existing: 7, blockTime: time.Unix(v294.RefundUnlockTime, 0), wantErr: v294.ErrUnlockInPast},
+		{name: "no account", pool: enough, coins: enough, wantErr: v284.ErrRecipientNotFound},
+		{name: "pool too small", pool: v284.RefundAmount - 1, coins: enough, existing: 7, wantErr: v284.ErrInsufficientPool},
+		{name: "pool accounting not backed by coins", pool: enough, coins: v284.RefundAmount - 1, existing: 7, wantErr: v284.ErrInsufficientPool},
+		{name: "unlock time already passed", pool: enough, coins: enough, existing: 7, blockTime: time.Unix(v284.RefundUnlockTime, 0), wantErr: v284.ErrUnlockInPast},
 		{
 			name: "recipient already vesting",
 			pool: enough, coins: enough,
 			setupAcc: func(app *gaiaapp.GaiaApp, ctx sdk.Context) {
 				base := app.AccountKeeper.NewAccountWithAddress(ctx, recipient).(*authtypes.BaseAccount)
-				acc, err := vestingtypes.NewDelayedVestingAccount(base, sdk.NewCoins(sdk.NewInt64Coin(denom, 1)), v294.RefundUnlockTime)
+				acc, err := vestingtypes.NewDelayedVestingAccount(base, sdk.NewCoins(sdk.NewInt64Coin(denom, 1)), v284.RefundUnlockTime)
 				require.NoError(t, err)
 				app.AccountKeeper.SetAccount(ctx, acc)
 			},
-			wantErr: v294.ErrRecipientNotBase,
+			wantErr: v284.ErrRecipientNotBase,
 		},
 	}
 
@@ -94,21 +94,21 @@ func TestRefundFromCommunityPool(t *testing.T) {
 
 			mm := module.NewManager()
 			configurator := module.NewConfigurator(app.AppCodec(), app.MsgServiceRouter(), app.GRPCQueryRouter())
-			handler := v294.CreateUpgradeHandler(mm, configurator, &app.AppKeepers)
+			handler := v284.CreateUpgradeHandler(mm, configurator, &app.AppKeepers)
 
-			_, err := handler(ctx, upgradetypes.Plan{Name: v294.UpgradeName, Height: 1}, module.VersionMap{})
+			_, err := handler(ctx, upgradetypes.Plan{Name: v284.UpgradeName, Height: 1}, module.VersionMap{})
 			if tc.wantErr != nil {
 				require.ErrorIs(t, err, tc.wantErr)
 				return
 			}
 			require.NoError(t, err)
 
-			refund := sdk.NewInt64Coin(denom, v294.RefundAmount)
+			refund := sdk.NewInt64Coin(denom, v284.RefundAmount)
 			require.Equal(t, refund.Amount.AddRaw(tc.existing), app.BankKeeper.GetBalance(ctx, recipient, denom).Amount)
 
 			acc, ok := app.AccountKeeper.GetAccount(ctx, recipient).(*vestingtypes.DelayedVestingAccount)
 			require.True(t, ok, "recipient should be a delayed vesting account")
-			require.Equal(t, int64(v294.RefundUnlockTime), acc.EndTime)
+			require.Equal(t, int64(v284.RefundUnlockTime), acc.EndTime)
 			require.Equal(t, math.NewInt(tc.existing), app.BankKeeper.SpendableCoins(ctx, recipient).AmountOf(denom))
 
 			feePool, err := app.DistrKeeper.FeePool.Get(ctx)

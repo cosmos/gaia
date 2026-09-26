@@ -1,4 +1,4 @@
-package v29_4_0
+package v28_4_0
 
 import (
 	"github.com/cosmos/gaia/v29/app/upgrades"
@@ -6,7 +6,7 @@ import (
 
 const (
 	// UpgradeName defines the on-chain upgrade name.
-	UpgradeName = "v29.4.0"
+	UpgradeName = "v28.4.0"
 
 	// RefundRecipient is ch_user from prop 1056.
 	RefundRecipient = "cosmos1dd25c4sshelrpfs0433apg24c5phrhk8m96c4n"

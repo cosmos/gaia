@@ -92,7 +92,6 @@ func TestExport(t *testing.T) {
 	genesis := chainsuite.DefaultGenesis()
 	genesis = append(genesis,
 		cosmos.NewGenesisKV("app_state.staking.params.max_validators", maxValidators),
-		cosmos.NewGenesisKV("app_state.provider.params.max_provider_consensus_validators", maxConsensusValidators),
 	)
 	s := &ExportSuite{
 		Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{

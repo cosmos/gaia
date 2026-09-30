@@ -79,8 +79,9 @@ ifeq (cleveldb,$(findstring cleveldb,$(GAIA_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
 endif
 ifeq ($(LINK_STATICALLY),true)
-  extldflags += -Wl,-z,muldefs -static -z noexecstack
+  extldflags += -Wl,-z,muldefs -static-pie -z noexecstack
   ldflags += -linkmode=external
+  buildmode_flags += -buildmode=pie
 endif
 ifeq (,$(findstring nostrip,$(GAIA_BUILD_OPTIONS)))
   ldflags += -w -s
@@ -91,7 +92,7 @@ ldflags += -extldflags "$(extldflags)"
 ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
 
-BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)' $(buildmode_flags)
 # check for nostrip option
 ifeq (,$(findstring nostrip,$(GAIA_BUILD_OPTIONS)))
   BUILD_FLAGS += -trimpath

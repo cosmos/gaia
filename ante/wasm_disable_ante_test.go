@@ -101,6 +101,8 @@ func TestWasmDisableDecoratorMsgExec(t *testing.T) {
 	decorator := ante.NewWasmDisableDecorator(gaiaApp.AppCodec())
 
 	wrap := func(t *testing.T, msg sdk.Msg, depth int) sdk.Msg {
+		t.Helper()
+
 		wrapped := msg
 		for i := 0; i < depth; i++ {
 			anyMsg, err := codectypes.NewAnyWithValue(wrapped)
@@ -153,7 +155,7 @@ func TestWasmDisableDecoratorAnteHandleSimulate(t *testing.T) {
 	tx := txBuilder.GetTx()
 
 	nextCalled := false
-	next := func(ctx sdk.Context, _ sdk.Tx, _ bool) (sdk.Context, error) {
+	next := func(ctx sdk.Context, _ sdk.Tx, _ bool) (sdk.Context, error) { //nolint:unparam // sdk.AnteHandler requires an error return, and this test stub always succeeds.
 		nextCalled = true
 		return ctx, nil
 	}

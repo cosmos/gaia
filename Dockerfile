@@ -10,6 +10,9 @@ RUN apk add --no-cache $PACKAGES
 ARG CGO_CFLAGS="-D__BLST_PORTABLE__"
 ENV CGO_CFLAGS=$CGO_CFLAGS
 
+ARG GIT_VERSION=""
+ARG GIT_COMMIT=""
+
 # See https://github.com/CosmWasm/wasmvm/releases
 ARG WASMVM_VERSION=v2.3.4
 ADD https://github.com/CosmWasm/wasmvm/releases/download/${WASMVM_VERSION}/libwasmvm_muslc.x86_64.a /lib/libwasmvm_muslc.x86_64.a
@@ -20,9 +23,10 @@ COPY go.mod go.sum* ./
 RUN go mod download
 
 COPY . .
-RUN LEDGER_ENABLED=false LINK_STATICALLY=true BUILD_TAGS=muslc make build
-RUN echo "Ensuring binary is statically linked ..."  \
-    && file /src/app/build/gaiad | grep "statically linked"
+RUN LEDGER_ENABLED=false LINK_STATICALLY=true BUILD_TAGS=muslc \
+    VERSION=$GIT_VERSION COMMIT=$GIT_COMMIT make build
+RUN echo "Ensuring binary is statically linked (static-pie) ..."  \
+    && file /src/app/build/gaiad | grep "static-pie linked"
 
 FROM alpine:$IMG_TAG
 RUN apk add --no-cache build-base jq

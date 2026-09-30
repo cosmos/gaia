@@ -161,15 +161,6 @@ func (s *CosmWasmSuite) assertStoreRejected(filePath string) {
 }
 
 func TestCosmWasm(t *testing.T) {
-	// CosmWasmSuite predates the temporary wasm store/instantiate block
-	// (ante/wasm_disable_ante.go, x/wasm/msg_server.go) — several of its
-	// tests (TestLargeContractAccepted, TestCreateNewContract, ...) call
-	// storeAndInstantiate after SetupSuite's s.UpgradeChain(), which the
-	// block now rejects. See WasmDisabledSuite/WasmDisabledICASuite
-	// (cosmwasm_disabled_test.go) for coverage of that behavior instead.
-	// Re-enable once the block is lifted.
-	t.Skip("wasm store/instantiate is temporarily disabled; see ante/wasm_disable_ante.go")
-
 	// Wasm code upload/instantiation is permissionless on the Cosmos Hub.
 	wasmGenesis := append(chainsuite.DefaultGenesis(),
 		cosmos.NewGenesisKV("app_state.wasm.params.code_upload_access.permission", "Everybody"),

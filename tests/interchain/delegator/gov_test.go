@@ -35,6 +35,8 @@ const (
 
 type GovSuite struct {
 	*delegator.Suite
+	contractWasm    []byte
+	contractPath    string
 	contractAddress string
 }
 
@@ -45,24 +47,20 @@ func (s *GovSuite) SetupSuite() {
 	node.StakingDelegate(s.GetContext(), s.DelegatorWallet.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, string(govStakeAmount)+s.Chain.Config().Denom)
 	node.StakingDelegate(s.GetContext(), s.DelegatorWallet2.KeyName(), s.Chain.ValidatorWallets[0].ValoperAddress, string(govStakeAmount)+s.Chain.Config().Denom)
 
-	// WASM: The delegate-vote contract is used to test cosmwasm governance
-	// votes (TestWasmVoteStakeValidation). It must be stored and instantiated
-	// here, before the upgrade below: wasm store/instantiate is temporarily
-	// disabled once the chain is on the upgraded binary (see
-	// ante/wasm_disable_ante.go). MsgExecuteContract is unaffected, so the
-	// contract deployed here remains usable by tests after the upgrade.
+	// WASM: The delegate-vote contract will be used to test cosmwasm governance votes
 	contractWasm, err := os.ReadFile("testdata/delegate_vote.wasm")
 	s.Require().NoError(err)
+	s.contractWasm = contractWasm
 
 	// WriteFile expects a relative path from the node's home directory
-	s.Require().NoError(s.Chain.GetNode().WriteFile(s.GetContext(), contractWasm, "delegate_vote.wasm"))
+	s.Require().NoError(s.Chain.GetNode().WriteFile(s.GetContext(), s.contractWasm, "delegate_vote.wasm"))
 
-	// Full path within the container
-	contractPath := path.Join(s.Chain.GetNode().HomeDir(), "delegate_vote.wasm")
+	// Store the contract path for later use - use full path within the container
+	s.contractPath = path.Join(s.Chain.GetNode().HomeDir(), "delegate_vote.wasm")
 
 	// Store the contract using tx wasm store command directly
 	_, err = s.Chain.GetNode().ExecTx(s.GetContext(), s.DelegatorWallet3.KeyName(),
-		"wasm", "store", contractPath, "--gas", "auto",
+		"wasm", "store", s.contractPath, "--gas", "auto",
 	)
 	s.Require().NoError(err)
 
@@ -88,11 +86,6 @@ func (s *GovSuite) SetupSuite() {
 		Address: s.contractAddress,
 	})
 	s.Require().NoError(err)
-
-	// Now that the contract is stored and instantiated, upgrade the chain.
-	// TestGovModule sets UpgradeOnSetup: false so this happens here, after
-	// the wasm setup above, rather than before it.
-	s.UpgradeChain()
 }
 
 func (s *GovSuite) TestProposal() {
@@ -416,9 +409,7 @@ func (s *GovSuite) TestAuthzVoteStakeValidation() {
 }
 
 func (s *GovSuite) TestWasmVoteStakeValidation() {
-	// Test that votes submitted through cosmwasm contracts without sufficient stake are rejected.
-	// The delegate-vote contract itself is stored and instantiated in
-	// SetupSuite, before the chain is upgraded (see the comment there for why).
+	// Test that votes submitted through cosmwasm contracts without sufficient stake are rejected
 
 	// Delegate 2uatom from contract address
 	// Excecute 'delegate' on contract
@@ -530,12 +521,8 @@ func TestGovModule(t *testing.T) {
 	chainSpec.ChainConfig.ModifyGenesis = cosmos.ModifyGenesis(wasmGenesis)
 
 	s := &GovSuite{Suite: &delegator.Suite{Suite: chainsuite.NewSuite(chainsuite.SuiteConfig{
-		ChainSpec: chainSpec,
-		// Upgrading is done explicitly in SetupSuite, after the delegate-vote
-		// contract is stored and instantiated (wasm store/instantiate is
-		// temporarily disabled once the chain is on the upgraded binary; see
-		// ante/wasm_disable_ante.go).
-		UpgradeOnSetup: false,
+		ChainSpec:      chainSpec,
+		UpgradeOnSetup: true,
 	})}}
 	suite.Run(t, s)
 }

@@ -217,9 +217,8 @@ func DefaultGenesis() []cosmos.GenesisKV {
 		cosmos.NewGenesisKV("app_state.feemarket.params.min_base_gas_price", strings.TrimSuffix(GasPrices, Uatom)),
 		cosmos.NewGenesisKV("app_state.feemarket.state.base_gas_price", strings.TrimSuffix(GasPrices, Uatom)),
 		cosmos.NewGenesisKV("app_state.feemarket.params.fee_denom", Uatom),
-		cosmos.NewGenesisKV("app_state.wasm.params.code_upload_access.permission", "Everybody"),
-		cosmos.NewGenesisKV("app_state.wasm.params.instantiate_default_permission", "Everybody"),
-		// cosmos.NewGenesisKV("app_state.provider.params.blocks_per_epoch", 1),
+		cosmos.NewGenesisKV("app_state.wasm.params.code_upload_access.permission", "Nobody"),
+		cosmos.NewGenesisKV("app_state.wasm.params.instantiate_default_permission", "AnyOfAddresses"),
 	}
 }
 

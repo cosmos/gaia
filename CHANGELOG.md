@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v28.1.1
+
+### FEATURES
+- Enable static PIE builds when `LINK_STATICALLY=true` ([#4149](https://github.com/cosmos/gaia/pull/4149))
+
+### API-BREAKING
+- Client tooling like wasmd tx wasm store and SDKs still builds these messages, but the chain now rejects them.
+  If you want to call that out, add something like: "Clients submitting the messages above now receive an unauthorized error." ([#4150](https://github.com/cosmos/gaia/pull/4150))
+
+### STATE-BREAKING
+- Temporarily disable CosmWasm code upload and contract instantiation.
+  `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`, `MsgStoreAndInstantiateContract` and `MsgStoreAndMigrateContract`
+  are rejected with `unauthorized`. ([#4150](https://github.com/cosmos/gaia/pull/4150))
+
 ## v28.0.0
 
 *August 7, 2026*

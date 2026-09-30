@@ -63,15 +63,6 @@ func (s *IntegrationTestSuite) TestV2RecvPacket() {
 }
 
 func (s *IntegrationTestSuite) TestV2Callback() {
-	// Depends on common.EntrypointAddress/AdapterAddress, only set by
-	// testCallbacksCWSkipGo (e2e_callbacks_test.go), which stores/
-	// instantiates CosmWasm contracts — disabled along with runCallbacksTest
-	// while wasm store/instantiate is temporarily disabled; see
-	// ante/wasm_disable_ante.go.
-	if !runCallbacksTest {
-		s.T().Skip()
-	}
-
 	chain := s.Resources.ChainA
 
 	submitterAccount := chain.GenesisAccounts[1]

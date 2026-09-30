@@ -64,7 +64,6 @@ import (
 	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
 	"github.com/cosmos/gaia/v28/x/metaprotocols"
 	metaprotocolstypes "github.com/cosmos/gaia/v28/x/metaprotocols/types"
-	gaiawasm "github.com/cosmos/gaia/v28/x/wasm"
 )
 
 var maccPerms = map[string][]string{
@@ -111,7 +110,7 @@ func appModules(
 		ibcwasm.NewAppModule(app.WasmClientKeeper),
 		sdkparams.NewAppModule(app.ParamsKeeper), //nolint:staticcheck
 		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
-		gaiawasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		app.TransferModule,
 		app.ICAModule,
 		app.PFMRouterModule,

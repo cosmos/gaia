@@ -84,6 +84,7 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewValidateMemoDecorator(opts.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
 		NewGovVoteDecorator(opts.Codec, opts.StakingKeeper),
+		NewWasmDisableDecorator(opts.Codec),            // TEMPORARY: blocks MsgStoreCode/MsgInstantiateContract/MsgInstantiateContract2/MsgStoreAndInstantiateContract/MsgStoreAndMigrateContract pending upstream CosmWasm patch
 		ante.NewSetPubKeyDecorator(opts.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),

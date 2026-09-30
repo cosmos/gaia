@@ -16,8 +16,8 @@ var (
 	runLiquidTest                 = true
 	runRateLimitTest              = true
 	runTxExtensionsTest           = true
-	runCWTest                     = true
-	runCallbacksTest              = true
+	runCWTest                     = false // wasm store/instantiate is temporarily disabled; see ante/wasm_disable_ante.go
+	runCallbacksTest              = false // wasm store/instantiate is temporarily disabled; see ante/wasm_disable_ante.go
 	runIbcV2Test                  = true
 )
 
@@ -151,7 +151,13 @@ func (s *IntegrationTestSuite) TestIbcV2() {
 	s.testStoreWasmLightClient()
 	s.testCreateWasmLightClient()
 	s.TestV2RecvPacket()
-	s.TestV2Callback()
+	// s.T().Skip() inside TestV2Callback (guarded by runCallbacksTest) would
+	// abort this whole method, since it's called directly rather than via
+	// t.Run — so the same guard is checked here first, to let the unrelated
+	// rate-limiting tests below still run.
+	if runCallbacksTest {
+		s.TestV2Callback()
+	}
 
 	// ibc v2 rate limiting tests
 	s.testAddRateLimits(true)

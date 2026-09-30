@@ -63,9 +63,9 @@ const (
 
 // These have to be vars so we can take their address
 var (
-	OneValidator   int = 1
-	SixValidators  int = 6
-	TenValidators  int = 10
+	OneValidator  int = 1
+	SixValidators int = 6
+	TenValidators int = 10
 )
 
 func MergeChainSpecs(spec, other *interchaintest.ChainSpec) *interchaintest.ChainSpec {
@@ -217,9 +217,9 @@ func DefaultGenesis() []cosmos.GenesisKV {
 		cosmos.NewGenesisKV("app_state.feemarket.params.min_base_gas_price", strings.TrimSuffix(GasPrices, Uatom)),
 		cosmos.NewGenesisKV("app_state.feemarket.state.base_gas_price", strings.TrimSuffix(GasPrices, Uatom)),
 		cosmos.NewGenesisKV("app_state.feemarket.params.fee_denom", Uatom),
-		cosmos.NewGenesisKV("app_state.wasm.params.code_upload_access.permission", "Nobody"),
-		cosmos.NewGenesisKV("app_state.wasm.params.instantiate_default_permission", "AnyOfAddresses"),
-		cosmos.NewGenesisKV("app_state.provider.params.blocks_per_epoch", 1),
+		cosmos.NewGenesisKV("app_state.wasm.params.code_upload_access.permission", "Everybody"),
+		cosmos.NewGenesisKV("app_state.wasm.params.instantiate_default_permission", "Everybody"),
+		// cosmos.NewGenesisKV("app_state.provider.params.blocks_per_epoch", 1),
 	}
 }
 

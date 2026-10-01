@@ -1,6 +1,20 @@
 # CHANGELOG
 
+## v28.2.1
+
+*October 1, 2026*
+
+### STATE-BREAKING
+- Re-enable CosmWasm code upload and contract instantiation (`MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`, `MsgStoreAndInstantiateContract` and `MsgStoreAndMigrateContract`), which were temporarily disabled in `v28.1.1` ([#4154](https://github.com/cosmos/gaia/pull/4154))
+- Add the `v28.2.0` upgrade handler ([#4154](https://github.com/cosmos/gaia/pull/4154))
+
+### DEPENDENCIES
+- Bump [github.com/CosmWasm/wasmd](https://github.com/CosmWasm/wasmd) from 0.60.8 to 0.60.9 ([#4153](https://github.com/cosmos/gaia/pull/4153))
+- Bump [github.com/CosmWasm/wasmvm/v2](https://github.com/CosmWasm/wasmvm) from 2.3.4 to 2.3.5 ([#4153](https://github.com/cosmos/gaia/pull/4153))
+
 ## v28.1.1
+
+*September 30, 2026*
 
 ### FEATURES
 - Enable static PIE builds when `LINK_STATICALLY=true` ([#4149](https://github.com/cosmos/gaia/pull/4149))

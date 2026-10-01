@@ -353,6 +353,9 @@ func NewGaiaApp(
 		}
 
 		ctx := app.NewUncachedContext(true, tmproto.Header{})
+		if err := app.BalanceMigration.ValidateStartup(ctx.WithChainID(app.ChainID()).WithBlockHeight(app.LastBlockHeight())); err != nil {
+			panic(err)
+		}
 
 		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
 			panic(fmt.Sprintf("WasmKeeper failed initialize pinned codes %s", err))
@@ -371,7 +374,14 @@ func (app *GaiaApp) Name() string { return app.BaseApp.Name() }
 
 // PreBlocker application updates every pre block
 func (app *GaiaApp) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-	return app.mm.PreBlock(ctx)
+	response, err := app.mm.PreBlock(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := app.BalanceMigration.PreBlock(ctx); err != nil {
+		return nil, err
+	}
+	return response, nil
 }
 
 // BeginBlocker application updates every begin block

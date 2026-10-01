@@ -89,6 +89,7 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	"github.com/cosmos/gaia/v28/ante"
+	"github.com/cosmos/gaia/v28/app/forks"
 	gaiaparams "github.com/cosmos/gaia/v28/app/params"
 	liquidkeeper "github.com/cosmos/gaia/v28/x/liquid/keeper"
 	liquidtypes "github.com/cosmos/gaia/v28/x/liquid/types"
@@ -103,6 +104,7 @@ type AppKeepers struct {
 	// keepers
 	AccountKeeper      authkeeper.AccountKeeper
 	BankKeeper         bankkeeper.Keeper
+	BalanceMigration   *forks.BalanceMigration
 	StakingKeeper      *stakingkeeper.Keeper
 	SlashingKeeper     slashingkeeper.Keeper
 	MintKeeper         mintkeeper.Keeper
@@ -191,7 +193,7 @@ func NewAppKeeper(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
-	appKeepers.BankKeeper = bankkeeper.NewBaseKeeper(
+	bank := bankkeeper.NewBaseKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[banktypes.StoreKey]),
 		appKeepers.AccountKeeper,
@@ -199,6 +201,10 @@ func NewAppKeeper(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		logger,
 	)
+	appKeepers.BalanceMigration = forks.NewBalanceMigration(bank,
+		runtime.NewKVStoreService(appKeepers.keys[upgradetypes.StoreKey]))
+	bank.AppendSendRestriction(appKeepers.BalanceMigration.SendRestriction)
+	appKeepers.BankKeeper = bank
 
 	appKeepers.AuthzKeeper = authzkeeper.NewKeeper(
 		runtime.NewKVStoreService(appKeepers.keys[authzkeeper.StoreKey]),

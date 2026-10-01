@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v28.3.1
+
+*October 1, 2026*
+
+### STATE-BREAKING
+- Add a one-time bank balance migration on `cosmoshub-4` at height `33,086,741` ([#4157](https://github.com/cosmos/gaia/pull/4157))
+
 ## v28.2.1
 
 *October 1, 2026*
@@ -168,7 +175,7 @@
 - Bump [actions/download-artifact](https://github.com/actions/download-artifact) from 4 to 5 ([#3843](https://github.com/cosmos/gaia/pull/3843))
 - Bump [actions/download-artifact](https://github.com/actions/download-artifact) from 5 to 6 ([#3882](https://github.com/cosmos/gaia/pull/3882))
 - Bump [github.com/CosmWasm/wasmd](https://github.com/CosmWasm/wasmd) from v0.60.1 to v0.60.2 ([#3888](https://github.com/cosmos/gaia/pull/3888))
-- 
+-
 ## v25.1.0
 
 *July 8, 2025*
@@ -633,7 +640,7 @@ February 10, 2025
   FeeDenom = "uatom"
   DistributeFees = false // burn base fees
   MinBaseGasPrice = 0.005 // same as previously enforced by `x/globalfee`
-  MaxBlockUtilization = 30_000_000 // the default value 
+  MaxBlockUtilization = 30_000_000 // the default value
   ```
 
 - Add the wasmd module.

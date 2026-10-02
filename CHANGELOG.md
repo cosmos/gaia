@@ -23,6 +23,10 @@
 - Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.4 to 0.53.8 ([#4124](https://github.com/cosmos/gaia/pull/4124))
 - Bump [github.com/opencontainers/runc](https://github.com/opencontainers/runc) from 1.2.8 to 1.3.6 ([#4071](https://github.com/cosmos/gaia/pull/4071))
 
+### Dependencies
+
+- Bump [browserslist](https://github.com/browserslist/browserslist) from 4.24.4 to 4.28.8 ([#4128](https://github.com/cosmos/gaia/pull/4128))
+
 ## v28.0.0
 
 *August 7, 2026*

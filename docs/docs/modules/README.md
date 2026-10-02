@@ -15,7 +15,6 @@ links for each one.
 - [x/bank](https://docs.cosmos.network/v0.50/build/modules/bank)
 - [x/capability](https://docs.cosmos.network/v0.50/build/modules/capability)
 - [x/consensus](https://docs.cosmos.network/v0.50/build/modules/consensus)
-- [x/crisis](https://docs.cosmos.network/v0.50/build/modules/crisis)
 - [x/distribution](https://docs.cosmos.network/v0.50/build/modules/distribution)
 - [x/evidence](https://docs.cosmos.network/v0.50/build/modules/evidence)
 - [x/feegrant](https://docs.cosmos.network/v0.50/build/modules/feegrant)

@@ -70,6 +70,10 @@
 
 - Queries for Interchain Security messages (e.g. `MsgAssignConsumerKey`, `MsgCreateConsumer`, `ConsumerAdditionProposal`) now return an empty stub instead of historical data.
 
+### BUG-FIXES
+
+### DEPENDENCIES
+
 ## v27.6.0
 
 *July 17, 2026*

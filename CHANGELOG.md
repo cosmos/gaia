@@ -23,6 +23,41 @@
 - Bump [github.com/cosmos/cosmos-sdk](https://github.com/cosmos/cosmos-sdk) from 0.53.4 to 0.53.8 ([#4124](https://github.com/cosmos/gaia/pull/4124))
 - Bump [github.com/opencontainers/runc](https://github.com/opencontainers/runc) from 1.2.8 to 1.3.6 ([#4071](https://github.com/cosmos/gaia/pull/4071))
 
+## v28.3.1
+
+*October 1, 2026*
+
+### STATE-BREAKING
+- Add a one-time bank balance migration on `cosmoshub-4` at height `33,086,741` ([#4157](https://github.com/cosmos/gaia/pull/4157))
+
+## v28.2.1
+
+*October 1, 2026*
+
+### STATE-BREAKING
+- Re-enable CosmWasm code upload and contract instantiation (`MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`, `MsgStoreAndInstantiateContract` and `MsgStoreAndMigrateContract`), which were temporarily disabled in `v28.1.1` ([#4154](https://github.com/cosmos/gaia/pull/4154))
+- Add the `v28.2.0` upgrade handler ([#4154](https://github.com/cosmos/gaia/pull/4154))
+
+### DEPENDENCIES
+- Bump [github.com/CosmWasm/wasmd](https://github.com/CosmWasm/wasmd) from 0.60.8 to 0.60.9 ([#4153](https://github.com/cosmos/gaia/pull/4153))
+- Bump [github.com/CosmWasm/wasmvm/v2](https://github.com/CosmWasm/wasmvm) from 2.3.4 to 2.3.5 ([#4153](https://github.com/cosmos/gaia/pull/4153))
+
+## v28.1.1
+
+*September 30, 2026*
+
+### FEATURES
+- Enable static PIE builds when `LINK_STATICALLY=true` ([#4149](https://github.com/cosmos/gaia/pull/4149))
+
+### API-BREAKING
+- Client tooling like wasmd tx wasm store and SDKs still builds these messages, but the chain now rejects them.
+  If you want to call that out, add something like: "Clients submitting the messages above now receive an unauthorized error." ([#4150](https://github.com/cosmos/gaia/pull/4150))
+
+### STATE-BREAKING
+- Temporarily disable CosmWasm code upload and contract instantiation.
+  `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`, `MsgStoreAndInstantiateContract` and `MsgStoreAndMigrateContract`
+  are rejected with `unauthorized`. ([#4150](https://github.com/cosmos/gaia/pull/4150))
+
 ## v28.0.0
 
 *August 7, 2026*
@@ -167,7 +202,7 @@
 - Bump [actions/download-artifact](https://github.com/actions/download-artifact) from 4 to 5 ([#3843](https://github.com/cosmos/gaia/pull/3843))
 - Bump [actions/download-artifact](https://github.com/actions/download-artifact) from 5 to 6 ([#3882](https://github.com/cosmos/gaia/pull/3882))
 - Bump [github.com/CosmWasm/wasmd](https://github.com/CosmWasm/wasmd) from v0.60.1 to v0.60.2 ([#3888](https://github.com/cosmos/gaia/pull/3888))
-- 
+-
 ## v25.1.0
 
 *July 8, 2025*
@@ -632,7 +667,7 @@ February 10, 2025
   FeeDenom = "uatom"
   DistributeFees = false // burn base fees
   MinBaseGasPrice = 0.005 // same as previously enforced by `x/globalfee`
-  MaxBlockUtilization = 30_000_000 // the default value 
+  MaxBlockUtilization = 30_000_000 // the default value
   ```
 
 - Add the wasmd module.

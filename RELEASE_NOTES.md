@@ -27,6 +27,8 @@ cd gaia && git checkout <v*.*.*>
 make install
 ```
 
-## ⚡️ Download binaries
+## ⚡️Download & Verification
 
 Binaries for linux and darwin are available below.
+
+You can verify all release binaries using the public verification keys and instructions provided [here](https://github.com/cosmos/security/tree/main/release/gaia/signing).

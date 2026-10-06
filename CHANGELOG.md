@@ -17,6 +17,8 @@
 
 ### BUG-FIXES
 
+- Propagate the caller's `context.Context` into `CheckEndpoint` so the underlying HTTP request is cancelled when the test context is cancelled or its deadline expires (previously `http.Get` ignored the context, leaving the interchain test suite hanging against a stuck RPC endpoint) ([#4166](https://github.com/cosmos/gaia/pull/4166))
+
 ### DEPENDENCIES
 
 - Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.23 to 0.38.25 ([#4123](https://github.com/cosmos/gaia/pull/4123))

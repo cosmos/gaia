@@ -24,6 +24,10 @@
 - Bump [github.com/opencontainers/runc](https://github.com/opencontainers/runc) from 1.2.8 to 1.3.6 ([#4071](https://github.com/cosmos/gaia/pull/4071))
 - Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.83.2 to 1.84.0 ([#4161](https://github.com/cosmos/gaia/pull/4161))
 
+### Dependencies
+
+- Bump [proxy-addr](https://github.com/jshttp/proxy-addr) from 2.0.7 to 2.0.8 ([#4163](https://github.com/cosmos/gaia/pull/4163))
+
 ## v28.3.1
 
 *October 1, 2026*

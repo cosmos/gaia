@@ -24,6 +24,10 @@
 - Bump [github.com/opencontainers/runc](https://github.com/opencontainers/runc) from 1.2.8 to 1.3.6 ([#4071](https://github.com/cosmos/gaia/pull/4071))
 - Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.83.2 to 1.84.0 ([#4161](https://github.com/cosmos/gaia/pull/4161))
 
+### Dependencies
+
+- Bump [source-map-js](https://github.com/7rulnik/source-map-js) from 1.2.1 to 1.2.2 ([#4164](https://github.com/cosmos/gaia/pull/4164))
+
 ## v28.3.1
 
 *October 1, 2026*

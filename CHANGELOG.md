@@ -4,6 +4,7 @@
 
 ### FEATURES
 
+- Remove the obsolete v28.3.1 balance-migration receipt from the upgrade store during the v29.0.0 upgrade ([#4165](https://github.com/cosmos/gaia/pull/4165))
 - Delete the contents of the deprecated `provider` kv store ([#4117](https://github.com/cosmos/gaia/pull/4117))
 - Remove dead `x/crisis` module-ordering references ([#4121](https://github.com/cosmos/gaia/pull/4121))
 - Remove the `x/params` module ([#4125](https://github.com/cosmos/gaia/pull/4125))

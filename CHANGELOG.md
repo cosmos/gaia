@@ -1,6 +1,8 @@
 # CHANGELOG
 
-## UNRELEASED
+## v29.0.0
+
+*October 9, 2026*
 
 ### FEATURES
 

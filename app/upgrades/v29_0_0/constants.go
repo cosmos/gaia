@@ -8,6 +8,10 @@ const (
 	// UpgradeName defines the on-chain upgrade name.
 	UpgradeName = "v29.0.0"
 
+	// legacyBalanceMigrationReceiptKey records the completed v28.3.1 fork in
+	// the upgrade store. Its migration and guards are no longer used in v29.
+	legacyBalanceMigrationReceiptKey = "\xffgaia/forks/balance-migration/v1"
+
 	// providerStoreKey is the deprecated ICS "provider" kv-store. Its
 	// contents are wiped inside CreateUpgradeHandler (a plain KV iterate+
 	// delete over ctx.KVStore) rather than via StoreUpgrades.Deleted:

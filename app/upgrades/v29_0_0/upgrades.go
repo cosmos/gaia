@@ -40,6 +40,12 @@ func CreateUpgradeHandler(
 			return vm, errorsmod.Wrapf(err, "running module migrations")
 		}
 
+		ctx.Logger().Info("Cleaning up the legacy v28.3.1 balance migration receipt...")
+		// Retire only the completed v28.3.1 migration receipt, not the upgrade store.
+		// Delete is a no-op on chains where the migration never ran.
+		ctx.KVStore(keepers.GetKey(upgradetypes.StoreKey)).Delete([]byte(legacyBalanceMigrationReceiptKey))
+		ctx.Logger().Info("Legacy v28.3.1 balance migration receipt cleanup complete")
+
 		ctx.Logger().Info("Upgrade complete", "name", UpgradeName)
 		return vm, nil
 	}

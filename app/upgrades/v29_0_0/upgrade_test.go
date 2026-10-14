@@ -36,6 +36,61 @@ import (
 // two, this test should fail rather than silently follow the drift.
 const providerStoreKey = "provider"
 
+// Keep the historical key literal independent of the implementation so a typo
+// in the cleanup cannot silently leave the v28.3.1 receipt behind.
+const legacyBalanceMigrationReceiptKey = "\xffgaia/forks/balance-migration/v1"
+
+func TestLegacyBalanceMigrationReceiptCleanup(t *testing.T) {
+	for _, tc := range []struct {
+		name       string
+		chainID    string
+		hasReceipt bool
+	}{
+		{name: "mainnet receipt", chainID: "cosmoshub-4", hasReceipt: true},
+		{name: "testnet without receipt", chainID: "testnet", hasReceipt: false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			app := newTestApp(t.TempDir(), dbm.NewMemDB())
+			ctx := sdk.NewContext(app.CommitMultiStore(), tmproto.Header{
+				ChainID: tc.chainID,
+				Height:  1,
+			}, false, log.NewNopLogger())
+			store := ctx.KVStore(app.GetKey(upgradetypes.StoreKey))
+			if tc.hasReceipt {
+				// The retired receipt is opaque to v29; cleanup must not depend
+				// on decoding its contents or importing the old fork code.
+				store.Set([]byte(legacyBalanceMigrationReceiptKey), []byte("completed-migration-receipt"))
+			}
+			require.Equal(t, tc.hasReceipt, store.Has([]byte(legacyBalanceMigrationReceiptKey)))
+
+			neighborKey := []byte(legacyBalanceMigrationReceiptKey + "/keep")
+			neighborValue := []byte("unrelated-upgrade-data")
+			store.Set(neighborKey, neighborValue)
+			wantVM := module.VersionMap{"bank": 4}
+			require.NoError(t, app.UpgradeKeeper.SetModuleVersionMap(ctx, wantVM))
+			plan := upgradetypes.Plan{Name: v290.UpgradeName, Height: 10}
+			require.NoError(t, app.UpgradeKeeper.ScheduleUpgrade(ctx, plan))
+
+			mm := module.NewManager()
+			configurator := module.NewConfigurator(app.AppCodec(), app.MsgServiceRouter(), app.GRPCQueryRouter())
+			handler := v290.CreateUpgradeHandler(mm, configurator, &app.AppKeepers)
+			// Call twice to also exercise cleanup with an already-deleted key.
+			for range 2 {
+				_, err := handler(ctx, plan, module.VersionMap{})
+				require.NoError(t, err)
+				require.False(t, store.Has([]byte(legacyBalanceMigrationReceiptKey)))
+				require.Equal(t, neighborValue, store.Get(neighborKey))
+				gotVM, err := app.UpgradeKeeper.GetModuleVersionMap(ctx)
+				require.NoError(t, err)
+				require.Equal(t, wantVM, gotVM)
+				gotPlan, err := app.UpgradeKeeper.GetUpgradePlan(ctx)
+				require.NoError(t, err)
+				require.Equal(t, plan, gotPlan)
+			}
+		})
+	}
+}
+
 func newTestApp(homeDir string, db dbm.DB) *gaiaapp.GaiaApp {
 	appOpts := make(simtestutil.AppOptionsMap)
 	appOpts[server.FlagInvCheckPeriod] = 5
@@ -111,6 +166,8 @@ func TestProviderStoreSurvivesRestartAfterUpgrade(t *testing.T) {
 
 	providerStore := app1.CommitMultiStore().GetKVStore(app1.GetKey(providerStoreKey))
 	providerStore.Set(testKey, testVal)
+	upgradeStore := app1.CommitMultiStore().GetKVStore(app1.GetKey(upgradetypes.StoreKey))
+	upgradeStore.Set([]byte(legacyBalanceMigrationReceiptKey), []byte("completed-migration-receipt"))
 	app1.CommitMultiStore().Commit()
 
 	// app1 has committed once (seeding "provider") by this point, so the
@@ -145,6 +202,7 @@ func TestProviderStoreSurvivesRestartAfterUpgrade(t *testing.T) {
 	require.NoError(t, os.WriteFile(filepath.Join(app2Home, "data", "upgrade-info.json"), upgradeInfo, 0o600)) //nolint:gosec
 
 	app2 := newTestApp(app2Home, db)
+	require.True(t, app2.CommitMultiStore().GetKVStore(app2.GetKey(upgradetypes.StoreKey)).Has([]byte(legacyBalanceMigrationReceiptKey)))
 	_, err = app2.FinalizeBlock(&abci.RequestFinalizeBlock{
 		Height: upgradeHeight,
 		Time:   time.Now(),
@@ -155,6 +213,8 @@ func TestProviderStoreSurvivesRestartAfterUpgrade(t *testing.T) {
 
 	postUpgradeStore := app2.CommitMultiStore().GetKVStore(app2.GetKey(providerStoreKey))
 	require.Nil(t, postUpgradeStore.Get(testKey), "provider store should have been wiped by the v29.0.0 upgrade handler")
+	require.False(t, app2.CommitMultiStore().GetKVStore(app2.GetKey(upgradetypes.StoreKey)).Has([]byte(legacyBalanceMigrationReceiptKey)),
+		"receipt should be deleted by the scheduled upgrade")
 
 	// --- Step 3: an entirely ordinary subsequent restart ---
 	app3Home := t.TempDir()
@@ -165,6 +225,8 @@ func TestProviderStoreSurvivesRestartAfterUpgrade(t *testing.T) {
 
 	finalStore := app3.CommitMultiStore().GetKVStore(app3.GetKey(providerStoreKey))
 	require.Nil(t, finalStore.Get(testKey), "provider store should remain empty and readable across further restarts")
+	require.False(t, app3.CommitMultiStore().GetKVStore(app3.GetKey(upgradetypes.StoreKey)).Has([]byte(legacyBalanceMigrationReceiptKey)),
+		"receipt deletion should persist across an ordinary restart")
 }
 
 // TestLegacyParamsStoreWipedByUpgradeHandler proves the x/params store

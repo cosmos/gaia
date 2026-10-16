@@ -19,6 +19,8 @@
 
 ### BUG-FIXES
 
+- Report the underlying filesystem error when `gaiad testnet start` cannot inspect its output directory ([#4147](https://github.com/cosmos/gaia/pull/4147)).
+
 ### DEPENDENCIES
 
 - Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.23 to 0.38.25 ([#4123](https://github.com/cosmos/gaia/pull/4123))

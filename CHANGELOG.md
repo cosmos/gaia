@@ -62,6 +62,14 @@
   `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`, `MsgStoreAndInstantiateContract` and `MsgStoreAndMigrateContract`
   are rejected with `unauthorized`. ([#4150](https://github.com/cosmos/gaia/pull/4150))
 
+### Dependencies
+
+- Bump webpack-dev-middleware from 5.3.4 to 7.4.6 ([#4148](https://github.com/cosmos/gaia/pull/4148))
+- Bump @docusaurus/core from 3.7.0 to 3.10.2 ([#4148](https://github.com/cosmos/gaia/pull/4148))
+- Bump @docusaurus/plugin-client-redirects from 3.7.0 to 3.10.2 ([#4148](https://github.com/cosmos/gaia/pull/4148))
+- Bump @docusaurus/plugin-google-analytics from 3.7.0 to 3.10.2 ([#4148](https://github.com/cosmos/gaia/pull/4148))
+- Bump @docusaurus/plugin-google-gtag from 3.7.0 to 3.10.2 ([#4148](https://github.com/cosmos/gaia/pull/4148))
+
 ## v28.0.0
 
 *August 7, 2026*

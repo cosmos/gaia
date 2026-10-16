@@ -62,6 +62,10 @@
   `MsgStoreCode`, `MsgInstantiateContract`, `MsgInstantiateContract2`, `MsgStoreAndInstantiateContract` and `MsgStoreAndMigrateContract`
   are rejected with `unauthorized`. ([#4150](https://github.com/cosmos/gaia/pull/4150))
 
+### Dependencies
+
+- Bump [colord](https://github.com/omgovich/colord) from 2.9.3 to 2.10.0 ([#4133](https://github.com/cosmos/gaia/pull/4133))
+
 ## v28.0.0
 
 *August 7, 2026*

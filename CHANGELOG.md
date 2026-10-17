@@ -8,6 +8,10 @@
 
 ### DEPENDENCIES
 
+### Dependencies
+
+- Bump [github.com/CosmWasm/wasmvm/v2](https://github.com/CosmWasm/wasmvm) from 2.3.5 to 2.3.6 ([#4180](https://github.com/cosmos/gaia/pull/4180))
+
 ## v29.0.0
 
 *October 9, 2026*

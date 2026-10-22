@@ -8,6 +8,8 @@
 
 ### DEPENDENCIES
 
+- Bump golang from `1.26.7` to `1.26.10`
+
 ## v29.0.0
 
 *October 9, 2026*

@@ -1,5 +1,18 @@
 # CHANGELOG
 
+<<<<<<< HEAD
+=======
+## UNRELEASED
+
+### FEATURES
+
+### BUG-FIXES
+
+### DEPENDENCIES
+
+- Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
+
+>>>>>>> 3d39971 (chore: bump Go to 1.26.10 for crypto/x509 and net/http security fixes (#4190))
 ## v29.0.0
 
 *October 9, 2026*

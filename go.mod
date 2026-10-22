@@ -1,6 +1,6 @@
 module github.com/cosmos/gaia/v29
 
-go 1.26.7
+go 1.26.10
 
 require (
 	cosmossdk.io/api v0.9.2

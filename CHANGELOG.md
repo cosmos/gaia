@@ -1,14 +1,12 @@
 # CHANGELOG
 
-## UNRELEASED
+## v29.0.1
 
-### FEATURES
-
-### BUG-FIXES
+*October 23, 2026*
 
 ### DEPENDENCIES
 
-- Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
+- Bump golang from 1.26.7 to 1.26.10 ([#4190](https://github.com/cosmos/gaia/pull/4190))
 
 ## v29.0.0
 

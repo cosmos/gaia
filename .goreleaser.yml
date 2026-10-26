@@ -43,40 +43,45 @@ builds:
   #     - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,static_wasm
   #     - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.TM_VERSION }}
 
-  - id: "gaiad-darwin-amd64"
-    main: ./cmd/gaiad
-    binary: gaiad
-    goos:
-      - darwin
-    goarch:
-      - amd64
-    mod_timestamp: "{{ .CommitTimestamp }}"
-    hooks:
-      pre:
-        - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
-    env:
-      - CC=oa64-clang
-      - CGO_CFLAGS=-D__BLST_PORTABLE__
-      - CGO_LDFLAGS=-L/lib
-    tags:
-      - netgo
-      - ledger
-      - static_wasm
-    flags:
-      - -trimpath
-      - -mod=readonly
+  # TEMPORARILY DISABLED: darwin/linux binaries are built, GPG-signed and uploaded
+  # (with .asc signatures and checksums) separately.
+  # Re-enable the darwin-amd64 build below (and remove "skip: true") if that changes.
+  - skip: true
 
-    ldflags:
-      - -s -w
-      - -linkmode=external
-      - -X main.commit={{.Commit}}
-      - -X main.date={{ .CommitDate }}
-      - -X github.com/cosmos/cosmos-sdk/version.Name=gaia
-      - -X github.com/cosmos/cosmos-sdk/version.AppName=gaiad
-      - -X github.com/cosmos/cosmos-sdk/version.Version=v{{ .Version }}
-      - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
-      - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,static_wasm
-      - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.TM_VERSION }}
+  # - id: "gaiad-darwin-amd64"
+  #   main: ./cmd/gaiad
+  #   binary: gaiad
+  #   goos:
+  #     - darwin
+  #   goarch:
+  #     - amd64
+  #   mod_timestamp: "{{ .CommitTimestamp }}"
+  #   hooks:
+  #     pre:
+  #       - wget https://github.com/CosmWasm/wasmvm/releases/download/{{ .Env.COSMWASM_VERSION }}/libwasmvmstatic_darwin.a -O /lib/libwasmvmstatic_darwin.a
+  #   env:
+  #     - CC=oa64-clang
+  #     - CGO_CFLAGS=-D__BLST_PORTABLE__
+  #     - CGO_LDFLAGS=-L/lib
+  #   tags:
+  #     - netgo
+  #     - ledger
+  #     - static_wasm
+  #   flags:
+  #     - -trimpath
+  #     - -mod=readonly
+  #
+  #   ldflags:
+  #     - -s -w
+  #     - -linkmode=external
+  #     - -X main.commit={{.Commit}}
+  #     - -X main.date={{ .CommitDate }}
+  #     - -X github.com/cosmos/cosmos-sdk/version.Name=gaia
+  #     - -X github.com/cosmos/cosmos-sdk/version.AppName=gaiad
+  #     - -X github.com/cosmos/cosmos-sdk/version.Version=v{{ .Version }}
+  #     - -X github.com/cosmos/cosmos-sdk/version.Commit={{ .Commit }}
+  #     - -X github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger,static_wasm
+  #     - -X github.com/cometbft/cometbft/version.TMCoreSemVer={{ .Env.TM_VERSION }}
   # - id: gaiad-linux-amd64
   # main: ./cmd/gaiad
   # binary: gaiad
@@ -142,23 +147,26 @@ archives:
   #     - README.md
   #   rlcp: true
 
-  - format: binary
-    name_template: "{{ .Binary }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
-    builds:
-      # - gaiad-darwin-arm64 # arm64 is not supported by the wasm modules
-      - gaiad-darwin-amd64
-      # - gaiad-linux-amd64 # muslc build is not available through GitHub Actions
-    wrap_in_directory: false
-    files:
-      - none*
+  # TEMPORARILY DISABLED: binary artifacts are uploaded separately.
+  # - format: binary
+  #   name_template: "{{ .Binary }}-v{{ .Version }}-{{ .Os }}-{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+  #   builds:
+  #     # - gaiad-darwin-arm64 # arm64 is not supported by the wasm modules
+  #     - gaiad-darwin-amd64
+  #     # - gaiad-linux-amd64 # muslc build is not available through GitHub Actions
+  #   wrap_in_directory: false
+  #   files:
+  #     - none*
 
 release:
   prerelease: true
   name_template: "v{{.Version}}"
 
 checksum:
-  name_template: SHA256SUMS-v{{.Version}}.txt
-  algorithm: sha256
+  # TEMPORARILY DISABLED: SHA256SUMS and .asc signatures are uploaded separately.
+  disable: true
+  # name_template: SHA256SUMS-v{{.Version}}.txt
+  # algorithm: sha256
 
 snapshot:
   name_template: SNAPSHOT-{{ .Commit }}

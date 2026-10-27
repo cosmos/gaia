@@ -140,9 +140,8 @@ endif
 	go mod download
 
 draw-deps:
-	@# requires brew install graphviz or apt-get install graphviz
-	go install github.com/RobotsAndPencils/goviz
-	@goviz -i ./cmd/gaiad -d 2 | dot -Tpng -o dependency-graph.png
+	go install github.com/kisielk/godepgraph@v1.0.0
+	@godepgraph -s -o $(shell go list -m) $(shell go list -m)/cmd/gaiad | dot -Tpng -o dependency-graph.png
 
 clean:
 	rm -rf $(BUILDDIR)/ artifacts/

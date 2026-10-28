@@ -4,7 +4,7 @@
 
 ### FEATURES
 
-- Allow CosmWasm contracts read-only gRPC query access to IBC light client proof verification (`ibc.core.client.v1.Query/VerifyMembership`), consensus states (`ibc.core.client.v1.Query/ConsensusState`) and client status (`ibc.core.client.v1.Query/ClientStatus`) ([#4023](https://github.com/cosmos/gaia/issues/4023)).
+- Allow CosmWasm contracts read-only gRPC query access to IBC light client proof verification (`ibc.core.client.v1.Query/VerifyMembership`), consensus states (`ibc.core.client.v1.Query/ConsensusState`) and client status (`ibc.core.client.v1.Query/ClientStatus`) ([#4023](https://github.com/cosmos/gaia/issues/4023)). Contracts that verify ICS23 proofs themselves against `ConsensusState` must check `ClientStatus` first and pin the proof specs and store key they expect, since the query enforces none of this.
 
 ### BUG-FIXES
 

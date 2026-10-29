@@ -14,9 +14,9 @@ ARG GIT_VERSION=""
 ARG GIT_COMMIT=""
 
 # See https://github.com/CosmWasm/wasmvm/releases
-ARG WASMVM_VERSION=v2.3.5
+ARG WASMVM_VERSION=v2.3.6
 ADD https://github.com/CosmWasm/wasmvm/releases/download/${WASMVM_VERSION}/libwasmvm_muslc.x86_64.a /lib/libwasmvm_muslc.x86_64.a
-RUN sha256sum /lib/libwasmvm_muslc.x86_64.a | grep 3b769d0e6a95724f71c7555c33b91270a207b7119ce7750c69b7de28b247ba14
+RUN sha256sum /lib/libwasmvm_muslc.x86_64.a | grep dd4beaf9e0092b8f6d398d09015edd400fef656cb0879b09e7441d02451ca03d
 RUN cp "/lib/libwasmvm_muslc.x86_64.a" /lib/libwasmvm_muslc.a
 
 COPY go.mod go.sum* ./

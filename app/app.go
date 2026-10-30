@@ -71,7 +71,7 @@ import (
 	gaiaante "github.com/cosmos/gaia/v29/ante"
 	"github.com/cosmos/gaia/v29/app/keepers"
 	"github.com/cosmos/gaia/v29/app/upgrades"
-	v290 "github.com/cosmos/gaia/v29/app/upgrades/v29_0_0"
+	v291 "github.com/cosmos/gaia/v29/app/upgrades/v29_1_0"
 	legacyics "github.com/cosmos/gaia/v29/x/legacy/ics"
 	legacyparams "github.com/cosmos/gaia/v29/x/legacy/params"
 )
@@ -80,7 +80,7 @@ var (
 	// DefaultNodeHome default home directories for the application daemon
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v290.Upgrade}
+	Upgrades = []upgrades.Upgrade{v291.Upgrade}
 )
 
 var (

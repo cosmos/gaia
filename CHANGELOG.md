@@ -9,6 +9,7 @@
 ### DEPENDENCIES
 
 - Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
+- Bump [github.com/go-jose/go-jose/v4](https://github.com/go-jose/go-jose) from 4.1.4 to 4.1.6 ([#4206](https://github.com/cosmos/gaia/pull/4206))
 
 ## v29.0.0
 

@@ -34,6 +34,7 @@ import (
 	ibctransferkeeper "github.com/cosmos/ibc-go/v10/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	transferv2 "github.com/cosmos/ibc-go/v10/modules/apps/transfer/v2"
+	ibcclienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
 	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
 	ibcapi "github.com/cosmos/ibc-go/v10/modules/core/api"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
@@ -453,11 +454,14 @@ func NewAppKeeper(
 	)
 	wasmOpts = append(wasmOpts, govVoteDecorator)
 
-	// Allow contracts read-only access to validator info and governance proposal
-	// state via the wasm Grpc query plugin.
+	// Allow contracts read-only access to validator info, governance proposal
+	// state and IBC light client proof verification via the wasm Grpc query plugin.
 	grpcAcceptList := wasmkeeper.AcceptedQueries{
-		"/cosmos.staking.v1beta1.Query/Validator": func() proto.Message { return &stakingtypes.QueryValidatorResponse{} },
-		"/cosmos.gov.v1.Query/Proposal":           func() proto.Message { return &govv1.QueryProposalResponse{} },
+		"/cosmos.staking.v1beta1.Query/Validator":    func() proto.Message { return &stakingtypes.QueryValidatorResponse{} },
+		"/cosmos.gov.v1.Query/Proposal":              func() proto.Message { return &govv1.QueryProposalResponse{} },
+		"/ibc.core.client.v1.Query/VerifyMembership": func() proto.Message { return &ibcclienttypes.QueryVerifyMembershipResponse{} },
+		"/ibc.core.client.v1.Query/ConsensusState":   func() proto.Message { return &ibcclienttypes.QueryConsensusStateResponse{} },
+		"/ibc.core.client.v1.Query/ClientStatus":     func() proto.Message { return &ibcclienttypes.QueryClientStatusResponse{} },
 	}
 	wasmOpts = append(wasmOpts, wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
 		Grpc: wasmkeeper.AcceptListGrpcQuerier(grpcAcceptList, bApp.GRPCQueryRouter(), appCodec),

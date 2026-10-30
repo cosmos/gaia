@@ -1,27 +1,25 @@
 # How to upgrade your node
 
-This upgrade is the governance gated upgrade
+There are two major kinds of upgrades:
+* Governance gated
+* Non-governance gated
 
-You can upgrade your node by replacing the binary manually or using Cosmovisor.
+In both cases, you can upgrade your node by replacing the binary manually or using Cosmovisor.
 
-> [!IMPORTANT]
-> Upgrade name: `v29.1.0`. Upgrade height: `<UPGRADE_HEIGHT>`. <br>
-> `v29.1.0` is a state-breaking release. Keep running `v29.0.1` until your node stops at the upgrade height, then switch to `v29.1.0`. <br>
-> Do not start `v29.1.0` before the upgrade height.
+The commands, paths, configuration snippets, and logs below are examples. Before using them, check the release notes and the approved on-chain upgrade plan (for governance gated upgrades), or the network upgrade announcement (for non-governance gated upgrades).
 
-## CosmWasm notes
+Replace the following placeholders with the values for your upgrade:
 
-`v29.1.0` uses wasmvm `v2.3.6` (previously `v2.3.5`).
+| Placeholder | Value |
+| --- | --- |
+| `<UPGRADE_NAME>` | The exact upgrade plan name. For governance gated upgrades, use the on-chain plan name; it may differ from the binary release version. |
+| `<UPGRADE_HEIGHT>` | The block height specified in the on-chain plan or agreed upon for the network upgrade. |
+| `<NEW_BINARY_PATH>` | The path to the new `gaiad` binary built or downloaded for your platform. |
+| `<NODE_HOME>` | Your node's home directory. |
+| `<PREVIOUS_UPGRADE_NAME>` | The upgrade directory currently targeted by Cosmovisor's `current` symlink, if it does not point to `genesis`. |
 
-* The release binaries link `libwasmvm` statically. If you build from source against a shared `libwasmvm` library (for example `/usr/lib/libwasmvm.x86_64.so`), replace it with the `v2.3.6` build before the upgrade. `gaiad start` refuses to run with a mismatched library.
-  * Check the library version with `gaiad query wasm libwasmvm-version`. It must print `2.3.6`.
-* The compiled module cache moves from `3858fb5318-wasmer24` to `20bed02e1f-wasmer24`.
-  * On the first start after the upgrade, the 08-wasm light client code is recompiled. CosmWasm contracts are recompiled the first time each one is executed, so the first blocks after the upgrade may process wasm transactions slightly slower. Gas is not affected.
-  * The old cache directories are not removed automatically. After confirming that the node runs normally, you can remove them:
-    ```
-    <node home>/wasm/cache/modules/3858fb5318-wasmer24
-    <node home>/data/08-light-client/cache/modules/3858fb5318-wasmer24
-    ```
+Do not copy placeholders literally into commands or configuration files. Adapt the sample service user and paths to your node's setup as well.
+
 
 ## Governance Gated Upgrade
 
@@ -34,30 +32,27 @@ A governance gated upgrade occurs when an upgrade plan goes on chain through a s
 2. Wait for the node to stop at the upgrade height.
   * The log will display something like this:
     ```
-    ERR UPGRADE "v29.1.0" NEEDED at height: <UPGRADE_HEIGHT>: upgrade to v29.1.0 and applying upgrade "v29.1.0" at height:<UPGRADE_HEIGHT>
+    ERR UPGRADE "<UPGRADE_NAME>" NEEDED at height: <UPGRADE_HEIGHT>: upgrade to <UPGRADE_NAME> and applying upgrade "<UPGRADE_NAME>" at height:<UPGRADE_HEIGHT>
     ```
 * If the node service remains active, you can stop it now.
-3. Replace the binary listed in the unit file with the new release [v29.1.0](https://github.com/cosmos/gaia/releases/tag/v29.1.0)
+3. Replace the binary listed in the unit file with the new release.
 4. Start the node service again.
 
 ### Cosmovisor Upgrade
 
 1. Build or download the binary for the release you are upgrading to.
 2. Create a folder for the new binary in the relevant Cosmovisor directory.
-  * If the upgrade name is `v29.1.0`, you would place the binary under `<node home>/cosmovisor/upgrades/v29.1.0/bin/gaiad`:
+  * Place the binary under `<NODE_HOME>/cosmovisor/upgrades/<UPGRADE_NAME>/bin/gaiad`, using the exact upgrade plan name for the directory:
     ```
     .
-    ├── current -> upgrades/v29.0.0
+    ├── current -> genesis or upgrades/<PREVIOUS_UPGRADE_NAME>
     ├── genesis
     │   └── bin
-    │       └── gaiad
+    │       └── gaiad  # genesis binary
     └── upgrades
-        ├── v29.0.0
-        │   └── bin
-        │       └── gaiad  # old: v29.0.1
-        └── v29.1.0
+        └── <UPGRADE_NAME>
             └── bin
-                └── gaiad  # new: v29.1.0
+                └── gaiad  # new binary
     ```
 3. Verify that Cosmovisor will use the binary you have prepared.
   * The Cosmovisor service should have the auto-download feature disabled. A sample Cosmovisor unit file will look like this:
@@ -83,3 +78,43 @@ A governance gated upgrade occurs when an upgrade plan goes on chain through a s
     ```
 * If you must change the contents of the unit file, run `systemctl daemon-reload` before restarting the service.
 4. Wait for the node to reach the upgrade height. Cosmovisor will restart the node using the new binary.
+
+
+## Non-governance Gated Upgrade
+
+A non-governance gated upgrade occurs when nodes upgrade their binary at an agreed-upon height.
+
+* You **must** stop your node at the relevant height and replace the binary before starting it again.
+* ⚠️ Monitor your logs when the halt height is about to be reached. If your node does not stop at the specified height using the instructions below, stop the service manually and replace the binary before starting the service again.
+
+### Manual Binary Upgrade
+
+1. Build or download the binary for the release you are upgrading to.
+2. Stop the node service.
+3. Update the app.toml file in your node's config folder to set the `halt-height` variable.
+  * Set the agreed-upon upgrade height as an integer:
+    ```
+    halt-height = <UPGRADE_HEIGHT>
+    ```
+4. Restart the service.
+5. Wait for the halt height.
+  * The log will display something like this when height is reached:
+    ```
+    ERR CONSENSUS FAILURE!!! err="failed to apply block; error halt per configuration height <UPGRADE_HEIGHT> time 0"
+    ```
+6. Stop the node service.
+7. Replace the binary listed in the unit file with the new release.
+  * For Cosmovisor, this will be `<NODE_HOME>/cosmovisor/current/bin/gaiad`.
+8. Update app.toml to set the `halt-height` back to 0.
+9. Start the node service.
+
+### Cosmovisor `add-upgrade`
+
+#### ⚠️ Be aware that there are reported issues with using Cosmovisor for non-governance upgrades: the instructions below may result in unexpected behaviour, such as an immediate upgrade or failure to stop at the specified height.
+
+1. Build or download the binary for the release you are upgrading to.
+2. Run the `add-upgrade` command using the upgrade name and height from the network upgrade announcement and the path to your new binary:
+   ```
+   cosmovisor add-upgrade <UPGRADE_NAME> <NEW_BINARY_PATH> --upgrade-height <UPGRADE_HEIGHT> --force
+   ```
+3. Wait for the node to reach the upgrade height. Cosmovisor will restart the node using the new binary.

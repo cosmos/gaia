@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## v29.1.0
+
+*October 30, 2026*
+
+### BUG-FIXES
+- Restore decoding of historical `ParameterChangeProposal` content, fixing governance proposal list, status-filtered, single-proposal and tally queries and state export ([#4199](https://github.com/cosmos/gaia/pull/4199))
+
+### STATE-BREAKING
+- Legacy `ParameterChangeProposal` submissions now decode and reach ante processing before governance rejects execution, so fees and account sequences change ([#4199](https://github.com/cosmos/gaia/pull/4199))
+- Add the `v29.1.0` upgrade handler ([#4209](https://github.com/cosmos/gaia/pull/4209))
+
+### DEPENDENCIES
+- Bump [github.com/CosmWasm/wasmd](https://github.com/CosmWasm/wasmd) from 0.60.9 to 0.60.10 ([#4201](https://github.com/cosmos/gaia/pull/4201))
+- Bump [github.com/CosmWasm/wasmvm/v2](https://github.com/CosmWasm/wasmvm) from 2.3.5 to 2.3.6 ([#4201](https://github.com/cosmos/gaia/pull/4201))
+
 ## v29.0.1
 
 *October 23, 2026*

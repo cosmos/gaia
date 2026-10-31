@@ -42,7 +42,7 @@ unbonding_time: 1814400s
 
 If a parameter-change proposal is successful, the change takes effect immediately upon completion of the voting period.
 
-**Note:** You cannot currently query the `bank` module's parameter, which is `sendenabled`. You also cannot query the `crisis` module's parameters.
+**Note:** You cannot currently query the `bank` module's parameter, which is `sendenabled`.
 
 ## Why create a parameter change proposal?
 

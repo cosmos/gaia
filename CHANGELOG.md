@@ -7,6 +7,7 @@
 ### BUG-FIXES
 
 ### DEPENDENCIES
+- Bump [launch-editor](https://github.com/vitejs/launch-editor) from 2.10.0 to 2.14.2 ([#4187](https://github.com/cosmos/gaia/pull/4187))
 
 - Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
 

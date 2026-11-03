@@ -1,6 +1,6 @@
 module github.com/cosmos/gaia/v29/tests/interchain
 
-go 1.26.7
+go 1.26.10
 
 replace (
 	cosmossdk.io/core => cosmossdk.io/core v0.11.3

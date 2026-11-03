@@ -45,6 +45,9 @@ jobs:
   test-sim-nondeterminism:
     runs-on: ubuntu-22.04
     needs: build
+    permissions:
+      contents: read
+      pull-requests: read
     # TestAppStateDeterminism is CPU-bound, single-threaded, and re-runs the
     # full simulation numSeeds*numTimesToRunPerSeed (3*5=15) times. Passing a
     # fixed -Seed forces numSeeds=1, so each matrix job runs a single seed (5
@@ -63,21 +66,23 @@ jobs:
           go-version-file: go.mod
           cache: true
           cache-dependency-path: go.sum
-      - uses: technote-space/get-diff-action@v6.1.2
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: git_diff
         with:
-          PATTERNS: |
-            **/**.go
-            go.mod
-            go.sum
+          filters: |
+            go:
+              - '**/*.go'
+              - 'go.mod'
+              - 'go.sum'
       - uses: actions/cache@v6
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary-v1.0.0
-        if: "env.GIT_DIFF != ''"
+        if: steps.git_diff.outputs.go == 'true'
       - name: test nondeterminism
         run: |
           make test-sim-nondeterminism SIM_SEED=${{ matrix.seed }}
-        if: "env.GIT_DIFF != ''"
+        if: steps.git_diff.outputs.go == 'true'
 
 
 

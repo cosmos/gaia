@@ -1,0 +1,269 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Test
+      run: go test -v ./...
+- name: Go Installer
+  # You may pin to the exact commit or the version.
+  # uses: mattdowdell/go-installer@de5d072ade9fc895652cd6a93ac4bde11e105bc6
+  uses: mattdowdell/go-installer@v0.4.0
+  with:
+    # The Go package to install.
+    package: 
+    # The Go package version to install.
+    version: # optional, default is latest
+    # The go.mod file to lookup the version from.
+    version-file: # optional, default is 
+    - name: Go Dependency Submission
+  uses: actions/go-dependency-submission@v2.0.3
+  with:
+    # GitHub Personal Access Token (PAT). Defaults to PAT provided by Action runner
+    token: # optional, default is ${{ github.token }}
+    # User provided map of max key/value pairs of metadata to include with the snapshot e.g. {"lastModified": "12-31-2022"}
+    metadata: # optional
+    # Repo path to the go.mod file used to detect dependencies for the Go build target. Defaults to go.mod in the root of the repository.
+    go-mod-path: # default is go.mod
+    # Build target to detect build dependencies. If unspecified, will use "all", with will detect all dependencies used in all build targets (including tests and tools).
+    go-build-target: # default is all
+    - name: Go CI
+  # You may pin to the exact commit or the version.
+  # uses: ghacts/go@f4993de229e57d20fc296c70a1570a4dfca88db1
+  uses: ghacts/go@v1.0.0
+  with:
+    # The path to the project
+    project-path: # optional, default is 
+    # The version of Go to use
+    go-version: # optional, default is stable
+    # The version of golangci-lint to use
+    golang-ci-lint-version: # optional, default is latest
+    # Additional arguments for golangci-lint
+    golang-ci-lint-args: # optional, default is --timeout=10m
+    # Check whether to skip lint step
+    skip-lint: # optional
+    # Check whether to skip build step
+    skip-build: # optional
+    # Check whether to skip test step
+    skip-test: # optional
+    - name: go-install
+  # You may pin to the exact commit or the version.
+  # uses: reconcilerio/go-install-action@d9bcafa690cb903d61b2cf962dcf5f87cf097617
+  uses: reconcilerio/go-install-action@v1.1.2
+  with:
+    # go package to install. Exactly one of 'package' or 'tool' is required
+    package: # optional
+    # version of go package to install. Only valid with 'package'
+    version: # optional
+    # tool defined in go.mod to install. Exactly one of 'package' or 'tool' is required
+    tool: # optional
+    # directory containing a go.mod file defining the package's version
+    working-directory: # optional, default is .
+    # override GOTOOLCHAIN for this build
+    toolchain: # optional
+    # URL template to resolve a pre-built binary. If the expanded URL resolves to an artifact, no artifact will be built or cached.
+    download-url-template: # optional
+    # Path within an archive resolved by download-url-template.
+    download-path-within-archive: # optional
+    # name of the built binary
+    output: # optional
+    # directory to place to build binary
+    output-dir: # optional
+    # environment variable containing the output path
+    output-path-env: # optional
+    # cache built artifacts. If false, always build from source
+    cache-enabled: # optional, default is true
+    - name: go-sync
+  # You may pin to the exact commit or the version.
+  # uses: x-actions/go-sync@1f6ac217cd015adbd7df6e11a6f6144a60d13323
+  uses: x-actions/go-sync@v1.2.1
+  with:
+    # Enable the debug flag to show detail log
+    debug: # optional, default is false
+    # cdn type
+    provider: # default is aliyun
+    # CDN Access Key ID
+    access_key: 
+    # CDN Access Key Secret
+    access_secret: 
+    # CDN Bucket Name
+    bucket: 
+    # CDN Bucket Endpoint (default "oss-cn-shanghai.aliyuncs.com")
+    endpoint: 
+    # the source dir public to cdn
+    source: 
+    # the cache file path (default "/tmp/<bucketName>.json")
+    cache: # optional
+    # exclude file or dir, comma-separated string
+    exclude: # optional
+    # ignore expression string, comma-separated string, replace by empty string when calculate md5 summary
+    ignore_expr: # optional
+    # auto delete Object which not in source dir
+    delete_objects: # optional, default is true
+    # exclude file or dir to delete in cdn provider, comma-separated string
+    exclude_delete_objects: # optional
+    - name: Go Publishr
+  # You may pin to the exact commit or the version.
+  # uses: PackagrIO/action-publishr-go@5500e68ee3673e8e8f9b825b72c67198d97804f3
+  uses: PackagrIO/action-publishr-go@v1.0.1
+  with:
+    # Commit Author
+    author_name: # default is packagrio-bot
+    # Commit Author Email
+    author_email: # default is packagr-io[bot]@users.noreply.github.com
+    # Assets to upload
+    upload_assets: # optional
+    # Working Directory
+    cwd: # optional, default is 
+    - name: go-openapi composite action
+  # You may pin to the exact commit or the version.
+  # uses: go-openapi/gh-actions@54ca899e07274336dbf153d2f5dcb3415beddb35
+  uses: go-openapi/gh-actions@v0.1.7-rc
+  with:
+    # 
+    install-gotestsum: # optional, default is true
+    # The version to install specifically.
+Defaults to 'auto': the version currenty released (see go.mod).
+
+    version-gotestsum: # optional, default is auto
+    # 
+    install-go-junit-report: # optional, default is true
+    # The version to install specifically.
+Defaults to 'auto': the version currenty released (see go.mod).
+
+    version-go-junit-report: # optional, default is auto
+    # 
+    install-go-ctrf-json-reporter: # optional, default is true
+    # The version to install specifically.
+Defaults to 'auto': the version currenty released (see go.mod).
+
+    version-go-ctrf-json-reporter: # optional, default is auto
+    # 
+    install-svu: # optional, default is true
+    # The version to install specifically.
+Defaults to 'auto': the version currenty released (see go.mod).
+- name: Go linter Runner
+  # You may pin to the exact commit or the version.
+  # uses: alingse/go-linter-runner@f714ac733facb20dfe3af0bf4e2e7580896b569d
+  uses: alingse/go-linter-runner@v1.1.0
+  with:
+    # Go Version
+Default '1.22'
+
+    go_version: # optional, default is 1.22
+    # 'run' or 'submit'
+Default 'run'
+
+    action: # optional, default is run
+    # 'run' option: the yaml style config file for 'run' action
+
+    yaml_config: # optional, default is 
+    # The repo to run lint, only work for github repo now
+
+    repo_url: # optional
+    # 'run' option: Work directory.
+Default '.'
+
+    workdir: # optional, default is .
+    # 'run' option: The install command like 'go install xxx/xxx@yyy'
+
+    install_command: # optional
+    # 'run' option: The lint command to run linter like 'xxlint --yy cc'
+
+    linter_command: # optional
+    # 'run' option: The output must exclude string array, can set as regex
+
+    excludes: # optional, default is []
+    # 'run' option: The output must include string array, can set as regex
+
+    includes: # optional, default is [ ".go" ]
+    # 'run' option: If linter catch some output, it will post comment on the issue
+
+    issue_id: # optional, default is 
+    # 'run' option: If enable_testfile is true, it will report the case in _test.go
+
+    enable_testfile: # optional
+    # 'submit' option: the repo url file for 'submit' action
+can be the file name in https://github.com/alingse/go-linter-runner/blob/main/source/ dir
+or other file download link.
+Default 'top.txt'
+
+    submit_source_file: # optional, default is top.txt
+    # 'submit' option: the repo url count to submit that read from `submit_source_file` for 'submit' action
+Default '1000'
+
+    submit_repo_count: # optional, default is 1000
+    # 'submit' option: the workflow to run
+Default 'go-linter-runner.yml'
+
+    submit_workflow: # optional, default is go-linter-runner.yml
+    # 'submit' option: the workflow ref barnch to run
+Default ''
+
+    submit_workflow_ref: # optional, default is 
+    # 'submit' option: the rate limit for submit action (requests per second)
+Default '0.25'
+
+    submit_rate: # optional, default is 0.25
+    - name: npm-multiple-publish
+  # You may pin to the exact commit or the version.
+  # uses: action-runner/npm-publish@c2877b5c4d9be83063e4f4cfe5e0b66759f87143
+  uses: action-runner/npm-publish@1.6.2
+  with:
+    # A list of npm tokens
+    tokens: 
+    # A list of package.json files
+    packageFiles: 
+    # A list of registries
+    registries: 
+    - name: Conventional Labeler
+  # You may pin to the exact commit or the version.
+  # uses: action-runner/conventional-labeler@2c9e06155ac5585f82ca9440b3e5edba9e81d433
+  uses: action-runner/conventional-labeler@2.0.0
+  with:
+    # Github Access Token to access and modify your pr's label
+    access_token: 
+    
+    version-svu: # optional, default is auto
+    - name: Upload release to release server
+  # You may pin to the exact commit or the version.
+  # uses: action-runner/release-uploader@0296034ed2d61b8a7dcf953aaccd205e8fa656d4
+  uses: action-runner/release-uploader@1.0.0
+  with:
+    # The release to upload
+    version: 
+    # The endpoint to upload to
+    endpoint: 
+    # The package name
+    package-name: 
+    # The assets to upload
+    assets: 
+    # The username to use for authentication
+    username: 
+    # The password to use for authentication
+    password: 
+    - name: Clean self-hosted runner
+  # You may pin to the exact commit or the version.
+  # uses: atos-actions/clean-self-hosted-runner@379e2a9cca9a04e458786df2417ed98139c3ba6a
+  uses: atos-actions/clean-self-hosted-runner@v1.3.0

@@ -9,6 +9,7 @@
 ### DEPENDENCIES
 
 - Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
+- Bump [github.com/spf13/pflag](https://github.com/spf13/pflag) from 1.0.10 to 1.1.0 ([#4213](https://github.com/cosmos/gaia/pull/4213))
 
 ## v29.0.0
 

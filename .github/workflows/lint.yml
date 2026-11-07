@@ -8,6 +8,7 @@ on:
   pull_request:
 permissions:
   contents: read
+  pull-requests: read
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
@@ -24,16 +25,17 @@ jobs:
           check-latest: true
           cache: true
           cache-dependency-path: go.sum
-      - uses: technote-space/get-diff-action@v6.1.2
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: git_diff
         with:
-          PATTERNS: |
-            **/*.go
-            go.mod
-            go.sum
-            **/go.mod
-            **/go.sum
+          filters: |
+            go:
+              - '**/*.go'
+              - 'go.mod'
+              - 'go.sum'
+              - '**/go.mod'
+              - '**/go.sum'
       - name: run linting
-        if: env.GIT_DIFF
+        if: steps.git_diff.outputs.go == 'true'
         run: |
           make lint

@@ -9,6 +9,7 @@
 ### DEPENDENCIES
 
 - Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
+- Bump [github.com/vektra/mockery/v2](https://github.com/vektra/mockery) from 2.53.7 to 2.53.8 ([#4194](https://github.com/cosmos/gaia/pull/4194))
 
 ## v29.0.0
 

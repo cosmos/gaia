@@ -9,6 +9,8 @@
 ### DEPENDENCIES
 
 - Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
+- Bump qs from 6.13.0 to 6.16.2 ([#4205](https://github.com/cosmos/gaia/pull/4205))
+- Bump express from 4.21.2 to 4.22.3 ([#4205](https://github.com/cosmos/gaia/pull/4205))
 
 ## v29.0.0
 

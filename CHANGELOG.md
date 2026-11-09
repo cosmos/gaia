@@ -9,6 +9,7 @@
 ### DEPENDENCIES
 
 - Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
+- Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.84.0 to 1.85.0 ([#4212](https://github.com/cosmos/gaia/pull/4212))
 
 ## v29.0.0
 

@@ -9,6 +9,7 @@
 ### DEPENDENCIES
 
 - Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
+- Bump [fast-uri](https://github.com/fastify/fast-uri) from 3.0.6 to 3.1.9 ([#4207](https://github.com/cosmos/gaia/pull/4207))
 
 ## v29.0.0
 

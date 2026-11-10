@@ -9,6 +9,7 @@
 ### DEPENDENCIES
 
 - Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
+- Bump [node-forge](https://github.com/digitalbazaar/forge) from 1.3.1 to 1.4.3 ([#4218](https://github.com/cosmos/gaia/pull/4218))
 
 ## v29.0.0
 

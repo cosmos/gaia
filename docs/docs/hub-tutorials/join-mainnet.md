@@ -57,7 +57,6 @@ For instructions to join as a validator, please also see the [Validator Guide](.
   - [Cosmovisor](#cosmovisor)
   - [Running via Background Process](#running-via-background-process)
   - [Exporting State](#exporting-state)
-  - [Verify Mainnet](#verify-mainnet)
 
 
 ## Explorers
@@ -272,10 +271,10 @@ It is possible to sync from previous versions of the Cosmos Hub. See the matrix 
 
 ##### Getting Started
 
-Start Gaia to begin syncing with the `skip-invariants` flag. For more information on this see [Verify Mainnet](#verify-mainnet).
+Start Gaia to begin syncing.
 
 ```bash
-gaiad start --x-crisis-skip-assert-invariants
+gaiad start
 
 ```
 
@@ -318,7 +317,7 @@ trust_period = "168h0m0s"
 Start Gaia to begin state sync. It may take some time for the node to acquire a snapshot, but the command and output should look similar to the following:
 
 ```bash
-$ gaiad start --x-crisis-skip-assert-invariants
+$ gaiad start
 
 ...
 
@@ -443,25 +442,4 @@ If planning to start a new network from the exported state, export with the `--f
 
 ```bash
 gaiad export --height [height] --for-zero-height > [filename].json
-```
-
-## Verify Mainnet
-
-Help to prevent a catastrophe by running invariants on each block on your full
-node. In essence, by running invariants the node operator ensures that the state of mainnet is the correct expected state. One vital invariant check is that no atoms are being created or destroyed outside of expected protocol, however there are many other invariant checks each unique to their respective module. Because invariant checks are computationally expensive, they are not enabled by default. To run a node with these checks start your node without the `--x-crisis-skip-assert-invariants` flag:
-
-```bash
-gaiad start
-```
-
-If an invariant is broken on the node, it will panic and prompt the operator to send a transaction which will halt mainnet. For example the provided message may look like:
-
-```bash
-invariant broken:
-    loose token invariance:
-        pool.NotBondedTokens: 100
-        sum of account tokens: 101
-    CRITICAL please submit the following transaction:
-        gaiad tx crisis invariant-broken staking supply
-
 ```

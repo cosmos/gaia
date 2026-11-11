@@ -10,6 +10,7 @@ import (
 	transfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	"github.com/cosmos/interchaintest/v10"
 	"github.com/cosmos/interchaintest/v10/ibc"
+	"github.com/cosmos/interchaintest/v10/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -95,7 +96,7 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferToChainB() {
 			s.ChainBWallet.FormattedAddress(), expectedDenomB)
 		assert.NoError(c, err)
 		assert.True(c, balanceB.Sub(balanceBBefore).Equal(sdkmath.NewInt(transferAmount)),
-			"expected balance increase of %d, got %d", transferAmount, balanceB.Sub(balanceBBefore))
+			"expected balance increase of %d, got %s", transferAmount, balanceB.Sub(balanceBBefore).String())
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain B balance did not increase")
 
 	// Verify balance decreased on chain A
@@ -147,8 +148,13 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferRoundTrip() {
 			s.ChainBWallet.FormattedAddress(), expectedDenomB)
 		assert.NoError(c, err)
 		assert.True(c, balanceB.Equal(sdkmath.NewInt(transferAmount)),
-			"expected balance %d, got %d", transferAmount, balanceB)
+			"expected balance %d, got %s", transferAmount, balanceB.String())
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain B balance did not update")
+
+	// Let Hermes commit the ack of the A→B packet on chain A first. Otherwise its
+	// B→A recv can collide with the pending ack (sequence mismatch) and be dropped
+	// until periodic clearing.
+	s.Require().NoError(testutil.WaitForBlocks(s.GetContext(), 4, s.Chain))
 
 	// Get return channel from B to A
 	transferChBtoA, err := s.Relayer.GetTransferChannel(s.GetContext(), s.ChainB, s.Chain)
@@ -171,14 +177,16 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferRoundTrip() {
 	)
 	s.Require().NoError(err)
 
-	// Wait for return transfer and verify tokens are unwrapped on chain A
+	// Wait for return transfer and verify tokens are unwrapped on chain A.
+	// If Hermes drops the recv anyway, it is relayed only by periodic clearing
+	// (clear_interval = 100 blocks), so wait longer than one clearing cycle.
 	s.Require().EventuallyWithT(func(c *assert.CollectT) {
 		balanceA, err := s.Chain.GetBalance(s.GetContext(),
 			s.DelegatorWallet.FormattedAddress(), denom)
 		assert.NoError(c, err)
 		assert.True(c, balanceA.Sub(balanceABefore).Equal(sdkmath.NewInt(returnAmount)),
-			"expected balance increase of %d, got %d", returnAmount, balanceA.Sub(balanceABefore))
-	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain A balance did not increase")
+			"expected balance increase of %d, got %s", returnAmount, balanceA.Sub(balanceABefore).String())
+	}, 120*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "chain A balance did not increase")
 
 	// Verify final balances
 	finalBalanceA, err := s.Chain.GetBalance(s.GetContext(),
@@ -323,7 +331,7 @@ func (s *TokenFactoryIBCSuite) TestMultipleTokenFactoryIBCTransfers() {
 				s.ChainBWallet.FormattedAddress(), expectedDenom)
 			assert.NoError(c, err)
 			assert.True(c, balance.Equal(sdkmath.NewInt(expectedAmount)),
-				"token %d: expected balance %d, got %d", i+1, expectedAmount, balance)
+				"token %d: expected balance %d, got %s", i+1, expectedAmount, balance.String())
 		}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout,
 			fmt.Sprintf("transfer of token %d did not complete", i+1))
 	}
@@ -384,7 +392,7 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferWithMintTo() {
 			s.ChainBWallet.FormattedAddress(), expectedDenomB)
 		assert.NoError(c, err)
 		assert.True(c, balanceB.Equal(sdkmath.NewInt(transferAmount)),
-			"expected balance %d on chain B, got %d", transferAmount, balanceB)
+			"expected balance %d on chain B, got %s", transferAmount, balanceB.String())
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "IBC transfer did not complete")
 
 	// Verify sender balance decreased
@@ -464,7 +472,7 @@ func (s *TokenFactoryIBCSuite) TestIBCTransferAfterAdminChange() {
 			s.ChainBWallet.FormattedAddress(), expectedDenomB)
 		assert.NoError(c, err)
 		assert.True(c, balance.Equal(sdkmath.NewInt(3000000)),
-			"expected total balance 3000000, got %d", balance)
+			"expected total balance 3000000, got %s", balance.String())
 	}, 30*chainsuite.CommitTimeout, chainsuite.CommitTimeout, "transfers did not complete")
 }
 

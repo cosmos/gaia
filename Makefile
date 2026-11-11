@@ -16,6 +16,7 @@ PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
 LEDGER_ENABLED ?= true
 SDK_PACK := $(shell go list -m github.com/cosmos/cosmos-sdk | sed  's/ /\@/g')
 TM_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::') # grab everything after the space in "github.com/cometbft/cometbft v0.34.7"
+HTTPS_GIT := https://github.com/cosmos/gaia.git
 DOCKER := $(shell which docker)
 BUILDDIR ?= $(CURDIR)/build
 TEST_DOCKER_REPO=cosmos/contrib-gaiatest
@@ -79,8 +80,9 @@ ifeq (cleveldb,$(findstring cleveldb,$(GAIA_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
 endif
 ifeq ($(LINK_STATICALLY),true)
-  extldflags += -Wl,-z,muldefs -static -z noexecstack
+  extldflags += -Wl,-z,muldefs -static-pie -z noexecstack
   ldflags += -linkmode=external
+  buildmode_flags += -buildmode=pie
 endif
 ifeq (,$(findstring nostrip,$(GAIA_BUILD_OPTIONS)))
   ldflags += -w -s
@@ -91,7 +93,7 @@ ldflags += -extldflags "$(extldflags)"
 ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
 
-BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)' $(buildmode_flags)
 # check for nostrip option
 ifeq (,$(findstring nostrip,$(GAIA_BUILD_OPTIONS)))
   BUILD_FLAGS += -trimpath

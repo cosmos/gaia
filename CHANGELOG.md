@@ -6,6 +6,9 @@
 
 ### BUG-FIXES
 
+- Fix `gaiad testnet` handing two validators the same IP when the generated
+  address crosses a `.255` octet boundary ([#4220](https://github.com/cosmos/gaia/pull/4220))
+
 ### DEPENDENCIES
 
 - Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))

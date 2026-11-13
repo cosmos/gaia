@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"bufio"
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -499,11 +500,17 @@ func calculateIP(ip string, i int) (string, error) {
 		return "", fmt.Errorf("%v: non ipv4 address", ip)
 	}
 
-	for j := 0; j < i; j++ {
-		ipv4[3]++
-	}
+	// Treat the address as a single 32-bit number so that the increment carries
+	// across octets. Bumping only the last byte wraps it back to 0 once it passes
+	// 255 (e.g. x.x.x.255 + 1 became x.x.x.0), which silently produces duplicate
+	// IPs when the starting octet plus the validator count crosses a boundary.
+	addr := binary.BigEndian.Uint32(ipv4)
+	addr += uint32(i)
 
-	return ipv4.String(), nil
+	next := make(net.IP, net.IPv4len)
+	binary.BigEndian.PutUint32(next, addr)
+
+	return next.String(), nil
 }
 
 func writeFile(name string, dir string, contents []byte) error {

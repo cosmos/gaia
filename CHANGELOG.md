@@ -9,6 +9,7 @@
 ### DEPENDENCIES
 
 - Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
+- Bump [go.opentelemetry.io/otel/sdk](https://github.com/open-telemetry/opentelemetry-go) from 1.45.0 to 1.47.0 ([#4222](https://github.com/cosmos/gaia/pull/4222))
 
 ## v29.0.0
 

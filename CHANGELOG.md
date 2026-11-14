@@ -9,6 +9,7 @@
 ### DEPENDENCIES
 
 - Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
+- Bump [joi](https://github.com/hapijs/joi) from 17.12.2 to 17.13.9 ([#4226](https://github.com/cosmos/gaia/pull/4226))
 
 ## v29.0.0
 

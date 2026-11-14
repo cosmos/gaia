@@ -9,6 +9,9 @@
 ### DEPENDENCIES
 
 - Bump golang from `1.26.7` to `1.26.10` ([#4190](https://github.com/cosmos/gaia/pull/4190))
+- Bump minimatch from 3.1.2 to 3.1.5 ([#4225](https://github.com/cosmos/gaia/pull/4225))
+- Bump serve-handler from 6.1.6 to 6.1.8 ([#4225](https://github.com/cosmos/gaia/pull/4225))
+- Bump sucrase from 3.35.0 to 3.35.1 ([#4225](https://github.com/cosmos/gaia/pull/4225))
 
 ## v29.0.0
 

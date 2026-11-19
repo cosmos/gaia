@@ -540,10 +540,8 @@ func startTestnet(cmd *cobra.Command, args startArgs) error {
 	networkLogger := network.NewCLILogger(cmd)
 
 	baseDir := fmt.Sprintf("%s/%s", args.outputDir, networkConfig.ChainID)
-	if _, err := os.Stat(baseDir); !os.IsNotExist(err) {
-		return fmt.Errorf(
-			"testnests directory already exists for chain-id '%s': %s, please remove or select a new --chain-id",
-			networkConfig.ChainID, baseDir)
+	if err := ensureTestnetDirDoesNotExist(baseDir, networkConfig.ChainID); err != nil {
+		return err
 	}
 
 	testnet, err := network.New(networkLogger, baseDir, networkConfig)
@@ -561,6 +559,20 @@ func startTestnet(cmd *cobra.Command, args startArgs) error {
 	testnet.Cleanup()
 
 	return nil
+}
+
+func ensureTestnetDirDoesNotExist(baseDir, chainID string) error {
+	_, err := os.Stat(baseDir)
+	switch {
+	case err == nil:
+		return fmt.Errorf(
+			"testnets directory already exists for chain-id '%s': %s, please remove or select a new --chain-id",
+			chainID, baseDir)
+	case os.IsNotExist(err):
+		return nil
+	default:
+		return fmt.Errorf("failed to check testnet directory %q: %w", baseDir, err)
+	}
 }
 
 // NewTestNetworkFixture returns a new gaiad AppConstructor for network simulation tests

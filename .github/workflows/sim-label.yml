@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
-      - uses: rokroskar/workflow-run-cleanup-action@master
+      - uses: rokroskar/workflow-run-cleanup-action@c631227427d0452af4994af0940d7655ebc50c7c # master
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 #    if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/main'"
@@ -21,13 +21,13 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-go@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7
         with:
           go-version-file: go.mod
           cache: true
           cache-dependency-path: go.sum
-      - uses: actions/cache@v6
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary-v1.0.0
@@ -47,13 +47,13 @@ jobs:
         seed: [1, 2, 3]
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-go@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7
         with:
           go-version-file: go.mod
           cache: true
           cache-dependency-path: go.sum
-      - uses: actions/cache@v6
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ~/go/bin
           key: ${{ runner.os }}-go-runsim-binary-v1.0.0

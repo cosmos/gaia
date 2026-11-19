@@ -6,6 +6,9 @@
 
 ### BUG-FIXES
 
+- Fix `gaiad testnet` handing two validators the same IP when the generated
+  address crosses a `.255` octet boundary ([#4220](https://github.com/cosmos/gaia/pull/4220))
+
 ### DEPENDENCIES
 
 ## v29.1.0

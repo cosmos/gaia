@@ -7,6 +7,7 @@
 ### BUG-FIXES
 
 ### DEPENDENCIES
+- Bump [brace-expansion](https://github.com/juliangruber/brace-expansion) from 1.1.11 to 1.1.22 ([#4235](https://github.com/cosmos/gaia/pull/4235))
 
 ## v29.1.0
 

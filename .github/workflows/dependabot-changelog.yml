@@ -18,7 +18,7 @@ jobs:
       contents: write # needed for pushing changes
 
     steps:
-    - uses: actions/checkout@v7
-    - uses: crambl/dependabot-changelog-writer@trunk # Always use the latest RELEASED version of this action
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+    - uses: crambl/dependabot-changelog-writer@478f44ae023312b697349f9d12b646936020936f # v1.3.1
       with:
         changelog-entry-pattern: 'Bump [dep] from [old] to [new] ([pr-link])'

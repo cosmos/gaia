@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkcosmos_hub_docs_site=self.webpackChunkcosmos_hub_docs_site||[]).push([[2634],{9179:(s,e,u)=>{u.r(e),u.d(e,{default:()=>t});u(6540);var c=u(6347),o=u(2467);function t(){return(0,o.jsx)(c.rd,{to:"/main"})}}}]);

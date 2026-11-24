@@ -1,4 +1,4 @@
-package v29_1_0
+package v29_2_0
 
 import (
 	"github.com/cosmos/gaia/v29/app/upgrades"
@@ -6,7 +6,7 @@ import (
 
 const (
 	// UpgradeName defines the on-chain upgrade name.
-	UpgradeName = "v29.1.0"
+	UpgradeName = "v29.2.0"
 )
 
 var Upgrade = upgrades.Upgrade{

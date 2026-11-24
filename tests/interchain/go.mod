@@ -13,7 +13,7 @@ replace (
 
 require (
 	cosmossdk.io/math v1.5.3
-	github.com/cometbft/cometbft v0.38.25
+	github.com/cometbft/cometbft v0.38.26
 	github.com/cosmos/cosmos-sdk v0.53.8
 	github.com/cosmos/ibc-go/v10 v10.7.0
 	github.com/cosmos/interchaintest/v10 v10.0.1
@@ -79,6 +79,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
+	github.com/cloudflare/circl v1.6.3 // indirect
 	github.com/cloudwego/base64x v0.1.7 // indirect
 	github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2 // indirect
 	github.com/cockroachdb/errors v1.12.0 // indirect

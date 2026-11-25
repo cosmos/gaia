@@ -6,6 +6,9 @@
 
 ### BUG-FIXES
 
+- Fix `gaiad testnet` handing two validators the same IP when the generated
+  address crosses a `.255` octet boundary ([#4220](https://github.com/cosmos/gaia/pull/4220))
+
 ### DEPENDENCIES
 - Bump [brace-expansion](https://github.com/juliangruber/brace-expansion) from 1.1.11 to 1.1.22 ([#4235](https://github.com/cosmos/gaia/pull/4235))
 

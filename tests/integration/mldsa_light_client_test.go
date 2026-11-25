@@ -308,10 +308,21 @@ func (s *MLDSALightClientTestSuite) TestUpdateClientLargeMlDsaValidatorSet() {
 // test: it runs only when the MLDSA_CHECK_* environment variables are set,
 // for example by a script that reads the current consensus params over RPC.
 //
-// It fails if a client update for a counterparty of the chain's own validator
-// count does not fit the chain's block tx data budget or block gas limit. It
-// only logs whether the update fits the mempool limit and whether a
-// misbehaviour fits the block, which are known limits for large ML-DSA sets.
+// It fails if a client update for a counterparty of the chain's own
+// validator count does not fit the chain's block tx data budget or block gas
+// limit. These are consensus params, which only governance can raise.
+//
+// It only logs two limits that a large ML-DSA set is known to exceed (see
+// the sizes logged by TestUpdateClientLargeMlDsaValidatorSet):
+//   - mempool.max_tx_bytes is node config and cannot be read from the chain.
+//     With 180 ML-DSA-65 validators the update exceeds the CometBFT default
+//     of 1 MiB, so it can be relayed only if the nodes of proposing
+//     validators raise this limit.
+//   - A misbehaviour carries two full headers, about twice the size of an
+//     update, and with 180 validators it exceeds the block tx data budget.
+//     A fork at a height the client already stores can still freeze the
+//     client through a conflicting header, which is the size of an update
+//     (see TestUpdateClientConflictingMlDsaHeaderFreezesClient).
 func (s *MLDSALightClientTestSuite) TestMlDsaMessagesAgainstChainParams() {
 	blockMaxBytes, ok1 := envInt(envBlockMaxBytes)
 	blockMaxGas, ok2 := envInt(envBlockMaxGas)
@@ -361,8 +372,14 @@ func (s *MLDSALightClientTestSuite) TestMlDsaMessagesAgainstChainParams() {
 		s.T().Logf("%s x %d: update tx %d B, gas %d, fastest simulate %s; misbehaviour tx %d B",
 			r.name, validators, r.updateTx, r.updateGas, r.fastest, r.misbehaviourTx)
 	}
-	s.T().Logf("ML-DSA-65 update fits mempool.max_tx_bytes: %t; misbehaviour fits block tx data budget: %t",
-		int64(mlDsaResult.updateTx) <= mempoolMaxBytes, int64(mlDsaResult.misbehaviourTx) <= budget)
+	if int64(mlDsaResult.updateTx) > mempoolMaxBytes {
+		s.T().Logf("WARNING: the ML-DSA-65 update (%d B) exceeds mempool.max_tx_bytes (%d B) and cannot be relayed with this setting; "+
+			"the nodes of proposing validators must raise mempool.max_tx_bytes", mlDsaResult.updateTx, mempoolMaxBytes)
+	}
+	if int64(mlDsaResult.misbehaviourTx) > budget {
+		s.T().Logf("WARNING: the ML-DSA-65 misbehaviour (%d B) exceeds the block tx data budget (%d B) and cannot be included in a block; "+
+			"a fork can freeze the client only through a conflicting header for a height the client already stores", mlDsaResult.misbehaviourTx, budget)
+	}
 
 	s.Require().LessOrEqual(int64(mlDsaResult.updateTx), budget, "ML-DSA update must fit the block tx data budget")
 	s.Require().LessOrEqual(mlDsaResult.updateGas, uint64(blockMaxGas), "ML-DSA update must fit the block gas limit") //nolint:gosec // block.max_gas is positive

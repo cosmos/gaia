@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## v29.2.0
+
+*November 25, 2026*
+
+### STATE-BREAKING
+- Decode ML-DSA-65 public keys and verify ML-DSA-65 signatures in counterparty headers. `MsgUpdateClient` and misbehaviour submissions from a counterparty whose validator set includes an ML-DSA-65 key now succeed instead of failing to decode ([#4241](https://github.com/cosmos/gaia/pull/4241))
+
+### DEPENDENCIES
+- Bump golang from 1.26.10 to 1.26.11 ([#4238](https://github.com/cosmos/gaia/pull/4238))
+- Bump [github.com/cometbft/cometbft](https://github.com/cometbft/cometbft) from 0.38.25 to 0.38.26 ([#4241](https://github.com/cosmos/gaia/pull/4241))
+- Bump [cosmossdk.io/client/v2](https://github.com/cosmos/cosmos-sdk) from 2.0.0-beta.9 to 2.0.0-beta.11 ([#4237](https://github.com/cosmos/gaia/pull/4237))
+- Bump [github.com/cosmos/iavl](https://github.com/cosmos/iavl) from 1.2.6 to 1.2.9 ([#4237](https://github.com/cosmos/gaia/pull/4237))
+- Bump [go.opentelemetry.io/otel](https://github.com/open-telemetry/opentelemetry-go) from 1.45.0 to 1.47.0 ([#4237](https://github.com/cosmos/gaia/pull/4237))
+- Bump [github.com/hashicorp/go-getter](https://github.com/hashicorp/go-getter) from 1.7.8 to 1.8.10 ([#4237](https://github.com/cosmos/gaia/pull/4237))
+- Bump [github.com/ulikunitz/xz](https://github.com/ulikunitz/xz) from 0.5.14 to 0.5.17 ([#4237](https://github.com/cosmos/gaia/pull/4237))
+- Bump [golang.org/x/net](https://github.com/golang/net) from 0.58.0 to 0.62.0 ([#4212](https://github.com/cosmos/gaia/pull/4212), [#4237](https://github.com/cosmos/gaia/pull/4237))
+- Bump [golang.org/x/crypto](https://github.com/golang/crypto) from 0.55.0 to 0.59.0 ([#4212](https://github.com/cosmos/gaia/pull/4212), [#4237](https://github.com/cosmos/gaia/pull/4237))
+- Bump [google.golang.org/grpc](https://github.com/grpc/grpc-go) from 1.84.0 to 1.85.0 ([#4212](https://github.com/cosmos/gaia/pull/4212))
+- Bump [github.com/spf13/pflag](https://github.com/spf13/pflag) from 1.0.10 to 1.1.0 ([#4213](https://github.com/cosmos/gaia/pull/4213))
+- Bump [github.com/prometheus/client_golang](https://github.com/prometheus/client_golang) from 1.24.1 to 1.25.0 ([#4194](https://github.com/cosmos/gaia/pull/4194))
+- Bump [github.com/go-jose/go-jose/v4](https://github.com/go-jose/go-jose) from 4.1.4 to 4.1.6 ([#4208](https://github.com/cosmos/gaia/pull/4208))
+
 ## v29.1.0
 
 *October 30, 2026*

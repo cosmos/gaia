@@ -7,7 +7,11 @@ import (
 )
 
 func CheckEndpoint(ctx context.Context, url string, f func([]byte) error) error {
-	resp, err := http.Get(url) //nolint:gosec
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil) //nolint:gosec
+	if err != nil {
+		return err
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return err
 	}

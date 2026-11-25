@@ -2,11 +2,16 @@ package integration
 
 import (
 	"fmt"
+	"math"
+	"math/rand"
+	"os"
+	"strconv"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/suite"
 
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/crypto/mldsa65"
 	cmtprotocrypto "github.com/cometbft/cometbft/proto/tendermint/crypto"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -16,6 +21,9 @@ import (
 	"github.com/cosmos/ibc-go/v10/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 	ibctesting "github.com/cosmos/ibc-go/v10/testing"
+
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/cosmos/gaia/v29/ante"
 	gaiaApp "github.com/cosmos/gaia/v29/app"
@@ -38,6 +46,24 @@ const (
 	errCantTrust      = "cant trust new val set"
 	errTooMuchChange  = "too much change from trusted validator set"
 	errClientFrozen   = "with status Frozen"
+
+	// largeValidatorSet is the counterparty size used for large ML-DSA
+	// messages. It matches the Cosmos Hub's 180 active validators.
+	largeValidatorSet = 180
+
+	// txGasLimit is the gas limit of the txs built by signedTx. It is high
+	// enough for an update with largeValidatorSet ML-DSA validators.
+	txGasLimit = 100_000_000
+)
+
+// Environment variables for TestMlDsaMessagesAgainstChainParams. They take the
+// values of a live chain at the time of the check, so the test does not depend
+// on constants that go stale. The test is skipped when they are not set.
+const (
+	envBlockMaxBytes   = "MLDSA_CHECK_BLOCK_MAX_BYTES"
+	envBlockMaxGas     = "MLDSA_CHECK_BLOCK_MAX_GAS"
+	envValidators      = "MLDSA_CHECK_VALIDATORS"
+	envMempoolMaxBytes = "MLDSA_CHECK_MEMPOOL_MAX_TX_BYTES"
 )
 
 // mutation changes a header before it is submitted.
@@ -203,6 +229,162 @@ func (s *MLDSALightClientTestSuite) TestUpdateClientRecoversAfterRejectedHeaders
 	s.requireClientAt(height, nextVals)
 }
 
+// The common case after a small validator rotates: the low-power ML-DSA
+// validator signs, but the light client stops verifying once 2/3 of the power
+// has signed. With ed25519 4 x 2 and ML-DSA 1, the ML-DSA validator sorts last
+// and its signature is decoded and size-checked but never verified.
+func (s *MLDSALightClientTestSuite) TestUpdateClientSigningLowPowerMlDsaValidator() {
+	vals, signers := s.counterpartyValSet(true, 1, lowMlDsaPower)
+	vals = setPowers(vals, 2, lowMlDsaPower)
+	s.Require().Equal(mldsa65.KeyType, vals.Validators[len(vals.Validators)-1].PubKey.Type())
+
+	height := s.rotateAndUpdate(vals, signers, nil, "")
+	s.requireClientAt(height, vals)
+}
+
+// CheckTx runs the client update through IBC's RedundantRelayDecorator, so an
+// update with a corrupted ML-DSA signature is rejected before it enters the
+// mempool, and a valid one is accepted. CheckTx must not change the committed
+// client state.
+func (s *MLDSALightClientTestSuite) TestCheckTxVerifiesMlDsaUpdate() {
+	for _, tc := range []struct {
+		name    string
+		mutate  mutation
+		wantErr string
+	}{
+		{"valid", nil, ""},
+		{"corrupted ML-DSA signature", corruptMlDsaSignatures, errWrongSignature},
+	} {
+		s.Run(tc.name, func() {
+			vals, signers := s.counterpartyValSet(true, 1, highMlDsaPower)
+			h1 := s.announceValSet(vals)
+			header := s.adjacentHeader(h1, vals, signers)
+			if tc.mutate != nil {
+				tc.mutate(header, vals)
+			}
+			s.commitChainAAtCurrentTime()
+
+			res, err := s.chainA.App.GetBaseApp().CheckTx(&abci.RequestCheckTx{
+				Tx:   s.signedTx(s.updateClientMsg(header)),
+				Type: abci.CheckTxType_New,
+			})
+			s.Require().NoError(err)
+			if tc.wantErr != "" {
+				s.Require().NotZero(res.Code)
+				s.Require().Contains(res.Log, tc.wantErr)
+			} else {
+				s.Require().Zero(res.Code, res.Log)
+			}
+			s.requireClientAt(h1, vals)
+		})
+	}
+}
+
+// The Hub app can process an update and a misbehaviour from a counterparty
+// with largeValidatorSet ML-DSA validators. This checks decoding, the ante
+// handler and light client verification of large messages; it does not depend
+// on any chain's block or mempool limits.
+func (s *MLDSALightClientTestSuite) TestUpdateClientLargeMlDsaValidatorSet() {
+	vals, signers := s.counterpartyValSet(false, largeValidatorSet, 1)
+	h1 := s.announceValSet(vals)
+
+	updateTx := s.signedTx(s.updateClientMsg(s.adjacentHeader(h1, vals, signers)))
+	misbehaviourTx := s.signedTx(s.updateClientMsg(ibctm.NewMisbehaviour(s.path.EndpointA.ClientID,
+		s.adjacentHeader(h1, vals, signers), s.adjacentHeader(h1, vals, signers))))
+	s.commitChainAAtCurrentTime()
+
+	updateGas, _, err := s.chainA.App.GetBaseApp().Simulate(updateTx)
+	s.Require().NoError(err)
+	misbehaviourGas, _, err := s.chainA.App.GetBaseApp().Simulate(misbehaviourTx)
+	s.Require().NoError(err)
+
+	s.T().Logf("%d ML-DSA validators: update tx %d B, gas %d; misbehaviour tx %d B, gas %d",
+		largeValidatorSet, len(updateTx), updateGas.GasUsed, len(misbehaviourTx), misbehaviourGas.GasUsed)
+}
+
+// TestMlDsaMessagesAgainstChainParams compares large ML-DSA messages with the
+// block and mempool limits of a live chain, and measures the update cost
+// against an ed25519 set of the same size. It is a release check, not a CI
+// test: it runs only when the MLDSA_CHECK_* environment variables are set,
+// for example by a script that reads the current consensus params over RPC.
+//
+// It fails if a client update for a counterparty of the chain's own
+// validator count does not fit the chain's block tx data budget or block gas
+// limit. These are consensus params, which only governance can raise.
+//
+// It only logs two limits that a large ML-DSA set is known to exceed (see
+// the sizes logged by TestUpdateClientLargeMlDsaValidatorSet):
+//   - mempool.max_tx_bytes is node config and cannot be read from the chain.
+//     With 180 ML-DSA-65 validators the update exceeds the CometBFT default
+//     of 1 MiB, so it can be relayed only if the nodes of proposing
+//     validators raise this limit.
+//   - A misbehaviour carries two full headers, about twice the size of an
+//     update, and with 180 validators it exceeds the block tx data budget.
+//     A fork at a height the client already stores can still freeze the
+//     client through a conflicting header, which is the size of an update
+//     (see TestUpdateClientConflictingMlDsaHeaderFreezesClient).
+func (s *MLDSALightClientTestSuite) TestMlDsaMessagesAgainstChainParams() {
+	blockMaxBytes, ok1 := envInt(envBlockMaxBytes)
+	blockMaxGas, ok2 := envInt(envBlockMaxGas)
+	validators, ok3 := envInt(envValidators)
+	if !ok1 || !ok2 || !ok3 {
+		s.T().Skipf("set %s, %s and %s to run this release check", envBlockMaxBytes, envBlockMaxGas, envValidators)
+	}
+	mempoolMaxBytes, ok := envInt(envMempoolMaxBytes)
+	if !ok {
+		mempoolMaxBytes = 1_048_576 // CometBFT default mempool.max_tx_bytes
+	}
+	budget := cmttypes.MaxDataBytesNoEvidence(blockMaxBytes, int(validators))
+	s.T().Logf("chain: block.max_bytes %d, block.max_gas %d, %d validators -> block tx data budget %d B; mempool.max_tx_bytes %d",
+		blockMaxBytes, blockMaxGas, validators, budget, mempoolMaxBytes)
+
+	type result struct {
+		updateTx, misbehaviourTx int
+		updateGas                uint64
+		fastest                  time.Duration
+	}
+	measure := func(vals *cmttypes.ValidatorSet, signers map[string]cmttypes.PrivValidator) result {
+		h1 := s.announceValSet(vals)
+		updateTx := s.signedTx(s.updateClientMsg(s.adjacentHeader(h1, vals, signers)))
+		misbehaviourTx := s.signedTx(s.updateClientMsg(ibctm.NewMisbehaviour(s.path.EndpointA.ClientID,
+			s.adjacentHeader(h1, vals, signers), s.adjacentHeader(h1, vals, signers))))
+		s.commitChainAAtCurrentTime()
+
+		r := result{updateTx: len(updateTx), misbehaviourTx: len(misbehaviourTx), fastest: time.Duration(math.MaxInt64)}
+		for range 5 {
+			start := time.Now()
+			info, _, err := s.chainA.App.GetBaseApp().Simulate(updateTx)
+			r.fastest = min(r.fastest, time.Since(start))
+			s.Require().NoError(err)
+			r.updateGas = info.GasUsed
+		}
+		return r
+	}
+
+	var ed25519Result, mlDsaResult result
+	s.Run("ed25519", func() { ed25519Result = measure(ed25519ValSet(int(validators))) })
+	s.Run("ML-DSA-65", func() { mlDsaResult = measure(s.counterpartyValSet(false, int(validators), 1)) })
+
+	for _, r := range []struct {
+		name string
+		result
+	}{{"ed25519", ed25519Result}, {"ML-DSA-65", mlDsaResult}} {
+		s.T().Logf("%s x %d: update tx %d B, gas %d, fastest simulate %s; misbehaviour tx %d B",
+			r.name, validators, r.updateTx, r.updateGas, r.fastest, r.misbehaviourTx)
+	}
+	if int64(mlDsaResult.updateTx) > mempoolMaxBytes {
+		s.T().Logf("WARNING: the ML-DSA-65 update (%d B) exceeds mempool.max_tx_bytes (%d B) and cannot be relayed with this setting; "+
+			"the nodes of proposing validators must raise mempool.max_tx_bytes", mlDsaResult.updateTx, mempoolMaxBytes)
+	}
+	if int64(mlDsaResult.misbehaviourTx) > budget {
+		s.T().Logf("WARNING: the ML-DSA-65 misbehaviour (%d B) exceeds the block tx data budget (%d B) and cannot be included in a block; "+
+			"a fork can freeze the client only through a conflicting header for a height the client already stores", mlDsaResult.misbehaviourTx, budget)
+	}
+
+	s.Require().LessOrEqual(int64(mlDsaResult.updateTx), budget, "ML-DSA update must fit the block tx data budget")
+	s.Require().LessOrEqual(mlDsaResult.updateGas, uint64(blockMaxGas), "ML-DSA update must fit the block gas limit") //nolint:gosec // block.max_gas is positive
+}
+
 // A valid fork with ML-DSA-65 signatures freezes the client, and the frozen
 // client rejects later updates.
 func (s *MLDSALightClientTestSuite) TestMisbehaviourFreezesClient() {
@@ -299,6 +481,44 @@ func (s *MLDSALightClientTestSuite) submitClientMessage(clientMsg exported.Clien
 	return err
 }
 
+// commitChainAAtCurrentTime commits an empty chainA block at the coordinator's
+// current time. CheckTx and Simulate check header times against the last
+// committed block, unlike SendMsgs, which first moves the block time forward.
+func (s *MLDSALightClientTestSuite) commitChainAAtCurrentTime() {
+	s.coordinator.UpdateTimeForChain(s.chainA)
+	s.chainA.NextBlock()
+}
+
+// signedTx signs msgs with chainA's sender at its current sequence, with no
+// fee and txGasLimit, and returns the encoded tx.
+func (s *MLDSALightClientTestSuite) signedTx(msgs ...sdk.Msg) []byte {
+	tx, err := simtestutil.GenSignedMockTx(
+		rand.New(rand.NewSource(1)),
+		s.chainA.TxConfig, msgs, sdk.NewCoins(), txGasLimit, s.chainA.ChainID,
+		[]uint64{s.chainA.SenderAccount.GetAccountNumber()},
+		[]uint64{s.chainA.SenderAccount.GetSequence()},
+		s.chainA.SenderPrivKey,
+	)
+	s.Require().NoError(err)
+	txBytes, err := s.chainA.TxConfig.TxEncoder()(tx)
+	s.Require().NoError(err)
+	return txBytes
+}
+
+// envInt reads an integer environment variable. It returns false if the
+// variable is not set.
+func envInt(name string) (int64, bool) {
+	v, ok := os.LookupEnv(name)
+	if !ok || v == "" {
+		return 0, false
+	}
+	n, err := strconv.ParseInt(v, 10, 64)
+	if err != nil {
+		panic(fmt.Sprintf("%s=%q is not an integer", name, v))
+	}
+	return n, true
+}
+
 func (s *MLDSALightClientTestSuite) clientStatus() exported.Status {
 	return s.chainA.App.GetIBCKeeper().ClientKeeper.GetClientStatus(s.chainA.GetContext(), s.path.EndpointA.ClientID)
 }
@@ -334,15 +554,35 @@ func (s *MLDSALightClientTestSuite) counterpartyValSet(keepEd25519 bool, numMlDs
 // which every ed25519 validator has highMlDsaPower and every ML-DSA validator
 // lowMlDsaPower.
 func shiftPowerToEd25519(vals *cmttypes.ValidatorSet) *cmttypes.ValidatorSet {
-	shifted := make([]*cmttypes.Validator, 0, len(vals.Validators))
+	return setPowers(vals, highMlDsaPower, lowMlDsaPower)
+}
+
+// setPowers returns a validator set with the same keys as vals, in which every
+// ed25519 validator has ed25519Power and every ML-DSA validator mlDsaPower.
+func setPowers(vals *cmttypes.ValidatorSet, ed25519Power, mlDsaPower int64) *cmttypes.ValidatorSet {
+	updated := make([]*cmttypes.Validator, 0, len(vals.Validators))
 	for _, v := range vals.Validators {
-		power := int64(highMlDsaPower)
+		power := ed25519Power
 		if v.PubKey.Type() == mldsa65.KeyType {
-			power = lowMlDsaPower
+			power = mlDsaPower
 		}
-		shifted = append(shifted, cmttypes.NewValidator(v.PubKey, power))
+		updated = append(updated, cmttypes.NewValidator(v.PubKey, power))
 	}
-	return cmttypes.NewValidatorSet(shifted)
+	return cmttypes.NewValidatorSet(updated)
+}
+
+// ed25519ValSet returns a counterparty validator set of n new ed25519
+// validators with power 1 each.
+func ed25519ValSet(n int) (*cmttypes.ValidatorSet, map[string]cmttypes.PrivValidator) {
+	vals := make([]*cmttypes.Validator, 0, n)
+	signers := make(map[string]cmttypes.PrivValidator, n)
+	for range n {
+		pv := cmttypes.NewMockPV()
+		pubKey := pv.PrivKey.PubKey()
+		vals = append(vals, cmttypes.NewValidator(pubKey, 1))
+		signers[pubKey.Address().String()] = pv
+	}
+	return cmttypes.NewValidatorSet(vals), signers
 }
 
 // rotateAndUpdate updates chainA's client of chainB in two steps, as a relayer
